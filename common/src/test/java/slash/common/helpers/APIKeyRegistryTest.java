@@ -33,6 +33,7 @@ import java.util.Properties;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -87,6 +88,34 @@ public class APIKeyRegistryTest {
     @Test
     public void testGetAPIKeyOfUnknownServiceIsNull() {
         assertNull(APIKeyRegistry.getInstance().getAPIKey("notaregisteredservice", "test"));
+    }
+
+    @Test
+    public void testHasAPIKeyIsFalseForUnknownService() {
+        assertFalse(APIKeyRegistry.getInstance().hasAPIKey("nosuchservice"));
+    }
+
+    @Test
+    public void testHasAPIKeyIsTrueAfterSettingPreference() {
+        APIKeyRegistry registry = APIKeyRegistry.getInstance();
+        registry.setAPIKeyPreference("nosuchservice", "k");
+        assertTrue(registry.hasAPIKey("nosuchservice"));
+    }
+
+    @Test
+    public void testHasAPIKeyIsFalseForBlankPreference() {
+        APIKeyRegistry registry = APIKeyRegistry.getInstance();
+        registry.setAPIKeyPreference("nosuchservice", "  ");
+        assertFalse(registry.hasAPIKey("nosuchservice"));
+    }
+
+    @Test
+    public void testHasAPIKeyDoesNotCountAUsage() throws BackingStoreException {
+        APIKeyRegistry registry = APIKeyRegistry.getInstance();
+        registry.setAPIKeyPreference("nosuchservice", "k");
+        registry.hasAPIKey("nosuchservice");
+        for (String key : preferences.keys())
+            assertFalse(key.startsWith("nosuchservice" + API_USAGES), key);
     }
 
     @Test

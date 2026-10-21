@@ -37,10 +37,30 @@ DEFAULT_POLL_TIMEOUT_S = 1500
 POLL_INTERVAL_S = 30
 # The factory topic; the publisher user may write nowhere else (anonymous: deny-all).
 NTFY_URL = "https://ntfy.routeconverter.com/factory-rc"
-REPRO = (
-    "JAVA_TOOL_OPTIONS=-XX:TieredStopAtLevel=1 mvn --batch-mode -T 1C "
-    "-Dsurefire.forkCount=1 -Dspotbugs.skip=true -Dshade.skip=true verify"
-)
+# Per-workflow repro command, keyed by the stem _workflow_name() returns.
+# "prerelease" names both platform build steps (_build-linux-mac.yml "Build",
+# _build-windows.yml "Build (incl. bundle modules…)") since either can fail;
+# the packaging gates downstream of those builds (makensis, jpackage, the
+# warm-launch smoke test, …) have no single repro command, so point at the run.
+REPRO_BY_WORKFLOW = {
+    "build": (
+        "JAVA_TOOL_OPTIONS=-XX:TieredStopAtLevel=1 mvn --batch-mode -T 1C "
+        "-Dsurefire.forkCount=1 -Dspotbugs.skip=true -Dshade.skip=true verify"
+    ),
+    "jdk-ea-canary": (
+        "mvn --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true "
+        "-Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots test-compile"
+    ),
+    "prerelease": (
+        "Linux/Mac: ./mvnw --batch-mode -Prouteconverter -DmacApp "
+        "-Dmaven.build.number=<run-number> -DcrashReportSecret=<secret> "
+        "-DtimeAlbumGoogleMapsApiKey=<secret> package\n"
+        "Windows:   ./mvnw.cmd --batch-mode -Prouteconverter "
+        "-Dmaven.build.number=<run-number> -DcrashReportSecret=<secret> "
+        "-DtimeAlbumGoogleMapsApiKey=<secret> clean package\n"
+        "packaging gates: see the failed step in the run"
+    ),
+}
 
 _SIG_RE = re.compile(r"\b[0-9a-f]{12}\b")
 
@@ -417,7 +437,7 @@ def _files_by_sig(findings):
     return {finding.signature: nightly_issue.resolve_files(finding, ls_files) for finding in findings}
 
 
-def _render_ctx(run, last_green, commits, env_diff):
+def _render_ctx(run, workflow, last_green, commits, env_diff):
     return {
         "run_url": run.get("html_url") or "",
         "last_green": (
@@ -425,7 +445,7 @@ def _render_ctx(run, last_green, commits, env_diff):
         ),
         "first_red": {"sha": run.get("head_sha") or "", "url": run.get("html_url") or ""},
         "commits": commits,
-        "repro": REPRO,
+        "repro": REPRO_BY_WORKFLOW.get(workflow, REPRO_BY_WORKFLOW["build"]),
         "seed": None,
         "env_diff": env_diff,
     }
@@ -613,11 +633,12 @@ def _cancelled_summary(env, run_id):
         f.write(f"run {run_id} was cancelled — not triaged\n")
 
 
-def _step_summary(actions, env, env_diff):
+def _step_summary(actions, env, env_diff, workflow):
     path = env.get("GITHUB_STEP_SUMMARY")
     if not path:
         return
     lines = [
+        f"Workflow: {workflow}",
         "| Class | Signature | Jobs | Action | Issue |",
         "| --- | --- | --- | --- | --- |",
     ]
@@ -698,7 +719,7 @@ def triage(api, repo, run_id, dry_run=False, settings=None, env=None):
     )
     actions = nightly_decide.plan(findings, issues, ctx, settings)
 
-    render_ctx = _render_ctx(run, last_green, commits, env_diff)
+    render_ctx = _render_ctx(run, workflow, last_green, commits, env_diff)
 
     if dry_run:
         for action in actions:
@@ -708,7 +729,7 @@ def triage(api, repo, run_id, dry_run=False, settings=None, env=None):
 
     _drift_log_comment(api, repo, env_diff, render_ctx["run_url"], open_issues, dry_run)
 
-    _step_summary(actions, env, env_diff)
+    _step_summary(actions, env, env_diff, workflow)
     return 0
 
 

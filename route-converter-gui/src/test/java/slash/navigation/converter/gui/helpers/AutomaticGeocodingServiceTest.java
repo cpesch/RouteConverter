@@ -101,6 +101,22 @@ public class AutomaticGeocodingServiceTest {
         }
     }
 
+    @Test
+    public void getAddressForSkipsServiceThatIsOverQueryLimit() throws Exception {
+        Preferences preferences = new InMemoryPreferences();
+        GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
+        AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
+        OverQueryLimitGeocodingService google = new OverQueryLimitGeocodingService("Google");
+        facade.addGeocodingService(automatic);
+        facade.addGeocodingService(google);
+        facade.addGeocodingService(new AddressGeocodingService("Nominatim", "online"));
+
+        String address = automatic.getAddressFor(new SimpleCategorizedNavigationPosition(1.0, 2.0, null, null, null));
+
+        assertEquals("online", address);
+        assertEquals(0, google.getAddressForCalled);
+    }
+
     private List<CategorizedNavigationPosition> singletonPositions(String description) {
         List<CategorizedNavigationPosition> positions = new ArrayList<>();
         positions.add(new SimpleCategorizedNavigationPosition(1.0, 2.0, null, description, null));
@@ -134,6 +150,66 @@ public class AutomaticGeocodingServiceTest {
 
         public String getAddressFor(NavigationPosition position) {
             return null;
+        }
+    }
+
+    private static class AddressGeocodingService extends BaseGeocodingService {
+        private final String name;
+        private final String address;
+
+        private AddressGeocodingService(String name, String address) {
+            this.name = name;
+            this.address = address;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isDownload() {
+            return false;
+        }
+
+        public boolean isOverQueryLimit() {
+            return false;
+        }
+
+        public List<GeocodingResult> getPositionsFor(String address) {
+            return emptyList();
+        }
+
+        public String getAddressFor(NavigationPosition position) {
+            return address;
+        }
+    }
+
+    private static class OverQueryLimitGeocodingService extends BaseGeocodingService {
+        private final String name;
+        private int getAddressForCalled;
+
+        private OverQueryLimitGeocodingService(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isDownload() {
+            return false;
+        }
+
+        public boolean isOverQueryLimit() {
+            return true;
+        }
+
+        public List<GeocodingResult> getPositionsFor(String address) {
+            return emptyList();
+        }
+
+        public String getAddressFor(NavigationPosition position) {
+            getAddressForCalled++;
+            return "should-not-be-used";
         }
     }
 

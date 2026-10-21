@@ -57,7 +57,7 @@ class ParseSurefireReportsTest(unittest.TestCase):
 class IsInfraTest(unittest.TestCase):
     def test_failed_setup_step_is_infra(self):
         job = JobResult(name="Java 21", conclusion="failure", failed_step="Set up JDK", log="")
-        self.assertTrue(nightly_classify.is_infra(job))
+        self.assertTrue(nightly_classify.is_infra(job, "build"))
 
     def test_connection_reset_log_is_infra(self):
         job = JobResult(
@@ -66,7 +66,7 @@ class IsInfraTest(unittest.TestCase):
             failed_step="Build with Maven",
             log="Error: Connection reset by peer",
         )
-        self.assertTrue(nightly_classify.is_infra(job))
+        self.assertTrue(nightly_classify.is_infra(job, "build"))
 
     def test_plain_test_failure_in_maven_step_is_not_infra(self):
         job = JobResult(
@@ -75,7 +75,7 @@ class IsInfraTest(unittest.TestCase):
             failed_step="Build with Maven",
             log="[ERROR] Tests run: 1, Failures: 1",
         )
-        self.assertFalse(nightly_classify.is_infra(job))
+        self.assertFalse(nightly_classify.is_infra(job, "build"))
 
     def test_unable_to_connect_to_source_log_is_infra(self):
         job = JobResult(
@@ -84,7 +84,29 @@ class IsInfraTest(unittest.TestCase):
             failed_step="Build with Maven",
             log="Unable to connect to source 'https://community.chocolatey.org/api/v2/'",
         )
-        self.assertTrue(nightly_classify.is_infra(job))
+        self.assertTrue(nightly_classify.is_infra(job, "build"))
+
+    def test_prerelease_pin_nsis_step_is_infra_even_though_not_with_maven(self):
+        job = JobResult(name="build-windows / build", conclusion="failure", failed_step="Pin NSIS 3.11", log="")
+        self.assertTrue(nightly_classify.is_infra(job, "prerelease"))
+
+    def test_prerelease_packaging_gate_step_is_not_infra(self):
+        job = JobResult(
+            name="build-windows / build",
+            conclusion="failure",
+            failed_step="Smoke test — bundled-jar warm-launch caching (issue #372)",
+            log="assertion C failed: run 2 took 4 s (expected < 3 s)",
+        )
+        self.assertFalse(nightly_classify.is_infra(job, "prerelease"))
+
+    def test_prerelease_packaging_gate_step_with_infra_log_signal_is_infra(self):
+        job = JobResult(
+            name="build-linux-mac / build",
+            conclusion="failure",
+            failed_step="Build",
+            log="Could not transfer artifact org.apache.maven.plugins:x",
+        )
+        self.assertTrue(nightly_classify.is_infra(job, "prerelease"))
 
 
 class MavenErrorTest(unittest.TestCase):
@@ -339,6 +361,64 @@ class ClassifyTest(unittest.TestCase):
             )
         ]
         rerun = [JobResult(name="Java 21", conclusion="cancelled", failed_step=None, log="")]
+        findings = nightly_classify.classify("build", first, rerun, {})
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].klass, "infra")
+
+    def test_prerelease_pin_nsis_failure_is_infra(self):
+        first = [
+            JobResult(name="build-windows / build", conclusion="failure", failed_step="Pin NSIS 3.11", log="")
+        ]
+        rerun = [
+            JobResult(name="build-windows / build", conclusion="failure", failed_step="Pin NSIS 3.11", log="")
+        ]
+        findings = nightly_classify.classify("prerelease", first, rerun, {})
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].klass, "infra")
+
+    def test_prerelease_packaging_gate_failure_is_deterministic(self):
+        log = "assertion C failed: run 2 took 4 s (expected < 3 s)"
+        first = [
+            JobResult(
+                name="build-windows / build",
+                conclusion="failure",
+                failed_step="Smoke test — bundled-jar warm-launch caching (issue #372)",
+                log=log,
+            )
+        ]
+        rerun = [
+            JobResult(
+                name="build-windows / build",
+                conclusion="failure",
+                failed_step="Smoke test — bundled-jar warm-launch caching (issue #372)",
+                log=log,
+            )
+        ]
+        findings = nightly_classify.classify("prerelease", first, rerun, {})
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].klass, "deterministic")
+
+    def test_prerelease_build_failure_with_infra_log_is_infra(self):
+        log = "Could not transfer artifact org.apache.maven.plugins:x"
+        first = [JobResult(name="build-linux-mac / build", conclusion="failure", failed_step="Build", log=log)]
+        rerun = [JobResult(name="build-linux-mac / build", conclusion="failure", failed_step="Build", log=log)]
+        findings = nightly_classify.classify("prerelease", first, rerun, {})
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].klass, "infra")
+
+    def test_prerelease_build_failure_green_rerun_is_flaky(self):
+        log = "Could not transfer artifact org.apache.maven.plugins:x"
+        first = [JobResult(name="build-linux-mac / build", conclusion="failure", failed_step="Build", log=log)]
+        rerun = [JobResult(name="build-linux-mac / build", conclusion="success", failed_step=None, log="")]
+        findings = nightly_classify.classify("prerelease", first, rerun, {})
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].klass, "flaky")
+
+    def test_build_workflow_pin_nsis_failure_keeps_with_maven_rule(self):
+        # build.yml has no "Pin NSIS" step, but the unchanged non-prerelease
+        # rule still applies: any failed step not ending "with Maven" is infra.
+        first = [JobResult(name="Java 21 on Windows", conclusion="failure", failed_step="Pin NSIS 3.11", log="")]
+        rerun = [JobResult(name="Java 21 on Windows", conclusion="failure", failed_step="Pin NSIS 3.11", log="")]
         findings = nightly_classify.classify("build", first, rerun, {})
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0].klass, "infra")

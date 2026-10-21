@@ -104,6 +104,8 @@ public class AutomaticGeocodingService extends BaseGeocodingService {
 
         for (GeocodingService service : sortByBestEffort(geocodingServiceFacade.getGeocodingServices())) {
             try {
+                if(service.isOverQueryLimit())
+                    continue;
 
                 String address = service.getAddressFor(position);
                 if (address != null) {
