@@ -20,10 +20,24 @@
 package slash.navigation.maps.mapsforge.models;
 
 import org.junit.Test;
+import org.mapsforge.core.model.Tile;
+import slash.navigation.maps.tileserver.TileServer;
+
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.maps.mapsforge.models.TileServerMapSource.appendApiKey;
+import static slash.navigation.maps.mapsforge.models.TileServerMapSource.isPlainApiKey;
 import static slash.navigation.maps.mapsforge.models.TileServerMapSource.userAgent;
 
 public class TileServerMapSourceTest {
@@ -51,6 +65,81 @@ public class TileServerMapSourceTest {
     @Test
     public void testMapboxWithExistingQueryAppendsAccessToken() {
         assertEquals("https://example.com/tile?a=b&access_token=key", appendApiKey("https://example.com/tile?a=b", "key", true));
+    }
+
+    @Test
+    public void testAppendApiKeyEncodesCharactersThatWouldBreakTheQueryString() {
+        String malformedApiKey = "https://attacker.example/?redirect=1 2";
+        String expected = "https://example.com/tile?apikey=" + URLEncoder.encode(malformedApiKey, StandardCharsets.UTF_8);
+        assertEquals(expected, appendApiKey("https://example.com/tile", malformedApiKey, false));
+    }
+
+    @Test
+    public void testIsPlainApiKeyRejectsKeysThatLookLikeAUrlOrTemplate() {
+        assertFalse(isPlainApiKey("https://attacker.example/?apikey=1"));
+        assertFalse(isPlainApiKey("key/with/slashes"));
+        assertFalse(isPlainApiKey("key:with:colons"));
+        assertFalse(isPlainApiKey("key with space"));
+        assertFalse(isPlainApiKey("{apikey}"));
+    }
+
+    @Test
+    public void testIsPlainApiKeyAcceptsPlainTokens() {
+        assertTrue(isPlainApiKey(null));
+        assertTrue(isPlainApiKey("abcDEF123-_."));
+    }
+
+    private static TileServer tileServer(String urlPattern) {
+        return new TileServer("test", "Test Tile Server", urlPattern, List.of("tiles.example.org"),
+                true, 0, 18, "copyright", "Copyright Text");
+    }
+
+    private static Tile tile() {
+        return new Tile(0, 0, (byte) 0, 256);
+    }
+
+    @Test
+    public void testGetTileUrlWithMalformedApiKeyLogsOneWarningAndDoesNotThrow() throws Exception {
+        TileServerMapSource tileSource = new TileServerMapSource(tileServer("https://tiles.example.org/tile.png"));
+        tileSource.setApiKey("https://attacker.example/?redirect=1 2");
+
+        Logger logger = Logger.getLogger(TileServerMapSource.class.getName());
+        List<LogRecord> records = new ArrayList<>();
+        Handler handler = new Handler() {
+            public void publish(LogRecord record) {
+                records.add(record);
+            }
+
+            public void flush() {
+            }
+
+            public void close() {
+            }
+        };
+        logger.addHandler(handler);
+        try {
+            URL first = tileSource.getTileUrl(tile());
+            URL second = tileSource.getTileUrl(tile());
+
+            assertTrue(first.toString().startsWith("https://tiles.example.org/tile.png"));
+            assertEquals(first.toString(), second.toString());
+        } finally {
+            logger.removeHandler(handler);
+        }
+
+        long warnings = records.stream().filter(r -> r.getLevel() == Level.WARNING).count();
+        assertEquals(1, warnings);
+    }
+
+    @Test
+    public void testGetTileUrlWithKeyNeedingEncodingProducesAValidUri() throws Exception {
+        TileServerMapSource tileSource = new TileServerMapSource(tileServer("https://tiles.example.org/tile.png"));
+        tileSource.setApiKey("key with space & special=chars");
+
+        URL url = tileSource.getTileUrl(tile());
+
+        assertTrue(url.toString().contains("apikey="));
+        assertFalse(url.toString().contains(" "));
     }
 
     private static final String ROUTE_CONVERTER_USER_AGENT =

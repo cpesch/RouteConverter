@@ -28,8 +28,14 @@ import slash.navigation.maps.tileserver.TileServer;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.prefs.Preferences;
+import java.util.regex.Pattern;
+import java.util.logging.Logger;
+
+import static java.lang.String.format;
 
 /**
  * A {@link OnlineTileSource} that is configured from a {@link TileServer}.
@@ -38,11 +44,15 @@ import java.util.prefs.Preferences;
  */
 
 public class TileServerMapSource extends AbstractTileSource {
+    private static final Logger log = Logger.getLogger(TileServerMapSource.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(TileServerMapSource.class);
     private static final String PARALLEL_REQUEST_LIMIT_PREFERENCE = "parallelRequestLimit";
     private static final String[] OUTDOOR_ACTIVE_TILE_DOMAINS = {"oastatic.com", "outdooractive.com"};
+    // characters that never occur in a plain API token but do occur in a pasted URL or template
+    private static final Pattern NOT_A_PLAIN_API_KEY = Pattern.compile("[\\s/:?{}]");
     private final TileServer tileServer;
     private boolean alpha = false;
+    private boolean loggedTileUrlWarning = false;
 
     private static String[] getHostNames(TileServer tileServer) {
         String[] hostNames = tileServer.hosts().toArray(new String[0]);
@@ -107,23 +117,49 @@ public class TileServerMapSource extends AbstractTileSource {
         this.alpha = alpha;
     }
 
+    // a key that is not a plain token (e.g. a whole URL pasted into the field) must not break the query string
+    static boolean isPlainApiKey(String apiKey) {
+        return apiKey == null || !NOT_A_PLAIN_API_KEY.matcher(apiKey).find();
+    }
+
     static String appendApiKey(String url, String apiKey, boolean mapbox) {
         if (apiKey == null)
             return url;
         String param = mapbox ? "access_token" : "apikey";
-        return url + (url.contains("?") ? "&" : "?") + param + "=" + apiKey;
+        String encodedApiKey = URLEncoder.encode(apiKey, StandardCharsets.UTF_8);
+        return url + (url.contains("?") ? "&" : "?") + param + "=" + encodedApiKey;
+    }
+
+    private void warnOnce(String message) {
+        if (loggedTileUrlWarning)
+            return;
+        loggedTileUrlWarning = true;
+        log.warning(message);
     }
 
     public URL getTileUrl(Tile tile) throws MalformedURLException {
         // Integer.toString() avoids points that group digits
-        String url = AlephFormatter.str(tileServer.urlPattern())
+        String bareUrl = AlephFormatter.str(tileServer.urlPattern())
                 .arg("host", getHostName())
                 .arg("language", Locale.getDefault().getLanguage())
                 .arg("tilex", Integer.toString(tile.tileX))
                 .arg("tiley", Integer.toString(tile.tileY))
                 .arg("zoom", Integer.toString(tile.zoomLevel))
                 .fmt();
-        url = appendApiKey(url, getApiKey(), tileServer.copyright().toLowerCase(Locale.ROOT).contains("mapbox"));
-        return URI.create(url).toURL();
+
+        String apiKey = getApiKey();
+        if (!isPlainApiKey(apiKey))
+            warnOnce(format("Tile server '%s' has an API key that is not a plain token; URL-encoding it for the tile URL",
+                    tileServer.description()));
+
+        String url = appendApiKey(bareUrl, apiKey, tileServer.copyright().toLowerCase(Locale.ROOT).contains("mapbox"));
+        try {
+            return URI.create(url).toURL();
+        } catch (IllegalArgumentException e) {
+            // a malformed API key must not crash the tile download thread once per tile
+            warnOnce(format("Tile server '%s' produced an invalid tile URL (%s); loading tiles without the API key",
+                    tileServer.description(), e.getMessage()));
+            return URI.create(bareUrl).toURL();
+        }
     }
 }
