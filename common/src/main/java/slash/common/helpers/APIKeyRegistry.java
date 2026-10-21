@@ -110,6 +110,11 @@ public class APIKeyRegistry {
         preferences.put(serviceName + API_KEY_PREFERENCE, apiKey != null ? apiKey : "");
     }
 
+    // does not call getAPIKey, so checking for a key does not count as a usage
+    public boolean hasAPIKey(String serviceName) {
+        return trim(getAPIKeyPreference(serviceName)) != null || getDefaultAPIKey(serviceName) != null;
+    }
+
     public String getAPIKey(String serviceName, String apiType) {
         count(preferences, serviceName + API_USAGES + "-" + apiType);
         String apiKey = trim(getAPIKeyPreference(serviceName));
