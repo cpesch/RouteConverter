@@ -114,7 +114,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute<?, ?>> implements
     }
 
     public int getMaximumFileNameLength() {
-        return preferences.getInt("maximumFileNameLength", 64);
+        return preferences.getInt("maximumFileNameLength", 255);
     }
 
     public int getMaximumRouteNameLength() {

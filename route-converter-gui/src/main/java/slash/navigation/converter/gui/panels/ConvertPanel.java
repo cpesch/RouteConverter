@@ -71,6 +71,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -82,6 +83,7 @@ import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 import static java.util.Collections.singletonList;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
@@ -994,10 +996,17 @@ public class ConvertPanel implements PanelInTab {
         }
 
         String fileName = path.getName();
+        Collection<String> knownExtensions = getNavigationFormatRegistry().getExtensions();
+        // the opened file's own extension goes, whatever it is - formats are detected by content
+        if (target != null && target.isFile()) {
+            fileName = removeExtension(fileName);
+            // strip once only: a.kml.dat suggests a.kml, not a
+            knownExtensions = emptySet();
+        }
         if (format instanceof GoPal3RouteFormat) {
             fileName = createGoPalFileName(fileName);
         }
-        return new File(calculateConvertFileName(new File(path.getParentFile(), fileName), "", format.getMaximumFileNameLength()));
+        return new File(calculateConvertFileName(new File(path.getParentFile(), fileName), "", format.getMaximumFileNameLength(), knownExtensions));
     }
 
     private void setFormatFileFilters(JFileChooser chooser, List<? extends NavigationFormat<?>> formats, String selectedFormat) {

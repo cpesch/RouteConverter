@@ -111,6 +111,21 @@ public class NavigationFormatRegistryTest {
     }
 
     @Test
+    public void testGetExtensions() {
+        Set<String> extensions = registry.getExtensions();
+        assertTrue(extensions.contains(".gpx"));
+        assertTrue(extensions.contains(".kml"));
+        assertTrue(extensions.contains(".itn"));
+        assertTrue(extensions.contains(".sbp")); // Navilink, read-only
+        assertTrue(extensions.contains(".zip"));
+
+        for (String extension : extensions) {
+            assertTrue(extension.startsWith("."));
+            assertEquals(extension.toLowerCase(Locale.ROOT), extension);
+        }
+    }
+
+    @Test
     public void testGetWriteFormatsIsSubsetOfGetReadFormats() {
         // WebPageFormat and TomTom8RouteFormat are pre-existing, write-only exceptions
         // (isSupportsReading() returns false for both); every other write format is also
