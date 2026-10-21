@@ -43,9 +43,11 @@ import static slash.common.system.Platform.isBundledJava;
  * Only known fields are extracted; free text is never scraped. The one unavoidable
  * exception is the cause chain and stack trace, which are needed for root-cause
  * diagnosis yet can embed absolute file paths (a {@code FileNotFoundException} on an
- * opened document, say). Those paths would reveal the OS user name and document
- * names, so {@link #scrub} replaces the known {@code user.home} and {@code user.name}
- * values with placeholders before the payload is spooled or sent. Route/track
+ * opened document, say) or, via a tile/routing-service URL, credentials. Those would
+ * reveal the OS user name, document names or a user's own API key, so {@link #scrub}
+ * replaces the known {@code user.home} and {@code user.name} values, credential query
+ * parameters, {@code Bearer}/{@code Basic} auth material and {@code user:password@}
+ * URL authorities with placeholders before the payload is spooled or sent. Route/track
  * contents, file names beyond what a path segment carries, and any stable identifier
  * are still never captured.
  *
@@ -73,6 +75,22 @@ public class DiagnosticReport {
     // or /home/other/notes.gpx; the running user's own home is replaced first, so anything
     // still matching here is a path outside it
     private static final Pattern UNIX_PATH = Pattern.compile("/(?:Volumes|media|mnt|home)/[^\\s\"]+");
+
+    // a credential-bearing query/matrix parameter value, e.g. ?apikey=... or ;jsessionid=...;
+    // the name is matched case-insensitively but only right after a ?, & or ; separator, so
+    // an unrelated identifier that merely ends or starts with the same letters (monkey=banana,
+    // ?keyboard=1) is left alone; the value runs up to the next separator, whitespace, quote
+    // or markup character
+    private static final Pattern CREDENTIAL_PARAMETER = Pattern.compile(
+            "([?&;](?:apikey|api_key|access_token|client_secret|signature|jsessionid|session"
+                    + "|password|passwd|token|secret|pwd|sig|auth|key)=)[^&;\\s\"'<>|#]+",
+            Pattern.CASE_INSENSITIVE);
+    // Bearer/Basic auth material in an Authorization header value embedded in a message
+    private static final Pattern BEARER_OR_BASIC_AUTH = Pattern.compile(
+            "\\b(Bearer|Basic)\\s+[^\\s\"'<>|#]+", Pattern.CASE_INSENSITIVE);
+    // a user:password@ credential embedded in a URL's authority component
+    private static final Pattern URL_USERINFO = Pattern.compile("([A-Za-z][A-Za-z0-9+.-]*://)[^/\\s@]+:[^/\\s@]+@");
+    private static final String REDACTED = "<redacted>";
 
     // the OS user name and home directory leak into exception messages / stack traces
     // via absolute paths; both are known values, so they are scrubbed by literal
@@ -132,7 +150,7 @@ public class DiagnosticReport {
     }
 
     /**
-     * Removes personal data an absolute path in a message or stack trace can carry.
+     * Removes personal data and credentials a message or stack trace can carry.
      * First the known {@code user.home} and {@code user.name} values are replaced with
      * placeholders (home literally; the name on word boundaries, so even a two-character
      * name is scrubbed inside a path without rewriting it inside an unrelated word such
@@ -140,7 +158,11 @@ public class DiagnosticReport {
      * path or a unix external-mount path outside the user's home -- is replaced whole,
      * so a message like {@code "cannot read D:\Trips\vacation2024.gpx"} cannot leak the
      * document name. Class names and stack frames carry no such token and are left
-     * intact.
+     * intact. Finally, credential-shaped tokens a URL embedded in an exception message
+     * can carry -- a query/matrix parameter such as {@code apikey} or {@code token}, a
+     * {@code Bearer}/{@code Basic} auth header value, or a {@code user:password@} URL
+     * authority -- are replaced with {@code <redacted>}, so a tile-service API key never
+     * leaves the device (defence in depth; the server also redacts on ingest).
      */
     static String scrub(String value) {
         return scrub(value, USER_HOME, USER_NAME);
@@ -168,6 +190,9 @@ public class DiagnosticReport {
                     Matcher.quoteReplacement(USER_PLACEHOLDER));
         result = WINDOWS_PATH.matcher(result).replaceAll(PATH_PLACEHOLDER);
         result = UNIX_PATH.matcher(result).replaceAll(PATH_PLACEHOLDER);
+        result = CREDENTIAL_PARAMETER.matcher(result).replaceAll("$1" + REDACTED);
+        result = BEARER_OR_BASIC_AUTH.matcher(result).replaceAll("$1 " + REDACTED);
+        result = URL_USERINFO.matcher(result).replaceAll("$1" + REDACTED + "@");
         return result;
     }
 
