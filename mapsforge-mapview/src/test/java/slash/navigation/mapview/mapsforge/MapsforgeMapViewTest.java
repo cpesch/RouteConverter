@@ -375,6 +375,34 @@ public class MapsforgeMapViewTest {
         assertEquals(false, MapsforgeMapView.isPannedSinceFit(false, current, null));
     }
 
+    // --- tolerating a null layer when adding/removing (issue #297) -----------------------------
+    // a position-list renderer's layer may not be created yet or may already be destroyed when
+    // addLayer()/removeLayer() runs on the EDT; withoutNullLayers() is the pure filter extracted
+    // from addLayers()/removeLayers() so the null-tolerance can be tested without booting a real
+    // mapsforge LayerManager.
+
+    @Test
+    public void testWithoutNullLayersDropsNullEntries() {
+        org.mapsforge.map.layer.Layer layer = mock(org.mapsforge.map.layer.Layer.class);
+        List<org.mapsforge.map.layer.Layer> withNulls = new ArrayList<>(List.of(layer));
+        withNulls.add(null);
+
+        List<org.mapsforge.map.layer.Layer> filtered = MapsforgeMapView.withoutNullLayers(withNulls);
+
+        assertEquals(List.of(layer), filtered);
+    }
+
+    @Test
+    public void testWithoutNullLayersOfAllNullsIsEmpty() {
+        List<org.mapsforge.map.layer.Layer> allNulls = new ArrayList<>();
+        allNulls.add(null);
+        allNulls.add(null);
+
+        List<org.mapsforge.map.layer.Layer> filtered = MapsforgeMapView.withoutNullLayers(allNulls);
+
+        assertEquals(0, filtered.size());
+    }
+
     @Test
     public void testDeviceScaleFactor() {
         // Windows: the screen resolution already contains the display scale

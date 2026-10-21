@@ -1082,12 +1082,24 @@ public class MapsforgeMapView extends BaseMapView {
     public void addLayers(final List<Layer> layers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
+                List<Layer> nonNullLayers = withoutNullLayers(layers);
+                if (nonNullLayers.size() != layers.size())
+                    log.fine("Skipping null layer(s) to add in " + layers);
+
                 getLayerManager().pause();
-                if (!getLayerManager().getLayers().addAll(layers, true))
-                    log.warning("Cannot add layers " + layers);
+                if (!getLayerManager().getLayers().addAll(nonNullLayers, true))
+                    log.warning("Cannot add layers " + nonNullLayers);
                 getLayerManager().proceed();
             }
         });
+    }
+
+    // a renderer's layer may not be created yet or may already be destroyed; tolerate that
+    // instead of failing the whole batch with mapsforge's "layer must not be null" (issue #297)
+    static List<Layer> withoutNullLayers(List<Layer> layers) {
+        List<Layer> nonNullLayers = new ArrayList<>(layers);
+        nonNullLayers.removeIf(Objects::isNull);
+        return nonNullLayers;
     }
 
     public void addObjectsWithLayer(final List<? extends ObjectWithLayer> withLayers) {
@@ -1115,9 +1127,13 @@ public class MapsforgeMapView extends BaseMapView {
     private void removeLayers(final List<Layer> layers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
+                List<Layer> nonNullLayers = withoutNullLayers(layers);
+                if (nonNullLayers.size() != layers.size())
+                    log.fine("Skipping null layer(s) to remove in " + layers);
+
                 getLayerManager().pause();
-                if (!getLayerManager().getLayers().removeAll(layers, true))
-                    log.warning("Cannot remove layers " + layers);
+                if (!getLayerManager().getLayers().removeAll(nonNullLayers, true))
+                    log.warning("Cannot remove layers " + nonNullLayers);
                 getLayerManager().proceed();
             }
         });
