@@ -519,7 +519,12 @@ public class BRouter extends BaseRoutingService {
     }
 
     private Collection<Downloadable> getDownloadablesFor(List<BoundingBox> boundingBoxes) {
+        // A map without a bounding box (MapDescriptor.getBoundingBox() == null) covers no
+        // routing tiles. Unfiltered it threw a NullPointerException in
+        // forEachTileInBoundingBox from MapsDialog.updateLabel on the Swing thread:
+        // ~190 crash reports a week from 3.6/3.7 (crash telemetry, 2026-10).
         return boundingBoxes.stream()
+                .filter(Objects::nonNull)
                 .flatMap(boundingBox -> getDownloadablesFor(boundingBox).stream())
                 .collect(toSet());
     }

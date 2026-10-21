@@ -23,6 +23,7 @@ import btools.router.OsmNodeNamed;
 import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
@@ -108,6 +109,17 @@ public class BRouterTest {
         for (OsmNodeNamed waypoint : waypoints) {
             assertNotNull(waypoint.name);
         }
+    }
+
+    @Test
+    public void testCalculateRemainingDownloadSizeIgnoresMapsWithoutBoundingBox() {
+        MapDescriptor withoutBoundingBox = mock(MapDescriptor.class);
+        when(withoutBoundingBox.getBoundingBox()).thenReturn(null);
+        MapDescriptor withBoundingBox = mock(MapDescriptor.class);
+        when(withBoundingBox.getBoundingBox()).thenReturn(new BoundingBox(
+                new SimpleNavigationPosition(2.0, 2.0), new SimpleNavigationPosition(0.0, 0.0)));
+
+        assertEquals(0L, router.calculateRemainingDownloadSize(asList(withoutBoundingBox, withBoundingBox)));
     }
 
     @Test
