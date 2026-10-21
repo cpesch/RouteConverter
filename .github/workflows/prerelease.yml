@@ -60,11 +60,29 @@ jobs:
     needs: [build-linux-mac, build-windows, sign-mac]
     runs-on: ubuntu-latest
     steps:
+      - name: Skip stale re-run
+        # A nightly-triage `rerun-failed-jobs` re-run of an old Prerelease run
+        # recreates the rolling release from THIS run's original SHA, which
+        # would overwrite prod with an outdated build if a master push already
+        # published a newer one in between. Attempt 1 always publishes.
+        id: stale
+        if: github.run_attempt > 1
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          master_sha=$(gh api "repos/${{ github.repository }}/commits/master" --jq .sha)
+          if [[ "$master_sha" != "$GITHUB_SHA" ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::re-run of ${GITHUB_SHA::7}: master moved to ${master_sha::7}, not publishing"
+          fi
       - uses: actions/download-artifact@v8
+        if: steps.stale.outputs.skip != 'true'
         with:
           path: incoming
           pattern: prerelease-*
       - name: Flatten
+        if: steps.stale.outputs.skip != 'true'
         run: |
           mkdir -p artefacts
           find incoming -mindepth 2 -type f -exec mv -t artefacts/ {} +
@@ -74,15 +92,18 @@ jobs:
         # is downloaded separately and copied LAST — the signed RouteConverterMac
         # and TimeAlbumProMac zips deterministically replace the unsigned ones
         # from build-linux-mac.
+        if: steps.stale.outputs.skip != 'true'
         uses: actions/download-artifact@v8
         with:
           name: mac-signed-prerelease
           path: mac-signed
       - name: Apply signed Mac overlay
+        if: steps.stale.outputs.skip != 'true'
         run: |
           cp mac-signed/RouteConverterMac-*-app.zip mac-signed/TimeAlbumProMac-*-app.zip artefacts/
           ls -la artefacts/
       - name: Configure SSH
+        if: steps.stale.outputs.skip != 'true'
         env:
           DEPLOY_KEY: ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
           DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
@@ -92,6 +113,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -t ed25519 "$DEPLOY_HOST" >> ~/.ssh/known_hosts
       - name: Rsync to static.routeconverter.com/downloads/prereleases/
+        if: steps.stale.outputs.skip != 'true'
         env:
           DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
         run: |
@@ -101,6 +123,7 @@ jobs:
             artefacts/ \
             "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/downloads/prereleases/"
       - name: Update rolling 'prerelease' GitHub Release
+        if: steps.stale.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO:     ${{ github.repository }}

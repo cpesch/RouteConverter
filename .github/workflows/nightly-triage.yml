@@ -13,12 +13,12 @@ name: Nightly triage
 #   gh workflow run nightly-triage.yml -f run_id=<id> -f dry_run=true
 on:
   workflow_run:
-    workflows: [RouteConverter CI, JDK EA canary]
+    workflows: [RouteConverter CI, JDK EA canary, Prerelease]
     types: [completed]
   workflow_dispatch:
     inputs:
       run_id:
-        description: RouteConverter CI or JDK EA canary run id to triage
+        description: RouteConverter CI, JDK EA canary or Prerelease run id to triage
         required: true
         type: string
       dry_run:
@@ -33,17 +33,20 @@ permissions:
   actions: write
   pull-requests: write
 
-# Serialised, never cancelled: two completions must not race on one issue.
-concurrency:
-  group: nightly-triage
-  cancel-in-progress: false
-
 jobs:
   triage:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.event == 'schedule'
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.event == 'schedule' && github.event.workflow_run.run_attempt == 1)
     runs-on: ubuntu-latest
     # The script stops polling for the re-run after 25 min and calls it infra.
     timeout-minutes: 30
+    # Serialised, never cancelled: two completions must not race on one issue.
+    # Job-level (not workflow-level) so a run skipped by the `if:` above never
+    # occupies the group and evicts a pending real triage.
+    concurrency:
+      group: nightly-triage
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v7
       - name: Triage
