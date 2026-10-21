@@ -23,6 +23,7 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import java.awt.image.BaseMultiResolutionImage;
 import java.awt.image.BufferedImage;
+import java.awt.image.MultiResolutionImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
@@ -50,6 +51,10 @@ public class IconHelper {
             return Optional.empty();
 
         ImageIcon baseIcon = new ImageIcon(baseUrl);
+        // on macOS the toolkit already attaches the @2x variant
+        if (baseIcon.getImage() instanceof MultiResolutionImage)
+            return Optional.of(baseIcon);
+
         URL retinaUrl = IconHelper.class.getResource(toRetinaPath(path));
         if (retinaUrl == null)
             return Optional.of(baseIcon);

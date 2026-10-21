@@ -24,19 +24,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.awt.image.MultiResolutionImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -49,10 +43,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests for {@link IconHelper}.
  *
- * The fixture images are not checked into the repository as binary files; this test
- * writes them onto the test classpath directory once before any test runs, so {@link
- * IconHelper#loadIcon} resolves them exactly as it would resolve a real icon resource.
- *
  * @author Christian Pesch
  */
 public class IconHelperTest {
@@ -64,13 +54,7 @@ public class IconHelperTest {
     private static String previousLookAndFeel;
 
     @BeforeClass
-    public static void generateFixturesAndInstallFlatLaf() throws IOException, UnsupportedLookAndFeelException {
-        File directory = new File("target/test-classes" + PACKAGE_PATH);
-        directory.mkdirs();
-        writeImage(new File(directory, "icon-helper-test-a.png"), 16, Color.RED);
-        writeImage(new File(directory, "icon-helper-test-a@2x.png"), 32, Color.RED);
-        writeImage(new File(directory, "icon-helper-test-b.png"), 16, Color.GREEN);
-
+    public static void installFlatLaf() throws UnsupportedLookAndFeelException {
         previousLookAndFeel = UIManager.getLookAndFeel().getClass().getName();
         UIManager.setLookAndFeel(new FlatLightLaf());
     }
@@ -84,15 +68,6 @@ public class IconHelperTest {
                 throw new UnsupportedLookAndFeelException(previousLookAndFeel);
             }
         }
-    }
-
-    private static void writeImage(File file, int size, Color color) throws IOException {
-        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics = image.createGraphics();
-        graphics.setColor(color);
-        graphics.fillRect(0, 0, size, size);
-        graphics.dispose();
-        ImageIO.write(image, "png", file);
     }
 
     @Test
