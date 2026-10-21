@@ -20,11 +20,11 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import com.bulenkov.iconloader.IconLoader;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.BaseRouteConverter;
+import slash.navigation.gui.helpers.IconHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,7 +59,7 @@ public class WaypointTypeColumnTableCellEditor extends PositionsTableCellEditor 
 
             Icon icon = null;
             if (key != null)
-                icon = IconLoader.getIcon("/slash/navigation/converter/gui/waypoint-type/" + key + ".png");
+                icon = IconHelper.loadIcon("/slash/navigation/converter/gui/waypoint-type/" + key + ".png");
 
             label.setIcon(icon);
         } else

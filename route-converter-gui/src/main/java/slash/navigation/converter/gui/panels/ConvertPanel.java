@@ -19,7 +19,6 @@
 */
 package slash.navigation.converter.gui.panels;
 
-import com.bulenkov.iconloader.IconLoader;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -51,6 +50,7 @@ import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.gui.helpers.AbstractListDataListener;
+import slash.navigation.gui.helpers.IconHelper;
 import slash.navigation.gui.helpers.JTableHelper;
 import slash.navigation.gui.undo.UndoManager;
 import slash.navigation.msfs.MSFSFlightPlanFormat;
@@ -432,15 +432,15 @@ public class ConvertPanel implements PanelInTab {
         registerAction(buttonMovePositionDown, "down");
         registerAction(buttonMovePositionToBottom, "bottom");
 
-        buttonNewPosition.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/new-position-action.png"));
-        buttonDeletePosition.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/delete-position-action.png"));
-        buttonMovePositionToTop.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/top.png"));
-        buttonMovePositionUp.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/up.png"));
-        buttonMovePositionDown.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/down.png"));
-        buttonMovePositionToBottom.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/24/bottom.png"));
-        buttonNewPositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/new-route.png"));
-        buttonRenamePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/rename-route.png"));
-        buttonDeletePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/delete-action.png"));
+        buttonNewPosition.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/24/new-position-action.png"));
+        buttonDeletePosition.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/24/delete-position-action.png"));
+        buttonMovePositionToTop.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/24/top.png"));
+        buttonMovePositionUp.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/24/up.png"));
+        buttonMovePositionDown.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/24/down.png"));
+        buttonMovePositionToBottom.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/24/bottom.png"));
+        buttonNewPositionList.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/16/new-route.png"));
+        buttonRenamePositionList.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/16/rename-route.png"));
+        buttonDeletePositionList.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/16/delete-action.png"));
 
         tablePositions.setName("position-list");
 

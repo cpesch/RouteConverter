@@ -9,6 +9,8 @@
 
 ### Changes
 
+- Windows and Linux: sharper toolbar and menu icons on scaled displays; disabled menu items show greyed icons (#284)
+
 ### Fixes
 
 - Windows: dates, times and numbers follow the regional settings again — the 3.7 installer bundled a Java runtime without locale data (#415, #470)
