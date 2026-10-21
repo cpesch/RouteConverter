@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import com.bulenkov.iconloader.IconLoader;
 import slash.navigation.converter.gui.BaseRouteConverter;
+import slash.navigation.gui.helpers.IconHelper;
 import slash.navigation.routes.impl.CategoryTreeNode;
 
 import javax.swing.*;
@@ -35,9 +35,9 @@ import java.awt.*;
  */
 
 public class CategoryTreeCellRenderer extends DefaultTreeCellRenderer {
-    private static final Icon OPEN_ICON = IconLoader.getIcon("/slash/navigation/converter/gui/16/folder-open.png");
-    private static final Icon OPEN_REMOTE_ICON = IconLoader.getIcon("/slash/navigation/converter/gui/16/folder-remote.png");
-    private static final Icon CLOSED_ICON = IconLoader.getIcon("/slash/navigation/converter/gui/16/folder.png");
+    private static final Icon OPEN_ICON = IconHelper.loadIcon("/slash/navigation/converter/gui/16/folder-open.png");
+    private static final Icon OPEN_REMOTE_ICON = IconHelper.loadIcon("/slash/navigation/converter/gui/16/folder-remote.png");
+    private static final Icon CLOSED_ICON = IconHelper.loadIcon("/slash/navigation/converter/gui/16/folder.png");
 
     public CategoryTreeCellRenderer() {
         setOpenIcon(OPEN_ICON);
