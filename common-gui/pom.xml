@@ -24,11 +24,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.bulenkov</groupId>
-            <artifactId>iconloader</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
             <!-- Apache License 2.0 -->
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>

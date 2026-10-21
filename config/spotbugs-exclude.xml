@@ -145,4 +145,15 @@
             <Class name="slash.navigation.converter.gui.models.PatchedXYSeries"/>
         </Or>
     </Match>
+
+    <!-- spotbugs 4.10.5 IL_INFINITE_LOOP false positive: the do/while moves
+         `intermediate` toward `currentPosition` by up to METERS_BETWEEN_MARKS
+         per pass through setLatitude/setLongitude, so calculateDistance
+         shrinks every iteration; the detector doesn't see the setter side
+         effects -->
+    <Match>
+        <Class name="slash.navigation.kml.Kml22Format"/>
+        <Method name="createMarks"/>
+        <Bug pattern="IL_INFINITE_LOOP"/>
+    </Match>
 </FindBugsFilter>
