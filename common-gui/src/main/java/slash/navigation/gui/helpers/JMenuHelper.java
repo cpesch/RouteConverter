@@ -20,7 +20,6 @@
 
 package slash.navigation.gui.helpers;
 
-import com.bulenkov.iconloader.IconLoader;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ToggleBooleanModelAction;
 import slash.navigation.gui.models.BooleanModel;
@@ -133,11 +132,8 @@ public class JMenuHelper {
         if (keystroke != null)
             item.setAccelerator(getKeyStroke(keystroke));
         String iconUrl = getOptionalString(name + "-action-icon");
-        if (iconUrl != null) {
-            Icon icon = IconLoader.getIcon(iconUrl);
-            item.setIcon(icon);
-            item.setDisabledIcon(icon);
-        }
+        if (iconUrl != null)
+            item.setIcon(IconHelper.loadIcon(iconUrl));
     }
 
     public static void registerAction(AbstractButton component, String name) {
