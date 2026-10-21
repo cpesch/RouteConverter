@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -127,12 +128,13 @@ public class FilesFilesystemTest {
     @Test
     public void createTargetFilesForSingleAndMultipleOutputs() {
         File pattern = new File(directory, "route.gpx");
+        Set<String> knownExtensions = Set.of(".gpx", ".kml");
 
-        File[] single = createTargetFiles(pattern, 1, ".kml", 64);
+        File[] single = createTargetFiles(pattern, 1, ".kml", 64, knownExtensions);
         assertEquals(1, single.length);
         assertTrue(single[0].getName().endsWith(".kml"));
 
-        File[] many = createTargetFiles(pattern, 3, ".kml", 64);
+        File[] many = createTargetFiles(pattern, 3, ".kml", 64, knownExtensions);
         assertEquals(3, many.length);
         assertTrue(many[0].getName().endsWith("1.kml"));
         assertTrue(many[2].getName().endsWith("3.kml"));

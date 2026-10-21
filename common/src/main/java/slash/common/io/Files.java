@@ -114,6 +114,23 @@ public class Files {
     }
 
     /**
+     * Remove the extension of the given file name, but only if it is a trailing dot
+     * or one of the given known extensions - unlike {@link #removeExtension(String)},
+     * which strips whatever follows the last dot even if that is not a real extension.
+     *
+     * @param name             the file name to remove the extension
+     * @param knownExtensions  the lowercase, dot-prefixed extensions to strip
+     * @return the file name without its extension, or unchanged if its last dot does
+     * not start a known extension
+     */
+    public static String removeExtension(String name, Collection<String> knownExtensions) {
+        String extension = getExtension(name);
+        if (extension.equals(".") || knownExtensions.contains(extension))
+            return name.substring(0, name.length() - extension.length());
+        return name;
+    }
+
+    /**
      * Replace the extension of the given file name with the
      * given extension.
      *
@@ -242,10 +259,11 @@ public class Files {
     }
 
 
-    public static String calculateConvertFileName(File file, String extension, int fileNameLength) {
+    public static String calculateConvertFileName(File file, String extension, int fileNameLength, Collection<String> knownExtensions) {
         String name = file.getName();
+        name = removeExtension(name, knownExtensions);
         name = name.substring(0, min(name.length(), fileNameLength));
-        name = setExtension(name, extension);
+        name += extension;
         String path = file.getParentFile() != null ? file.getParentFile().getPath() : "";
         return new File(path, name).getAbsolutePath();
     }
@@ -270,9 +288,9 @@ public class Files {
         return result.toString();
     }
 
-    static String calculateConvertFileName(File file, int index, int maximum, String extension, int fileNameLength) {
+    static String calculateConvertFileName(File file, int index, int maximum, String extension, int fileNameLength, Collection<String> knownExtensions) {
         String name = file.getName();
-        name = removeExtension(name);
+        name = removeExtension(name, knownExtensions);
         name = name.substring(0, min(name.length(), fileNameLength));
 
         if (calculateNumberLength(maximum) > 0) {
@@ -281,19 +299,19 @@ public class Files {
             name += number;
         }
 
-        name = setExtension(name, extension);
+        name += extension;
         File parentFile = file.getParentFile();
         String path = parentFile != null ? parentFile.getPath() : ".";
         return new File(path, name).getAbsolutePath();
     }
 
-    public static File[] createTargetFiles(File pattern, int fileCount, String extension, int fileNameLength) {
+    public static File[] createTargetFiles(File pattern, int fileCount, String extension, int fileNameLength, Collection<String> knownExtensions) {
         File[] files = new File[fileCount];
         if (fileCount == 1) {
-            files[0] = new File(calculateConvertFileName(pattern, extension, fileNameLength));
+            files[0] = new File(calculateConvertFileName(pattern, extension, fileNameLength, knownExtensions));
         } else {
             for (int i = 0; i < fileCount; i++) {
-                files[i] = new File(calculateConvertFileName(pattern, i + 1, fileCount, extension, fileNameLength));
+                files[i] = new File(calculateConvertFileName(pattern, i + 1, fileCount, extension, fileNameLength, knownExtensions));
             }
         }
         return files;

@@ -38,12 +38,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.io.File.createTempFile;
+import static java.util.Collections.emptySet;
 import static org.junit.jupiter.api.Assertions.*;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.Files.*;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 public class FilesTest {
+    // ".tmp" keeps the convert.tmp fixture's existing expectations valid
+    private static final Set<String> KNOWN = Set.of(".tmp", ".gpx", ".kml", ".itn");
+
     private File file;
 
     @BeforeEach
@@ -72,44 +76,44 @@ public class FilesTest {
         int FILE_NAME_LENGTH = 18;
 
         assertEquals(new File(file.getParentFile(), "convert.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 0, 0, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 0, 0, ".itn", FILE_NAME_LENGTH, KNOWN));
 
         assertEquals(new File(file.getParentFile(), "convert1.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 1, 3, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 1, 3, ".itn", FILE_NAME_LENGTH, KNOWN));
         assertEquals(new File(file.getParentFile(), "convert9.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 9, 9, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 9, 9, ".itn", FILE_NAME_LENGTH, KNOWN));
 
         assertEquals(new File(file.getParentFile(), "convert5.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 5, 5, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 5, 5, ".itn", FILE_NAME_LENGTH, KNOWN));
         assertEquals(new File(file.getParentFile(), "convert05.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 5, 50, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 5, 50, ".itn", FILE_NAME_LENGTH, KNOWN));
         assertEquals(new File(file.getParentFile(), "convert005.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 5, 500, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 5, 500, ".itn", FILE_NAME_LENGTH, KNOWN));
 
         assertEquals(new File(file.getParentFile(), "convert10.bcr").getAbsolutePath(),
-                calculateConvertFileName(file, 10, 10, ".bcr", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 10, 10, ".bcr", FILE_NAME_LENGTH, KNOWN));
         assertEquals(new File(file.getParentFile(), "convert99.bcr").getAbsolutePath(),
-                calculateConvertFileName(file, 99, 99, ".bcr", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 99, 99, ".bcr", FILE_NAME_LENGTH, KNOWN));
 
         assertEquals(new File(file.getParentFile(), "convert50.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 50, 50, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 50, 50, ".itn", FILE_NAME_LENGTH, KNOWN));
         assertEquals(new File(file.getParentFile(), "convert050.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 50, 500, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 50, 500, ".itn", FILE_NAME_LENGTH, KNOWN));
 
         assertEquals(new File(file.getParentFile(), "convert100.kml").getAbsolutePath(),
-                calculateConvertFileName(file, 100, 100, ".kml", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 100, 100, ".kml", FILE_NAME_LENGTH, KNOWN));
         assertEquals(new File(file.getParentFile(), "convert999.long").getAbsolutePath(),
-                calculateConvertFileName(file, 999, 999, ".long", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 999, 999, ".long", FILE_NAME_LENGTH, KNOWN));
 
         assertEquals(new File(file.getParentFile(), "convert500.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 500, 500, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 500, 500, ".itn", FILE_NAME_LENGTH, KNOWN));
         assertEquals(new File(file.getParentFile(), "convert500.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 500, 999, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 500, 999, ".itn", FILE_NAME_LENGTH, KNOWN));
 
         assertEquals(new File(file.getParentFile(), "convert5000.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 5000, 5000, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 5000, 5000, ".itn", FILE_NAME_LENGTH, KNOWN));
         assertEquals(new File(file.getParentFile(), "convert5000.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 5000, 9999, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 5000, 9999, ".itn", FILE_NAME_LENGTH, KNOWN));
     }
 
     @Test
@@ -117,50 +121,113 @@ public class FilesTest {
         int FILE_NAME_LENGTH = 4;
 
         assertEquals(new File(file.getParentFile(), "conv.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 0, 0, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 0, 0, ".itn", FILE_NAME_LENGTH, KNOWN));
 
         assertEquals(new File(file.getParentFile(), "con9.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 9, 9, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 9, 9, ".itn", FILE_NAME_LENGTH, KNOWN));
 
         assertEquals(new File(file.getParentFile(), "con5.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 5, 5, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 5, 5, ".itn", FILE_NAME_LENGTH, KNOWN));
         assertEquals(new File(file.getParentFile(), "co05.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 5, 50, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 5, 50, ".itn", FILE_NAME_LENGTH, KNOWN));
         assertEquals(new File(file.getParentFile(), "c005.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 5, 500, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 5, 500, ".itn", FILE_NAME_LENGTH, KNOWN));
         assertEquals(new File(file.getParentFile(), "5000.itn").getAbsolutePath(),
-                calculateConvertFileName(file, 5000, 5000, ".itn", FILE_NAME_LENGTH));
+                calculateConvertFileName(file, 5000, 5000, ".itn", FILE_NAME_LENGTH, KNOWN));
     }
 
     @Test
     public void testCalculateConvertFileNameMoreThanOneDot() throws IOException {
         File tempPath = createTempFile("test", "egal").getParentFile();
+        assertEquals(new File(tempPath, "a.b.c.d.e.gpx").getAbsolutePath(),
+                calculateConvertFileName(new File(tempPath, "a.b.c.d.e"), ".gpx", 255, KNOWN));
         assertEquals(new File(tempPath, "a.b.c.d.gpx").getAbsolutePath(),
-                calculateConvertFileName(new File(tempPath, "a.b.c.d.e"), ".gpx", 255));
+                calculateConvertFileName(new File(tempPath, "a.b.c.d.kml"), ".gpx", 255, KNOWN));
     }
 
     @Test
     public void testCalculateConvertFileNameThrowsException() {
         try {
-            calculateConvertFileName(file, 10000, 10000, "gpx", 64);
+            calculateConvertFileName(file, 10000, 10000, "gpx", 64, KNOWN);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // intentionally left empty
         }
 
         try {
-            calculateConvertFileName(file, 5000, 10000, "gpx", 64);
+            calculateConvertFileName(file, 5000, 10000, "gpx", 64, KNOWN);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // intentionally left empty
         }
 
         try {
-            calculateConvertFileName(file, 1001, 999, "gpx", 64);
+            calculateConvertFileName(file, 1001, 999, "gpx", 64, KNOWN);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // intentionally left empty
         }
+    }
+
+    @Test
+    public void testRemoveExtensionWithKnownExtensions() {
+        assertEquals("BurgSchreckenstein-Bhf.Glücksstadt_beste Route_56,7km",
+                removeExtension("BurgSchreckenstein-Bhf.Glücksstadt_beste Route_56,7km", KNOWN));
+        assertEquals("a", removeExtension("a.GPX", KNOWN));
+        assertEquals("Tour 1.5 Teil A", removeExtension("Tour 1.5 Teil A", KNOWN));
+        assertEquals("route", removeExtension("route.kml", KNOWN));
+        assertEquals("foo", removeExtension("foo.", KNOWN));
+        assertEquals("noext", removeExtension("noext", KNOWN));
+    }
+
+    @Test
+    public void testCalculateConvertFileNameKeepsFullNameForUnknownDottedNames() throws IOException {
+        File tempPath = createTempFile("test", "egal").getParentFile();
+
+        assertEquals(new File(tempPath, "BurgSchreckenstein-Bhf.Glücksstadt_beste Route_56,7km.gpx").getAbsolutePath(),
+                calculateConvertFileName(new File(tempPath, "BurgSchreckenstein-Bhf.Glücksstadt_beste Route_56,7km"), ".gpx", 255, KNOWN));
+        assertEquals(new File(tempPath, "BurgSchreckenstein-Bhf.Glücksstadt_beste Route_56,7km.gpx").getAbsolutePath(),
+                calculateConvertFileName(new File(tempPath, "BurgSchreckenstein-Bhf.Glücksstadt_beste Route_56,7km.gpx"), ".gpx", 255, KNOWN));
+        assertEquals(new File(tempPath, "Tour 1.5 Teil A.gpx").getAbsolutePath(),
+                calculateConvertFileName(new File(tempPath, "Tour 1.5 Teil A"), ".gpx", 255, KNOWN));
+        assertEquals(new File(tempPath, "route.gpx").getAbsolutePath(),
+                calculateConvertFileName(new File(tempPath, "route.kml"), ".gpx", 255, KNOWN));
+        assertEquals(new File(tempPath, "foo.gpx").getAbsolutePath(),
+                calculateConvertFileName(new File(tempPath, "foo."), ".gpx", 255, KNOWN));
+    }
+
+    @Test
+    public void testCalculateConvertFileNameStripsKnownExtensionBeforeTruncating() throws IOException {
+        File tempPath = createTempFile("test", "egal").getParentFile();
+        String longName = "BurgSchreckenstein-Bhf.Glücksstadt_beste Route_56,7km_und_noch_viel_mehr_text_bis_ueber_64.gpx";
+        String expected = removeExtension(longName, KNOWN).substring(0, 64);
+
+        assertEquals(new File(tempPath, expected).getAbsolutePath(),
+                calculateConvertFileName(new File(tempPath, longName), "", 64, KNOWN));
+    }
+
+    @Test
+    public void testCalculateConvertFileNameAppliesDeviceLimit() throws IOException {
+        File tempPath = createTempFile("test", "egal").getParentFile();
+
+        assertEquals(new File(tempPath, "Bhf.Ost Rundtour l.itn").getAbsolutePath(),
+                calculateConvertFileName(new File(tempPath, "Bhf.Ost Rundtour lang.itn"), ".itn", 18, KNOWN));
+    }
+
+    @Test
+    public void testCalculateConvertFileNameWithIndexKeepsInnerDot() throws IOException {
+        File tempPath = createTempFile("test", "egal").getParentFile();
+
+        assertEquals(new File(tempPath, "Bhf.Ost Tour1.itn").getAbsolutePath(),
+                calculateConvertFileName(new File(tempPath, "Bhf.Ost Tour"), 1, 3, ".itn", 18, KNOWN));
+    }
+
+    @Test
+    public void testCalculateConvertFileNameStripsOpenedFilesOwnExtensionOnce() {
+        assertEquals(new File(file.getParentFile(), "a.kml").getAbsolutePath(),
+                calculateConvertFileName(new File(file.getParentFile(), "a.kml"), "", 64, emptySet()));
+        assertEquals(new File(file.getParentFile(), "foo").getAbsolutePath(),
+                calculateConvertFileName(new File(file.getParentFile(), "foo."), "", 64, emptySet()));
     }
 
     @Test

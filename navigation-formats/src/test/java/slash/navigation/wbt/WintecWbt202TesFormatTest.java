@@ -27,7 +27,7 @@ public class WintecWbt202TesFormatTest {
 		assertTrue("should support multiple routes", format.isSupportsMultipleRoutes());
 		assertEquals("unexpected extension", ".tes", format.getExtension());
 		assertEquals("unexpected name", "Wintec WBT-202 (*.tes)", format.getName());
-		assertEquals("unexpected maximum filename length", 64, format.getMaximumFileNameLength());
+		assertEquals("unexpected maximum filename length", 255, format.getMaximumFileNameLength());
 		assertEquals("unexpected maximum position count", Integer.MAX_VALUE, format.getMaximumPositionCount());
 		assertEquals("unexpected maximum route name length", 64, format.getMaximumRouteNameLength());
 	}
