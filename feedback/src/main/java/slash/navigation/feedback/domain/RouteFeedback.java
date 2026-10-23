@@ -148,12 +148,17 @@ public class RouteFeedback {
         return new RedactedErrorReport(CredentialRedaction.redact(logOutput), CredentialRedaction.redact(description));
     }
 
+    // the FINE message is built even when FINE is off, so a null log or description must not throw here
+    static int length(String value) {
+        return value != null ? value.length() : 0;
+    }
+
     public String sendErrorReport(String logOutput, String description, java.io.File file) throws IOException {
         String errorReportUrl = apiUrl + ERROR_REPORT_URI;
         RedactedErrorReport redacted = redact(logOutput, description);
 
-        log.fine("Sending error report with log of " + redacted.log.length() + " characters, description of " +
-                redacted.description.length() + " characters" +
+        log.fine("Sending error report with log of " + length(redacted.log) + " characters, description of " +
+                length(redacted.description) + " characters" +
                 (file != null ? ", file " + file.getAbsolutePath() : ""));
         Post request = new Post(errorReportUrl, credentials);
         request.addString("log", redacted.log);
@@ -166,7 +171,7 @@ public class RouteFeedback {
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot send error report " + (file != null ? ", file " + file.getAbsolutePath() : ""), errorReportUrl);
         if (!request.isSuccessful())
-            throw new IOException("POST on " + errorReportUrl + " with log " + redacted.log.length() + " characters" +
+            throw new IOException("POST on " + errorReportUrl + " with log " + length(redacted.log) + " characters" +
                     ", description \"" + redacted.description + "\", file " + file + " not successful: " + result);
         return request.getLocation();
     }

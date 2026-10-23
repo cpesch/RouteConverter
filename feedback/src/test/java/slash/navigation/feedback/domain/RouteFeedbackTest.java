@@ -26,6 +26,7 @@ import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.feedback.domain.RouteFeedback.redact;
 
@@ -43,6 +44,17 @@ public class RouteFeedbackTest {
         assertTrue(redacted.description.contains("access_token=<redacted>"));
         assertFalse(redacted.log.contains("SECRET123"));
         assertFalse(redacted.description.contains("SECRET456"));
+    }
+
+    @Test
+    public void testSendErrorReportToleratesNullLogAndDescription() {
+        RouteFeedback.RedactedErrorReport redacted = redact(null, null);
+
+        assertNull(redacted.log);
+        assertNull(redacted.description);
+        assertEquals(0, RouteFeedback.length(redacted.log));
+        assertEquals(0, RouteFeedback.length(redacted.description));
+        assertEquals(3, RouteFeedback.length("abc"));
     }
 
     @Test
