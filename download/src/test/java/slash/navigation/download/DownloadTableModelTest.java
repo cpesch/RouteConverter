@@ -22,12 +22,16 @@ package slash.navigation.download;
 
 import org.junit.Test;
 
+import javax.swing.SwingUtilities;
+import javax.swing.event.TableModelEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -100,6 +104,43 @@ public class DownloadTableModelTest {
         if (failure.get() != null)
             throw new AssertionError("Concurrent access failed", failure.get());
         assertEquals(DOWNLOADS_PER_ITERATION - 1, model.getDownloads().size());
+    }
+
+    // updateDownload()/addDownload() capture the queued Runnable before the download is known to
+    // be removed; a download removed on another thread between the queueing and the EDT actually
+    // running it must not throw (issue #297) and must not fire a stale row event
+    @Test
+    public void updateQueuedForRemovedDownloadFiresNoEventAndThrowsNothing() throws Exception {
+        DownloadTableModel model = new DownloadTableModel();
+        Download download = createDownloads().get(0);
+        model.setDownloads(new ArrayList<>(Collections.singletonList(download)));
+
+        List<TableModelEvent> events = Collections.synchronizedList(new ArrayList<>());
+        model.addTableModelListener(events::add);
+
+        Thread.UncaughtExceptionHandler previousHandler = Thread.getDefaultUncaughtExceptionHandler();
+        AtomicReference<Throwable> edtFailure = new AtomicReference<>();
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> edtFailure.compareAndSet(null, throwable));
+        try {
+            // called from this (non-EDT) thread, both calls only queue their event-firing
+            // Runnable on the EDT; the removal below runs before either Runnable executes
+            model.updateDownload(download);
+            model.removeDownload(download);
+
+            SwingUtilities.invokeAndWait(() -> { });
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(previousHandler);
+        }
+
+        assertNull("Queued update must not throw once the download is gone", edtFailure.get());
+        assertTrue(model.getDownloads().isEmpty());
+
+        List<Integer> staleUpdates = events.stream()
+                .filter(event -> event.getType() == TableModelEvent.UPDATE)
+                .map(TableModelEvent::getFirstRow)
+                .collect(Collectors.toList());
+        assertTrue("A stale update for a removed download must not fire a row event: " + staleUpdates,
+                staleUpdates.isEmpty());
     }
 
     @Test

@@ -18,6 +18,7 @@
 - Find places in the offline POI data ignores the case of umlauts and other non-ASCII letters: "überseering" finds "Überseering" (#277)
 - Find places searches the downloaded offline POI data also while an online map is displayed (#278)
 - The log and error reports no longer contain API keys for Google and GeoNames (#280)
+- The map no longer crashes with "layer must not be null" when a map layer is added or removed while it is not yet ready (#297)
 
 ## 3.7 — 2026-10-10
 
