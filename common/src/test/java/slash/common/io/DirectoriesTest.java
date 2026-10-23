@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.util.prefs.Preferences;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -73,5 +74,70 @@ public class DirectoriesTest {
     public void testTemporaryDirectoryComesFromPreferences() {
         assertEquals(temporaryDirectory, Directories.getTemporaryDirectory());
         assertTrue(Directories.getTemporaryDirectory().isDirectory());
+    }
+
+    @Test
+    public void testEnsureDirectoryToleratesConcurrentCreation() {
+        File directory = new ConcurrentlyCreatedDirectory();
+        assertEquals(directory, Directories.ensureDirectory(directory));
+    }
+
+    @Test
+    public void testEnsureDirectoryThrowsIfCreationFails() {
+        File directory = new NeverCreatableDirectory();
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> Directories.ensureDirectory(directory));
+        assertTrue(exception.getMessage().startsWith("Cannot create directory"));
+    }
+
+    @Test
+    public void testEnsureDirectoryReturnsExistingDirectoryUnchanged() throws Exception {
+        File directory = Files.createTempDirectory("directories-test-existing").toFile();
+        assertEquals(directory, Directories.ensureDirectory(directory));
+    }
+
+    @Test
+    public void testEnsureDirectoryThrowsForRegularFile() throws Exception {
+        File file = Files.createTempFile("directories-test-file", ".tmp").toFile();
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> Directories.ensureDirectory(file));
+        assertTrue(exception.getMessage().startsWith("Cannot create directory"));
+    }
+
+    // simulates another process creating the directory between the exists() and mkdirs() calls
+    private static class ConcurrentlyCreatedDirectory extends File {
+        private boolean isDirectoryCalled = false;
+
+        private ConcurrentlyCreatedDirectory() {
+            super("concurrently-created-directory");
+        }
+
+        @Override
+        public boolean isDirectory() {
+            boolean result = isDirectoryCalled;
+            isDirectoryCalled = true;
+            return result;
+        }
+
+        @Override
+        public boolean mkdirs() {
+            return false;
+        }
+    }
+
+    private static class NeverCreatableDirectory extends File {
+        private NeverCreatableDirectory() {
+            super("never-creatable-directory");
+        }
+
+        @Override
+        public boolean isDirectory() {
+            return false;
+        }
+
+        @Override
+        public boolean mkdirs() {
+            return false;
+        }
     }
 }
