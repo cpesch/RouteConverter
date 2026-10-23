@@ -666,94 +666,53 @@ public class PositionsModelCallbackImplTest {
     public void testSetLongitudeInvalidKeepsOldValueAndDoesNotThrow() {
         when(position.getLongitude()).thenReturn(1.2);
 
-        // setValueAt resolves the preferred degree/unit format and the error dialog via
-        // BaseRouteConverter.getInstance(), which is null in a plain unit test (no running GUI) -
-        // mock the static methods directly instead of building a full BaseRouteConverter fixture,
-        // and stub out WindowHelper so no real (headless-hostile) dialog is shown.
-        BaseRouteConverter mockConverter = mock(BaseRouteConverter.class);
-        when(mockConverter.getUnitSystemModel()).thenReturn(new UnitSystemModel());
-        ResourceBundle bundle = new ListResourceBundle() {
-            protected Object[][] getContents() {
-                return new Object[][]{
-                        {"longitude-format-error", "Could not parse longitude ''{0}''."},
-                };
-            }
-        };
-
-        try (MockedStatic<BaseRouteConverter> mockedBaseRouteConverter = mockStatic(BaseRouteConverter.class);
-             MockedStatic<WindowHelper> mockedWindowHelper = mockStatic(WindowHelper.class)) {
-            mockedBaseRouteConverter.when(BaseRouteConverter::getInstance).thenReturn(mockConverter);
-            mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(bundle);
-
-            sut.setValueAt(position, LONGITUDE_COLUMN_INDEX, "not a longitude");
-        }
-
-        verify(position, atLeast(1)).getLongitude();
-        verify(position).setLongitude(1.2);
+        runInvalidValueTestStep(LONGITUDE_COLUMN_INDEX, "not a longitude", "longitude-format-error", () -> {
+            verify(position, atLeast(1)).getLongitude();
+            verify(position).setLongitude(1.2);
+        });
     }
 
     @Test
     public void testSetLatitudeInvalidKeepsOldValueAndDoesNotThrow() {
         when(position.getLatitude()).thenReturn(3.4);
 
-        BaseRouteConverter mockConverter = mock(BaseRouteConverter.class);
-        when(mockConverter.getUnitSystemModel()).thenReturn(new UnitSystemModel());
-        ResourceBundle bundle = new ListResourceBundle() {
-            protected Object[][] getContents() {
-                return new Object[][]{
-                        {"latitude-format-error", "Could not parse latitude ''{0}''."},
-                };
-            }
-        };
-
-        try (MockedStatic<BaseRouteConverter> mockedBaseRouteConverter = mockStatic(BaseRouteConverter.class);
-             MockedStatic<WindowHelper> mockedWindowHelper = mockStatic(WindowHelper.class)) {
-            mockedBaseRouteConverter.when(BaseRouteConverter::getInstance).thenReturn(mockConverter);
-            mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(bundle);
-
-            sut.setValueAt(position, LATITUDE_COLUMN_INDEX, "not a latitude");
-        }
-
-        verify(position, atLeast(1)).getLatitude();
-        verify(position).setLatitude(3.4);
+        runInvalidValueTestStep(LATITUDE_COLUMN_INDEX, "not a latitude", "latitude-format-error", () -> {
+            verify(position, atLeast(1)).getLatitude();
+            verify(position).setLatitude(3.4);
+        });
     }
 
     @Test
     public void testSetElevationInvalidKeepsOldValueAndDoesNotThrow() {
         when(position.getElevation()).thenReturn(5.6);
 
-        BaseRouteConverter mockConverter = mock(BaseRouteConverter.class);
-        when(mockConverter.getUnitSystemModel()).thenReturn(new UnitSystemModel());
-        ResourceBundle bundle = new ListResourceBundle() {
-            protected Object[][] getContents() {
-                return new Object[][]{
-                        {"elevation-format-error", "Could not parse elevation ''{0}''."},
-                };
-            }
-        };
-
-        try (MockedStatic<BaseRouteConverter> mockedBaseRouteConverter = mockStatic(BaseRouteConverter.class);
-             MockedStatic<WindowHelper> mockedWindowHelper = mockStatic(WindowHelper.class)) {
-            mockedBaseRouteConverter.when(BaseRouteConverter::getInstance).thenReturn(mockConverter);
-            mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(bundle);
-
-            sut.setValueAt(position, ELEVATION_COLUMN_INDEX, "not an elevation");
-        }
-
-        verify(position, atLeast(1)).getElevation();
-        verify(position).setElevation(5.6);
+        runInvalidValueTestStep(ELEVATION_COLUMN_INDEX, "not an elevation", "elevation-format-error", () -> {
+            verify(position, atLeast(1)).getElevation();
+            verify(position).setElevation(5.6);
+        });
     }
 
     @Test
     public void testSetSpeedInvalidKeepsOldValueAndDoesNotThrow() {
         when(position.getSpeed()).thenReturn(7.8);
 
+        runInvalidValueTestStep(SPEED_COLUMN_INDEX, "not a speed", "speed-format-error", () -> {
+            verify(position, atLeast(1)).getSpeed();
+            verify(position).setSpeed(7.8);
+        });
+    }
+
+    // setValueAt resolves the preferred degree/unit format and the error dialog via
+    // BaseRouteConverter.getInstance(), which is null in a plain unit test (no running GUI) -
+    // mock the static methods directly instead of building a full BaseRouteConverter fixture,
+    // and stub out WindowHelper so no real (headless-hostile) dialog is shown.
+    private void runInvalidValueTestStep(int column, String invalidInput, String bundleKey, Runnable verification) {
         BaseRouteConverter mockConverter = mock(BaseRouteConverter.class);
         when(mockConverter.getUnitSystemModel()).thenReturn(new UnitSystemModel());
         ResourceBundle bundle = new ListResourceBundle() {
             protected Object[][] getContents() {
                 return new Object[][]{
-                        {"speed-format-error", "Could not parse speed ''{0}''."},
+                        {bundleKey, "Could not parse ''{0}''."},
                 };
             }
         };
@@ -763,11 +722,10 @@ public class PositionsModelCallbackImplTest {
             mockedBaseRouteConverter.when(BaseRouteConverter::getInstance).thenReturn(mockConverter);
             mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(bundle);
 
-            sut.setValueAt(position, SPEED_COLUMN_INDEX, "not a speed");
+            sut.setValueAt(position, column, invalidInput);
         }
 
-        verify(position, atLeast(1)).getSpeed();
-        verify(position).setSpeed(7.8);
+        verification.run();
     }
 
     @Test
@@ -777,6 +735,30 @@ public class PositionsModelCallbackImplTest {
         when(position.getTime()).thenReturn(oldTime);
 
         sut.setValueAt(position, DATE_COLUMN_INDEX, "not a date");
+
+        verify(position, atLeast(1)).getTime();
+        verify(position).setTime(oldTime);
+    }
+
+    @Test
+    public void testSetTimeInvalidKeepsOldValueAndDoesNotThrow() {
+        timeZoneModel.setTimeZone(ZONE_UTC);
+        CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
+        when(position.getTime()).thenReturn(oldTime);
+
+        sut.setValueAt(position, TIME_COLUMN_INDEX, "not a time");
+
+        verify(position, atLeast(1)).getTime();
+        verify(position).setTime(oldTime);
+    }
+
+    @Test
+    public void testSetDateTimeInvalidKeepsOldValueAndDoesNotThrow() {
+        timeZoneModel.setTimeZone(ZONE_UTC);
+        CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
+        when(position.getTime()).thenReturn(oldTime);
+
+        sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, "not a date time");
 
         verify(position, atLeast(1)).getTime();
         verify(position).setTime(oldTime);
