@@ -54,8 +54,10 @@ public class TileServerMapSource extends AbstractTileSource {
     private static final Pattern NOT_A_PLAIN_API_KEY = Pattern.compile("[\\s/:?{}]");
     private final TileServer tileServer;
     private boolean alpha = false;
-    // getTileUrl() runs on several TileDownloadThreads at once
-    private final AtomicBoolean loggedTileUrlWarning = new AtomicBoolean(false);
+    // getTileUrl() runs on several TileDownloadThreads at once; separate flags so one cause
+    // logging first doesn't permanently suppress a later, unrelated cause
+    private final AtomicBoolean loggedNonPlainApiKeyWarning = new AtomicBoolean(false);
+    private final AtomicBoolean loggedInvalidUrlPatternWarning = new AtomicBoolean(false);
 
     private static String[] getHostNames(TileServer tileServer) {
         String[] hostNames = tileServer.hosts().toArray(new String[0]);
@@ -133,8 +135,8 @@ public class TileServerMapSource extends AbstractTileSource {
         return url + (url.contains("?") ? "&" : "?") + param + "=" + encodedApiKey;
     }
 
-    private void warnOnce(String message) {
-        if (loggedTileUrlWarning.compareAndSet(false, true))
+    private static void warnOnce(AtomicBoolean logged, String message) {
+        if (logged.compareAndSet(false, true))
             log.warning(message);
     }
 
@@ -150,7 +152,7 @@ public class TileServerMapSource extends AbstractTileSource {
 
         String apiKey = getApiKey();
         if (!isPlainApiKey(apiKey))
-            warnOnce(format("Tile server '%s' has an API key that is not a plain token; URL-encoding it for the tile URL",
+            warnOnce(loggedNonPlainApiKeyWarning, format("Tile server '%s' has an API key that is not a plain token; URL-encoding it for the tile URL",
                     tileServer.description()));
 
         String url = appendApiKey(bareUrl, apiKey, tileServer.copyright().toLowerCase(Locale.ROOT).contains("mapbox"));
@@ -164,7 +166,7 @@ public class TileServerMapSource extends AbstractTileSource {
             String reason = e.getCause() instanceof URISyntaxException syntax ?
                     format("%s at index %d", syntax.getReason(), syntax.getIndex()) : e.getClass().getSimpleName();
             String message = format("Tile server '%s' has an invalid tile URL pattern: %s", tileServer.description(), reason);
-            warnOnce(message);
+            warnOnce(loggedInvalidUrlPatternWarning, message);
             throw new MalformedURLException(message);
         }
     }
