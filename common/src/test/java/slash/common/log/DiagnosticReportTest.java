@@ -156,6 +156,69 @@ public class DiagnosticReportTest {
     }
 
     @Test
+    public void testScrubsApiKeyFromTileUrl() {
+        String scrubbed = DiagnosticReport.scrub(
+                "Cannot load tile https://tile.thunderforest.com/cycle/1/2/3.png?apikey=abc123def456", null, null);
+        assertTrue(scrubbed.contains("apikey=<redacted>"));
+        assertFalse(scrubbed.contains("abc123def456"));
+    }
+
+    @Test
+    public void testScrubsApiKeyWithNestedUrlValue() {
+        String scrubbed = DiagnosticReport.scrub(
+                "failed for ?apikey=https%3A%2F%2Fevil.example%2Fcallback%3Fx%3D1", null, null);
+        assertTrue(scrubbed.contains("apikey=<redacted>"));
+        assertFalse(scrubbed.contains("evil.example"));
+    }
+
+    @Test
+    public void testScrubsAccessTokenAmongOtherParams() {
+        String scrubbed = DiagnosticReport.scrub(
+                "GET https://api.example.com/v1?foo=bar&access_token=secretvalue123&baz=qux", null, null);
+        assertTrue(scrubbed.contains("access_token=<redacted>"));
+        assertFalse(scrubbed.contains("secretvalue123"));
+        assertTrue(scrubbed.contains("foo=bar"));
+        assertTrue(scrubbed.contains("baz=qux"));
+    }
+
+    @Test
+    public void testScrubsJsessionIdMatrixParameter() {
+        String scrubbed = DiagnosticReport.scrub(
+                "https://example.com/app;jsessionid=1234567890ABCDEF?x=1", null, null);
+        assertTrue(scrubbed.contains("jsessionid=<redacted>"));
+        assertFalse(scrubbed.contains("1234567890ABCDEF"));
+    }
+
+    @Test
+    public void testScrubsBearerAuthMaterial() {
+        String scrubbed = DiagnosticReport.scrub("Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.secret.token", null, null);
+        assertTrue(scrubbed.contains("Bearer <redacted>"));
+        assertFalse(scrubbed.contains("eyJhbGciOiJIUzI1NiJ9"));
+    }
+
+    @Test
+    public void testScrubsBasicAuthMaterial() {
+        String scrubbed = DiagnosticReport.scrub("Authorization: Basic dXNlcjpwYXNzd29yZA==", null, null);
+        assertTrue(scrubbed.contains("Basic <redacted>"));
+        assertFalse(scrubbed.contains("dXNlcjpwYXNzd29yZA"));
+    }
+
+    @Test
+    public void testScrubsUserPasswordFromUrlAuthority() {
+        String scrubbed = DiagnosticReport.scrub("Cannot connect to https://user:password@example.com/path", null, null);
+        assertTrue(scrubbed.contains("https://<redacted>@example.com/path"));
+        assertFalse(scrubbed.contains("user:password"));
+    }
+
+    @Test
+    public void testScrubLeavesUnrelatedMessagesIntact() {
+        assertEquals("Could not parse longitude 477286.7334",
+                DiagnosticReport.scrub("Could not parse longitude 477286.7334", null, null));
+        assertEquals("monkey=banana", DiagnosticReport.scrub("monkey=banana", null, null));
+        assertEquals("?keyboard=1", DiagnosticReport.scrub("?keyboard=1", null, null));
+    }
+
+    @Test
     public void testTruncateCapsLongValueWithMarker() {
         assertNull(DiagnosticReport.truncate(null));
         assertEquals("short", DiagnosticReport.truncate("short"));
