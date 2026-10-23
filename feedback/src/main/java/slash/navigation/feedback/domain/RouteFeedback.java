@@ -20,6 +20,7 @@
 
 package slash.navigation.feedback.domain;
 
+import slash.common.log.CredentialRedaction;
 import slash.navigation.datasources.*;
 import slash.navigation.datasources.binding.*;
 import slash.navigation.datasources.helpers.DataSourcesUtil;
@@ -123,14 +124,40 @@ public class RouteFeedback {
             throw new IOException("DELETE on " + userUrl + " not successful: " + result);
     }
 
+    /**
+     * The redacted log and description {@link #sendErrorReport} puts into the request.
+     * A package-private helper so the redaction can be unit-tested without an HTTP call.
+     */
+    static final class RedactedErrorReport {
+        final String log;
+        final String description;
+
+        RedactedErrorReport(String log, String description) {
+            this.log = log;
+            this.description = description;
+        }
+    }
+
+    /**
+     * Redacts credential-shaped tokens (e.g. a tile/routing-service API key quoted in
+     * the log) from the log and description before they leave the device; defence in
+     * depth for whatever the error-report dialog or any other caller did not already
+     * redact.
+     */
+    static RedactedErrorReport redact(String logOutput, String description) {
+        return new RedactedErrorReport(CredentialRedaction.redact(logOutput), CredentialRedaction.redact(description));
+    }
+
     public String sendErrorReport(String logOutput, String description, java.io.File file) throws IOException {
         String errorReportUrl = apiUrl + ERROR_REPORT_URI;
+        RedactedErrorReport redacted = redact(logOutput, description);
 
-        log.fine("Sending error report with log \"" + logOutput + "\", description \"" + description + "\"" +
+        log.fine("Sending error report with log of " + redacted.log.length() + " characters, description of " +
+                redacted.description.length() + " characters" +
                 (file != null ? ", file " + file.getAbsolutePath() : ""));
         Post request = new Post(errorReportUrl, credentials);
-        request.addString("log", logOutput);
-        request.addString("description", description);
+        request.addString("log", redacted.log);
+        request.addString("description", redacted.description);
         request.addString("locale", getDefault().toString());
         if (file != null && file.isFile())
             request.addFile("file", file);
@@ -139,8 +166,8 @@ public class RouteFeedback {
         if (request.isUnAuthorized())
             throw new UnAuthorizedException("Cannot send error report " + (file != null ? ", file " + file.getAbsolutePath() : ""), errorReportUrl);
         if (!request.isSuccessful())
-            throw new IOException("POST on " + errorReportUrl + " with log " + logOutput.length() + " characters" +
-                    ", description \"" + description + "\", file " + file + " not successful: " + result);
+            throw new IOException("POST on " + errorReportUrl + " with log " + redacted.log.length() + " characters" +
+                    ", description \"" + redacted.description + "\", file " + file + " not successful: " + result);
         return request.getLocation();
     }
 
