@@ -19,6 +19,7 @@
 - Find places searches the downloaded offline POI data also while an online map is displayed (#278)
 - The log and error reports no longer contain API keys for Google and GeoNames (#280)
 - Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand shows a message and keeps the old value, instead of crashing; a date and time without seconds such as "2026-08-18 10:00" is accepted (#294)
+- Send error report: the log shown, sent and copied no longer carries credentials a tile or routing-service URL embeds, e.g. an API key or session token (#305)
 
 ## 3.7 — 2026-10-10
 

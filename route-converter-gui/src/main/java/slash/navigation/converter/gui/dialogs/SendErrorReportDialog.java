@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.Files;
+import slash.common.log.CredentialRedaction;
 import slash.common.log.LoggingHelper;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.helpers.AbstractDocumentListener;
@@ -73,19 +74,24 @@ public class SendErrorReportDialog extends SimpleDialog {
     /**
      * Opens the dialog pre-filled with a diagnostic report (e.g. from a captured
      * crash): the report is prepended to the log area so the user reviews and sends
-     * a full root-cause payload. The "Copy diagnostic report" button then copies the
-     * report; without a report it copies the log area content.
+     * a full root-cause payload. Both the log and the report are redacted with
+     * {@link CredentialRedaction#redact} before they are shown, since the log can
+     * carry a credential a tile or routing-service URL embeds that RouteConverter's
+     * own logging does not scrub (third-party code, exception messages). The user
+     * then reviews, sends and copies exactly the redacted text. The "Copy diagnostic
+     * report" button then copies the (redacted) report; without a report it copies
+     * the log area content.
      */
     public SendErrorReportDialog(String diagnosticReport) {
         super(BaseRouteConverter.getInstance().getFrame(), "send-error-report");
-        this.diagnosticReport = diagnosticReport;
+        this.diagnosticReport = CredentialRedaction.redact(diagnosticReport);
         setTitle(BaseRouteConverter.getBundle().getString("send-error-report-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonSend);
 
-        String log = LoggingHelper.getInstance().getLogFileAsString();
-        textAreaLog.setText(diagnosticReport != null ? diagnosticReport + "\n\n" + log : log);
+        String log = CredentialRedaction.redact(LoggingHelper.getInstance().getLogFileAsString());
+        textAreaLog.setText(this.diagnosticReport != null ? this.diagnosticReport + "\n\n" + log : log);
 
         textAreaDescription.getDocument().addDocumentListener(new AbstractDocumentListener() {
             public void process(DocumentEvent e) {
