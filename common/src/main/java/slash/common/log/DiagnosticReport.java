@@ -80,14 +80,17 @@ public class DiagnosticReport {
     // the name is matched case-insensitively but only right after a ?, & or ; separator, so
     // an unrelated identifier that merely ends or starts with the same letters (monkey=banana,
     // ?keyboard=1) is left alone; the value runs up to the next separator, whitespace, quote
-    // or markup character
+    // or markup character. Names and spellings (api-key, access-token, client-secret) follow
+    // rc-site's feedback/redaction.py, so client and server redact the same parameters
     private static final Pattern CREDENTIAL_PARAMETER = Pattern.compile(
-            "([?&;](?:apikey|api_key|access_token|client_secret|signature|jsessionid|session"
+            "([?&;](?:api[_-]?key|access[_-]?token|client[_-]?secret|signature|jsessionid|session"
                     + "|password|passwd|token|secret|pwd|sig|auth|key)=)[^&;\\s\"'<>|#]+",
             Pattern.CASE_INSENSITIVE);
-    // Bearer/Basic auth material in an Authorization header value embedded in a message
+    // Bearer/Basic auth material in an Authorization header value embedded in a message: a
+    // token of at least 8 base64/JWT characters, as on rc-site, so the next word of a plain
+    // sentence ("a basic error") stays readable
     private static final Pattern BEARER_OR_BASIC_AUTH = Pattern.compile(
-            "\\b(Bearer|Basic)\\s+[^\\s\"'<>|#]+", Pattern.CASE_INSENSITIVE);
+            "\\b(Bearer|Basic)\\s+[A-Za-z0-9._~+/=-]{8,}", Pattern.CASE_INSENSITIVE);
     // a user:password@ credential embedded in a URL's authority component
     private static final Pattern URL_USERINFO = Pattern.compile("([A-Za-z][A-Za-z0-9+.-]*://)[^/\\s@]+:[^/\\s@]+@");
     private static final String REDACTED = "<redacted>";

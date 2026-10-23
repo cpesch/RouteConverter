@@ -211,6 +211,25 @@ public class DiagnosticReportTest {
     }
 
     @Test
+    public void testScrubsHyphenatedParameterSpellingsLikeTheServer() {
+        String scrubbed = DiagnosticReport.scrub("GET https://api.example.com/v1?api-key=secret1"
+                + "&access-token=secret2&client-secret=secret3&clientsecret=secret4&x=1", null, null);
+        assertTrue(scrubbed.contains("api-key=<redacted>"));
+        assertTrue(scrubbed.contains("access-token=<redacted>"));
+        assertTrue(scrubbed.contains("client-secret=<redacted>"));
+        assertTrue(scrubbed.contains("clientsecret=<redacted>"));
+        assertTrue(scrubbed.contains("x=1"));
+        for (String secret : new String[]{"secret1", "secret2", "secret3", "secret4"})
+            assertFalse(scrubbed.contains(secret), secret);
+    }
+
+    @Test
+    public void testScrubKeepsTheWordAfterBasicOrBearerInPlainText() {
+        assertEquals("a basic error happened", DiagnosticReport.scrub("a basic error happened", null, null));
+        assertEquals("Bearer token missing", DiagnosticReport.scrub("Bearer token missing", null, null));
+    }
+
+    @Test
     public void testScrubLeavesUnrelatedMessagesIntact() {
         assertEquals("Could not parse longitude 477286.7334",
                 DiagnosticReport.scrub("Could not parse longitude 477286.7334", null, null));
