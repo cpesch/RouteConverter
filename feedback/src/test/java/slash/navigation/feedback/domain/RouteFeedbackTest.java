@@ -25,9 +25,45 @@ import org.junit.Test;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static slash.navigation.feedback.domain.RouteFeedback.redact;
 
 public class RouteFeedbackTest {
     private final RouteFeedback routeFeedback = new RouteFeedback("https://api.routeconverter.com/", null);
+
+    @Test
+    public void testSendErrorReportRedactsLogAndDescription() {
+        String log = "Cannot load tile https://tile.thunderforest.com/cycle/1/2/3.png?apikey=SECRET123";
+        String description = "happened while loading https://api.example.com/route?access_token=SECRET456";
+
+        RouteFeedback.RedactedErrorReport redacted = redact(log, description);
+
+        assertTrue(redacted.log.contains("apikey=<redacted>"));
+        assertTrue(redacted.description.contains("access_token=<redacted>"));
+        assertFalse(redacted.log.contains("SECRET123"));
+        assertFalse(redacted.description.contains("SECRET456"));
+    }
+
+    @Test
+    public void testSendErrorReportToleratesNullLogAndDescription() {
+        RouteFeedback.RedactedErrorReport redacted = redact(null, null);
+
+        assertNull(redacted.log);
+        assertNull(redacted.description);
+        assertEquals(0, RouteFeedback.length(redacted.log));
+        assertEquals(0, RouteFeedback.length(redacted.description));
+        assertEquals(3, RouteFeedback.length("abc"));
+    }
+
+    @Test
+    public void testSendErrorReportRedactionLeavesUnrelatedTextIntact() {
+        RouteFeedback.RedactedErrorReport redacted = redact("nothing sensitive here", "monkey=banana");
+
+        assertEquals("nothing sensitive here", redacted.log);
+        assertEquals("monkey=banana", redacted.description);
+    }
 
     @Test
     public void testWindowsAmd64GermanUsesDeDomain() {

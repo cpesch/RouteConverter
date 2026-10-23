@@ -45,9 +45,10 @@ import static slash.common.system.Platform.isBundledJava;
  * diagnosis yet can embed absolute file paths (a {@code FileNotFoundException} on an
  * opened document, say) or, via a tile/routing-service URL, credentials. Those would
  * reveal the OS user name, document names or a user's own API key, so {@link #scrub}
- * replaces the known {@code user.home} and {@code user.name} values, credential query
- * parameters, {@code Bearer}/{@code Basic} auth material and {@code user:password@}
- * URL authorities with placeholders before the payload is spooled or sent. Route/track
+ * replaces the known {@code user.home} and {@code user.name} values and absolute-path-like
+ * tokens with placeholders, then delegates to {@link CredentialRedaction} to redact
+ * credential query parameters, {@code Bearer}/{@code Basic} auth material and
+ * {@code user:password@} URL authorities, before the payload is spooled or sent. Route/track
  * contents, file names beyond what a path segment carries, and any stable identifier
  * are still never captured.
  *
@@ -75,25 +76,6 @@ public class DiagnosticReport {
     // or /home/other/notes.gpx; the running user's own home is replaced first, so anything
     // still matching here is a path outside it
     private static final Pattern UNIX_PATH = Pattern.compile("/(?:Volumes|media|mnt|home)/[^\\s\"]+");
-
-    // a credential-bearing query/matrix parameter value, e.g. ?apikey=... or ;jsessionid=...;
-    // the name is matched case-insensitively but only right after a ?, & or ; separator, so
-    // an unrelated identifier that merely ends or starts with the same letters (monkey=banana,
-    // ?keyboard=1) is left alone; the value runs up to the next separator, whitespace, quote
-    // or markup character. Names and spellings (api-key, access-token, client-secret) follow
-    // rc-site's feedback/redaction.py, so client and server redact the same parameters
-    private static final Pattern CREDENTIAL_PARAMETER = Pattern.compile(
-            "([?&;](?:api[_-]?key|access[_-]?token|client[_-]?secret|signature|jsessionid|session"
-                    + "|password|passwd|token|secret|pwd|sig|auth|key)=)[^&;\\s\"'<>|#]+",
-            Pattern.CASE_INSENSITIVE);
-    // Bearer/Basic auth material in an Authorization header value embedded in a message: a
-    // token of at least 8 base64/JWT characters, as on rc-site, so the next word of a plain
-    // sentence ("a basic error") stays readable
-    private static final Pattern BEARER_OR_BASIC_AUTH = Pattern.compile(
-            "\\b(Bearer|Basic)\\s+[A-Za-z0-9._~+/=-]{8,}", Pattern.CASE_INSENSITIVE);
-    // a user:password@ credential embedded in a URL's authority component
-    private static final Pattern URL_USERINFO = Pattern.compile("([A-Za-z][A-Za-z0-9+.-]*://)[^/\\s@]+:[^/\\s@]+@");
-    private static final String REDACTED = "<redacted>";
 
     // the OS user name and home directory leak into exception messages / stack traces
     // via absolute paths; both are known values, so they are scrubbed by literal
@@ -161,11 +143,12 @@ public class DiagnosticReport {
      * path or a unix external-mount path outside the user's home -- is replaced whole,
      * so a message like {@code "cannot read D:\Trips\vacation2024.gpx"} cannot leak the
      * document name. Class names and stack frames carry no such token and are left
-     * intact. Finally, credential-shaped tokens a URL embedded in an exception message
-     * can carry -- a query/matrix parameter such as {@code apikey} or {@code token}, a
-     * {@code Bearer}/{@code Basic} auth header value, or a {@code user:password@} URL
-     * authority -- are replaced with {@code <redacted>}, so a tile-service API key never
-     * leaves the device (defence in depth; the server also redacts on ingest).
+     * intact. Finally, {@link CredentialRedaction#redact} replaces credential-shaped
+     * tokens a URL embedded in an exception message can carry -- a query/matrix
+     * parameter such as {@code apikey} or {@code token}, a {@code Bearer}/{@code Basic}
+     * auth header value, or a {@code user:password@} URL authority -- with
+     * {@code <redacted>}, so a tile-service API key never leaves the device (defence in
+     * depth; the server also redacts on ingest).
      */
     static String scrub(String value) {
         return scrub(value, USER_HOME, USER_NAME);
@@ -193,9 +176,7 @@ public class DiagnosticReport {
                     Matcher.quoteReplacement(USER_PLACEHOLDER));
         result = WINDOWS_PATH.matcher(result).replaceAll(PATH_PLACEHOLDER);
         result = UNIX_PATH.matcher(result).replaceAll(PATH_PLACEHOLDER);
-        result = CREDENTIAL_PARAMETER.matcher(result).replaceAll("$1" + REDACTED);
-        result = BEARER_OR_BASIC_AUTH.matcher(result).replaceAll("$1 " + REDACTED);
-        result = URL_USERINFO.matcher(result).replaceAll("$1" + REDACTED + "@");
+        result = CredentialRedaction.redact(result);
         return result;
     }
 

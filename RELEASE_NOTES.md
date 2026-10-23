@@ -18,6 +18,7 @@
 - Find places in the offline POI data ignores the case of umlauts and other non-ASCII letters: "überseering" finds "Überseering" (#277)
 - Find places searches the downloaded offline POI data also while an online map is displayed (#278)
 - The log and error reports no longer contain API keys for Google and GeoNames (#280)
+- Send error report: the log shown, sent and copied no longer carries credentials a tile or routing-service URL embeds, e.g. an API key or session token (#305)
 
 ## 3.7 — 2026-10-10
 
