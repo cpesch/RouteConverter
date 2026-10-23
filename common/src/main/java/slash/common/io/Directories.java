@@ -67,11 +67,14 @@ public class Directories {
     }
 
     public static File ensureDirectory(File directory) {
-        if (!directory.exists()) {
-            if (!directory.mkdirs()) {
-                log.severe("Could not create directory " + directory);
-                throw new IllegalArgumentException(format("Cannot create directory %s", directory));
-            }
+        if (directory.isDirectory())
+            return directory;
+        // parallel JVMs (CI jobs, surefire forks, or two RouteConverter instances) share
+        // ${java.io.tmpdir}/routeconverter-${user.name}; mkdirs() can lose the race if another
+        // process creates the directory first, so re-check instead of failing (flaky GetPerformerTest, 2026-10-21)
+        if (!directory.mkdirs() && !directory.isDirectory()) {
+            log.severe("Could not create directory " + directory);
+            throw new IllegalArgumentException(format("Cannot create directory %s", directory));
         }
         return directory;
     }
