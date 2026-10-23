@@ -42,6 +42,6 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Show Maven version
-        run: mvn --version
+        run: ./mvnw --version
       - name: Compile with Maven
-        run: mvn --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots test-compile
+        run: ./mvnw --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots test-compile

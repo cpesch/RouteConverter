@@ -61,13 +61,13 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Show Maven version
-        run: mvn --version
+        run: ./mvnw --version
       - name: Build with Maven
         # -T 1C: parallel modules. Linux only; on Windows it was 13-18 % slower.
         # SpotBugs runs once, in the spotbugs job; no test reads a shaded jar.
         # forkCount=1: one test JVM per module. With -T 1C, the pom's 1.5C
         # started 116 test JVMs on 4 cores (279 -> 78 s with C1).
-        run: mvn --batch-mode -T 1C -Dsurefire.forkCount=1 -Dmaven.build.number=${{ github.run_number }} -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots verify
+        run: ./mvnw --batch-mode -T 1C -Dsurefire.forkCount=1 -Dmaven.build.number=${{ github.run_number }} -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots verify
       # nightly-triage.yml reads the reports of a failed job from the artifact
       # `surefire-<job name, spaces -> '-'>`. Keep every Maven step named
       # `... with Maven`: the triage classifies a failure in any other step as
@@ -107,7 +107,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: SpotBugs with Maven
-        run: mvn --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dshade.skip=true --update-snapshots verify
+        run: ./mvnw --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dshade.skip=true --update-snapshots verify
 
   prerelease:
     needs: scope
@@ -130,7 +130,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Show Maven version
-        run: mvn --version
+        run: ./mvnw.cmd --version
       - name: Build with Maven
         # Quote the -D: pwsh (default windows-latest shell) tokenizes
         # `.build.number` as member-access, splitting the arg into
@@ -139,7 +139,7 @@ jobs:
         # -Djacoco.skip: Codecov only uploads from Linux Java 21, so the
         # Windows coverage agent only slows the tests down.
         # SpotBugs runs in the spotbugs job; no test reads a shaded jar.
-        run: mvn --batch-mode "-Dmaven.build.number=${{ github.run_number }}" "-Djacoco.skip=true" "-Dspotbugs.skip=true" "-Dshade.skip=true" "-Dsurefire.forkCount=1" --update-snapshots verify
+        run: ./mvnw.cmd --batch-mode "-Dmaven.build.number=${{ github.run_number }}" "-Djacoco.skip=true" "-Dspotbugs.skip=true" "-Dshade.skip=true" "-Dsurefire.forkCount=1" --update-snapshots verify
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v7
@@ -179,7 +179,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Integration tests with Maven
-        run: mvn --batch-mode -T 1C -Phermetic-integration-test "-Dfailsafe.ci.excludes=%regex[.*slash/navigation/(babel|base|bcr|columbus|csv|excel|gopal|gpx|itn|kml|lmx|nmn|ovl|photo|simple|tour|url|wbt|zip)/[^/]*IT\.class]" -Dsurefire.forkCount=1 -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots verify
+        run: ./mvnw --batch-mode -T 1C -Phermetic-integration-test "-Dfailsafe.ci.excludes=%regex[.*slash/navigation/(babel|base|bcr|columbus|csv|excel|gopal|gpx|itn|kml|lmx|nmn|ovl|photo|simple|tour|url|wbt|zip)/[^/]*IT\.class]" -Dsurefire.forkCount=1 -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots verify
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v7
@@ -213,7 +213,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
-        run: mvn --batch-mode -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
+        run: ./mvnw --batch-mode -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v7
@@ -244,7 +244,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
-        run: mvn --batch-mode -T 1C -Dsurefire.forkCount=1 -Dsurefire.runOrder=random -Dsurefire.runOrder.random.seed=${{ github.run_id }} -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots verify
+        run: ./mvnw --batch-mode -T 1C -Dsurefire.forkCount=1 -Dsurefire.runOrder=random -Dsurefire.runOrder.random.seed=${{ github.run_id }} -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots verify
       - name: Upload test reports
         if: failure()
         uses: actions/upload-artifact@v7
@@ -275,7 +275,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Package with Maven
-        run: mvn --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} -DcrashReportSecret=nightly-dummy -DtimeAlbumGoogleMapsApiKey=nightly-dummy -DskipTests -Dspotbugs.skip=true --update-snapshots package
+        run: ./mvnw --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} -DcrashReportSecret=nightly-dummy -DtimeAlbumGoogleMapsApiKey=nightly-dummy -DskipTests -Dspotbugs.skip=true --update-snapshots package
 
   # Environment snapshot for the drift comparison (nightly_drift.py): artifact
   # `drift-snapshot` with `drift.json`, a flat string -> string object.
@@ -304,7 +304,7 @@ jobs:
       # `package`, not `compile`: dependency:list resolves the test scope too, and the
       # reactor's test-jars (common, common-gui) only exist after `package` (#481).
       - name: Resolve dependencies with Maven
-        run: mvn --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots package dependency:list -DoutputFile=target/deps.txt -DexcludeGroupIds=slash.navigation
+        run: ./mvnw --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots package dependency:list -DoutputFile=target/deps.txt -DexcludeGroupIds=slash.navigation
       - name: Write drift.json
         run: |
           set -euo pipefail
