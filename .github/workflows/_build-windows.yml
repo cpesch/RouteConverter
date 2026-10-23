@@ -155,6 +155,15 @@ jobs:
           done
           exit $fail
 
+      # Same name, new content: a zip from before scripts/CacertsStrip.java
+      # still trusts the eMudhra emSign roots (CVE-2026-111943).
+      - name: Verify bundled JRE trusts no distrusted CA root
+        shell: bash
+        run: |
+          java scripts/CacertsStrip.java --check \
+            {RouteConverterWindows,TimeAlbumProWindows}/jre-"${JRE_VERSION}"/lib/security/cacerts \
+            || { echo "::error::hosted Windows JRE predates scripts/CacertsStrip.java; re-run Build Windows JRE"; exit 1; }
+
       - name: makensis RouteConverterWindows
         shell: cmd
         working-directory: RouteConverterWindows

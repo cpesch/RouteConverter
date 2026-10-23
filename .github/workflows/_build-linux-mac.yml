@@ -81,6 +81,14 @@ jobs:
             done
             rm -f "$zip" "${zip}.sha256"
           done
+      - name: Verify hosted Mac JREs trust no distrusted CA root
+        # The hosted zips are rebuilt under the same name; one from before
+        # scripts/CacertsStrip.java still trusts the eMudhra emSign roots
+        # (CVE-2026-111943) and must not ship.
+        run: |
+          java scripts/CacertsStrip.java --check \
+            {RouteConverterMac,TimeAlbumProMac}/target/Runtime-{x64,aarch64}/lib/security/cacerts \
+            || { echo "::error::hosted Mac JRE predates scripts/CacertsStrip.java; re-run Build Mac JRE"; exit 1; }
       - name: Fetch hosted macOS launcher stub
         # The .app's Contents/MacOS/<App> is a universal Cocoa Mach-O that cannot
         # be compiled on this Linux runner; build-mac-jre.yml builds + hosts it.
