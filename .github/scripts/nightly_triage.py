@@ -44,11 +44,11 @@ NTFY_URL = "https://ntfy.routeconverter.com/factory-rc"
 # warm-launch smoke test, …) have no single repro command, so point at the run.
 REPRO_BY_WORKFLOW = {
     "build": (
-        "JAVA_TOOL_OPTIONS=-XX:TieredStopAtLevel=1 mvn --batch-mode -T 1C "
+        "JAVA_TOOL_OPTIONS=-XX:TieredStopAtLevel=1 ./mvnw --batch-mode -T 1C "
         "-Dsurefire.forkCount=1 -Dspotbugs.skip=true -Dshade.skip=true verify"
     ),
     "jdk-ea-canary": (
-        "mvn --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true "
+        "./mvnw --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true "
         "-Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots test-compile"
     ),
     "prerelease": (

@@ -39,7 +39,7 @@ def make_ctx(**overrides):
         "first_red": {"sha": "bbb", "url": "https://example.com/commits/bbb"},
         "commits": ["bbb fix thing", "ccc another"],
         "env_diff": {"JAVA_VERSION": ["21", "25"]},
-        "repro": "mvn -pl common test",
+        "repro": "./mvnw -pl common test",
         "seed": None,
         "state": {"sig": "sig1"},
     }
