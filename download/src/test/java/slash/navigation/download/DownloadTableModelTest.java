@@ -123,9 +123,13 @@ public class DownloadTableModelTest {
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> edtFailure.compareAndSet(null, throwable));
         try {
             // called from this (non-EDT) thread, both calls only queue their event-firing
-            // Runnable on the EDT; the removal below runs before either Runnable executes
-            model.updateDownload(download);
-            model.removeDownload(download);
+            // Runnable on the EDT. Holding the model's monitor across both keeps the queued
+            // update from resolving its index before the removal: without it the EDT may run
+            // the update in between and fire a legitimate UPDATE for the still-present row
+            synchronized (model) {
+                model.updateDownload(download);
+                model.removeDownload(download);
+            }
 
             SwingUtilities.invokeAndWait(() -> { });
         } finally {
