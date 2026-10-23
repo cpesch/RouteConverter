@@ -521,7 +521,7 @@ public class PositionAugmenter {
                               final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, false, predicate,
                 new Operation() {
-                    private int predecessorIndex, successorIndex;
+                    private volatile int predecessorIndex, successorIndex;
 
                     public String getName() {
                         return "TimePositionAugmenter";
@@ -691,7 +691,7 @@ public class PositionAugmenter {
                          final boolean trackUndo) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
-                    private int predecessorIndex, successorIndex;
+                    private volatile int predecessorIndex, successorIndex;
                     private final SkipTracker skipTracker = new SkipTracker();
 
                     public String getName() {

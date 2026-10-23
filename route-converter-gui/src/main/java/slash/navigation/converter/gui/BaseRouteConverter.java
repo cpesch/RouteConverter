@@ -1177,7 +1177,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     }
 
     private class MapSplitPaneListener implements PropertyChangeListener {
-        private int location = -1;
+        private volatile int location = -1;
 
         public void propertyChange(PropertyChangeEvent e) {
             if (!isMapViewAvailable()) {
@@ -1211,7 +1211,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     }
 
     private class ProfileSplitPaneListener implements PropertyChangeListener {
-        private int location;
+        private volatile int location;
 
         private ProfileSplitPaneListener(int location) {
             this.location = location;
