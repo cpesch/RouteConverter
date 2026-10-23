@@ -27,13 +27,15 @@ import slash.navigation.maps.tileserver.TileServer;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
-import java.util.logging.Logger;
 
 import static java.lang.String.format;
 
@@ -52,7 +54,8 @@ public class TileServerMapSource extends AbstractTileSource {
     private static final Pattern NOT_A_PLAIN_API_KEY = Pattern.compile("[\\s/:?{}]");
     private final TileServer tileServer;
     private boolean alpha = false;
-    private boolean loggedTileUrlWarning = false;
+    // getTileUrl() runs on several TileDownloadThreads at once
+    private final AtomicBoolean loggedTileUrlWarning = new AtomicBoolean(false);
 
     private static String[] getHostNames(TileServer tileServer) {
         String[] hostNames = tileServer.hosts().toArray(new String[0]);
@@ -131,10 +134,8 @@ public class TileServerMapSource extends AbstractTileSource {
     }
 
     private void warnOnce(String message) {
-        if (loggedTileUrlWarning)
-            return;
-        loggedTileUrlWarning = true;
-        log.warning(message);
+        if (loggedTileUrlWarning.compareAndSet(false, true))
+            log.warning(message);
     }
 
     public URL getTileUrl(Tile tile) throws MalformedURLException {
@@ -156,10 +157,15 @@ public class TileServerMapSource extends AbstractTileSource {
         try {
             return URI.create(url).toURL();
         } catch (IllegalArgumentException e) {
-            // a malformed API key must not crash the tile download thread once per tile
-            warnOnce(format("Tile server '%s' produced an invalid tile URL (%s); loading tiles without the API key",
-                    tileServer.description(), e.getMessage()));
-            return URI.create(bareUrl).toURL();
+            // With the key URL-encoded, only a broken URL pattern gets here. The unchecked exception escaped
+            // mapsforge's TileDownloadThread and became one crash report per tile; a MalformedURLException is an
+            // IOException that the thread just logs. Its message and the warning name the reason only: the
+            // IllegalArgumentException quotes the whole URL, API key included, so it is neither logged nor chained.
+            String reason = e.getCause() instanceof URISyntaxException syntax ?
+                    format("%s at index %d", syntax.getReason(), syntax.getIndex()) : e.getClass().getSimpleName();
+            String message = format("Tile server '%s' has an invalid tile URL pattern: %s", tileServer.description(), reason);
+            warnOnce(message);
+            throw new MalformedURLException(message);
         }
     }
 }

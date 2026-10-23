@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.mapsforge.core.model.Tile;
 import slash.navigation.maps.tileserver.TileServer;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -35,6 +36,8 @@ import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.maps.mapsforge.models.TileServerMapSource.appendApiKey;
 import static slash.navigation.maps.mapsforge.models.TileServerMapSource.isPlainApiKey;
@@ -98,11 +101,11 @@ public class TileServerMapSourceTest {
         return new Tile(0, 0, (byte) 0, 256);
     }
 
-    @Test
-    public void testGetTileUrlWithMalformedApiKeyLogsOneWarningAndDoesNotThrow() throws Exception {
-        TileServerMapSource tileSource = new TileServerMapSource(tileServer("https://tiles.example.org/tile.png"));
-        tileSource.setApiKey("https://attacker.example/?redirect=1 2");
+    private interface TileUrlCalls {
+        void run() throws Exception;
+    }
 
+    private static List<LogRecord> recordLogs(TileUrlCalls calls) throws Exception {
         Logger logger = Logger.getLogger(TileServerMapSource.class.getName());
         List<LogRecord> records = new ArrayList<>();
         Handler handler = new Handler() {
@@ -118,17 +121,53 @@ public class TileServerMapSourceTest {
         };
         logger.addHandler(handler);
         try {
+            calls.run();
+        } finally {
+            logger.removeHandler(handler);
+        }
+        return records;
+    }
+
+    private static long warnings(List<LogRecord> records) {
+        return records.stream().filter(r -> r.getLevel() == Level.WARNING).count();
+    }
+
+    @Test
+    public void testGetTileUrlWithMalformedApiKeyLogsOneWarningAndDoesNotThrow() throws Exception {
+        TileServerMapSource tileSource = new TileServerMapSource(tileServer("https://tiles.example.org/tile.png"));
+        tileSource.setApiKey("https://attacker.example/?redirect=1 2");
+
+        List<LogRecord> records = recordLogs(() -> {
             URL first = tileSource.getTileUrl(tile());
             URL second = tileSource.getTileUrl(tile());
 
             assertTrue(first.toString().startsWith("https://tiles.example.org/tile.png"));
             assertEquals(first.toString(), second.toString());
-        } finally {
-            logger.removeHandler(handler);
-        }
+        });
 
-        long warnings = records.stream().filter(r -> r.getLevel() == Level.WARNING).count();
-        assertEquals(1, warnings);
+        assertEquals(1, warnings(records));
+    }
+
+    @Test
+    public void testGetTileUrlWithBrokenUrlPatternThrowsCheckedExceptionWithoutTheApiKey() throws Exception {
+        TileServerMapSource tileSource = new TileServerMapSource(tileServer("https://tiles.example.org/broken pattern/tile.png"));
+        String apiKey = "f00dfeedcafe1234";
+        tileSource.setApiKey(apiKey);
+
+        List<MalformedURLException> exceptions = new ArrayList<>();
+        List<LogRecord> records = recordLogs(() -> {
+            exceptions.add(assertThrows(MalformedURLException.class, () -> tileSource.getTileUrl(tile())));
+            exceptions.add(assertThrows(MalformedURLException.class, () -> tileSource.getTileUrl(tile())));
+        });
+
+        assertEquals(1, warnings(records));
+        assertFalse(records.get(0).getMessage().contains(apiKey));
+        for (MalformedURLException exception : exceptions) {
+            assertTrue(exception.getMessage().contains("invalid tile URL pattern"));
+            assertFalse(exception.getMessage().contains(apiKey));
+            // the IllegalArgumentException quotes the whole URL including the key, so it must not be chained
+            assertNull(exception.getCause());
+        }
     }
 
     @Test
