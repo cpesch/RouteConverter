@@ -30,6 +30,7 @@ on:
     paths:
       - 'pom.xml'
       - 'scripts/jre-modules.txt'
+      - 'scripts/CacertsStrip.java'
       - 'mac-launcher/JavaAppLauncher.m'
       - '.github/workflows/build-mac-jre.yml'
 
@@ -135,6 +136,10 @@ jobs:
             rm -f  "$OUT/bin/keytool"
             rm -f  "$OUT/conf/security/policy/README.txt"
             rm -f  "$OUT/lib/server/Xusage.txt"
+            # Drop distrusted CA roots (eMudhra emSign, CVE-2026-111943) and
+            # fail if one survives. cacerts is arch-independent, so the host
+            # JDK runs the tool for both arches.
+            "$AARCH64_HOME/bin/java" scripts/CacertsStrip.java "$OUT/lib/security/cacerts"
           done
 
       - name: Compile universal launcher stub

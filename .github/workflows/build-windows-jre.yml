@@ -26,6 +26,7 @@ on:
     paths:
       - 'pom.xml'
       - 'scripts/jre-modules.txt'
+      - 'scripts/CacertsStrip.java'
       - '.github/workflows/build-windows-jre.yml'
 
 concurrency:
@@ -94,6 +95,14 @@ jobs:
           if exist %OUT%\lib\client rmdir /s /q %OUT%\lib\client
           if exist %OUT%\lib\server rmdir /s /q %OUT%\lib\server
           if exist %OUT%\conf\security\policy\README.txt del /q %OUT%\conf\security\policy\README.txt
+
+      - name: Drop distrusted CA roots from cacerts
+        # eMudhra emSign roots (CVE-2026-111943); fails the build if one
+        # survives or the rewritten store holds too few roots to verify TLS
+        shell: bash
+        env:
+          VER: ${{ steps.jdk.outputs.version }}
+        run: java scripts/CacertsStrip.java "jre-${VER}/lib/security/cacerts"
 
       - name: Show full JRE tree
         shell: bash

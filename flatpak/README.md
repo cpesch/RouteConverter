@@ -14,7 +14,9 @@ Not yet submitted to Flathub. Staged here, build- and run-verified.
   built at build time from the `org.freedesktop.Sdk.Extension.openjdk21`
   SDK extension, using the same module set as
   `scripts/jre-modules.txt` (the single source of truth the Windows/Mac
-  bundled JREs also use).
+  bundled JREs also use). The build then runs
+  `../scripts/CacertsStrip.java` on its cacerts to drop the distrusted
+  eMudhra emSign roots (CVE-2026-111943), as the Windows/Mac JRE builds do.
 - `com.routeconverter.RouteConverter.desktop`, `.metainfo.xml`,
   `RouteConverter.png` (256px, extracted from the macOS `.icns` — no
   Linux icon asset existed before).
