@@ -36,6 +36,7 @@ import javax.swing.*;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNullElse;
@@ -53,6 +54,8 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 public class PositionsModelCallbackImpl implements PositionsModelCallback {
     private static final Logger log = Logger.getLogger(PositionsModelCallbackImpl.class.getName());
+    // a value ending in H:mm without seconds, e.g. "10:00" or "2026-08-18 10:00" but not "10:00:00"
+    private static final Pattern MISSING_SECONDS = Pattern.compile("(^|[^:\\d])\\d{1,2}:\\d{2}$");
 
     private final TimeZoneModel timeZoneModel;
 
@@ -232,13 +235,20 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         } catch (DateTimeParserException e) {
             // accept the common variant without seconds, e.g. "10:00" for a "...HH:mm:ss" pattern
             // (#294: "2026-08-18 10:00" crashed against y-MM-dd HH:mm:ss), and only fall back to
-            // the original exception when that doesn't match either
+            // the original exception when that doesn't match either; only a value that ends in
+            // H:mm is retried, so a date-only column never sees an appended ":00"
+            if (!lacksSeconds(stringValue))
+                throw e;
             try {
                 return toCompactCalendar(formatter.parse(stringValue + ":00", referenceTimestamp));
             } catch (DateTimeParserException ignored) {
                 throw e;
             }
         }
+    }
+
+    static boolean lacksSeconds(String stringValue) {
+        return MISSING_SECONDS.matcher(stringValue).find();
     }
 
     private static CompactCalendar toCompactCalendar(Calendar parsed) {
@@ -349,23 +359,19 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
 
     private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateTimeParserFormatter format) {
         log.warning(format("Could not parse %s since it does not match the pattern %s", stringValue, format.getPatternInfo()));
-
-        BaseRouteConverter instance = BaseRouteConverter.getInstance();
-        if (instance != null) {
-            showError(instance.getFrame(),
-                    MessageFormat.format(BaseRouteConverter.getBundle().getString(messageBundleKey),
-                            stringValue, format.getPatternInfo()), BaseRouteConverter.getTitle());
-        }
+        showParseError(messageBundleKey, stringValue, format.getPatternInfo());
     }
 
     private void handleValueParseException(String stringValue, String messageBundleKey) {
         log.warning(format("Could not parse value %s with message bundle key %s", stringValue, messageBundleKey));
+        showParseError(messageBundleKey, stringValue);
+    }
 
+    // no running GUI in unit tests, so no dialog there
+    private void showParseError(String messageBundleKey, Object... arguments) {
         BaseRouteConverter instance = BaseRouteConverter.getInstance();
-        if (instance != null) {
-            showError(instance.getFrame(),
-                    MessageFormat.format(BaseRouteConverter.getBundle().getString(messageBundleKey),
-                            stringValue), BaseRouteConverter.getTitle());
-        }
+        if (instance != null)
+            showError(instance.getFrame(), MessageFormat.format(BaseRouteConverter.getBundle().getString(messageBundleKey), arguments),
+                    BaseRouteConverter.getTitle());
     }
 }

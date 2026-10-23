@@ -676,6 +676,25 @@ public class PositionsModelCallbackImplTest {
     }
 
     @Test
+    public void testSetTimeAcceptsMissingSeconds() {
+        timeZoneModel.setTimeZone(ZONE_UTC);
+        when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
+
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "15:25", cal(2025, 1, 1, 15, 25, 0));
+    }
+
+    @Test
+    public void testOnlyValuesEndingInHoursAndMinutesAreRetriedWithSeconds() {
+        assertTrue(PositionsModelCallbackImpl.lacksSeconds("2026-08-18 10:00"));
+        assertTrue(PositionsModelCallbackImpl.lacksSeconds("10:00"));
+        assertTrue(PositionsModelCallbackImpl.lacksSeconds("1.8.2025, 9:05"));
+        assertFalse(PositionsModelCallbackImpl.lacksSeconds("10:00:00"));
+        assertFalse(PositionsModelCallbackImpl.lacksSeconds("1.8.2025, 15:65:78"));
+        assertFalse(PositionsModelCallbackImpl.lacksSeconds("18.08.2026"));
+        assertFalse(PositionsModelCallbackImpl.lacksSeconds("not a date"));
+    }
+
+    @Test
     public void testSetLongitudeInvalidKeepsOldValueAndDoesNotThrow() {
         when(position.getLongitude()).thenReturn(1.2);
 
