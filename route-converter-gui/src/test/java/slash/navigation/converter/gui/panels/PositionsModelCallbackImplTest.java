@@ -23,16 +23,22 @@ package slash.navigation.converter.gui.panels;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import slash.common.io.Transfer;
 import slash.common.helpers.DateTimeParserException;
 import slash.common.type.CompactCalendar;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
 import slash.navigation.converter.gui.models.TimeZoneModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.gpx.GpxPosition;
+import slash.navigation.gui.helpers.WindowHelper;
 
 import java.util.Calendar;
+import java.util.ListResourceBundle;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.TimeZone;
 
 import static org.mockito.Mockito.*;
@@ -654,6 +660,60 @@ public class PositionsModelCallbackImplTest {
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1.8.2025, 1:2:3", cal(2025, 7, 31, 23, 2, 3));
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1.8.2025, 15:25:35", cal(2025, 8, 1, 13, 25, 35));
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1.8.2025, 15:65:78", cal(2025, 8, 1, 14, 6, 18));
+    }
+
+    @Test
+    public void testSetDateTimeAcceptsMissingSeconds() {
+        Locale.setDefault(SWEDISH);
+        timeZoneModel.setTimeZone(ZONE_UTC);
+
+        assertTrue(Transfer.getDateTimeFormat(ZONE_UTC.getID()).getPatternInfo().startsWith("y-"));
+
+        when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
+
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2026-08-18 10:00", cal(2026, 8, 18, 10, 0, 0));
+    }
+
+    @Test
+    public void testSetLongitudeInvalidKeepsOldValueAndDoesNotThrow() {
+        when(position.getLongitude()).thenReturn(1.2);
+
+        // setValueAt resolves the preferred degree/unit format and the error dialog via
+        // BaseRouteConverter.getInstance(), which is null in a plain unit test (no running GUI) -
+        // mock the static methods directly instead of building a full BaseRouteConverter fixture,
+        // and stub out WindowHelper so no real (headless-hostile) dialog is shown.
+        BaseRouteConverter mockConverter = mock(BaseRouteConverter.class);
+        when(mockConverter.getUnitSystemModel()).thenReturn(new UnitSystemModel());
+        ResourceBundle bundle = new ListResourceBundle() {
+            protected Object[][] getContents() {
+                return new Object[][]{
+                        {"longitude-format-error", "Could not parse longitude ''{0}''."},
+                };
+            }
+        };
+
+        try (MockedStatic<BaseRouteConverter> mockedBaseRouteConverter = mockStatic(BaseRouteConverter.class);
+             MockedStatic<WindowHelper> mockedWindowHelper = mockStatic(WindowHelper.class)) {
+            mockedBaseRouteConverter.when(BaseRouteConverter::getInstance).thenReturn(mockConverter);
+            mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(bundle);
+
+            sut.setValueAt(position, LONGITUDE_COLUMN_INDEX, "not a longitude");
+        }
+
+        verify(position, atLeast(1)).getLongitude();
+        verify(position).setLongitude(1.2);
+    }
+
+    @Test
+    public void testSetDateInvalidKeepsOldValueAndDoesNotThrow() {
+        timeZoneModel.setTimeZone(ZONE_UTC);
+        CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
+        when(position.getTime()).thenReturn(oldTime);
+
+        sut.setValueAt(position, DATE_COLUMN_INDEX, "not a date");
+
+        verify(position, atLeast(1)).getTime();
+        verify(position).setTime(oldTime);
     }
 
     private void runSetTimeTestStep(int column, String toSet, CompactCalendar expectedSet) {
