@@ -18,7 +18,7 @@
 - Find places in the offline POI data ignores the case of umlauts and other non-ASCII letters: "überseering" finds "Überseering" (#277)
 - Find places searches the downloaded offline POI data also while an online map is displayed (#278)
 - The log and error reports no longer contain API keys for Google and GeoNames (#280)
-- Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand shows a message and keeps the old value, instead of crashing (#294)
+- Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand shows a message and keeps the old value, instead of crashing; a date and time without seconds such as "2026-08-18 10:00" is accepted (#294)
 
 ## 3.7 — 2026-10-10
 

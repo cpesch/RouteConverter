@@ -662,6 +662,19 @@ public class PositionsModelCallbackImplTest {
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1.8.2025, 15:65:78", cal(2025, 8, 1, 14, 6, 18));
     }
 
+    // #294 acceptance: the common variant without seconds parses for a "...HH:mm:ss" column
+    @Test
+    public void testSetDateTimeAcceptsMissingSeconds() {
+        Locale.setDefault(SWEDISH);
+        timeZoneModel.setTimeZone(ZONE_UTC);
+
+        assertTrue(Transfer.getDateTimeFormat(ZONE_UTC.getID()).getPatternInfo().startsWith("y-"));
+
+        when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
+
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2026-08-18 10:00", cal(2026, 8, 18, 10, 0, 0));
+    }
+
     @Test
     public void testSetLongitudeInvalidKeepsOldValueAndDoesNotThrow() {
         when(position.getLongitude()).thenReturn(1.2);
