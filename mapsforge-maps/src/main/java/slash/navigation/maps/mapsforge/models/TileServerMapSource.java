@@ -53,7 +53,8 @@ public class TileServerMapSource extends AbstractTileSource {
     // characters that never occur in a plain API token but do occur in a pasted URL or template
     private static final Pattern NOT_A_PLAIN_API_KEY = Pattern.compile("[\\s/:?{}]");
     private final TileServer tileServer;
-    private boolean alpha = false;
+    // set when the tile layer is created, read by the TileDownloadThreads
+    private volatile boolean alpha = false;
     // getTileUrl() runs on several TileDownloadThreads at once; separate flags so one cause
     // logging first doesn't permanently suppress a later, unrelated cause
     private final AtomicBoolean loggedNonPlainApiKeyWarning = new AtomicBoolean(false);
