@@ -663,18 +663,6 @@ public class PositionsModelCallbackImplTest {
     }
 
     @Test
-    public void testSetDateTimeAcceptsMissingSeconds() {
-        Locale.setDefault(SWEDISH);
-        timeZoneModel.setTimeZone(ZONE_UTC);
-
-        assertTrue(Transfer.getDateTimeFormat(ZONE_UTC.getID()).getPatternInfo().startsWith("y-"));
-
-        when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
-
-        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2026-08-18 10:00", cal(2026, 8, 18, 10, 0, 0));
-    }
-
-    @Test
     public void testSetLongitudeInvalidKeepsOldValueAndDoesNotThrow() {
         when(position.getLongitude()).thenReturn(1.2);
 
@@ -702,6 +690,84 @@ public class PositionsModelCallbackImplTest {
 
         verify(position, atLeast(1)).getLongitude();
         verify(position).setLongitude(1.2);
+    }
+
+    @Test
+    public void testSetLatitudeInvalidKeepsOldValueAndDoesNotThrow() {
+        when(position.getLatitude()).thenReturn(3.4);
+
+        BaseRouteConverter mockConverter = mock(BaseRouteConverter.class);
+        when(mockConverter.getUnitSystemModel()).thenReturn(new UnitSystemModel());
+        ResourceBundle bundle = new ListResourceBundle() {
+            protected Object[][] getContents() {
+                return new Object[][]{
+                        {"latitude-format-error", "Could not parse latitude ''{0}''."},
+                };
+            }
+        };
+
+        try (MockedStatic<BaseRouteConverter> mockedBaseRouteConverter = mockStatic(BaseRouteConverter.class);
+             MockedStatic<WindowHelper> mockedWindowHelper = mockStatic(WindowHelper.class)) {
+            mockedBaseRouteConverter.when(BaseRouteConverter::getInstance).thenReturn(mockConverter);
+            mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(bundle);
+
+            sut.setValueAt(position, LATITUDE_COLUMN_INDEX, "not a latitude");
+        }
+
+        verify(position, atLeast(1)).getLatitude();
+        verify(position).setLatitude(3.4);
+    }
+
+    @Test
+    public void testSetElevationInvalidKeepsOldValueAndDoesNotThrow() {
+        when(position.getElevation()).thenReturn(5.6);
+
+        BaseRouteConverter mockConverter = mock(BaseRouteConverter.class);
+        when(mockConverter.getUnitSystemModel()).thenReturn(new UnitSystemModel());
+        ResourceBundle bundle = new ListResourceBundle() {
+            protected Object[][] getContents() {
+                return new Object[][]{
+                        {"elevation-format-error", "Could not parse elevation ''{0}''."},
+                };
+            }
+        };
+
+        try (MockedStatic<BaseRouteConverter> mockedBaseRouteConverter = mockStatic(BaseRouteConverter.class);
+             MockedStatic<WindowHelper> mockedWindowHelper = mockStatic(WindowHelper.class)) {
+            mockedBaseRouteConverter.when(BaseRouteConverter::getInstance).thenReturn(mockConverter);
+            mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(bundle);
+
+            sut.setValueAt(position, ELEVATION_COLUMN_INDEX, "not an elevation");
+        }
+
+        verify(position, atLeast(1)).getElevation();
+        verify(position).setElevation(5.6);
+    }
+
+    @Test
+    public void testSetSpeedInvalidKeepsOldValueAndDoesNotThrow() {
+        when(position.getSpeed()).thenReturn(7.8);
+
+        BaseRouteConverter mockConverter = mock(BaseRouteConverter.class);
+        when(mockConverter.getUnitSystemModel()).thenReturn(new UnitSystemModel());
+        ResourceBundle bundle = new ListResourceBundle() {
+            protected Object[][] getContents() {
+                return new Object[][]{
+                        {"speed-format-error", "Could not parse speed ''{0}''."},
+                };
+            }
+        };
+
+        try (MockedStatic<BaseRouteConverter> mockedBaseRouteConverter = mockStatic(BaseRouteConverter.class);
+             MockedStatic<WindowHelper> mockedWindowHelper = mockStatic(WindowHelper.class)) {
+            mockedBaseRouteConverter.when(BaseRouteConverter::getInstance).thenReturn(mockConverter);
+            mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(bundle);
+
+            sut.setValueAt(position, SPEED_COLUMN_INDEX, "not a speed");
+        }
+
+        verify(position, atLeast(1)).getSpeed();
+        verify(position).setSpeed(7.8);
     }
 
     @Test

@@ -227,17 +227,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     }
 
     private CompactCalendar parseDateTime(String stringValue, DateTimeParserFormatter formatter, CompactCalendar referenceTimestamp) throws DateTimeParserException {
-        try {
-            return toCompactCalendar(formatter.parse(stringValue, referenceTimestamp));
-        } catch (DateTimeParserException e) {
-            // accept the common variant without seconds, e.g. "10:00" for a "...HH:mm:ss" pattern,
-            // and only fall back to the original exception when that doesn't match either
-            try {
-                return toCompactCalendar(formatter.parse(stringValue + ":00", referenceTimestamp));
-            } catch (DateTimeParserException ignored) {
-                throw e;
-            }
-        }
+        return toCompactCalendar(formatter.parse(stringValue, referenceTimestamp));
     }
 
     private static CompactCalendar toCompactCalendar(Calendar parsed) {
