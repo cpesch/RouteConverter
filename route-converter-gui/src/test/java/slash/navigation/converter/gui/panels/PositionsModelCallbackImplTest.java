@@ -23,16 +23,22 @@ package slash.navigation.converter.gui.panels;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import slash.common.io.Transfer;
 import slash.common.helpers.DateTimeParserException;
 import slash.common.type.CompactCalendar;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
 import slash.navigation.converter.gui.models.TimeZoneModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.gpx.GpxPosition;
+import slash.navigation.gui.helpers.WindowHelper;
 
 import java.util.Calendar;
+import java.util.ListResourceBundle;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.TimeZone;
 
 import static org.mockito.Mockito.*;
@@ -654,6 +660,140 @@ public class PositionsModelCallbackImplTest {
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1.8.2025, 1:2:3", cal(2025, 7, 31, 23, 2, 3));
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1.8.2025, 15:25:35", cal(2025, 8, 1, 13, 25, 35));
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1.8.2025, 15:65:78", cal(2025, 8, 1, 14, 6, 18));
+    }
+
+    // #294 acceptance: the common variant without seconds parses for a "...HH:mm:ss" column
+    @Test
+    public void testSetDateTimeAcceptsMissingSeconds() {
+        Locale.setDefault(SWEDISH);
+        timeZoneModel.setTimeZone(ZONE_UTC);
+
+        assertTrue(Transfer.getDateTimeFormat(ZONE_UTC.getID()).getPatternInfo().startsWith("y-"));
+
+        when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
+
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2026-08-18 10:00", cal(2026, 8, 18, 10, 0, 0));
+    }
+
+    @Test
+    public void testSetTimeAcceptsMissingSeconds() {
+        timeZoneModel.setTimeZone(ZONE_UTC);
+        when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
+
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "15:25", cal(2025, 1, 1, 15, 25, 0));
+    }
+
+    @Test
+    public void testOnlyValuesEndingInHoursAndMinutesAreRetriedWithSeconds() {
+        assertTrue(PositionsModelCallbackImpl.lacksSeconds("2026-08-18 10:00"));
+        assertTrue(PositionsModelCallbackImpl.lacksSeconds("10:00"));
+        assertTrue(PositionsModelCallbackImpl.lacksSeconds("1.8.2025, 9:05"));
+        assertFalse(PositionsModelCallbackImpl.lacksSeconds("10:00:00"));
+        assertFalse(PositionsModelCallbackImpl.lacksSeconds("1.8.2025, 15:65:78"));
+        assertFalse(PositionsModelCallbackImpl.lacksSeconds("18.08.2026"));
+        assertFalse(PositionsModelCallbackImpl.lacksSeconds("not a date"));
+    }
+
+    @Test
+    public void testSetLongitudeInvalidKeepsOldValueAndDoesNotThrow() {
+        when(position.getLongitude()).thenReturn(1.2);
+
+        runInvalidValueTestStep(LONGITUDE_COLUMN_INDEX, "not a longitude", "longitude-format-error", () -> {
+            verify(position, atLeast(1)).getLongitude();
+            verify(position).setLongitude(1.2);
+        });
+    }
+
+    @Test
+    public void testSetLatitudeInvalidKeepsOldValueAndDoesNotThrow() {
+        when(position.getLatitude()).thenReturn(3.4);
+
+        runInvalidValueTestStep(LATITUDE_COLUMN_INDEX, "not a latitude", "latitude-format-error", () -> {
+            verify(position, atLeast(1)).getLatitude();
+            verify(position).setLatitude(3.4);
+        });
+    }
+
+    @Test
+    public void testSetElevationInvalidKeepsOldValueAndDoesNotThrow() {
+        when(position.getElevation()).thenReturn(5.6);
+
+        runInvalidValueTestStep(ELEVATION_COLUMN_INDEX, "not an elevation", "elevation-format-error", () -> {
+            verify(position, atLeast(1)).getElevation();
+            verify(position).setElevation(5.6);
+        });
+    }
+
+    @Test
+    public void testSetSpeedInvalidKeepsOldValueAndDoesNotThrow() {
+        when(position.getSpeed()).thenReturn(7.8);
+
+        runInvalidValueTestStep(SPEED_COLUMN_INDEX, "not a speed", "speed-format-error", () -> {
+            verify(position, atLeast(1)).getSpeed();
+            verify(position).setSpeed(7.8);
+        });
+    }
+
+    // setValueAt resolves the preferred degree/unit format and the error dialog via
+    // BaseRouteConverter.getInstance(), which is null in a plain unit test (no running GUI) -
+    // mock the static methods directly instead of building a full BaseRouteConverter fixture,
+    // and stub out WindowHelper so no real (headless-hostile) dialog is shown.
+    private void runInvalidValueTestStep(int column, String invalidInput, String bundleKey, Runnable verification) {
+        BaseRouteConverter mockConverter = mock(BaseRouteConverter.class);
+        when(mockConverter.getUnitSystemModel()).thenReturn(new UnitSystemModel());
+        ResourceBundle bundle = new ListResourceBundle() {
+            protected Object[][] getContents() {
+                return new Object[][]{
+                        {bundleKey, "Could not parse ''{0}''."},
+                };
+            }
+        };
+
+        try (MockedStatic<BaseRouteConverter> mockedBaseRouteConverter = mockStatic(BaseRouteConverter.class);
+             MockedStatic<WindowHelper> mockedWindowHelper = mockStatic(WindowHelper.class)) {
+            mockedBaseRouteConverter.when(BaseRouteConverter::getInstance).thenReturn(mockConverter);
+            mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(bundle);
+
+            sut.setValueAt(position, column, invalidInput);
+        }
+
+        verification.run();
+    }
+
+    @Test
+    public void testSetDateInvalidKeepsOldValueAndDoesNotThrow() {
+        timeZoneModel.setTimeZone(ZONE_UTC);
+        CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
+        when(position.getTime()).thenReturn(oldTime);
+
+        sut.setValueAt(position, DATE_COLUMN_INDEX, "not a date");
+
+        verify(position, atLeast(1)).getTime();
+        verify(position).setTime(oldTime);
+    }
+
+    @Test
+    public void testSetTimeInvalidKeepsOldValueAndDoesNotThrow() {
+        timeZoneModel.setTimeZone(ZONE_UTC);
+        CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
+        when(position.getTime()).thenReturn(oldTime);
+
+        sut.setValueAt(position, TIME_COLUMN_INDEX, "not a time");
+
+        verify(position, atLeast(1)).getTime();
+        verify(position).setTime(oldTime);
+    }
+
+    @Test
+    public void testSetDateTimeInvalidKeepsOldValueAndDoesNotThrow() {
+        timeZoneModel.setTimeZone(ZONE_UTC);
+        CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
+        when(position.getTime()).thenReturn(oldTime);
+
+        sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, "not a date time");
+
+        verify(position, atLeast(1)).getTime();
+        verify(position).setTime(oldTime);
     }
 
     private void runSetTimeTestStep(int column, String toSet, CompactCalendar expectedSet) {

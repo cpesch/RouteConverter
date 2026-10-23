@@ -36,6 +36,7 @@ import javax.swing.*;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNullElse;
@@ -53,6 +54,8 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 public class PositionsModelCallbackImpl implements PositionsModelCallback {
     private static final Logger log = Logger.getLogger(PositionsModelCallbackImpl.class.getName());
+    // a value ending in H:mm without seconds, e.g. "10:00" or "2026-08-18 10:00" but not "10:00:00"
+    private static final Pattern MISSING_SECONDS = Pattern.compile("(^|[^:\\d])\\d{1,2}:\\d{2}$");
 
     private final TimeZoneModel timeZoneModel;
 
@@ -126,20 +129,20 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         String string = value != null ? trim(value.toString()) : null;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX -> position.setDescription(string);
-            case DATE_TIME_COLUMN_INDEX -> position.setTime(parseDateTime(value, string));
+            case DATE_TIME_COLUMN_INDEX -> position.setTime(parseDateTime(value, string, position.getTime()));
             case DATE_COLUMN_INDEX -> position.setTime(parseDate(value, string, position.getTime()));
             case TIME_COLUMN_INDEX -> position.setTime(parseTime(value, string, position.getTime()));
-            case LONGITUDE_COLUMN_INDEX -> position.setLongitude(parseLongitude(value, string));
-            case LATITUDE_COLUMN_INDEX -> position.setLatitude(parseLatitude(value, string));
-            case ELEVATION_COLUMN_INDEX -> position.setElevation(parseElevation(value, string));
-            case SPEED_COLUMN_INDEX -> position.setSpeed(parseSpeed(value, string));
+            case LONGITUDE_COLUMN_INDEX -> position.setLongitude(parseLongitude(value, string, position.getLongitude()));
+            case LATITUDE_COLUMN_INDEX -> position.setLatitude(parseLatitude(value, string, position.getLatitude()));
+            case ELEVATION_COLUMN_INDEX -> position.setElevation(parseElevation(value, string, position.getElevation()));
+            case SPEED_COLUMN_INDEX -> position.setSpeed(parseSpeed(value, string, position.getSpeed()));
             default -> {
                 // the remaining columns are derived and not editable
             }
         }
     }
 
-    private Double parseLongitude(Object objectValue, String stringValue) {
+    private Double parseLongitude(Object objectValue, String stringValue, Double positionLongitude) {
         if (objectValue == null || objectValue instanceof Double)
             return (Double) objectValue;
 
@@ -153,11 +156,12 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
                 // intentionally left empty
             }
         }
-        // this exception ensures that the editing can continue because the cell value is not cleared
-        throw new IllegalArgumentException(format("Could not parse longitude %s", stringValue));
+        // keeps the previous value instead of throwing so that an invalid entry doesn't crash the EDT
+        handleValueParseException(stringValue, "longitude-format-error");
+        return positionLongitude;
     }
 
-    private Double parseLatitude(Object objectValue, String stringValue) {
+    private Double parseLatitude(Object objectValue, String stringValue, Double positionLatitude) {
         if (objectValue == null || objectValue instanceof Double)
             return (Double) objectValue;
 
@@ -171,8 +175,9 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
                 // intentionally left empty
             }
         }
-        // this exception ensures that the editing can continue because the cell value is not cleared
-        throw new IllegalArgumentException(format("Could not parse latitude %s", stringValue));
+        // keeps the previous value instead of throwing so that an invalid entry doesn't crash the EDT
+        handleValueParseException(stringValue, "latitude-format-error");
+        return positionLatitude;
     }
 
     private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {
@@ -183,7 +188,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         return Transfer.parseDouble(stringValue);
     }
 
-    private Double parseElevation(Object objectValue, String stringValue) {
+    private Double parseElevation(Object objectValue, String stringValue, Double positionElevation) {
         for(UnitSystem unitSystem : getUnitSystems()) {
             try {
                 Double value = parseDouble(objectValue, stringValue, unitSystem.getElevationName());
@@ -194,11 +199,12 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
                 // intentionally left empty
             }
         }
-        // this exception ensures that the editing can continue because the cell value is not cleared
-        throw new IllegalArgumentException(format("Could not parse elevation %s", stringValue));
+        // keeps the previous value instead of throwing so that an invalid entry doesn't crash the EDT
+        handleValueParseException(stringValue, "elevation-format-error");
+        return positionElevation;
     }
 
-    private Double parseSpeed(Object objectValue, String stringValue) {
+    private Double parseSpeed(Object objectValue, String stringValue, Double positionSpeed) {
         for(UnitSystem unitSystem : getUnitSystems()) {
             try {
                 Double value = parseDouble(objectValue, stringValue, unitSystem.getSpeedName());
@@ -209,8 +215,9 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
                 // intentionally left empty
             }
         }
-        // this exception unsures that the editing can continue because the cell value is not cleared
-        throw new IllegalArgumentException(format("Could not parse speed %s", stringValue));
+        // keeps the previous value instead of throwing so that an invalid entry doesn't crash the EDT
+        handleValueParseException(stringValue, "speed-format-error");
+        return positionSpeed;
     }
 
     private String formatDateTime(CompactCalendar time) {
@@ -223,21 +230,44 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     }
 
     private CompactCalendar parseDateTime(String stringValue, DateTimeParserFormatter formatter, CompactCalendar referenceTimestamp) throws DateTimeParserException {
-        Calendar parsed = formatter.parse(stringValue, referenceTimestamp);
+        try {
+            return toCompactCalendar(formatter.parse(stringValue, referenceTimestamp));
+        } catch (DateTimeParserException e) {
+            // accept the common variant without seconds, e.g. "10:00" for a "...HH:mm:ss" pattern
+            // (#294: "2026-08-18 10:00" crashed against y-MM-dd HH:mm:ss), and only fall back to
+            // the original exception when that doesn't match either; only a value that ends in
+            // H:mm is retried, so a date-only column never sees an appended ":00"
+            if (!lacksSeconds(stringValue))
+                throw e;
+            try {
+                return toCompactCalendar(formatter.parse(stringValue + ":00", referenceTimestamp));
+            } catch (DateTimeParserException ignored) {
+                throw e;
+            }
+        }
+    }
+
+    static boolean lacksSeconds(String stringValue) {
+        return MISSING_SECONDS.matcher(stringValue).find();
+    }
+
+    private static CompactCalendar toCompactCalendar(Calendar parsed) {
         return fromMillisAndTimeZone(parsed.getTimeInMillis(), "UTC");
     }
 
-    private CompactCalendar parseDateTime(Object objectValue, String stringValue) {
+    private CompactCalendar parseDateTime(Object objectValue, String stringValue, CompactCalendar positionTime) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
-        } else if (stringValue != null) {
-            try {
-                return parseDateTime(stringValue, getDateTimeFormat(), null);
-            } catch (DateTimeParserException e) {
-                handleDateTimeParseException(stringValue, "date-time-format-error", getDateTimeFormat());
-            }
         }
-        return null;
+        if (stringValue == null) {
+            return null;
+        }
+        try {
+            return parseDateTime(stringValue, getDateTimeFormat(), null);
+        } catch (DateTimeParserException e) {
+            handleDateTimeParseException(stringValue, "date-time-format-error", getDateTimeFormat());
+            return positionTime;
+        }
     }
 
     private String formatDate(CompactCalendar time) {
@@ -254,14 +284,16 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     private CompactCalendar parseDate(Object objectValue, String stringValue, CompactCalendar positionTime) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
-        } else if (stringValue != null) {
-            try {
-                return parseDateTime(stringValue, getDateFormat(), getReferenceTime(positionTime));
-            } catch (DateTimeParserException e) {
-                handleDateTimeParseException(stringValue, "date-format-error", getDateFormat());
-            }
         }
-        return null;
+        if (stringValue == null) {
+            return null;
+        }
+        try {
+            return parseDateTime(stringValue, getDateFormat(), getReferenceTime(positionTime));
+        } catch (DateTimeParserException e) {
+            handleDateTimeParseException(stringValue, "date-format-error", getDateFormat());
+            return positionTime;
+        }
     }
 
     private CompactCalendar getReferenceTime(CompactCalendar positionTime) {
@@ -288,14 +320,16 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     private CompactCalendar parseTime(Object objectValue, String stringValue, CompactCalendar positionTime) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
-        } else if (stringValue != null) {
-            try {
-                return parseDateTime(stringValue, getTimeFormat(), getReferenceTime(positionTime));
-            } catch (DateTimeParserException e) {
-                handleDateTimeParseException(stringValue, "time-format-error", getTimeFormat());
-            }
         }
-        return null;
+        if (stringValue == null) {
+            return null;
+        }
+        try {
+            return parseDateTime(stringValue, getTimeFormat(), getReferenceTime(positionTime));
+        } catch (DateTimeParserException e) {
+            handleDateTimeParseException(stringValue, "time-format-error", getTimeFormat());
+            return positionTime;
+        }
     }
 
     private DateTimeParserFormatter getDateTimeFormat() {
@@ -324,14 +358,20 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     }
 
     private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateTimeParserFormatter format) {
-        BaseRouteConverter instance = BaseRouteConverter.getInstance();
-        if (instance != null) {
-            showError(instance.getFrame(),
-                    MessageFormat.format(BaseRouteConverter.getBundle().getString(messageBundleKey),
-                            stringValue, format.getPatternInfo()), BaseRouteConverter.getTitle());
-        }
+        log.warning(format("Could not parse %s since it does not match the pattern %s", stringValue, format.getPatternInfo()));
+        showParseError(messageBundleKey, stringValue, format.getPatternInfo());
+    }
 
-        // Occurs during unittests ...
-        throw new RuntimeException(stringValue+" is not a pattern: "+format.getPatternInfo());
+    private void handleValueParseException(String stringValue, String messageBundleKey) {
+        log.warning(format("Could not parse value %s with message bundle key %s", stringValue, messageBundleKey));
+        showParseError(messageBundleKey, stringValue);
+    }
+
+    // no running GUI in unit tests, so no dialog there
+    private void showParseError(String messageBundleKey, Object... arguments) {
+        BaseRouteConverter instance = BaseRouteConverter.getInstance();
+        if (instance != null)
+            showError(instance.getFrame(), MessageFormat.format(BaseRouteConverter.getBundle().getString(messageBundleKey), arguments),
+                    BaseRouteConverter.getTitle());
     }
 }
