@@ -39,6 +39,12 @@ import java.util.Locale;
  * certificate for api.routeconverter.com. Mozilla dropped the roots; drop
  * them here too until the Temurin build in pom.xml ships without them.
  *
+ * The same intermediates are cross-signed by Sectigo's AAA Certificate
+ * Services, so that root goes too. Temurin, Mozilla and Ubuntu no longer
+ * trust it for TLS, but the OpenJDK cacerts of the Flatpak's openjdk21 SDK
+ * extension does and accepted the cross-signed chains. Current Sectigo
+ * chains end at USERTrust, which stays.
+ *
  * The store is read with a null password, like the JRE's default trust
  * manager does, and written back password-less (as the JDK ships it): an
  * encrypted store would load as empty at runtime and break every TLS call.
@@ -49,7 +55,7 @@ import java.util.Locale;
  * Exits 1 if a distrusted root remains or a store holds suspiciously few roots.
  */
 public class CacertsStrip {
-    private static final String[] DISTRUSTED = {"emsign", "emudhra"};
+    private static final String[] DISTRUSTED = {"emsign", "emudhra", "cn=aaa certificate services"};
     private static final int MINIMUM_ROOTS = 50;
 
     public static void main(String[] args) throws Exception {

@@ -16,7 +16,9 @@ Not yet submitted to Flathub. Staged here, build- and run-verified.
   `scripts/jre-modules.txt` (the single source of truth the Windows/Mac
   bundled JREs also use). The build then runs
   `../scripts/CacertsStrip.java` on its cacerts to drop the distrusted
-  eMudhra emSign roots (CVE-2026-111943), as the Windows/Mac JRE builds do.
+  eMudhra emSign roots (CVE-2026-111943), as the Windows/Mac JRE builds do,
+  plus AAA Certificate Services: the extension's OpenJDK cacerts trusts it and
+  so the AAA-cross-signed eMudhra intermediates.
 - `com.routeconverter.RouteConverter.desktop`, `.metainfo.xml`,
   `RouteConverter.png` (256px, extracted from the macOS `.icns` — no
   Linux icon asset existed before).
