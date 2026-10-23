@@ -2,6 +2,7 @@ package slash.navigation.hgt;
 
 import org.junit.Test;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
@@ -9,6 +10,7 @@ import slash.navigation.download.DownloadManager;
 
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -82,6 +84,17 @@ public class HgtFilesTest {
         assertEquals(2, coverageTiles.size());
         assertTrue(coverageTiles.containsKey(new BoundingBox(11.0, 41.0, 10.0, 40.0)));
         assertTrue(coverageTiles.containsKey(new BoundingBox(12.0, 41.0, 11.0, 40.0)));
+    }
+
+    @Test
+    public void testCalculateRemainingDownloadSizeIgnoresMapsWithoutBoundingBox() {
+        MapDescriptor withoutBoundingBox = mock(MapDescriptor.class);
+        when(withoutBoundingBox.getBoundingBox()).thenReturn(null);
+        MapDescriptor withBoundingBox = mock(MapDescriptor.class);
+        when(withBoundingBox.getBoundingBox()).thenReturn(new BoundingBox(
+                new SimpleNavigationPosition(2.0, 2.0), new SimpleNavigationPosition(0.0, 0.0)));
+
+        assertEquals(0L, files.calculateRemainingDownloadSize(asList(withoutBoundingBox, withBoundingBox)));
     }
 
     @Test

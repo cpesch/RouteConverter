@@ -39,11 +39,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.removeExtension;
@@ -200,10 +202,13 @@ public class HgtFiles implements ElevationService {
     }
 
     private Collection<Fragment<Downloadable>> getDownloadablesFor(List<BoundingBox> boundingBoxes) {
-        Collection<Fragment<Downloadable>> result = new HashSet<>();
-        for (BoundingBox boundingBox : boundingBoxes)
-            result.addAll(getDownloadablesFor(boundingBox));
-        return result;
+        // A map without a bounding box (MapDescriptor.getBoundingBox() == null) covers no
+        // elevation tiles. Unfiltered it throws a NullPointerException in
+        // forEachTileInBoundingBox from MapsDialog.updateLabel on the Swing thread.
+        return boundingBoxes.stream()
+                .filter(Objects::nonNull)
+                .flatMap(boundingBox -> getDownloadablesFor(boundingBox).stream())
+                .collect(toSet());
     }
 
     /**
