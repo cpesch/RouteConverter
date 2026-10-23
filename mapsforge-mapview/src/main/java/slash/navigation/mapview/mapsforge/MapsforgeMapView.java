@@ -1085,6 +1085,9 @@ public class MapsforgeMapView extends BaseMapView {
                 List<Layer> nonNullLayers = withoutNullLayers(layers);
                 if (nonNullLayers.size() != layers.size())
                     log.fine("Skipping null layer(s) to add in " + layers);
+                // mapsforge's addAll() answers false for an empty list, which would log a bogus warning
+                if (nonNullLayers.isEmpty())
+                    return;
 
                 getLayerManager().pause();
                 if (!getLayerManager().getLayers().addAll(nonNullLayers, true))
@@ -1095,7 +1098,9 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     // a renderer's layer may not be created yet or may already be destroyed; tolerate that
-    // instead of failing the whole batch with mapsforge's "layer must not be null" (issue #297)
+    // instead of failing the whole batch with mapsforge's "layer must not be null" (issue #297).
+    // The 3.6 crash came from removeLayers(toLayers(pairWithLayers)) in the route/track updaters,
+    // which 3.7 removed (efd7e4740, #363); this guard is hardening for any other caller
     static List<Layer> withoutNullLayers(List<Layer> layers) {
         List<Layer> nonNullLayers = new ArrayList<>(layers);
         nonNullLayers.removeIf(Objects::isNull);
@@ -1130,6 +1135,9 @@ public class MapsforgeMapView extends BaseMapView {
                 List<Layer> nonNullLayers = withoutNullLayers(layers);
                 if (nonNullLayers.size() != layers.size())
                     log.fine("Skipping null layer(s) to remove in " + layers);
+                // mapsforge's removeAll() answers false for an empty list, which would log a bogus warning
+                if (nonNullLayers.isEmpty())
+                    return;
 
                 getLayerManager().pause();
                 if (!getLayerManager().getLayers().removeAll(nonNullLayers, true))
