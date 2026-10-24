@@ -187,16 +187,21 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         if (rowIndex > getRowCount() - 1)
             return false;
 
-        boolean applied = true;
+        // a multi-column edit (e.g. LONGITUDE_COLUMN_INDEX + LATITUDE_COLUMN_INDEX) may have
+        // one column rejected (unparsable input, kept at its old value) while a sibling column
+        // in the same call is already written to the position -- report/fire on that column
+        // actually changing, not on every column in the call having changed, or the written
+        // column's event and undo step would be silently dropped
+        boolean applied = false;
         if (columnToValues.getNextValues() != null) {
             for (int i = 0; i < columnToValues.getColumnIndices().size(); i++) {
                 int columnIndex = columnToValues.getColumnIndices().get(i);
-                if (!positionsModelCallback.setValueAt(getPosition(rowIndex), columnIndex, columnToValues.getNextValues().get(i)))
-                    applied = false;
+                if (positionsModelCallback.setValueAt(getPosition(rowIndex), columnIndex, columnToValues.getNextValues().get(i)))
+                    applied = true;
             }
         }
 
-        // a rejected value (e.g. unparsable input) keeps the old value, so neither an
+        // no column applied (e.g. unparsable input) keeps every old value, so neither an
         // undo step nor a row-changed event is warranted
         if (applied && fireEvent) {
             if (columnToValues.getColumnIndices().size() > 1)
