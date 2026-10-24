@@ -131,8 +131,8 @@ public class OverlayPositionsModel implements PositionsModel {
         delegate.setValueAt(aValue, rowIndex, columnIndex);
     }
 
-    public void edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
-        delegate.edit(rowIndex, columnToValues, fireEvent, trackUndo);
+    public boolean edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
+        return delegate.edit(rowIndex, columnToValues, fireEvent, trackUndo);
     }
 
     public void addTableModelListener(TableModelListener l) {

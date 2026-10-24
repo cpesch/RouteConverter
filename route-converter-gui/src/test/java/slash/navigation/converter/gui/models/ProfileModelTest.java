@@ -68,7 +68,8 @@ public class ProfileModelTest {
                 return "";
             }
 
-            public void setValueAt(NavigationPosition position, int columnIndex, Object value) {
+            public boolean setValueAt(NavigationPosition position, int columnIndex, Object value) {
+                return true;
             }
         });
         characteristicsModel = new CharacteristicsModel();

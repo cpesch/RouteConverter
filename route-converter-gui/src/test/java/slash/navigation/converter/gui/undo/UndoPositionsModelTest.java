@@ -25,6 +25,8 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.bcr.MTP0607Format;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.converter.gui.models.PositionsModelCallback;
 import slash.navigation.converter.gui.panels.PositionsModelCallbackImpl;
 import slash.navigation.gui.undo.UndoManager;
 
@@ -32,6 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 
 public class UndoPositionsModelTest {
     UndoManager undoManager = new UndoManager();
@@ -93,5 +98,58 @@ public class UndoPositionsModelTest {
         undoManager.redo();
         assertEquals(2, model.getRowCount());
         assertEquals("ae", descriptions());
+    }
+
+    // a value-rejecting PositionsModelCallback, to exercise #309 without depending on
+    // PositionsModelCallbackImpl's own format parsing (degree/unit formats, time zone)
+    private static final String INVALID = "invalid";
+
+    private static PositionsModelCallback rejectingCallback() {
+        return new PositionsModelCallback() {
+            public String getStringAt(NavigationPosition position, int columnIndex) {
+                return position.getDescription();
+            }
+
+            public boolean setValueAt(NavigationPosition position, int columnIndex, Object value) {
+                if (INVALID.equals(value))
+                    return false;
+                position.setDescription((String) value);
+                return true;
+            }
+        };
+    }
+
+    @Test
+    public void testInvalidEditAddsNoUndoStepAndFiresNoEvent() {
+        initialize();
+        UndoManager localUndoManager = new UndoManager();
+        UndoPositionsModel rejectingModel = new UndoPositionsModel(localUndoManager, rejectingCallback());
+        rejectingModel.setRoute(route);
+
+        final int[] eventCount = {0};
+        rejectingModel.addTableModelListener(e -> eventCount[0]++);
+
+        rejectingModel.setValueAt(INVALID, 0, DESCRIPTION_COLUMN_INDEX);
+
+        assertFalse(localUndoManager.canUndo());
+        assertEquals(0, eventCount[0]);
+        assertEquals("a", rejectingModel.getPosition(0).getDescription());
+    }
+
+    @Test
+    public void testValidEditAddsOneUndoStepAndFiresOneEvent() {
+        initialize();
+        UndoManager localUndoManager = new UndoManager();
+        UndoPositionsModel acceptingModel = new UndoPositionsModel(localUndoManager, rejectingCallback());
+        acceptingModel.setRoute(route);
+
+        final int[] eventCount = {0};
+        acceptingModel.addTableModelListener(e -> eventCount[0]++);
+
+        acceptingModel.setValueAt("z", 0, DESCRIPTION_COLUMN_INDEX);
+
+        assertTrue(localUndoManager.canUndo());
+        assertEquals(1, eventCount[0]);
+        assertEquals("z", acceptingModel.getPosition(0).getDescription());
     }
 }

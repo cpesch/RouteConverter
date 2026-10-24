@@ -95,9 +95,9 @@ public class UndoPositionsModel implements PositionsModel {
         return delegate.getStringAt(rowIndex, columnIndex);
     }
 
-    public void edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
+    public boolean edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
         if (rowIndex >= getRowCount())
-            return;
+            return false;
 
         if(trackUndo) {
             List<Object> previousValues = new ArrayList<>(columnToValues.getColumnIndices().size());
@@ -106,9 +106,11 @@ public class UndoPositionsModel implements PositionsModel {
             }
             columnToValues.setPreviousValues(previousValues);
         }
-        delegate.edit(rowIndex, columnToValues, fireEvent, trackUndo);
-        if (trackUndo)
+        boolean applied = delegate.edit(rowIndex, columnToValues, fireEvent, trackUndo);
+        // a rejected edit (e.g. unparsable input) changed nothing, so it adds no undo step
+        if (trackUndo && applied)
             undoManager.addEdit(new EditPosition(this, rowIndex, columnToValues));
+        return applied;
     }
 
     public void addTableModelListener(TableModelListener l) {

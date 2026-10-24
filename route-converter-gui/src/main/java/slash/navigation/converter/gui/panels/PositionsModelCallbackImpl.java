@@ -58,6 +58,9 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     private static final Pattern MISSING_SECONDS = Pattern.compile("(^|[^:\\d])\\d{1,2}:\\d{2}$");
 
     private final TimeZoneModel timeZoneModel;
+    // side channel from handle*ParseException() to setValueAt(), since the parse* methods
+    // already keep the old value on failure instead of throwing -- reset before every edit
+    private boolean valueApplied;
 
     public PositionsModelCallbackImpl(TimeZoneModel timeZoneModel) {
         this.timeZoneModel = timeZoneModel;
@@ -114,18 +117,19 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         throw new IllegalArgumentException("Column " + columnIndex + " does not exist");
     }
 
-    public void setValueAt(NavigationPosition position, int columnIndex, Object value) {
+    public boolean setValueAt(NavigationPosition position, int columnIndex, Object value) {
         // If the same string is set that `getStringAt` returns, then do not change anything.
         // ==> It's likely that only in the table cell was clicked and nothing was changed.
         try {
             if (Objects.equals(getStringAt(position, columnIndex), value)) {
-                return;
+                return true;
             }
         }
         catch(IllegalArgumentException e) {
             // intentionally left empty
         }
 
+        valueApplied = true;
         String string = value != null ? trim(value.toString()) : null;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX -> position.setDescription(string);
@@ -140,6 +144,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
                 // the remaining columns are derived and not editable
             }
         }
+        return valueApplied;
     }
 
     private Double parseLongitude(Object objectValue, String stringValue, Double positionLongitude) {
@@ -359,11 +364,13 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
 
     private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateTimeParserFormatter format) {
         log.warning(format("Could not parse %s since it does not match the pattern %s", stringValue, format.getPatternInfo()));
+        valueApplied = false;
         showParseError(messageBundleKey, stringValue, format.getPatternInfo());
     }
 
     private void handleValueParseException(String stringValue, String messageBundleKey) {
         log.warning(format("Could not parse value %s with message bundle key %s", stringValue, messageBundleKey));
+        valueApplied = false;
         showParseError(messageBundleKey, stringValue);
     }
 

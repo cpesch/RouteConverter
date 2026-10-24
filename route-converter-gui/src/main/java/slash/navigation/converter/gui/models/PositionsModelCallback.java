@@ -30,5 +30,6 @@ import slash.navigation.common.NavigationPosition;
 
 public interface PositionsModelCallback {
     String getStringAt(NavigationPosition position, int columnIndex);
-    void setValueAt(NavigationPosition position, int columnIndex, Object value);
+    // returns false if value could not be applied (e.g. unparsable), true otherwise
+    boolean setValueAt(NavigationPosition position, int columnIndex, Object value);
  }

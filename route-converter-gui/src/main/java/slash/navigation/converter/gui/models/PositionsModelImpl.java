@@ -182,24 +182,29 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         edit(rowIndex, new PositionColumnValues(columnIndex, aValue), true, true);
     }
 
-    public void edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
+    public boolean edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
         // avoid exceptions due to parallel deletions
         if (rowIndex > getRowCount() - 1)
-            return;
+            return false;
 
+        boolean applied = true;
         if (columnToValues.getNextValues() != null) {
             for (int i = 0; i < columnToValues.getColumnIndices().size(); i++) {
                 int columnIndex = columnToValues.getColumnIndices().get(i);
-                positionsModelCallback.setValueAt(getPosition(rowIndex), columnIndex, columnToValues.getNextValues().get(i));
+                if (!positionsModelCallback.setValueAt(getPosition(rowIndex), columnIndex, columnToValues.getNextValues().get(i)))
+                    applied = false;
             }
         }
 
-        if (fireEvent) {
+        // a rejected value (e.g. unparsable input) keeps the old value, so neither an
+        // undo step nor a row-changed event is warranted
+        if (applied && fireEvent) {
             if (columnToValues.getColumnIndices().size() > 1)
                 fireTableRowsUpdated(rowIndex, rowIndex);
             else
                 fireTableRowsUpdated(rowIndex, rowIndex, columnToValues.getColumnIndices().get(0));
         }
+        return applied;
     }
 
     public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {

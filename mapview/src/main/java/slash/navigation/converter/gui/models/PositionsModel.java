@@ -65,7 +65,9 @@ public interface PositionsModel extends TableModel {
     void add(int rowIndex, BaseRoute<?, ?> route) throws IOException;
     void add(int rowIndex, List<BaseNavigationPosition> positions);
 
-    void edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo);
+    // returns false if the edit was rejected (e.g. an unparsable value), in which case
+    // no event fired and no undo step was recorded
+    boolean edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo);
 
     void remove(int firstIndex, int lastIndex);
     void remove(int[] rowIndices);
