@@ -117,9 +117,10 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     public boolean setValueAt(NavigationPosition position, int columnIndex, Object value) {
         // If the same string is set that `getStringAt` returns, then do not change anything.
         // ==> It's likely that only in the table cell was clicked and nothing was changed.
+        // ==> Reports "not applied" so no undo step is recorded and the file is not marked modified.
         try {
             if (Objects.equals(getStringAt(position, columnIndex), value)) {
-                return true;
+                return false;
             }
         }
         catch(IllegalArgumentException e) {
