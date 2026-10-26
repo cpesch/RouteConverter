@@ -10,6 +10,7 @@
 ### Changes
 
 - Windows and Linux: sharper toolbar and menu icons on scaled displays; disabled menu items show greyed icons (#284)
+- Options > API Keys: a field holding a whole URL instead of a key gets a red border and a tooltip saying so (#306)
 
 ### Fixes
 

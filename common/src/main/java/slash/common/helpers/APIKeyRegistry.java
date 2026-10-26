@@ -24,9 +24,11 @@ import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.regex.Pattern;
 
 import static java.lang.String.format;
 import static java.util.Locale.ROOT;
@@ -47,6 +49,10 @@ public class APIKeyRegistry {
     private static final Logger log = Logger.getLogger(APIKeyRegistry.class.getName());
     private static final String API_KEY_PREFERENCE = "ApiKey";
     private static final String API_USAGES = "ApiUsages";
+    // characters that never occur in a plain API token but do occur in a pasted URL or template
+    private static final Pattern NOT_A_PLAIN_API_KEY = Pattern.compile("[\\s/:?{}]");
+
+    private final Set<String> warnedNonPlainAPIKeys = ConcurrentHashMap.newKeySet();
 
     private APIKeyRegistry() {
     }
@@ -115,9 +121,16 @@ public class APIKeyRegistry {
         return trim(getAPIKeyPreference(serviceName)) != null || getDefaultAPIKey(serviceName) != null;
     }
 
+    public static boolean isPlainAPIKey(String apiKey) {
+        return apiKey == null || !NOT_A_PLAIN_API_KEY.matcher(apiKey).find();
+    }
+
     public String getAPIKey(String serviceName, String apiType) {
         count(preferences, serviceName + API_USAGES + "-" + apiType);
         String apiKey = trim(getAPIKeyPreference(serviceName));
+        // name the service, not the key: the log ends up in error reports
+        if (!isPlainAPIKey(apiKey) && warnedNonPlainAPIKeys.add(serviceName))
+            log.warning(serviceName + " API key is not a plain token; check it in the options");
         return apiKey != null ? apiKey : getDefaultAPIKey(serviceName);
     }
 
