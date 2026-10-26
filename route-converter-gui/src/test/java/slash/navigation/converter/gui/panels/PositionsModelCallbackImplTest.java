@@ -754,7 +754,7 @@ public class PositionsModelCallbackImplTest {
             mockedBaseRouteConverter.when(BaseRouteConverter::getInstance).thenReturn(mockConverter);
             mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(bundle);
 
-            sut.setValueAt(position, column, invalidInput);
+            assertFalse("rejected value must report not applied", sut.setValueAt(position, column, invalidInput));
         }
 
         verification.run();
@@ -766,7 +766,7 @@ public class PositionsModelCallbackImplTest {
         CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
         when(position.getTime()).thenReturn(oldTime);
 
-        sut.setValueAt(position, DATE_COLUMN_INDEX, "not a date");
+        assertFalse("rejected value must report not applied", sut.setValueAt(position, DATE_COLUMN_INDEX, "not a date"));
 
         verify(position, atLeast(1)).getTime();
         verify(position).setTime(oldTime);
@@ -778,7 +778,7 @@ public class PositionsModelCallbackImplTest {
         CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
         when(position.getTime()).thenReturn(oldTime);
 
-        sut.setValueAt(position, TIME_COLUMN_INDEX, "not a time");
+        assertFalse("rejected value must report not applied", sut.setValueAt(position, TIME_COLUMN_INDEX, "not a time"));
 
         verify(position, atLeast(1)).getTime();
         verify(position).setTime(oldTime);
@@ -790,14 +790,14 @@ public class PositionsModelCallbackImplTest {
         CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
         when(position.getTime()).thenReturn(oldTime);
 
-        sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, "not a date time");
+        assertFalse("rejected value must report not applied", sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, "not a date time"));
 
         verify(position, atLeast(1)).getTime();
         verify(position).setTime(oldTime);
     }
 
     private void runSetTimeTestStep(int column, String toSet, CompactCalendar expectedSet) {
-        sut.setValueAt(position, column, toSet);
+        assertTrue("applied value must report applied", sut.setValueAt(position, column, toSet));
         verify(position, atLeast(1)).getTime();
         verify(position).setTime(expectedSet);
         verifyNoMoreInteractions(position);
