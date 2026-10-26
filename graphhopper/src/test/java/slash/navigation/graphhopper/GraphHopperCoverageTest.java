@@ -22,6 +22,7 @@ package slash.navigation.graphhopper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
@@ -39,6 +40,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertFalse;
@@ -72,6 +74,9 @@ public class GraphHopperCoverageTest {
     @Before
     public void setUp() {
         GraphHopper.TEST_MODE = true;
+        // an empty directory preference makes GraphManager resolve the .poly under
+        // expectedPolyFile(), whatever the user store holds (issue 501)
+        GraphManager.setPreferences(new InMemoryPreferences());
         dataSourceDirectoryName = "graphhopper-coverage-test-" + UUID.randomUUID();
         downloadManager = mock(DownloadManager.class);
         mapDescriptor = new LatitudeAndLongitudeMapDescriptor("test-map",
@@ -80,6 +85,7 @@ public class GraphHopperCoverageTest {
 
     @After
     public void tearDown() throws IOException {
+        GraphManager.setPreferences(Preferences.userNodeForPackage(GraphManager.class));
         File directory = new File(getApplicationDirectory(), dataSourceDirectoryName);
         if (directory.exists())
             recursiveDelete(directory);
