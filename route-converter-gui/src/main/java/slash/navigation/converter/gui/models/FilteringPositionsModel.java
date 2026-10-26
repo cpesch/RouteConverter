@@ -116,8 +116,8 @@ public class FilteringPositionsModel<P extends NavigationPosition> extends Filte
         throw new UnsupportedOperationException();
     }
 
-    public void edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
-        getDelegate().edit(mapRow(rowIndex), columnToValues, fireEvent, trackUndo);
+    public boolean edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
+        return getDelegate().edit(mapRow(rowIndex), columnToValues, fireEvent, trackUndo);
     }
 
     public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {

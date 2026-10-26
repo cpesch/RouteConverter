@@ -54,7 +54,9 @@ import static slash.navigation.graphhopper.PbfUtil.PROPERTIES;
 
 public class GraphManager {
     private static final Logger log = Logger.getLogger(GraphManager.class.getName());
-    private static final Preferences preferences = Preferences.userNodeForPackage(GraphManager.class);
+    // GraphHopper creates its GraphManager itself, so the test seam is a setter rather than
+    // constructor injection; tests must restore the default node in their teardown
+    private static Preferences preferences = Preferences.userNodeForPackage(GraphManager.class);
     private static final String DIRECTORY_PREFERENCE = "directory";
 
     private final List<GraphDescriptor> localGraphDescriptors = new ArrayList<>();
@@ -63,6 +65,11 @@ public class GraphManager {
     public GraphManager(DataSource kurviger, DataSource mapsforge, DataSource graphHopper) throws IOException {
         scanLocalGraphs(kurviger, mapsforge, graphHopper);
         scanRemoteGraphs(asList(kurviger, mapsforge, graphHopper));
+    }
+
+    // visible for testing
+    static void setPreferences(Preferences preferences) {
+        GraphManager.preferences = preferences;
     }
 
     List<GraphDescriptor> getLocalGraphDescriptors() {

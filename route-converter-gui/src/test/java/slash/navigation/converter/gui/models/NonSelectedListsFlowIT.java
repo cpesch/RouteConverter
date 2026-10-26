@@ -53,7 +53,7 @@ public class NonSelectedListsFlowIT {
     public void grayListsAreAllRoutesExceptSelectedAndFollowSwitches() throws Exception {
         PositionsModel positionsModel = new PositionsModelImpl(new PositionsModelCallback() {
             public String getStringAt(slash.navigation.common.NavigationPosition p, int c) { return null; }
-            public void setValueAt(slash.navigation.common.NavigationPosition p, int c, Object v) { }
+            public boolean setValueAt(slash.navigation.common.NavigationPosition p, int c, Object v) { return true; }
         });
         CharacteristicsModel characteristicsModel = new CharacteristicsModel();
         FormatAndRoutesModel model = new FormatAndRoutesModelImpl(positionsModel, characteristicsModel);

@@ -3,6 +3,7 @@ package slash.navigation.graphhopper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.datasources.DataSource;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.prefs.Preferences;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -27,13 +29,15 @@ import static slash.common.io.Files.removeExtension;
 public class GraphManagerTest {
     private File croatia, france, franceProperties, germany, germanyGraphDirectory, hamburg;
     private GraphManager graphManager;
-    private String originalPathPreference;
     private final List<File> createdDirectories = new ArrayList<>();
 
     @Before
     public void setUp() throws Exception {
+        // In-memory preferences isolate the test from the shared user store: parallel
+        // surefire forks all read java.util.prefs through the same OS backing store, so
+        // a directory set here redirected other forks' GraphHopper lookups (issue 501)
+        GraphManager.setPreferences(new InMemoryPreferences());
         graphManager = new GraphManager(null, null, null);
-        originalPathPreference = graphManager.getPath();
         java.io.File directory = getTemporaryDirectory();
         croatia = File.createTempFile("croatia", ".pbf", directory);
         france = File.createTempFile("france", ".pbf", directory);
@@ -46,7 +50,7 @@ public class GraphManagerTest {
 
     @After
     public void tearDown() {
-        graphManager.setPath(originalPathPreference);
+        GraphManager.setPreferences(Preferences.userNodeForPackage(GraphManager.class));
         assertTrue(croatia.delete());
         assertTrue(france.delete());
         assertTrue(franceProperties.delete());
