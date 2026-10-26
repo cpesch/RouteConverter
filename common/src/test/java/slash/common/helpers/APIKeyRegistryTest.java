@@ -40,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static slash.common.helpers.APIKeyRegistry.isPlainAPIKey;
 
 /**
  * Tests for {@link APIKeyRegistry}.
@@ -131,6 +132,70 @@ public class APIKeyRegistryTest {
         registry.setAPIKeyPreference("mapbox", "secret-api-key");
         registry.getAPIKey("mapbox", "tiles");
 
+        List<String> messages = logMessages(registry::logUsage);
+
+        assertEquals(1, messages.size());
+        assertTrue(messages.get(0).startsWith("mapbox API key: own usage:"), messages.get(0));
+        assertFalse(messages.get(0).contains("secret-api-key"), messages.get(0));
+    }
+
+    @Test
+    public void testIsPlainAPIKeyRejectsKeysThatLookLikeAUrlOrTemplate() {
+        assertFalse(isPlainAPIKey("https://attacker.example/?apikey=1"));
+        assertFalse(isPlainAPIKey("key/with/slashes"));
+        assertFalse(isPlainAPIKey("key:with:colons"));
+        assertFalse(isPlainAPIKey("key with space"));
+        assertFalse(isPlainAPIKey("{apikey}"));
+    }
+
+    @Test
+    public void testIsPlainAPIKeyAcceptsPlainTokens() {
+        assertTrue(isPlainAPIKey(null));
+        assertTrue(isPlainAPIKey("abcDEF123-_."));
+    }
+
+    @Test
+    public void testGetAPIKeyWarnsOnceForNonPlainKeyAndStillReturnsIt() {
+        APIKeyRegistry registry = APIKeyRegistry.getInstance();
+        String nonPlainAPIKey = "https://tile.example/{z}/{x}/{y}.png?apikey=secret";
+        // the registry is a singleton that remembers which services it warned about
+        registry.setAPIKeyPreference("nonplainservice", nonPlainAPIKey);
+
+        List<String> messages = logMessages(() -> {
+            assertEquals(nonPlainAPIKey, registry.getAPIKey("nonplainservice", "map"));
+            assertEquals(nonPlainAPIKey, registry.getAPIKey("nonplainservice", "map"));
+        });
+
+        assertEquals(1, messages.size());
+        assertTrue(messages.get(0).startsWith("nonplainservice API key is not a plain token"), messages.get(0));
+        assertFalse(messages.get(0).contains("secret"), messages.get(0));
+    }
+
+    @Test
+    public void testGetAPIKeyDoesNotWarnForPlainKey() {
+        APIKeyRegistry registry = APIKeyRegistry.getInstance();
+        registry.setAPIKeyPreference("plainservice", "abcDEF123-_.");
+
+        List<String> messages = logMessages(() -> registry.getAPIKey("plainservice", "map"));
+
+        assertTrue(messages.isEmpty(), messages.toString());
+    }
+
+    // mirrors getDefaultAPIKey: apikey.properties is Maven-filtered, so a plain
+    // build keeps the ${...} placeholder, which counts as unset, while the CI
+    // build filters in a real key
+    private String expectedDefaultAPIKey(String serviceName) throws IOException {
+        try (InputStream inputStream = APIKeyRegistry.class.getResourceAsStream("apikey.properties")) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            String property = properties.getProperty(serviceName + API_KEY_PREFERENCE);
+            if (property != null && !property.toLowerCase().contains((serviceName + API_KEY_PREFERENCE).toLowerCase()))
+                return property;
+        }
+        return null;
+    }
+
+    private static List<String> logMessages(Runnable runnable) {
         List<String> messages = new ArrayList<>();
         Logger logger = Logger.getLogger(APIKeyRegistry.class.getName());
         Handler handler = new Handler() {
@@ -146,27 +211,10 @@ public class APIKeyRegistryTest {
         };
         logger.addHandler(handler);
         try {
-            registry.logUsage();
+            runnable.run();
         } finally {
             logger.removeHandler(handler);
         }
-
-        assertEquals(1, messages.size());
-        assertTrue(messages.get(0).startsWith("mapbox API key: own usage:"), messages.get(0));
-        assertFalse(messages.get(0).contains("secret-api-key"), messages.get(0));
-    }
-
-    // mirrors getDefaultAPIKey: apikey.properties is Maven-filtered, so a plain
-    // build keeps the ${...} placeholder, which counts as unset, while the CI
-    // build filters in a real key
-    private String expectedDefaultAPIKey(String serviceName) throws IOException {
-        try (InputStream inputStream = APIKeyRegistry.class.getResourceAsStream("apikey.properties")) {
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            String property = properties.getProperty(serviceName + API_KEY_PREFERENCE);
-            if (property != null && !property.toLowerCase().contains((serviceName + API_KEY_PREFERENCE).toLowerCase()))
-                return property;
-        }
-        return null;
+        return messages;
     }
 }

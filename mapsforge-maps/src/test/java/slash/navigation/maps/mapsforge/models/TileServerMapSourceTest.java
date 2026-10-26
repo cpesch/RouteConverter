@@ -40,7 +40,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.maps.mapsforge.models.TileServerMapSource.appendApiKey;
-import static slash.navigation.maps.mapsforge.models.TileServerMapSource.isPlainApiKey;
 import static slash.navigation.maps.mapsforge.models.TileServerMapSource.userAgent;
 
 public class TileServerMapSourceTest {
@@ -75,21 +74,6 @@ public class TileServerMapSourceTest {
         String malformedApiKey = "https://attacker.example/?redirect=1 2";
         String expected = "https://example.com/tile?apikey=" + URLEncoder.encode(malformedApiKey, StandardCharsets.UTF_8);
         assertEquals(expected, appendApiKey("https://example.com/tile", malformedApiKey, false));
-    }
-
-    @Test
-    public void testIsPlainApiKeyRejectsKeysThatLookLikeAUrlOrTemplate() {
-        assertFalse(isPlainApiKey("https://attacker.example/?apikey=1"));
-        assertFalse(isPlainApiKey("key/with/slashes"));
-        assertFalse(isPlainApiKey("key:with:colons"));
-        assertFalse(isPlainApiKey("key with space"));
-        assertFalse(isPlainApiKey("{apikey}"));
-    }
-
-    @Test
-    public void testIsPlainApiKeyAcceptsPlainTokens() {
-        assertTrue(isPlainApiKey(null));
-        assertTrue(isPlainApiKey("abcDEF123-_."));
     }
 
     private static TileServer tileServer(String urlPattern) {

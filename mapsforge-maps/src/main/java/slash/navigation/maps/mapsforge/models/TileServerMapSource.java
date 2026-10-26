@@ -35,9 +35,9 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-import java.util.regex.Pattern;
 
 import static java.lang.String.format;
+import static slash.common.helpers.APIKeyRegistry.isPlainAPIKey;
 
 /**
  * A {@link OnlineTileSource} that is configured from a {@link TileServer}.
@@ -50,8 +50,6 @@ public class TileServerMapSource extends AbstractTileSource {
     private static final Preferences preferences = Preferences.userNodeForPackage(TileServerMapSource.class);
     private static final String PARALLEL_REQUEST_LIMIT_PREFERENCE = "parallelRequestLimit";
     private static final String[] OUTDOOR_ACTIVE_TILE_DOMAINS = {"oastatic.com", "outdooractive.com"};
-    // characters that never occur in a plain API token but do occur in a pasted URL or template
-    private static final Pattern NOT_A_PLAIN_API_KEY = Pattern.compile("[\\s/:?{}]");
     private final TileServer tileServer;
     // set when the tile layer is created, read by the TileDownloadThreads
     private volatile boolean alpha = false;
@@ -123,11 +121,6 @@ public class TileServerMapSource extends AbstractTileSource {
         this.alpha = alpha;
     }
 
-    // a key that is not a plain token (e.g. a whole URL pasted into the field) must not break the query string
-    static boolean isPlainApiKey(String apiKey) {
-        return apiKey == null || !NOT_A_PLAIN_API_KEY.matcher(apiKey).find();
-    }
-
     static String appendApiKey(String url, String apiKey, boolean mapbox) {
         if (apiKey == null)
             return url;
@@ -152,7 +145,7 @@ public class TileServerMapSource extends AbstractTileSource {
                 .fmt();
 
         String apiKey = getApiKey();
-        if (!isPlainApiKey(apiKey))
+        if (!isPlainAPIKey(apiKey))
             warnOnce(loggedNonPlainApiKeyWarning, format("Tile server '%s' has an API key that is not a plain token; URL-encoding it for the tile URL",
                     tileServer.description()));
 

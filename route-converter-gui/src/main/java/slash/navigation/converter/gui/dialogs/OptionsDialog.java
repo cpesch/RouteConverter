@@ -53,6 +53,7 @@ import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
@@ -65,13 +66,16 @@ import java.util.List;
 import java.util.*;
 import java.util.logging.Logger;
 
+import static java.awt.Color.RED;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.util.Comparator.comparing;
 import static java.util.Locale.*;
+import static javax.swing.BorderFactory.createLineBorder;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JFileChooser.*;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.common.helpers.APIKeyRegistry.isPlainAPIKey;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.LocaleHelper.*;
 import static slash.common.io.Transfer.trim;
@@ -102,6 +106,7 @@ import static slash.navigation.gui.helpers.UIHelper.setLookAndFeelPreference;
 
 public class OptionsDialog extends SimpleDialog {
     private static final Logger log = Logger.getLogger(OptionsDialog.class.getName());
+    private static final Border INVALID_API_KEY_BORDER = createLineBorder(RED, 2);
     private JPanel contentPane;
     private JTabbedPane tabbedPane1;
     private JComboBox<Locale> comboBoxLocale;
@@ -307,6 +312,7 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
+        Border validApiKeyBorder = textFieldGoogleApiKey.getBorder();
         labelGoogleApiKey.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
                 startBrowserForGoogleApiKey(OptionsDialog.this);
@@ -314,9 +320,11 @@ public class OptionsDialog extends SimpleDialog {
         });
         // first setText then adding the listener to avoid #restartMapView() on initialization
         textFieldGoogleApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("google"));
+        markNonPlainApiKey(textFieldGoogleApiKey, validApiKeyBorder);
         textFieldGoogleApiKey.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 APIKeyRegistry.getInstance().setAPIKeyPreference("google", trimApiKey(textFieldGoogleApiKey.getText()));
+                markNonPlainApiKey(textFieldGoogleApiKey, validApiKeyBorder);
                 restartMapView();
             }
 
@@ -336,9 +344,11 @@ public class OptionsDialog extends SimpleDialog {
         });
         // first setText then adding the listener to avoid #restartMapView() on initialization
         textFieldThunderforestApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("thunderforest"));
+        markNonPlainApiKey(textFieldThunderforestApiKey, validApiKeyBorder);
         textFieldThunderforestApiKey.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 APIKeyRegistry.getInstance().setAPIKeyPreference("thunderforest", trimApiKey(textFieldThunderforestApiKey.getText()));
+                markNonPlainApiKey(textFieldThunderforestApiKey, validApiKeyBorder);
                 restartMapView();
             }
 
@@ -358,9 +368,11 @@ public class OptionsDialog extends SimpleDialog {
         });
         // first setText then adding the listener to avoid #restartMapView() on initialization
         textFieldMapboxApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("mapbox"));
+        markNonPlainApiKey(textFieldMapboxApiKey, validApiKeyBorder);
         textFieldMapboxApiKey.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 APIKeyRegistry.getInstance().setAPIKeyPreference("mapbox", trimApiKey(textFieldMapboxApiKey.getText()));
+                markNonPlainApiKey(textFieldMapboxApiKey, validApiKeyBorder);
                 restartMapView();
             }
 
@@ -656,6 +668,13 @@ public class OptionsDialog extends SimpleDialog {
     private String trimApiKey(String string) {
         string = trim(string);
         return string != null ? string.replaceAll("\\s+", "") : null;
+    }
+
+    // keys are saved on every keystroke, so a key that is not a plain token is marked, not rejected
+    private void markNonPlainApiKey(JTextField textField, Border validBorder) {
+        boolean plain = isPlainAPIKey(trimApiKey(textField.getText()));
+        textField.setBorder(plain ? validBorder : INVALID_API_KEY_BORDER);
+        textField.setToolTipText(plain ? null : getBundle().getString("api-key-not-plain"));
     }
 
     private void restartMapView() {

@@ -10,6 +10,7 @@
 ### Changes
 
 - Windows and Linux: sharper toolbar and menu icons on scaled displays; disabled menu items show greyed icons (#284)
+- Options > API Keys: a field holding a whole URL instead of a key gets a red border and a tooltip saying so (#306)
 
 ### Fixes
 
@@ -21,6 +22,7 @@
 - Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand shows a message and keeps the old value, instead of crashing; a date and time without seconds such as "2026-08-18 10:00" is accepted (#294)
 - Send error report: the log shown, sent and copied no longer carries credentials a tile or routing-service URL embeds, e.g. an API key or session token (#305)
 - Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand no longer adds a no-op step to Undo/Redo or marks the row changed (#309)
+- Maps dialog: selecting a map with no known extent no longer crashes the app (#303)
 
 ## 3.7 — 2026-10-10
 
