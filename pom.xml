@@ -99,9 +99,9 @@
         <!-- FlatLaf look-and-feel, Apache License 2.0 (https://www.formdev.com/flatlaf/) -->
         <flatlaf.version>3.7.2</flatlaf.version>
         <httpclient.version>5.6.5</httpclient.version>
-        <jackson.version>2.22.3</jackson.version>
+        <jackson.version>2.22.4</jackson.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
-        <jackson3.version>3.2.3</jackson3.version>
+        <jackson3.version>3.2.4</jackson3.version>
         <janino.version>3.1.12</janino.version>
         <!-- jaxb-api.version / jaxb-impl.version must stay on the same JAXB
              major as the jaxb2-maven-plugin's bundled xjc (see the plugin
@@ -305,7 +305,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -371,7 +371,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.6.1</version>
                 </plugin>
                 
                 <plugin>
