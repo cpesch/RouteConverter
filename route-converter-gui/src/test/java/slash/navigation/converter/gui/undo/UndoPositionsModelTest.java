@@ -152,4 +152,33 @@ public class UndoPositionsModelTest {
         assertEquals(1, eventCount[0]);
         assertEquals("z", acceptingModel.getPosition(0).getDescription());
     }
+
+    @Test
+    public void testUnchangedDescriptionAddsNoUndoStepAndFiresNoEvent() {
+        initialize();
+        boolean canUndoBefore = undoManager.canUndo();
+
+        final int[] eventCount = {0};
+        model.addTableModelListener(e -> eventCount[0]++);
+
+        model.setValueAt("a", 0, DESCRIPTION_COLUMN_INDEX);
+
+        assertEquals(canUndoBefore, undoManager.canUndo());
+        assertEquals(0, eventCount[0]);
+        assertEquals("a", model.getPosition(0).getDescription());
+    }
+
+    @Test
+    public void testChangedDescriptionAddsOneUndoStepAndFiresOneEvent() {
+        initialize();
+
+        final int[] eventCount = {0};
+        model.addTableModelListener(e -> eventCount[0]++);
+
+        model.setValueAt("z", 0, DESCRIPTION_COLUMN_INDEX);
+
+        assertTrue(undoManager.canUndo());
+        assertEquals(1, eventCount[0]);
+        assertEquals("z", model.getPosition(0).getDescription());
+    }
 }
