@@ -139,6 +139,14 @@ public abstract class HttpRequest {
         return queryStart != -1 ? string.substring(0, queryStart) : string;
     }
 
+    // a blank user name is skipped since an empty Basic userid makes the server run a failed login per request
+    static boolean hasCredentials(Credentials credentials) {
+        if (credentials == null)
+            return false;
+        String userName = credentials.userName();
+        return userName != null && !userName.isBlank() && credentials.password() != null;
+    }
+
     public <T> T execute(HttpClientResponseHandler<T> responseHandler) throws IOException {
         URI uri = getURI();
         Proxy proxy = findHTTPProxy(uri);
@@ -155,7 +163,7 @@ public abstract class HttpRequest {
 
 
         HttpClientContext context = HttpClientContext.create();
-        if(credentials != null && credentials.userName() != null && credentials.password() != null) {
+        if(hasCredentials(credentials)) {
             UsernamePasswordCredentials preemptiveCredentials = new UsernamePasswordCredentials(credentials.userName(), credentials.password());
             BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(new AuthScope(uri.getHost(), uri.getPort()), preemptiveCredentials);
