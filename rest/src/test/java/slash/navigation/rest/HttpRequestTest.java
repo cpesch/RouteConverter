@@ -25,6 +25,8 @@ import org.junit.Test;
 import java.net.URI;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class HttpRequestTest {
     @Test
@@ -33,5 +35,40 @@ public class HttpRequestTest {
                 HttpRequest.withoutQuery(new URI("https://maps.googleapis.com/maps/api/geocode/xml?address=Mundsburg&key=secret-api-key")));
         assertEquals("https://api.routeconverter.com/v1/datasources",
                 HttpRequest.withoutQuery(new URI("https://api.routeconverter.com/v1/datasources")));
+    }
+
+    @Test
+    public void hasCredentialsIsFalseForNullCredentials() {
+        assertFalse(HttpRequest.hasCredentials(null));
+    }
+
+    @Test
+    public void hasCredentialsIsFalseForNullUserName() {
+        assertFalse(HttpRequest.hasCredentials(new SimpleCredentials(null, "pw".toCharArray())));
+    }
+
+    @Test
+    public void hasCredentialsIsFalseForEmptyUserName() {
+        assertFalse(HttpRequest.hasCredentials(new SimpleCredentials("", "pw".toCharArray())));
+    }
+
+    @Test
+    public void hasCredentialsIsFalseForBlankUserName() {
+        assertFalse(HttpRequest.hasCredentials(new SimpleCredentials("  ", "pw".toCharArray())));
+    }
+
+    @Test
+    public void hasCredentialsIsFalseForNullPassword() {
+        assertFalse(HttpRequest.hasCredentials(new SimpleCredentials("user", null)));
+    }
+
+    @Test
+    public void hasCredentialsIsTrueForUserNameAndPassword() {
+        assertTrue(HttpRequest.hasCredentials(new SimpleCredentials("user", "pw".toCharArray())));
+    }
+
+    @Test
+    public void hasCredentialsIsTrueForUserNameAndEmptyPassword() {
+        assertTrue(HttpRequest.hasCredentials(new SimpleCredentials("user", "".toCharArray())));
     }
 }
