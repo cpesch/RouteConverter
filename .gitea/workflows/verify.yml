@@ -83,8 +83,9 @@ jobs:
           {
             grep -E '<<< (FAILURE|ERROR)!' "$LOG" | head -40 || true
             grep -E '^\[ERROR\]   [^ ]+:[0-9]+' "$LOG" | head -40 || true
-            grep -E '^\[INFO\] .* (FAILURE|SKIPPED)( \[.*\])?$' "$LOG" | head -40 || true
-            grep -E '^\[INFO\] BUILD' "$LOG" || true
+            grep -E '^\[(INFO|ERROR)\] .* FAILURE( \[.*\])?$' "$LOG" | head -40 || true
+            grep -E '^\[(INFO|ERROR)\] .* SKIPPED$' "$LOG" | head -10 || true
+            grep -E '^\[(INFO|ERROR)\] BUILD' "$LOG" || true
             grep -E '^\[ERROR\]' "$LOG" | head -40 || true
             grep -E 'Tests run:' "$LOG" | tail -60 || true
           } | awk '!seen[$0]++' > /tmp/verify-summary.txt || true
@@ -115,7 +116,8 @@ jobs:
           # at all — name it instead of calling the run inconclusive
           if [[ -e /tmp/verify-compile-failed ]]; then
             HEADLINE='🤖 **verify failed** — the sources do not compile (the test suite never ran).'
-          elif grep -qE '^\[INFO\] BUILD (SUCCESS|FAILURE)' /tmp/verify-mvn.log 2>/dev/null; then
+          # Maven logs a failed build at ERROR level: `[ERROR] BUILD FAILURE`.
+          elif grep -qE '^\[(INFO|ERROR)\] BUILD (SUCCESS|FAILURE)' /tmp/verify-mvn.log 2>/dev/null; then
             HEADLINE='🤖 **verify failed** — test suite did not pass.'
           elif [[ -s /tmp/verify-mvn.log ]]; then
             # Maven produced output but no verdict: it was killed mid-run
