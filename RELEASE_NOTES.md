@@ -24,6 +24,7 @@
 - Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand no longer adds a no-op step to Undo/Redo or marks the row changed (#309)
 - Clicking into a cell of the positions table and leaving it unchanged no longer adds a step to Undo/Redo or marks the file modified (#311)
 - Maps dialog: selecting a map with no known extent no longer crashes the app (#303)
+- If the online map you used last has been removed from the catalog, RouteConverter now tells you once that it switched to OpenStreetMap, instead of silently showing OpenStreetMap without explanation (#320)
 
 ## 3.7 — 2026-10-10
 
