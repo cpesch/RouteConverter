@@ -24,6 +24,7 @@
 - Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand no longer adds a no-op step to Undo/Redo or marks the row changed (#309)
 - Clicking into a cell of the positions table and leaving it unchanged no longer adds a step to Undo/Redo or marks the file modified (#311)
 - Maps dialog: selecting a map with no known extent no longer crashes the app (#303)
+- Maps dialog: a `.map` file that isn't a valid offline map (e.g. a failed download) is no longer listed and no longer crashes the app when selected (#323)
 
 ## 3.7 — 2026-10-10
 
