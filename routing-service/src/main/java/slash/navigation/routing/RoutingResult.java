@@ -33,5 +33,5 @@ import java.util.List;
 
 public record RoutingResult(List<NavigationPosition> positions, DistanceAndTime distanceAndTime, Validity validity) {
 
-    public enum Validity {Valid, Invalid, PointNotFound}
+    public enum Validity {Valid, Invalid, PointNotFound, Timeout}
 }
