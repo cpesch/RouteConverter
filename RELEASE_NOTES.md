@@ -11,6 +11,11 @@
 
 - Windows and Linux: sharper toolbar and menu icons on scaled displays; disabled menu items show greyed icons (#284)
 - Options > API Keys: a field holding a whole URL instead of a key gets a red border and a tooltip saying so (#306)
+- Linux on a scaled GNOME or KDE desktop: menus, map and icons follow the display scale, and dark mode follows the desktop setting
+- Linux: the RouteConverter jar tells which Java version to install instead of failing silently on a Java that is too old
+- The bundled Java no longer trusts the eMudhra emSign and Sectigo AAA Certificate Services roots, which forged certificates for any host chain up to (CVE-2026-111943)
+- The update check also reports whether RouteConverter runs on its bundled Java
+- Find places reads the bounds of the offline POI files only once instead of on every first search (#279)
 
 ### Fixes
 
@@ -24,6 +29,17 @@
 - Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand no longer adds a no-op step to Undo/Redo or marks the row changed (#309)
 - Clicking into a cell of the positions table and leaving it unchanged no longer adds a step to Undo/Redo or marks the file modified (#311)
 - Maps dialog: selecting a map with no known extent no longer crashes the app (#303)
+- Windows with display scaling above 100 %, macOS Retina and Linux HiDPI: the map is drawn in device pixels instead of being scaled a second time and blurred (#442, #449); this resolves the 3.7 known issue
+- Save as keeps typed file names that contain a dot, and suggested file names are no longer cut at 64 characters (#287)
+- Automatic geocoding no longer calls Google when no Google API key is set (#288)
+- Map context menu: Delete works on the point you clicked and is enabled when it applies; in 3.7 it used an earlier click point (#441)
+- Hover coordinates on the map show at start when the option is on, not only after switching it off and on (#443)
+- Unchanged downloads such as the map and routing catalogs are no longer downloaded again on every start (#440)
+- macOS: opening a route no longer fits the map one zoom level too close (#274)
+- Crash reports no longer carry credentials that a URL in an exception message embeds (#296)
+- A tile server API key holding a whole URL no longer throws an error for every map tile (#295)
+- The bundled Java reads GPX and KML files in Japanese, Chinese, Hebrew, Arabic and Thai encodings instead of garbling their names
+- Linux Flatpak: starts on Wayland desktops, keeps settings and maps across restarts, and opens help, web pages and mail in the desktop's browser and mail program
 
 ## 3.7 — 2026-10-10
 
