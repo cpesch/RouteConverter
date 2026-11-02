@@ -227,7 +227,7 @@ public class LoginDialog extends SimpleDialog {
         }
 
         String password = trim(new String(passwordRegister.getPassword()));
-        if (password == null || password.length() < 4) {
+        if (password == null || password.length() < 8) {
             showError(frame, new JLabel(BaseRouteConverter.getBundle().getString("register-password-too-short-error")),
                     frame.getTitle());
             return;
