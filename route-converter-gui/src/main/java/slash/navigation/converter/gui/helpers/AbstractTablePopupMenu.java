@@ -62,8 +62,11 @@ public abstract class AbstractTablePopupMenu {
         table.getParent().addMouseMotionListener(new MouseMotionListener());
         table.registerKeyboardAction(new FrameAction() {
             public void run() {
-                ensureSelection(lastMouseEvent, 1);
-                showPopup(lastMouseEvent);
+                if (lastMouseEvent != null) {
+                    ensureSelection(lastMouseEvent, 1);
+                    showPopup(lastMouseEvent);
+                } else
+                    showPopupAtKeyboardLocation();
             }
         }, getKeyStroke(VK_CONTEXT_MENU, 0), WHEN_IN_FOCUSED_WINDOW);
         this.popupMenu = doCreatePopupMenu();
@@ -75,6 +78,22 @@ public abstract class AbstractTablePopupMenu {
             table.getCellEditor().cancelCellEditing();
 
         invokeLater(() -> popupMenu.show(e.getComponent(), e.getX(), e.getY()));
+    }
+
+    private void showPopupAtKeyboardLocation() {
+        if (table.getCellEditor() != null)
+            table.getCellEditor().cancelCellEditing();
+
+        int selectedRow = table.getSelectedRow();
+        Rectangle selectedCellRect = selectedRow != -1 ? table.getCellRect(selectedRow, 0, true) : null;
+        Point location = keyboardPopupLocation(selectedCellRect, table.getVisibleRect());
+        invokeLater(() -> popupMenu.show(table, location.x, location.y));
+    }
+
+    static Point keyboardPopupLocation(Rectangle selectedCellRect, Rectangle visibleRect) {
+        if (selectedCellRect != null && visibleRect.intersects(selectedCellRect))
+            return new Point(selectedCellRect.x, selectedCellRect.y + selectedCellRect.height);
+        return new Point(visibleRect.x + 10, visibleRect.y + 10);
     }
 
     private void ensureSelection(MouseEvent e, int selectedRowCountMinimum) {
