@@ -1,0 +1,4 @@
+Streckendetails:Tracker-1 2026-10-11 00:00:00 - 2026-10-13 23:59:59;;;;;;;;;;;;;;;;
+No.;Device Name;IMEI;Modell;Fahrername;Nummernschild-Nr.;SIM;Phone;Zündung;Positionszeit;Speed;Azimut;Position type;Anzahl Satelliten;Datentyp;Koordinaten;Die Adresse
+1;Tracker-1;000000000000000;;;;;;geschlossen;2026-10-12 17:24:18;0;Due West(Richtung271);GPS;15;Real;52.5000,13.4000;
+2;Tracker-1;000000000000000;;;;;;geschlossen;2026-10-12 17:28:22;7;Genau nach Osten(Richtung106);GPS;13;Real;52.5002,13.4003;
