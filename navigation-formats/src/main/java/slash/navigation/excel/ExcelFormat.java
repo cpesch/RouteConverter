@@ -63,7 +63,7 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
 
     @SuppressWarnings("unchecked")
     public <P extends NavigationPosition> ExcelRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new ExcelRoute(this, createSheet(name), DEFAULT, (List<ExcelPosition>) positions);
+        return new ExcelRoute(this, createSheet(name), DEFAULT.copy(), (List<ExcelPosition>) positions);
     }
 
     abstract Sheet createSheet(String name);

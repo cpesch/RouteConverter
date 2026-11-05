@@ -42,7 +42,7 @@ import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
  */
 
 public class ExcelPosition extends BaseNavigationPosition implements ExtendedSensorNavigationPosition {
-    private ColumnTypeToRowIndexMapping mapping = DEFAULT;
+    private ColumnTypeToRowIndexMapping mapping;
     private Row row;
     private Double accelerationX, accelerationY, accelerationZ;
 
@@ -51,10 +51,14 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
         this.mapping = mapping;
     }
 
+    // a position not attached to a route gets its own copy of DEFAULT, so a column added to it (e.g. Heartbeat)
+    // does not change DEFAULT for every route created later; its header row is its own row 0, where the value
+    // then overwrites the column name
     public ExcelPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet("new sheet");
         this.row = sheet.createRow(0);
+        this.mapping = DEFAULT.copy();
         setLongitude(longitude);
         setLatitude(latitude);
         setElevation(elevation);

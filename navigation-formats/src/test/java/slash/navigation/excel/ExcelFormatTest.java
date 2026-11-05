@@ -494,22 +494,25 @@ public class ExcelFormatTest {
         assertXlsAndXlsx(route -> route.add(1, new ExcelPosition(13.5, 52.7, null, null, null, "X")), 52.5, 52.7, 52.5002, 52.5004);
     }
 
-    // both routes share the DEFAULT mapping instance, so attach() copies cells instead of transferring fields;
+    // both routes explicitly share one mapping instance, so attach() copies cells instead of transferring fields;
     // one route is HSSF-backed and the other XSSF-backed, forcing copyCells' cell style class mismatch branch
     @Test
     public void attachClonesTimeCellStyleAcrossWorkbookTypes() {
         CompactCalendar time = calendar(2026, 11, 5, 9, 32, 14);
+        ColumnTypeToRowIndexMapping sharedMapping = ColumnTypeToRowIndexMapping.DEFAULT.copy();
 
-        ExcelRoute hssfRoute = new ExcelRoute(new MicrosoftExcel97Format(), "Data", new ArrayList<>());
+        MicrosoftExcel97Format hssfFormat = new MicrosoftExcel97Format();
+        ExcelRoute hssfRoute = new ExcelRoute(hssfFormat, hssfFormat.createSheet("Data"), sharedMapping, new ArrayList<>());
         ExcelPosition position = hssfRoute.createPosition(13.5, 52.7, null, null, time, "X");
 
-        ExcelRoute xssfRoute = new ExcelRoute(new MicrosoftExcel2008Format(), "Data", new ArrayList<>());
+        MicrosoftExcel2008Format xssfFormat = new MicrosoftExcel2008Format();
+        ExcelRoute xssfRoute = new ExcelRoute(xssfFormat, xssfFormat.createSheet("Data"), sharedMapping, new ArrayList<>());
         xssfRoute.add(0, position);
 
         ExcelPosition attached = xssfRoute.getPosition(0);
         assertEquals(time, attached.getTime());
 
-        Cell timeCell = attached.getRow().getCell(ColumnTypeToRowIndexMapping.DEFAULT.getIndex(ColumnType.Time));
+        Cell timeCell = attached.getRow().getCell(sharedMapping.getIndex(ColumnType.Time));
         assertNotEquals(0, timeCell.getCellStyle().getIndex());
         assertEquals("m/d/yy h:mm", timeCell.getCellStyle().getDataFormatString());
     }
@@ -520,12 +523,12 @@ public class ExcelFormatTest {
     public void attachTransfersAllSensorFieldsWhenMappingDiffers() throws IOException {
         CompactCalendar time = calendar(2026, 11, 5, 9, 32, 14);
         assertXlsAndXlsx(route -> {
-            // Heartbeat is deliberately left out: it has no entry in ColumnTypeToRowIndexMapping.DEFAULT, so
-            // setting it on a DEFAULT-mapped position would add a column to that shared static mapping instance
             ExcelPosition position = new ExcelPosition(13.5, 52.7, 123.0, 45.0, time, "X");
             position.setHeading(90.0);
             position.setPressure(1013.0);
             position.setTemperature(21.5);
+            // not a column of DEFAULT: the position adds it to its own mapping copy
+            position.setHeartBeat((short) 80);
 
             route.add(1, position);
             ExcelPosition added = route.getPosition(1);
@@ -539,6 +542,23 @@ public class ExcelFormatTest {
             assertEquals(90.0, added.getHeading(), 0.0);
             assertEquals(1013.0, added.getPressure(), 0.0);
             assertEquals(21.5, added.getTemperature(), 0.0);
+            assertEquals(Short.valueOf((short) 80), added.getHeartBeat());
         }, 52.5, 52.7, 52.5002, 52.5004);
+    }
+
+    // a column added to one new route's own mapping must not leak into DEFAULT or into a route created afterwards
+    @Test
+    public void addingAColumnToOneRouteDoesNotAffectDefaultOrALaterRoute() {
+        assertNull(ColumnTypeToRowIndexMapping.DEFAULT.getIndex(ColumnType.Heartbeat));
+
+        ExcelRoute one = new ExcelRoute(new MicrosoftExcel97Format(), "one", new ArrayList<>());
+        ExcelPosition position = one.createPosition(13.5, 52.6, null, null, null, null);
+        position.setHeartBeat((short) 80);
+
+        assertNull(ColumnTypeToRowIndexMapping.DEFAULT.getIndex(ColumnType.Heartbeat));
+
+        ExcelRoute two = new ExcelRoute(new MicrosoftExcel97Format(), "two", new ArrayList<>());
+        Sheet sheetTwo = two.getWorkbook().getSheetAt(0);
+        assertEquals(9, sheetTwo.getRow(0).getLastCellNum());
     }
 }

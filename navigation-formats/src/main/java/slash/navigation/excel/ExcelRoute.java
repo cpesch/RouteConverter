@@ -79,7 +79,7 @@ import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
 
 public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     private final Sheet sheet;
-    private ColumnTypeToRowIndexMapping mapping = DEFAULT;
+    private ColumnTypeToRowIndexMapping mapping;
     private final List<ExcelPosition> positions;
 
     public ExcelRoute(ExcelFormat format, Sheet sheet, ColumnTypeToRowIndexMapping mapping, List<ExcelPosition> positions) {
@@ -89,8 +89,9 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         this.positions = positions;
     }
 
+    // a new route gets its own copy of DEFAULT so adding a column to it does not affect DEFAULT or other routes
     public ExcelRoute(ExcelFormat format, String name, List<ExcelPosition> positions) {
-        this(format, format.createSheet(name), DEFAULT, positions);
+        this(format, format.createSheet(name), DEFAULT.copy(), positions);
         populateHeader(sheet.createRow(0));
     }
 
