@@ -30,9 +30,6 @@ import java.util.*;
 
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
-import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.common.type.CompactCalendar.parseDate;
-import static slash.common.type.ISO8601.parseDate;
 import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExtendedSensorData;
 import static slash.navigation.csv.ColumnType.*;
 
@@ -42,7 +39,6 @@ import static slash.navigation.csv.ColumnType.*;
 
 public class CsvPosition extends BaseNavigationPosition implements ExtendedSensorNavigationPosition {
     private static final String DATE_AND_TIME_FORMAT = "dd.MM.yy HH:mm:ss";
-    private static final String DATE_AND_TIME_WITHOUT_SECONDS_FORMAT = "dd.MM.yy HH:mm";
 
     private final Map<String, String> rowAsMap;
     private Double accelerationX, accelerationY, accelerationZ;
@@ -93,16 +89,8 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
         return parseCalendar(value);
     }
 
-    static CompactCalendar parseCalendar(String value) {
-        CompactCalendar calendar = parseDate(value, DATE_AND_TIME_FORMAT, false);
-        if (calendar == null)
-            calendar = parseDate(value, DATE_AND_TIME_WITHOUT_SECONDS_FORMAT, false);
-        if (calendar == null) {
-            Calendar date = parseDate(value);
-            if (date != null)
-                calendar = fromCalendar(date);
-        }
-        return calendar;
+    private double[] getCombinedCoordinates() {
+        return parseCombinedCoordinates(getValueAsString(Coordinates));
     }
 
     private void setValueAsString(ColumnType type, String value) {
@@ -143,7 +131,13 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
     }
 
     public Double getLongitude() {
-        return getValueAsDouble(Longitude);
+        Double longitude = getValueAsDouble(Longitude);
+        if (longitude == null) {
+            double[] coordinates = getCombinedCoordinates();
+            if (coordinates != null)
+                longitude = coordinates[1];
+        }
+        return longitude;
     }
 
     public void setLongitude(Double longitude) {
@@ -151,7 +145,13 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
     }
 
     public Double getLatitude() {
-        return getValueAsDouble(Latitude);
+        Double latitude = getValueAsDouble(Latitude);
+        if (latitude == null) {
+            double[] coordinates = getCombinedCoordinates();
+            if (coordinates != null)
+                latitude = coordinates[0];
+        }
+        return latitude;
     }
 
     public void setLatitude(Double latitude) {

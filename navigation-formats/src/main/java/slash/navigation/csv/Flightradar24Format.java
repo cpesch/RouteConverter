@@ -29,7 +29,6 @@ import static java.lang.Math.round;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.common.UnitConversion.*;
 import static slash.navigation.csv.ColumnType.*;
-import static slash.navigation.csv.CsvPosition.parseCalendar;
 
 /**
  * Reads comma separated CSV (.csv) files from <a href="https://www.flightradar24.com/">Flightradar24</a>.
