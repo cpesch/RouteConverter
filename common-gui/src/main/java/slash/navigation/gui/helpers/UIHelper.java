@@ -26,6 +26,7 @@ import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.formdev.flatlaf.util.UIScale;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -67,6 +68,17 @@ public class UIHelper {
     private static final Pattern PORTAL_COLOR_SCHEME_PATTERN = Pattern.compile("uint32 (\\d+)");
     private static final Pattern XFT_DPI_PATTERN = Pattern.compile("^Xft\\.dpi:\\s*(\\d+)", Pattern.MULTILINE);
     private static final String UI_SCALE_PROPERTY = "sun.java2d.uiScale";
+
+    /**
+     * With ImageIO's default useCache=true, writing to an OutputStream creates a
+     * FileCacheImageOutputStream backed by a temp file and registers it with the JDK's
+     * StreamCloser shutdown hook; a stream already closed by then throws a
+     * NullPointerException there at JVM exit. MemoryCacheImageOutputStream never
+     * registers with StreamCloser, so disabling the disk cache avoids that crash.
+     */
+    public static void disableImageIODiskCache() {
+        ImageIO.setUseCache(false);
+    }
 
     /**
      * On Linux, Java2D scales only by GDK_SCALE, J2D_UISCALE or the deprecated GNOME

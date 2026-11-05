@@ -27,6 +27,7 @@ import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.ColorModel;
+import slash.navigation.gui.Application;
 import slash.navigation.gui.models.IntegerModel;
 import slash.navigation.mapview.mapsforge.MapsforgeMapViewCallback;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
@@ -40,6 +41,7 @@ import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -129,12 +131,31 @@ public class RouteRenderer {
                 return;
         }
 
+        RoutingFailureSummary routingFailureSummary = new RoutingFailureSummary();
         try {
-            drawRoute(mapIdentifier, pairWithLayers);
+            drawRoute(mapIdentifier, pairWithLayers, routingFailureSummary);
         }
         finally {
             invokeAfterRenderingRunnable.run();
+
+            synchronized (notificationMutex) {
+                if (drawingRoute)
+                    notifyRoutingFailures(service, routingFailureSummary);
+            }
         }
+    }
+
+    private void notifyRoutingFailures(RoutingService service, RoutingFailureSummary routingFailureSummary) {
+        int timeouts = routingFailureSummary.getTimeouts();
+        int notFound = routingFailureSummary.getNotFound();
+        if (timeouts + notFound == 0)
+            return;
+
+        String bundleKey = timeouts > 0 ? "routing-timeout-notification" : "routing-not-found-notification";
+        int failureCount = timeouts > 0 ? timeouts : notFound;
+        String message = MessageFormat.format(Application.getInstance().getContext().getBundle().getString(bundleKey),
+                failureCount, routingFailureSummary.getTotal(), service.getName());
+        Application.getInstance().getContext().getNotificationManager().showNotification(message, null);
     }
 
     private void waitForInitialization(RoutingService service) {
@@ -234,7 +255,7 @@ public class RouteRenderer {
         return result;
     }
 
-    private void drawRoute(String mapIdentifier, List<PairWithLayer> pairWithLayers) {
+    private void drawRoute(String mapIdentifier, List<PairWithLayer> pairWithLayers, RoutingFailureSummary routingFailureSummary) {
         Paint paint = graphicFactory.createPaint();
         paint.setColor(asRGBA(routeColorModel));
         paint.setStrokeWidth(getRouteLineWidth());
@@ -253,7 +274,7 @@ public class RouteRenderer {
 
             // first calculate route, then remove straight-line layer then add polyline layer from routing
             Layer layer = pairWithLayer.getLayer();
-            IntermediateRoute intermediateRoute = calculateRoute(routingService, future, pairWithLayer);
+            IntermediateRoute intermediateRoute = calculateRoute(routingService, future, pairWithLayer, routingFailureSummary);
 
             synchronized (trackLayer) {
                 trackLayer.layers.remove(layer);
@@ -303,11 +324,12 @@ public class RouteRenderer {
         return paint;
     }
 
-    private IntermediateRoute calculateRoute(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {
+    private IntermediateRoute calculateRoute(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer, RoutingFailureSummary routingFailureSummary) {
         List<NavigationPosition> positions = new ArrayList<>();
         positions.add(pairWithLayer.getFirst());
 
         RoutingResult result = calculateResult(routingService, future, pairWithLayer);
+        routingFailureSummary.add(result.validity());
         boolean routable = result.validity().equals(Valid);
         Double routedMeters = result.distanceAndTime() != null ? result.distanceAndTime().distance() : null;
         Double straightLineMeters = pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond());

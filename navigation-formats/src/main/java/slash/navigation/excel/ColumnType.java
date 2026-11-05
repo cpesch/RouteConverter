@@ -42,8 +42,9 @@ enum ColumnType {
     Pressure(NUMERIC, "Druck", "Pressure"),
     Temperature(NUMERIC, "Temperatur", "Temperature"),
     Heartbeat(NUMERIC, "Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
-    Time(NUMERIC, "Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
+    Time(NUMERIC, "Zeit", "Timestamp", "Zeitstempel", "Date", "Datum", "Positionszeit", "Position time", "Positiontime"),
     Description(STRING, "Beschreibung", "Comment", "Kommentar"),
+    Coordinates(STRING, "Koordinaten"),
     Unsupported(STRING);
 
     private final CellType cellType;
