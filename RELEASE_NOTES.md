@@ -25,6 +25,8 @@
 - Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand no longer adds a no-op step to Undo/Redo or marks the row changed (#309)
 - Clicking into a cell of the positions table and leaving it unchanged no longer adds a step to Undo/Redo or marks the file modified (#311)
 - Maps dialog: selecting a map with no known extent no longer crashes the app (#303)
+- Login dialog: the login and failure messages now say they ask for the RouteConverter service account, not the forum account, and point to the Register tab; registering requires a password of at least 8 characters, matching what the server accepts (#319)
+- If the online map you used last has been removed from the catalog, RouteConverter now tells you once that it switched to OpenStreetMap, instead of silently showing OpenStreetMap without explanation (#320)
 - Fast mouse-wheel zooming on the map no longer crashes the app (#321)
 - No longer reports a crash from the JDK's shutdown cleanup of temporary tile image files on exit (#322)
 - Maps dialog: a `.map` file that isn't a valid offline map (e.g. a failed download) is no longer listed and no longer crashes the app when selected (#323)
