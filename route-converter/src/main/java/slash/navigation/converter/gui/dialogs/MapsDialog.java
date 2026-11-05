@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.text.MessageFormat.format;
@@ -75,6 +76,8 @@ import static slash.navigation.maps.mapsforge.models.TileMapTableModel.DESCRIPTI
  */
 
 public class MapsDialog extends SimpleDialog {
+    private static final Logger log = Logger.getLogger(MapsDialog.class.getName());
+
     private JPanel contentPane;
     private JTable tableAvailableOnlineMaps;
     private JButton buttonDisplayOnlineMap;
@@ -161,7 +164,11 @@ public class MapsDialog extends SimpleDialog {
             }
             int row = tableAvailableOfflineMaps.convertRowIndexToView(selectedRow);
             LocalMap map = getMapsforgeMapManager().getAvailableOfflineMapsModel().getItem(row);
-            r.showMapBorder(map.getBoundingBox());
+            try {
+                r.showMapBorder(map.getBoundingBox());
+            } catch (RuntimeException ex) {
+                log.warning(format("Cannot determine bounding box of {0}: {1}", map.description(), ex));
+            }
         });
 
         tableDownloadableMaps.setModel(getMapsforgeMapManager().getDownloadableMapsModel());
