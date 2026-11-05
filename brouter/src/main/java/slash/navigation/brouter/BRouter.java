@@ -62,6 +62,7 @@ import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.download.Checksum.createChecksum;
 import static slash.navigation.routing.RoutingResult.Validity.Invalid;
+import static slash.navigation.routing.RoutingResult.Validity.Timeout;
 import static slash.navigation.routing.RoutingResult.Validity.Valid;
 import static slash.navigation.routing.TravelRestrictions.NO_RESTRICTIONS;
 
@@ -369,7 +370,7 @@ public class BRouter extends BaseRoutingService {
                 routingEngine.doRun(preferences.getLong("routingTimeout", routingTimeout));
             } catch (RuntimeException e) {
                 log.severe(format("Error while routing between %s and %s: %s", from, to, getLocalizedMessage(e)));
-                return new RoutingResult(asList(from, to), new DistanceAndTime(bearing, null), Invalid);
+                return new RoutingResult(asList(from, to), new DistanceAndTime(bearing, null), validityOf(getLocalizedMessage(e)));
             }
 
             if (routingEngine.getErrorMessage() != null)
@@ -377,7 +378,7 @@ public class BRouter extends BaseRoutingService {
 
             OsmTrack track = routingEngine.getFoundTrack();
             double distance = routingEngine.getDistance();
-            Validity validity = routingEngine.getErrorMessage() == null ? Valid : Invalid;
+            Validity validity = validityOf(routingEngine.getErrorMessage());
             return new RoutingResult(asPositions(track), new DistanceAndTime(distance, getTime(track)), validity);
         } finally {
             secondCounter.stop();
@@ -385,6 +386,14 @@ public class BRouter extends BaseRoutingService {
             long end = currentTimeMillis();
             log.info("Routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
         }
+    }
+
+    static Validity validityOf(String errorMessage) {
+        if (errorMessage == null)
+            return Valid;
+        if (errorMessage.contains(" timeout after "))
+            return Timeout;
+        return Invalid;
     }
 
     private static final double DUPLICATE_OFFSET = 0.0001;
