@@ -39,7 +39,10 @@ import slash.navigation.maps.tileserver.TileServerMapManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -75,6 +78,7 @@ public class MapsforgeMapManager {
     private static final String DISPLAYED_MAP_PREFERENCE = "displayedMap";
     private static final String APPLIED_THEME_PREFERENCE = "appliedTheme";
     private static final String APPLIED_STYLE_PREFERENCE = "appliedStyle";
+    private static final String MAPSFORGE_MAGIC_BYTE = "mapsforge binary OSM";
     private static final String DEFAULT_URL = "http://wiki.openstreetmap.org/wiki/Default";
     private static final String OSMARENDER_URL = "http://wiki.openstreetmap.org/wiki/Osmarender";
     private static final OpenStreetMap OPEN_STREET_MAP = new OpenStreetMap();
@@ -268,6 +272,19 @@ public class MapsforgeMapManager {
         return index != -1 ? prefix.substring(0, index) : prefix;
     }
 
+    static boolean isMapsforgeMapFile(File file) {
+        byte[] magicBytes = MAPSFORGE_MAGIC_BYTE.getBytes(StandardCharsets.US_ASCII);
+        byte[] buffer = new byte[magicBytes.length];
+        try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
+            if (raf.length() < magicBytes.length)
+                return false;
+            raf.readFully(buffer);
+        } catch (IOException e) {
+            return false;
+        }
+        return Arrays.equals(magicBytes, buffer);
+    }
+
     public synchronized void scanMaps() throws IOException {
         invokeInAwtEventQueue(availableOfflineMapsModel::clear);
 
@@ -281,7 +298,14 @@ public class MapsforgeMapManager {
                 continue;
 
             checkFile(file);
-            LocalMap map = getExtension(file).equals(DOT_MAP) ?
+
+            boolean isMapFile = getExtension(file).equals(DOT_MAP);
+            if (isMapFile && !isMapsforgeMapFile(file)) {
+                log.warning(format("Skipping %s since it is not a mapsforge map file", file));
+                continue;
+            }
+
+            LocalMap map = isMapFile ?
                     new MapsforgeFileMap(removePrefix(mapsDirectory, file), file.toURI().toString(), file, extractMapProvider(file), retrieveCopyrightText("OpenStreetMap")) :
                     new MBTilesFileMap(removePrefix(mapsDirectory, file), file.toURI().toString(), file, extractMapProvider(file), retrieveCopyrightText("OpenStreetMap"));
             invokeInAwtEventQueue(() -> availableOfflineMapsModel.addOrUpdateItem(map));

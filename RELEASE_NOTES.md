@@ -26,6 +26,8 @@
 - Clicking into a cell of the positions table and leaving it unchanged no longer adds a step to Undo/Redo or marks the file modified (#311)
 - Maps dialog: selecting a map with no known extent no longer crashes the app (#303)
 - Fast mouse-wheel zooming on the map no longer crashes the app (#321)
+- No longer reports a crash from the JDK's shutdown cleanup of temporary tile image files on exit (#322)
+- Maps dialog: a `.map` file that isn't a valid offline map (e.g. a failed download) is no longer listed and no longer crashes the app when selected (#323)
 
 ## 3.7 — 2026-10-10
 
