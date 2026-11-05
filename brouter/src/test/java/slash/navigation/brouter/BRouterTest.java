@@ -40,6 +40,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static slash.navigation.routing.RoutingResult.Validity.Invalid;
+import static slash.navigation.routing.RoutingResult.Validity.Timeout;
+import static slash.navigation.routing.RoutingResult.Validity.Valid;
 
 public class BRouterTest {
     private final BRouter router = new BRouter(null);
@@ -166,6 +169,21 @@ public class BRouterTest {
         assertEquals(2, coverageTiles.size());
         assertTrue(coverageTiles.containsKey(new BoundingBox(11.0, 41.0, 10.0, 40.0)));
         assertTrue(coverageTiles.containsKey(new BoundingBox(12.0, 41.0, 11.0, 40.0)));
+    }
+
+    @Test
+    public void testValidityOfNullIsValid() {
+        assertEquals(Valid, BRouter.validityOf(null));
+    }
+
+    @Test
+    public void testValidityOfTimeoutMessageIsTimeout() {
+        assertEquals(Timeout, BRouter.validityOf("operation timeout after 10 seconds"));
+    }
+
+    @Test
+    public void testValidityOfOtherMessageIsInvalid() {
+        assertEquals(Invalid, BRouter.validityOf("no track found"));
     }
 
     @Test

@@ -6,6 +6,7 @@
 
 - Windows and Linux: modern FlatLaf look-and-feel, light or dark following the operating system setting; macOS keeps its native look. Options > General > Look and feel switches to Light, Dark or the old System look (requires restart) (#263)
 - View > POIs… shows all POIs of the chosen categories on the map, such as every bank or toilet in view, from the offline POI data or the displayed offline map; they stay while you edit the route, show their name on hover, and the map's context menu adds one to the position list (#434)
+- CSV and Excel import: a title row above the actual column headers is skipped, and a single column holding "latitude,longitude" is read when there is no separate latitude/longitude column (#318)
 
 ### Changes
 
@@ -25,6 +26,9 @@
 - Clicking into a cell of the positions table and leaving it unchanged no longer adds a step to Undo/Redo or marks the file modified (#311)
 - Maps dialog: selecting a map with no known extent no longer crashes the app (#303)
 - Login dialog: the login and failure messages now say they ask for the RouteConverter service account, not the forum account, and point to the Register tab; registering requires a password of at least 8 characters, matching what the server accepts (#319)
+- Fast mouse-wheel zooming on the map no longer crashes the app (#321)
+- No longer reports a crash from the JDK's shutdown cleanup of temporary tile image files on exit (#322)
+- Maps dialog: a `.map` file that isn't a valid offline map (e.g. a failed download) is no longer listed and no longer crashes the app when selected (#323)
 
 ## 3.7 — 2026-10-10
 

@@ -37,6 +37,8 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static slash.common.io.InputOutput.readAsReaderPreferringUtf8;
 import static slash.common.io.Transfer.*;
+import static slash.navigation.csv.ColumnType.Coordinates;
+import static slash.navigation.csv.ColumnType.Unsupported;
 
 /**
  * The base of all CSV formats.
@@ -84,23 +86,28 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
         }
     }
 
+    private static final int HEADER_SEARCH_ROW_LIMIT = 10;
+    // generous lookahead for mark()/reset(): only the title/header rows actually get buffered
+    private static final int HEADER_SEARCH_MARK_LIMIT = 1 << 20;
+
     protected boolean read(Reader reader, ParserContext<CsvRoute> context) throws IOException {
         List<CsvPosition> positions = new ArrayList<>();
 
+        BufferedReader bufferedReader = reader instanceof BufferedReader br ? br : new BufferedReader(reader);
+        skipToHeaderLine(bufferedReader);
+
         CsvSchema schema = CsvSchema.emptySchema().withHeader().withColumnSeparator(getColumnSeparator());
         ObjectReader objectReader = new CsvMapper().readerFor(LinkedHashMap.class).with(schema);
-        try (reader) {
-            MappingIterator<LinkedHashMap<String, String>> iterator = objectReader.readValues(reader);
-            while (iterator.hasNext()) {
-                LinkedHashMap<String, String> rowAsMap = iterator.next();
-                CsvPosition position = new CsvPosition(transformRead(rowAsMap));
+        MappingIterator<LinkedHashMap<String, String>> iterator = objectReader.readValues(bufferedReader);
+        while (iterator.hasNext()) {
+            LinkedHashMap<String, String> rowAsMap = iterator.next();
+            CsvPosition position = new CsvPosition(transformRead(rowAsMap));
 
-                // skip positions without any reasonable data to make format less greedy
-                if (position.getLongitude() == null && position.getLatitude() == null && position.getDescription() == null)
-                    continue;
+            // skip positions without any reasonable data to make format less greedy
+            if (position.getLongitude() == null && position.getLatitude() == null && position.getDescription() == null)
+                continue;
 
-                positions.add(position);
-            }
+            positions.add(position);
         }
 
         if (!positions.isEmpty()) {
@@ -108,6 +115,59 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
             return true;
         } else
             return false;
+    }
+
+    // finds the header line among the first lines, skipping an optional title row above it, then
+    // rewinds so the rest of the stream reaches the CSV parser unmodified (quoting, embedded
+    // newlines in quoted fields) instead of being rejoined from naively split lines
+    private void skipToHeaderLine(BufferedReader reader) throws IOException {
+        reader.mark(HEADER_SEARCH_MARK_LIMIT);
+
+        int headerLineIndex = 0;
+        String line;
+        for (int i = 0; i < HEADER_SEARCH_ROW_LIMIT && (line = reader.readLine()) != null; i++) {
+            if (countKnownColumns(line) >= 2) {
+                headerLineIndex = i;
+                break;
+            }
+        }
+
+        reader.reset();
+        for (int i = 0; i < headerLineIndex; i++)
+            reader.readLine();
+    }
+
+    private int countKnownColumns(String line) {
+        List<String> cells = splitRespectingQuotes(line, getColumnSeparator());
+        int count = 0;
+        for (String cell : cells) {
+            ColumnType columnType = ColumnType.classify(trim(cell));
+            if (columnType == Coordinates)
+                count += 2;
+            else if (columnType != Unsupported)
+                count++;
+        }
+        return count;
+    }
+
+    // a minimal quote-aware split, just for classifying a single title/header line;
+    // the CSV parser itself handles the full dialect (escaping, embedded newlines) once reading resumes
+    private List<String> splitRespectingQuotes(String line, char separator) {
+        List<String> cells = new ArrayList<>();
+        StringBuilder cell = new StringBuilder();
+        boolean inQuotes = false;
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"')
+                inQuotes = !inQuotes;
+            else if (c == separator && !inQuotes) {
+                cells.add(cell.toString());
+                cell.setLength(0);
+            } else
+                cell.append(c);
+        }
+        cells.add(cell.toString());
+        return cells;
     }
 
     private Set<String> collectKeys(List<CsvPosition> positions) {
