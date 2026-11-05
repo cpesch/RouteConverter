@@ -88,7 +88,7 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
         ColumnTypeToRowIndexMapping mapping = parseHeader(header);
 
         List<ExcelPosition> positions = new ArrayList<>();
-        for (int i = headerRowIndex + 1, c = sheet.getPhysicalNumberOfRows(); i < c; i++) {
+        for (int i = headerRowIndex + 1, c = findLastDataRowIndex(sheet); i <= c; i++) {
             Row row = sheet.getRow(i);
             // in case there is just a formatting in a line, the row is null
             if (row != null)
@@ -96,6 +96,18 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
         }
 
         context.appendRoute(new ExcelRoute(this, sheet, mapping, positions));
+    }
+
+    // the last row with cells; empty rows behind it are left over from editing and are not positions
+    private int findLastDataRowIndex(Sheet sheet) {
+        int index = sheet.getLastRowNum();
+        while (index >= 0) {
+            Row row = sheet.getRow(index);
+            if (row != null && row.getPhysicalNumberOfCells() > 0)
+                break;
+            index--;
+        }
+        return index;
     }
 
     // finds the header row among the first rows, skipping an optional title row above it
