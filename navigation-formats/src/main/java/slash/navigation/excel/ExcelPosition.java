@@ -43,7 +43,7 @@ import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
 
 public class ExcelPosition extends BaseNavigationPosition implements ExtendedSensorNavigationPosition {
     private ColumnTypeToRowIndexMapping mapping = DEFAULT;
-    private final Row row;
+    private Row row;
     private Double accelerationX, accelerationY, accelerationZ;
 
     public ExcelPosition(Row row, ColumnTypeToRowIndexMapping mapping) {
@@ -65,6 +65,19 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
 
     Row getRow() {
         return row;
+    }
+
+    // rows are moved around by ExcelRoute, which binds the position to the row that holds its data
+    void setRow(Row row) {
+        this.row = row;
+    }
+
+    ColumnTypeToRowIndexMapping getMapping() {
+        return mapping;
+    }
+
+    void setMapping(ColumnTypeToRowIndexMapping mapping) {
+        this.mapping = mapping;
     }
 
     private Cell getCell(ColumnType type) {

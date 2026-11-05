@@ -1,15 +1,20 @@
 # PR verification for factory workspaces.
 #
-# Deployed copy of the factory's verify.yml template — do not edit here;
-# change the template and re-deploy.
+# ADAPTED copy of factory/verify/verify.yml.template: same trust properties,
+# plus a release-notes gate before the compile gate (rc/RouteConverter#337).
+# verify-template-sha256: 0d3bf0853ef2
+# ^ rc-meta scripts/check-verify-onboarding.sh compares that stamp with the
+#   template's current hash. When the template changes, re-derive and re-stamp.
 #
 # Runs the repo's own test suite on the `verify` runner label: a separate
 # act_runner instance whose job container (verify-runner image) carries NO
 # secrets — see bootstrap-server/render-act-runner-verify-config.sh. The
 # code under test is agent-authored (untrusted); that is why:
 #   - checkout uses persist-credentials: false (no token left in .git/config)
-#   - the mvn step gets no secrets in env
-#   - the workflow-level GITEA_TOKEN is only referenced in the report step
+#   - the release-notes and mvn steps get no secrets in env
+#   - the workflow-level GITEA_TOKEN is only referenced in the `pr labels` step
+#     and the report step; neither runs a file from the checkout, and
+#     `pr labels` runs before any file from the checkout does
 #
 # Triggers:
 #   - pull_request: human-pushed PRs (maintainer, manual branches)
@@ -40,6 +45,99 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
+          # the release-notes gate diffs against origin/master
+          fetch-depth: 0
+
+      # Labels for the release-notes gate, read live from the API: a dispatch
+      # run carries no PR payload, and a label added after the push has to
+      # count on a re-dispatch. curl + jq only, no file from the checkout, and
+      # it runs before any such file does. Any failure leaves the list empty:
+      # no exemption, the gate still runs (fails closed).
+      - name: pr labels
+        shell: bash
+        env:
+          GITEA_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_INPUT: ${{ github.event.inputs.pr || github.event.pull_request.number }}
+        run: |
+          set -uo pipefail
+          OUT=/tmp/verify-pr-labels.txt
+          : > "$OUT"
+          PR="$PR_INPUT"
+          if [[ -z "$PR" ]]; then
+            echo "no PR number: no labels"; exit 0
+          fi
+          if [[ ! "$PR" =~ ^[0-9]+$ ]]; then
+            echo "::warning::PR number is not numeric: no labels, the release-notes gate still runs"; exit 0
+          fi
+          if ! JSON="$(curl -sSf -H "Authorization: token $GITEA_TOKEN" \
+                "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/issues/${PR}/labels")" \
+             || ! jq -r '.[].name' <<<"$JSON" > "$OUT"; then
+            : > "$OUT"
+            echo "::warning::reading the labels of PR #${PR} failed: no exemption, the release-notes gate still runs"
+          fi
+          echo "PR #${PR} labels:"
+          cat "$OUT"
+          exit 0
+
+      # A PR that changes shipped code (a module's src/main; translated
+      # *_xx[_YY].properties excepted, the English source _en counts) must add
+      # a bullet under "## Next release" in RELEASE_NOTES.md. Same rule as
+      # .github/workflows/release-notes-check.yml, which never sees a PR merged
+      # here: it reaches GitHub as a mirror push to master (rc/RouteConverter#337).
+      # Exempt: the Crowdin branch l10n_master, the trunk patcher's
+      # agent/patcher/* fixes, and PRs labelled no-user-impact. Runs before the
+      # compile gate, so a missing bullet fails in seconds.
+      - name: release notes (Next bullet gate)
+        id: notes
+        shell: bash
+        env:
+          HEAD_REF: ${{ github.head_ref || github.ref_name }}
+          BASE_REF: ${{ github.base_ref || 'master' }}
+        run: |
+          set -uo pipefail
+          if [[ "$HEAD_REF" == "l10n_master" ]]; then
+            echo "Exempt: Crowdin translation branch (l10n_master)."; exit 0
+          fi
+          if [[ "$HEAD_REF" == agent/patcher/* ]]; then
+            echo "Exempt: trunk patcher branch."; exit 0
+          fi
+          if grep -qx 'no-user-impact' /tmp/verify-pr-labels.txt 2>/dev/null; then
+            echo "Exempt: labelled no-user-impact."; exit 0
+          fi
+
+          # A git failure here is a runner/checkout fault, not a missing
+          # bullet: exit without the marker, the report says inconclusive.
+          changed=$(git diff --name-only "origin/${BASE_REF}...HEAD") \
+            || { echo "::error::cannot diff against origin/${BASE_REF}"; exit 1; }
+          # Translations don't count; the English source (_en) is UI text and does.
+          shipped=$(grep -E '^[^/]+/src/main/' <<<"$changed" \
+            | awk '/_en\.properties$/ || !/_[a-z][a-z](_[A-Z][A-Z])?\.properties$/' || true)
+          if [[ -z "$shipped" ]]; then
+            echo "No shipped code changed."; exit 0
+          fi
+          echo "Shipped code changed:"
+          echo "$shipped"
+
+          base=/tmp/RELEASE_NOTES.base.md
+          git show "origin/${BASE_REF}:RELEASE_NOTES.md" > "$base" \
+            || { echo "::error::cannot read RELEASE_NOTES.md of origin/${BASE_REF}"; exit 1; }
+          if added=$(python3 .github/scripts/release_notes.py added-next "$base" RELEASE_NOTES.md); then
+            echo "New Next release bullets:"
+            echo "$added"
+            exit 0
+          fi
+          # The PR comment keeps the first 4000 chars of the summary: cap the
+          # file list so the instruction line always fits.
+          n=$(wc -l <<<"$shipped")
+          {
+            head -30 <<<"$shipped"
+            if [[ "$n" -gt 30 ]]; then echo "… and $((n - 30)) more"; fi
+            echo
+            echo 'This PR changes shipped code but adds no bullet under "## Next release" in RELEASE_NOTES.md. Add one in the matching ### New features / ### Changes / ### Fixes subsection (user-facing wording, see AGENTS.md "Release notes"), or label the PR no-user-impact and re-dispatch verify.'
+          } > /tmp/verify-summary.txt
+          : > /tmp/verify-notes-failed
+          echo '::error::shipped code changed without a "## Next release" bullet in RELEASE_NOTES.md'
+          exit 1
 
       # A compile break is the cheapest failure to detect and the most
       # expensive to mistake for a test failure: navigation-formats did not
@@ -112,9 +210,12 @@ jobs:
           # output). Anchor the verdict on real build output, and report an
           # infra fault as inconclusive — the action there is re-dispatch, not
           # debugging the diff.
-          # the compile gate runs first, so its failure leaves no mvn test log
-          # at all — name it instead of calling the run inconclusive
-          if [[ -e /tmp/verify-compile-failed ]]; then
+          # the release-notes and compile gates run first, so their failure
+          # leaves no mvn test log at all — name them instead of calling the
+          # run inconclusive
+          if [[ -e /tmp/verify-notes-failed ]]; then
+            HEADLINE='🤖 **verify failed** — shipped code changed without a "## Next release" bullet in RELEASE_NOTES.md (compile and tests did not run).'
+          elif [[ -e /tmp/verify-compile-failed ]]; then
             HEADLINE='🤖 **verify failed** — the sources do not compile (the test suite never ran).'
           # Maven logs a failed build at ERROR level: `[ERROR] BUILD FAILURE`.
           elif grep -qE '^\[(INFO|ERROR)\] BUILD (SUCCESS|FAILURE)' /tmp/verify-mvn.log 2>/dev/null; then
