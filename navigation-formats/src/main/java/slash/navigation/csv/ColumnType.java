@@ -38,8 +38,9 @@ enum ColumnType {
     Pressure("Druck", "Pressure"),
     Temperature("Temperatur", "Temperature"),
     Heartbeat("Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
-    Time("Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
+    Time("Zeit", "Timestamp", "Zeitstempel", "Date", "Datum", "Positionszeit", "Position time", "Positiontime"),
     Description("Beschreibung", "Comment", "Kommentar"),
+    Coordinates("Koordinaten"),
     Unsupported();
 
     private final List<String> alternativeNames;
@@ -50,5 +51,18 @@ enum ColumnType {
 
     public List<String> getAlternativeNames() {
         return alternativeNames;
+    }
+
+    static ColumnType classify(String value) {
+        if (value != null) {
+            for (ColumnType columnType : values()) {
+                if (columnType.name().equals(value))
+                    return columnType;
+                for (String alternativeName : columnType.getAlternativeNames())
+                    if (alternativeName.equals(value))
+                        return columnType;
+            }
+        }
+        return Unsupported;
     }
 }

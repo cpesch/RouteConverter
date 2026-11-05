@@ -43,11 +43,12 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.toArray;
 import static slash.common.system.Platform.isWindows;
@@ -67,6 +68,8 @@ import static slash.navigation.mapview.mapsforge.renderer.LocalThemeListCellRend
  */
 
 public class MapSelector {
+    private static final Logger log = Logger.getLogger(MapSelector.class.getName());
+
     private static final GridConstraints MAP_SELECTOR_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER,
             FILL_BOTH, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(MAX_VALUE, MAX_VALUE), 0, false);
@@ -76,6 +79,7 @@ public class MapSelector {
     private JComboBox<LocalTheme> comboBoxTheme;
     private JPanel mapViewPanel;
     private JLabel labelCopyrightText;
+    private boolean updatingZoom = false;
 
     public MapSelector(MapsforgeMapManager mapManager, final AwtGraphicMapView mapView) {
         $$$setupUI$$$();
@@ -83,7 +87,7 @@ public class MapSelector {
 
         comboBoxZoom.setModel(new DefaultComboBoxModel<>());
         comboBoxZoom.addItemListener(e -> {
-            if (e.getStateChange() != SELECTED) {
+            if (e.getStateChange() != SELECTED || updatingZoom) {
                 return;
             }
             Integer zoom = (Integer) e.getItem();
@@ -150,19 +154,44 @@ public class MapSelector {
         labelCopyrightText.setText("<html>" + copyrightText);
     }
 
+    static int clampZoom(int zoomLevel, byte zoomLevelMin, byte zoomLevelMax) {
+        if (zoomLevel < zoomLevelMin) {
+            return zoomLevelMin;
+        }
+        if (zoomLevel > zoomLevelMax) {
+            return zoomLevelMax;
+        }
+        return zoomLevel;
+    }
+
     private void zoomChanged(byte zoomLevelMin, byte zoomLevelMax, int zoomLevel) {
-        ComboBoxModel<Integer> model = comboBoxZoom.getModel();
-        if (model.getSize() == 0 ||
-                model.getElementAt(0) != zoomLevelMin ||
-                model.getElementAt(model.getSize() - 1) != zoomLevelMax) {
-            comboBoxZoom.setModel(new DefaultComboBoxModel<>(toArray(asRange(zoomLevelMin, zoomLevelMax))));
+        if (updatingZoom) {
+            return;
         }
 
+        updatingZoom = true;
         try {
-            comboBoxZoom.setSelectedItem(zoomLevel);
-        } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
-            // work around exceptions deep in Swings BasicListUI on Mac OS X
-            comboBoxZoom.setSelectedIndex(min(zoomLevel - 1, zoomLevelMax));
+            ComboBoxModel<Integer> model = comboBoxZoom.getModel();
+            if (model.getSize() == 0 ||
+                    model.getElementAt(0) != zoomLevelMin ||
+                    model.getElementAt(model.getSize() - 1) != zoomLevelMax) {
+                comboBoxZoom.setModel(new DefaultComboBoxModel<>(toArray(asRange(zoomLevelMin, zoomLevelMax))));
+            }
+
+            int clampedZoomLevel = clampZoom(zoomLevel, zoomLevelMin, zoomLevelMax);
+            Integer selectedItem = (Integer) comboBoxZoom.getSelectedItem();
+            if (selectedItem != null && selectedItem == clampedZoomLevel) {
+                return;
+            }
+
+            try {
+                comboBoxZoom.setSelectedItem(clampedZoomLevel);
+            } catch (RuntimeException e) {
+                // work around exceptions deep in Swing's combo box UI, e.g. on re-entrant updates while the editor/popup is updating
+                log.log(Level.FINE, "Cannot select zoom level " + clampedZoomLevel, e);
+            }
+        } finally {
+            updatingZoom = false;
         }
     }
 
