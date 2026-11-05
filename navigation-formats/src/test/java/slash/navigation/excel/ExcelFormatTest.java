@@ -425,7 +425,8 @@ public class ExcelFormatTest {
 
     @Test
     public void revertWithIndicesKeepsInMemoryOrderInSyncWithSheet() throws IOException {
-        assertXlsAndXlsx(route -> route.revert(new int[]{0, 2}), 52.5004, 52.5002, 52.5);
+        // a subset, so that ignoring the indices and reverting all positions fails
+        assertXlsAndXlsx(route -> route.revert(new int[]{0, 1}), 52.5002, 52.5, 52.5004);
     }
 
     @Test
