@@ -128,7 +128,7 @@ public class MapsDialog extends SimpleDialog {
             if (selectedRow == -1) {
                 return;
             }
-            int row = tableAvailableOnlineMaps.convertRowIndexToView(selectedRow);
+            int row = tableAvailableOnlineMaps.convertRowIndexToModel(selectedRow);
             LocalMap map = getMapsforgeMapManager().getAvailableOnlineMapsModel().getItem(row);
             r.showMapBorder(map.getType().equals(Mapsforge) ? map.getBoundingBox() : null);
         });
@@ -162,7 +162,7 @@ public class MapsDialog extends SimpleDialog {
             if (selectedRow == -1) {
                 return;
             }
-            int row = tableAvailableOfflineMaps.convertRowIndexToView(selectedRow);
+            int row = tableAvailableOfflineMaps.convertRowIndexToModel(selectedRow);
             LocalMap map = getMapsforgeMapManager().getAvailableOfflineMapsModel().getItem(row);
             try {
                 r.showMapBorder(map.getBoundingBox());
@@ -214,7 +214,7 @@ public class MapsDialog extends SimpleDialog {
             if (selectedRow == -1) {
                 return;
             }
-            int row = tableDownloadableMaps.convertRowIndexToView(selectedRow);
+            int row = tableDownloadableMaps.convertRowIndexToModel(selectedRow);
             RemoteMap map = getMapsforgeMapManager().getDownloadableMapsModel().getItem(row);
             r.showMapBorder(map.getBoundingBox());
             updateLabel();

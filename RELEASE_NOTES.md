@@ -29,6 +29,7 @@
 - Fast mouse-wheel zooming on the map no longer crashes the app (#321)
 - No longer reports a crash from the JDK's shutdown cleanup of temporary tile image files on exit (#322)
 - Maps dialog: a `.map` file that isn't a valid offline map (e.g. a failed download) is no longer listed and no longer crashes the app when selected (#323)
+- Maps and Downloads dialogs: with a sorted table, selecting, displaying, stopping, restarting or removing now acts on the row you selected, not another one (#333)
 
 ## 3.7 — 2026-10-10
 
