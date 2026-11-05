@@ -68,6 +68,7 @@ import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.Mapsforge;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.gui.helpers.JMenuHelper.*;
+import static slash.navigation.maps.mapsforge.models.OpenStreetMap.OPENSTREETMAP_URL;
 
 /**
  * A small graphical user interface for the route conversion based on Opensource software and free services.
@@ -285,6 +286,13 @@ public class RouteConverter extends BaseRouteConverter {
                     log.warning("Could not scan local maps and themes: " + e);
                     showError(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle());
                 });
+            }
+
+            if (getMapsforgeMapManager().isDisplayedOnlineMapMissing()) {
+                getNotificationManager().showNotification(BaseRouteConverter.getBundle().getString("map-no-longer-available"),
+                        Application.getInstance().getContext().getActionManager().get("show-maps"));
+                LocalMap openStreetMap = getMapsforgeMapManager().getAvailableOnlineMapsModel().getItemByUrl(OPENSTREETMAP_URL);
+                getMapsforgeMapManager().getDisplayedMapModel().setItem(openStreetMap);
             }
 
             LocalMap mapAfterScan = getMapsforgeMapManager().getDisplayedMapModel().getItem();
