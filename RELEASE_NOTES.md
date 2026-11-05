@@ -51,6 +51,7 @@
 - Pressing the context-menu key in a table before any mouse click no longer crashes the app; the menu opens below the selected cell (#324)
 - Excel: sorting or reverting positions now survives saving and reopening the .xls/.xlsx; before, the positions table showed the new order but the saved file kept the old one (#338)
 - Excel: a new position list or converted .xls/.xlsx no longer gets an empty column (such as Heartbeat) left over from another Excel route edited earlier in the same session (#341)
+- Excel: moving a position to the top or bottom, or removing one, on a sheet with an empty row between positions no longer leaves a position without coordinates after saving and reopening the file (#340)
 
 ## 3.7 — 2026-10-10
 

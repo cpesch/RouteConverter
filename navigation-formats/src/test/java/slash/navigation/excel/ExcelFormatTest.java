@@ -354,6 +354,69 @@ public class ExcelFormatTest {
         assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel2008Format(), createWorkbookWithoutTitleRow(new XSSFWorkbook()), operation, expectedLatitudes);
     }
 
+    // a formatting-only line between data rows: the row exists but has no cells, unlike a row that was never created
+    private static Workbook createWorkbookWithoutTitleRowAndGapRow(Workbook workbook) {
+        Sheet sheet = workbook.createSheet("Data");
+
+        Row header = sheet.createRow(0);
+        header.createCell(0).setCellValue("Latitude");
+        header.createCell(1).setCellValue("Longitude");
+
+        Row first = sheet.createRow(1);
+        first.createCell(0).setCellValue(LATITUDES[0]);
+        first.createCell(1).setCellValue(LONGITUDES[0]);
+
+        sheet.createRow(2);
+
+        Row second = sheet.createRow(3);
+        second.createCell(0).setCellValue(LATITUDES[1]);
+        second.createCell(1).setCellValue(LONGITUDES[1]);
+
+        Row third = sheet.createRow(4);
+        third.createCell(0).setCellValue(LATITUDES[2]);
+        third.createCell(1).setCellValue(LONGITUDES[2]);
+        return workbook;
+    }
+
+    private static void assertXlsAndXlsxWithGapRow(RouteOperation operation, double... expectedLatitudes) throws IOException {
+        assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel97Format(), createWorkbookWithoutTitleRowAndGapRow(new HSSFWorkbook()), operation, expectedLatitudes);
+        assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel2008Format(), createWorkbookWithoutTitleRowAndGapRow(new XSSFWorkbook()), operation, expectedLatitudes);
+    }
+
+    @Test
+    public void parsingSkipsAGapRowBetweenDataRows() {
+        Workbook workbook = createWorkbookWithoutTitleRowAndGapRow(new HSSFWorkbook());
+        ParserContextImpl<ExcelRoute> context = new ParserContextImpl<>();
+        new MicrosoftExcel97Format().parseWorkbook(workbook, context);
+
+        assertLatitudes(context.getRoutes().get(0).getPositions(), LATITUDES);
+    }
+
+    @Test
+    public void topKeepsInMemoryOrderInSyncWithSheetWithGapRow() throws IOException {
+        assertXlsAndXlsxWithGapRow(route -> route.top(2, 0), LATITUDES[2], LATITUDES[0], LATITUDES[1]);
+    }
+
+    @Test
+    public void bottomKeepsInMemoryOrderInSyncWithSheetWithGapRow() throws IOException {
+        assertXlsAndXlsxWithGapRow(route -> route.bottom(0, 0), LATITUDES[1], LATITUDES[2], LATITUDES[0]);
+    }
+
+    @Test
+    public void moveKeepsInMemoryOrderInSyncWithSheetWithGapRow() throws IOException {
+        assertXlsAndXlsxWithGapRow(route -> route.move(0, 1), LATITUDES[1], LATITUDES[0], LATITUDES[2]);
+    }
+
+    @Test
+    public void removeKeepsInMemoryOrderInSyncWithSheetWithGapRow() throws IOException {
+        assertXlsAndXlsxWithGapRow(route -> route.remove(1), LATITUDES[0], LATITUDES[2]);
+    }
+
+    @Test
+    public void addKeepsInMemoryOrderInSyncWithSheetWithGapRow() throws IOException {
+        assertXlsAndXlsxWithGapRow(route -> addPosition(route, 1), LATITUDES[0], 52.6, LATITUDES[1], LATITUDES[2]);
+    }
+
     private static void assertXlsAndXlsx(double[] latitudes, double[] longitudes, RouteOperation operation, double... expectedLatitudes) throws IOException {
         assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel97Format(), createWorkbookWithoutTitleRow(new HSSFWorkbook(), latitudes, longitudes), operation, expectedLatitudes);
         assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel2008Format(), createWorkbookWithoutTitleRow(new XSSFWorkbook(), latitudes, longitudes), operation, expectedLatitudes);
