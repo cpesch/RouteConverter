@@ -20,15 +20,19 @@
 package slash.navigation.excel;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContextImpl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -185,19 +189,7 @@ public class ExcelFormatTest {
     private static final double[] LONGITUDES = {13.4, 13.4003, 13.4006};
 
     private static Workbook createWorkbookWithoutTitleRow() {
-        Workbook workbook = new HSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Data");
-
-        Row header = sheet.createRow(0);
-        header.createCell(0).setCellValue("Latitude");
-        header.createCell(1).setCellValue("Longitude");
-
-        for (int i = 0; i < LATITUDES.length; i++) {
-            Row row = sheet.createRow(i + 1);
-            row.createCell(0).setCellValue(LATITUDES[i]);
-            row.createCell(1).setCellValue(LONGITUDES[i]);
-        }
-        return workbook;
+        return createWorkbookWithoutTitleRow(new HSSFWorkbook());
     }
 
     private interface RouteOperation {
@@ -309,5 +301,211 @@ public class ExcelFormatTest {
     @Test
     public void addLeavesNoEmptyRowWithTitleRow() throws IOException {
         assertLatitudesAfter(createWorkbookWithTitleRow(), route -> addPosition(route, 1), 52.5, 52.6, 52.5002, 52.5004);
+    }
+
+    // in-memory positions must show the same order as the sheet that is written
+
+    private static Workbook createWorkbookWithoutTitleRow(Workbook workbook) {
+        Sheet sheet = workbook.createSheet("Data");
+
+        Row header = sheet.createRow(0);
+        header.createCell(0).setCellValue("Latitude");
+        header.createCell(1).setCellValue("Longitude");
+
+        for (int i = 0; i < LATITUDES.length; i++) {
+            Row row = sheet.createRow(i + 1);
+            row.createCell(0).setCellValue(LATITUDES[i]);
+            row.createCell(1).setCellValue(LONGITUDES[i]);
+        }
+        return workbook;
+    }
+
+    private static void assertLatitudes(List<ExcelPosition> positions, double... expectedLatitudes) {
+        assertEquals(expectedLatitudes.length, positions.size());
+        for (int i = 0; i < expectedLatitudes.length; i++)
+            assertEquals("latitude " + i, expectedLatitudes[i], positions.get(i).getLatitude(), 0.0);
+    }
+
+    private static void assertInMemoryAndRereadLatitudesAfter(ExcelFormat format, Workbook workbook, RouteOperation operation,
+                                                              double... expectedLatitudes) throws IOException {
+        ParserContextImpl<ExcelRoute> context = new ParserContextImpl<>();
+        format.parseWorkbook(workbook, context);
+        ExcelRoute route = context.getRoutes().get(0);
+
+        operation.apply(route);
+
+        assertLatitudes(route.getPositions(), expectedLatitudes);
+
+        ByteArrayOutputStream target = new ByteArrayOutputStream();
+        format.write(route, target, 0, route.getPositionCount());
+        ParserContextImpl<ExcelRoute> reread = new ParserContextImpl<>();
+        format.read(new ByteArrayInputStream(target.toByteArray()), reread);
+
+        assertLatitudes(reread.getRoutes().get(0).getPositions(), expectedLatitudes);
+    }
+
+    private static void assertXlsAndXlsx(RouteOperation operation, double... expectedLatitudes) throws IOException {
+        assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel97Format(), createWorkbookWithoutTitleRow(new HSSFWorkbook()), operation, expectedLatitudes);
+        assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel2008Format(), createWorkbookWithoutTitleRow(new XSSFWorkbook()), operation, expectedLatitudes);
+    }
+
+    @Test
+    public void topKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.top(2, 0), 52.5004, 52.5, 52.5002);
+    }
+
+    @Test
+    public void bottomKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.bottom(0, 0), 52.5002, 52.5004, 52.5);
+    }
+
+    @Test
+    public void moveKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.move(0, 1), 52.5002, 52.5, 52.5004);
+    }
+
+    // move() swaps the two given positions, like BaseRoute#move(), instead of shifting the
+    // positions between them: the row at index 1 stays where it is
+    @Test
+    public void moveWithGapKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.move(0, 2), 52.5004, 52.5002, 52.5);
+    }
+
+    @Test
+    public void topWithIndexEqualToOffsetIsANoOp() throws IOException {
+        assertXlsAndXlsx(route -> route.top(0, 0), 52.5, 52.5002, 52.5004);
+    }
+
+    @Test
+    public void bottomWithIndexEqualToOffsetIsANoOp() throws IOException {
+        assertXlsAndXlsx(route -> route.bottom(2, 0), 52.5, 52.5002, 52.5004);
+    }
+
+    @Test
+    public void moveWithEqualIndicesIsANoOp() throws IOException {
+        assertXlsAndXlsx(route -> route.move(1, 1), 52.5, 52.5002, 52.5004);
+    }
+
+    @Test
+    public void removeKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.remove(1), 52.5, 52.5004);
+    }
+
+    @Test
+    public void removeRangeKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.remove(0, 2), 52.5004);
+        assertXlsAndXlsx(route -> route.remove(1, 3), 52.5);
+    }
+
+    @Test
+    public void addKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> addPosition(route, 1), 52.5, 52.6, 52.5002, 52.5004);
+    }
+
+    @Test
+    public void subsequentOperationsKeepInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> {
+            route.top(2, 0);
+            route.move(1, 2);
+            route.bottom(0, 0);
+        }, 52.5002, 52.5, 52.5004);
+        assertXlsAndXlsx(route -> {
+            route.bottom(0, 0);
+            route.remove(0);
+            addPosition(route, 0);
+        }, 52.6, 52.5004, 52.5);
+    }
+
+    @Test
+    public void movedPositionKeepsItsData() throws IOException {
+        assertXlsAndXlsx(route -> {
+            ExcelPosition last = route.getPosition(2);
+            route.top(2, 0);
+            assertSame(last, route.getPosition(0));
+            assertEquals(52.5004, last.getLatitude(), 0.0);
+
+            last.setLatitude(53.0);
+            route.bottom(0, 0);
+            assertSame(last, route.getPosition(2));
+        }, 52.5, 52.5002, 53.0);
+    }
+
+    @Test
+    public void removedPositionsKeepTheirDataAndCanBeAddedAgain() throws IOException {
+        assertXlsAndXlsx(route -> {
+            List<ExcelPosition> removed = route.remove(0, 2);
+            assertLatitudes(removed, 52.5, 52.5002);
+            assertLatitudes(route.getPositions(), 52.5004);
+
+            // undo adds the removed positions again, from the last to the first
+            for (int i = removed.size() - 1; i >= 0; i--)
+                route.add(0, removed.get(i));
+            assertSame(removed.get(0), route.getPosition(0));
+            assertSame(removed.get(1), route.getPosition(1));
+        }, 52.5, 52.5002, 52.5004);
+    }
+
+    @Test
+    public void removedPositionKeepsItsTime() throws IOException {
+        CompactCalendar time = calendar(2026, 11, 5, 9, 32, 14);
+        assertXlsAndXlsx(route -> {
+            route.add(1, route.createPosition(13.5, 52.6, null, null, time, null));
+            ExcelPosition removed = route.remove(1);
+            route.add(1, removed);
+            assertEquals(time, route.getPosition(1).getTime());
+        }, 52.5, 52.6, 52.5002, 52.5004);
+    }
+
+    @Test
+    public void addsAPositionFromAnotherWorkbook() throws IOException {
+        assertXlsAndXlsx(route -> route.add(1, new ExcelPosition(13.5, 52.7, null, null, null, "X")), 52.5, 52.7, 52.5002, 52.5004);
+    }
+
+    // both routes share the DEFAULT mapping instance, so attach() copies cells instead of transferring fields;
+    // one route is HSSF-backed and the other XSSF-backed, forcing copyCells' cell style class mismatch branch
+    @Test
+    public void attachClonesTimeCellStyleAcrossWorkbookTypes() {
+        CompactCalendar time = calendar(2026, 11, 5, 9, 32, 14);
+
+        ExcelRoute hssfRoute = new ExcelRoute(new MicrosoftExcel97Format(), "Data", new ArrayList<>());
+        ExcelPosition position = hssfRoute.createPosition(13.5, 52.7, null, null, time, "X");
+
+        ExcelRoute xssfRoute = new ExcelRoute(new MicrosoftExcel2008Format(), "Data", new ArrayList<>());
+        xssfRoute.add(0, position);
+
+        ExcelPosition attached = xssfRoute.getPosition(0);
+        assertEquals(time, attached.getTime());
+
+        Cell timeCell = attached.getRow().getCell(ColumnTypeToRowIndexMapping.DEFAULT.getIndex(ColumnType.Time));
+        assertNotEquals(0, timeCell.getCellStyle().getIndex());
+        assertEquals("m/d/yy h:mm", timeCell.getCellStyle().getDataFormatString());
+    }
+
+    // the target route's mapping only has Latitude/Longitude columns, so position.getMapping() != mapping and
+    // attach() takes the field-transfer branch instead of copyCells; assert every transferable field survives it
+    @Test
+    public void attachTransfersAllSensorFieldsWhenMappingDiffers() throws IOException {
+        CompactCalendar time = calendar(2026, 11, 5, 9, 32, 14);
+        assertXlsAndXlsx(route -> {
+            // Heartbeat is deliberately left out: it has no entry in ColumnTypeToRowIndexMapping.DEFAULT, so
+            // setting it on a DEFAULT-mapped position would add a column to that shared static mapping instance
+            ExcelPosition position = new ExcelPosition(13.5, 52.7, 123.0, 45.0, time, "X");
+            position.setHeading(90.0);
+            position.setPressure(1013.0);
+            position.setTemperature(21.5);
+
+            route.add(1, position);
+            ExcelPosition added = route.getPosition(1);
+
+            assertEquals(13.5, added.getLongitude(), 0.0);
+            assertEquals(52.7, added.getLatitude(), 0.0);
+            assertEquals(123.0, added.getElevation(), 0.0);
+            assertEquals(45.0, added.getSpeed(), 0.0);
+            assertEquals(time, added.getTime());
+            assertEquals("X", added.getDescription());
+            assertEquals(90.0, added.getHeading(), 0.0);
+            assertEquals(1013.0, added.getPressure(), 0.0);
+            assertEquals(21.5, added.getTemperature(), 0.0);
+        }, 52.5, 52.7, 52.5002, 52.5004);
     }
 }

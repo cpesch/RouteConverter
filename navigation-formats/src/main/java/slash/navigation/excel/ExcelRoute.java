@@ -19,10 +19,14 @@
 */
 package slash.navigation.excel;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.bcr.BcrFormat;
@@ -54,9 +58,13 @@ import slash.navigation.tcx.TcxFormat;
 import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
+import static org.apache.poi.ss.usermodel.CellType.FORMULA;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteComments.createRouteName;
 import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
@@ -118,16 +126,17 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         return sheet.getWorkbook();
     }
 
-    private int shiftRowToTheEnd(int index) {
-        ExcelPosition row = getPosition(index);
-        int rowForIndex = row.getRow().getRowNum();
-        sheet.shiftRows(rowForIndex, rowForIndex, sheet.getLastRowNum() - rowForIndex + 1);
-        return rowForIndex;
+    private int getRowNum(int index) {
+        return getPosition(index).getRow().getRowNum();
     }
 
-    private void shiftRowFromEndTo(int index) {
+    private void shiftRowToTheEnd(int rowNum) {
+        sheet.shiftRows(rowNum, rowNum, sheet.getLastRowNum() - rowNum + 1);
+    }
+
+    private void shiftRowFromEndTo(int rowNum) {
         int lastRowNum = sheet.getLastRowNum();
-        sheet.shiftRows(lastRowNum, lastRowNum, index - lastRowNum);
+        sheet.shiftRows(lastRowNum, lastRowNum, rowNum - lastRowNum);
         removeEmptyRow(lastRowNum);
     }
 
@@ -138,74 +147,214 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
             sheet.removeRow(row);
     }
 
+    // HSSF moves the cells of shifted rows between Row objects that stay at their row number and XSSF
+    // replaces the Row objects of the sheet: bind the positions to the rows again, in the order of the sheet
+    private void bindPositionsToRows() {
+        int index = 0;
+        for (int rowNum = mapping.getHeaderRowIndex() + 1, lastRowNum = sheet.getLastRowNum();
+             rowNum <= lastRowNum && index < positions.size(); rowNum++) {
+            Row row = sheet.getRow(rowNum);
+            // in case there is just a formatting in a line, the row is null and no position
+            if (row != null)
+                positions.get(index++).setRow(row);
+        }
+    }
+
     public void top(int index, int topOffset) {
-        // shift index row to the end
-        int rowForIndex = shiftRowToTheEnd(index);
+        if (index > topOffset) {
+            int rowForIndex = getRowNum(index);
+            int rowForTopOffset = getRowNum(topOffset);
 
-        // move all rows between topOffset and rowForIndex one down
-        int rowForTopOffset = mapping.getHeaderRowIndex() + 1 + topOffset;
-        sheet.shiftRows(rowForTopOffset, rowForIndex - 1, 1);
+            // shift index row to the end
+            shiftRowToTheEnd(rowForIndex);
 
-        // move index row from the end to topOffset row
-        shiftRowFromEndTo(rowForTopOffset);
+            // move all rows between topOffset and index one down
+            sheet.shiftRows(rowForTopOffset, rowForIndex - 1, 1);
+
+            // move index row from the end to topOffset row
+            shiftRowFromEndTo(rowForTopOffset);
+        }
 
         super.top(index, topOffset);
+        bindPositionsToRows();
     }
 
     public void bottom(int index, int bottomOffset) {
-        // shift index row to the end
-        int lastRowNum = sheet.getLastRowNum();
-        int rowForIndex = shiftRowToTheEnd(index);
+        int bottomIndex = getPositionCount() - 1 - bottomOffset;
+        if (index < bottomIndex) {
+            int rowForIndex = getRowNum(index);
+            int rowForBottomIndex = getRowNum(bottomIndex);
 
-        // move all rows between rowForIndex and lastRowNum-bottomOffset one up
-        sheet.shiftRows(rowForIndex + 1, lastRowNum - bottomOffset, -1);
+            // shift index row to the end
+            shiftRowToTheEnd(rowForIndex);
 
-        // move index row from the end to lastRowNum-bottomOffset row
-        shiftRowFromEndTo(sheet.getLastRowNum() - (bottomOffset + 1));
+            // move all rows between index and bottomIndex one up
+            sheet.shiftRows(rowForIndex + 1, rowForBottomIndex, -1);
+
+            // move index row from the end to bottomIndex row
+            shiftRowFromEndTo(rowForBottomIndex);
+        }
 
         super.bottom(index, bottomOffset);
+        bindPositionsToRows();
     }
 
     public void move(int firstIndex, int secondIndex) {
-        // shift secondIndex row to the end
-        shiftRowToTheEnd(secondIndex);
+        if (firstIndex != secondIndex) {
+            int rowForFirstIndex = getRowNum(firstIndex);
+            int rowForSecondIndex = getRowNum(secondIndex);
 
-        // move first row to secondIndex
-        ExcelPosition first = getPosition(firstIndex);
-        int rowForFirstIndex = first.getRow().getRowNum();
-        sheet.shiftRows(rowForFirstIndex, rowForFirstIndex, secondIndex - firstIndex);
+            // shift secondIndex row to the end
+            shiftRowToTheEnd(rowForSecondIndex);
 
-        // move secondIndex row from the end to firstIndex row
-        shiftRowFromEndTo(rowForFirstIndex);
+            // move firstIndex row to secondIndex row
+            sheet.shiftRows(rowForFirstIndex, rowForFirstIndex, rowForSecondIndex - rowForFirstIndex);
+
+            // move secondIndex row from the end to firstIndex row
+            shiftRowFromEndTo(rowForFirstIndex);
+        }
 
         super.move(firstIndex, secondIndex);
+        bindPositionsToRows();
     }
 
     public void add(int index, ExcelPosition position) {
+        // a position from another sheet, e.g. one removed before and added again by undo, gets a row of its own
+        if (position.getRow().getSheet() != sheet)
+            attach(position);
+
         // shift all rows from index one position down
-        int rowForIndex = index < getPositionCount() ? getPosition(index).getRow().getRowNum() : position.getRow().getRowNum();
+        int sourceRowNum = position.getRow().getRowNum();
+        int rowForIndex = index < getPositionCount() ? getRowNum(index) : sourceRowNum;
         sheet.shiftRows(rowForIndex, sheet.getLastRowNum(), 1);
 
-        // shift row to add to the desired position (+1 for header)
-        int sourceRowIndex = position.getRow().getRowNum() + 1;
-        sheet.shiftRows(sourceRowIndex, sourceRowIndex, rowForIndex - sourceRowIndex);
-        removeEmptyRow(sourceRowIndex);
+        // shift row to add to the desired position
+        int shiftedSourceRowNum = sourceRowNum + 1;
+        sheet.shiftRows(shiftedSourceRowNum, shiftedSourceRowNum, rowForIndex - shiftedSourceRowNum);
+        removeEmptyRow(shiftedSourceRowNum);
 
         positions.add(index, position);
+        bindPositionsToRows();
     }
 
     public ExcelPosition remove(int index) {
-        // shift all rows one forward to index
-        int rowForIndex = getPosition(index).getRow().getRowNum() + 1;
+        return remove(index, index + 1).get(0);
+    }
+
+    public List<ExcelPosition> remove(int fromIndex, int toIndex) {
+        if (fromIndex >= toIndex)
+            return super.remove(fromIndex, toIndex);
+
+        int firstRowNum = getRowNum(fromIndex);
+        int lastRemovedRowNum = getRowNum(toIndex - 1);
+        int count = lastRemovedRowNum - firstRowNum + 1;
+
+        // the shifts below overwrite the rows, keep their data for undo
+        for (int i = fromIndex; i < toIndex; i++)
+            detach(getPosition(i));
+
+        // shift all rows behind the removed rows forward
         int lastRowNum = sheet.getLastRowNum();
-        sheet.shiftRows(rowForIndex, lastRowNum, -1);
+        if (lastRemovedRowNum < lastRowNum)
+            sheet.shiftRows(lastRemovedRowNum + 1, lastRowNum, -count);
 
-        // remove last row
-        Row row = sheet.getRow(lastRowNum);
-        if (row != null)
-            sheet.removeRow(row);
+        // remove the rows that are left at the end
+        for (int rowNum = lastRowNum - count + 1; rowNum <= lastRowNum; rowNum++) {
+            Row row = sheet.getRow(rowNum);
+            if (row != null)
+                sheet.removeRow(row);
+        }
 
-        return super.remove(index);
+        List<ExcelPosition> removed = super.remove(fromIndex, toIndex);
+        bindPositionsToRows();
+        return removed;
+    }
+
+    // a sheet outside of the workbook that holds the rows of removed positions
+    private Sheet detachedSheet;
+    private int detachedRowNum;
+    private final Map<StyleKey, CellStyle> detachedStyles = new HashMap<>();
+    private final Map<StyleKey, CellStyle> attachedStyles = new HashMap<>();
+
+    // a style of a workbook; POI returns a new style object for each cell
+    private record StyleKey(Workbook workbook, short index) {
+    }
+
+    private Row createDetachedRow() {
+        Workbook workbook = sheet.getWorkbook();
+        if (detachedSheet == null || detachedRowNum > workbook.getSpreadsheetVersion().getLastRowIndex()) {
+            Workbook detachedWorkbook = workbook instanceof HSSFWorkbook ? new HSSFWorkbook() : new XSSFWorkbook();
+            detachedSheet = detachedWorkbook.createSheet();
+            detachedRowNum = 0;
+            detachedStyles.clear();
+            attachedStyles.clear();
+        }
+        return detachedSheet.createRow(detachedRowNum++);
+    }
+
+    private void detach(ExcelPosition position) {
+        Row row = createDetachedRow();
+        copyCells(position.getRow(), row, detachedStyles);
+        position.setRow(row);
+    }
+
+    private void attach(ExcelPosition position) {
+        Row row = sheet.createRow(sheet.getLastRowNum() + 1);
+        if (position.getMapping() == mapping) {
+            copyCells(position.getRow(), row, attachedStyles);
+            position.setRow(row);
+        } else {
+            // the columns of a position from another route differ, transfer the values it has
+            ExcelPosition source = new ExcelPosition(position.getRow(), position.getMapping());
+            position.setRow(row);
+            position.setMapping(mapping);
+            transfer(source.getLongitude(), position::setLongitude);
+            transfer(source.getLatitude(), position::setLatitude);
+            transfer(source.getElevation(), position::setElevation);
+            transfer(source.getSpeed(), position::setSpeed);
+            transfer(source.getTime(), position::setTime);
+            transfer(source.getDescription(), position::setDescription);
+            transfer(source.getHeading(), position::setHeading);
+            transfer(source.getHeartBeat(), position::setHeartBeat);
+            transfer(source.getPressure(), position::setPressure);
+            transfer(source.getTemperature(), position::setTemperature);
+        }
+    }
+
+    private static <T> void transfer(T value, Consumer<T> setter) {
+        if (value != null)
+            setter.accept(value);
+    }
+
+    private static void copyCells(Row source, Row target, Map<StyleKey, CellStyle> styles) {
+        Workbook workbook = target.getSheet().getWorkbook();
+        for (Cell cell : source) {
+            Cell copy = target.createCell(cell.getColumnIndex());
+            CellType cellType = cell.getCellType();
+            if (cellType == FORMULA)
+                // a formula may refer to cells of the sheet that it is copied away from
+                cellType = cell.getCachedFormulaResultType();
+            switch (cellType) {
+                case NUMERIC -> copy.setCellValue(cell.getNumericCellValue());
+                case STRING -> copy.setCellValue(cell.getStringCellValue());
+                case BOOLEAN -> copy.setCellValue(cell.getBooleanCellValue());
+                case ERROR -> copy.setCellErrorValue(cell.getErrorCellValue());
+                default -> copy.setBlank();
+            }
+
+            // keep the date format of time cells; share styles since the number of styles of a workbook is limited
+            CellStyle style = cell.getCellStyle();
+            if (style.getIndex() != 0) {
+                copy.setCellStyle(styles.computeIfAbsent(new StyleKey(source.getSheet().getWorkbook(), style.getIndex()), key -> {
+                    CellStyle clone = workbook.createCellStyle();
+                    if (clone.getClass().equals(style.getClass()))
+                        clone.cloneStyleFrom(style);
+                    else
+                        clone.setDataFormat(workbook.createDataFormat().getFormat(style.getDataFormatString()));
+                    return clone;
+                }));
+            }
+        }
     }
 
     public ExcelPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
