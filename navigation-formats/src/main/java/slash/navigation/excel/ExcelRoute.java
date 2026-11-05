@@ -128,6 +128,14 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     private void shiftRowFromEndTo(int index) {
         int lastRowNum = sheet.getLastRowNum();
         sheet.shiftRows(lastRowNum, lastRowNum, index - lastRowNum);
+        removeEmptyRow(lastRowNum);
+    }
+
+    // HSSF keeps the source of a shift as an empty row, which would be written and read back as an empty position
+    private void removeEmptyRow(int rowNum) {
+        Row row = sheet.getRow(rowNum);
+        if (row != null && row.getPhysicalNumberOfCells() == 0)
+            sheet.removeRow(row);
     }
 
     public void top(int index, int topOffset) {
@@ -181,6 +189,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         // shift row to add to the desired position (+1 for header)
         int sourceRowIndex = position.getRow().getRowNum() + 1;
         sheet.shiftRows(sourceRowIndex, sourceRowIndex, rowForIndex - sourceRowIndex);
+        removeEmptyRow(sourceRowIndex);
 
         positions.add(index, position);
     }

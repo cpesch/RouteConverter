@@ -180,4 +180,134 @@ public class ExcelFormatTest {
         assertEquals(52.5, positions.get(1).getLatitude(), 0.0);
         assertEquals(52.5002, positions.get(2).getLatitude(), 0.0);
     }
+
+    private static final double[] LATITUDES = {52.5, 52.5002, 52.5004};
+    private static final double[] LONGITUDES = {13.4, 13.4003, 13.4006};
+
+    private static Workbook createWorkbookWithoutTitleRow() {
+        Workbook workbook = new HSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Data");
+
+        Row header = sheet.createRow(0);
+        header.createCell(0).setCellValue("Latitude");
+        header.createCell(1).setCellValue("Longitude");
+
+        for (int i = 0; i < LATITUDES.length; i++) {
+            Row row = sheet.createRow(i + 1);
+            row.createCell(0).setCellValue(LATITUDES[i]);
+            row.createCell(1).setCellValue(LONGITUDES[i]);
+        }
+        return workbook;
+    }
+
+    private interface RouteOperation {
+        void apply(ExcelRoute route);
+    }
+
+    private static void assertLatitudesAfter(Workbook workbook, RouteOperation operation, double... expectedLatitudes) throws IOException {
+        MicrosoftExcel97Format format = new MicrosoftExcel97Format();
+        ParserContextImpl<ExcelRoute> context = new ParserContextImpl<>();
+        format.parseWorkbook(workbook, context);
+        ExcelRoute route = context.getRoutes().get(0);
+
+        operation.apply(route);
+
+        Sheet sheet = route.getWorkbook().getSheetAt(0);
+        // no empty row left over from shifting rows
+        for (Row row : sheet)
+            assertTrue("empty row " + row.getRowNum(), row.getPhysicalNumberOfCells() > 0);
+
+        ByteArrayOutputStream target = new ByteArrayOutputStream();
+        format.write(route, target, 0, route.getPositionCount());
+        ParserContextImpl<ExcelRoute> reread = new ParserContextImpl<>();
+        format.read(new ByteArrayInputStream(target.toByteArray()), reread);
+
+        List<ExcelPosition> positions = reread.getRoutes().get(0).getPositions();
+        assertEquals(expectedLatitudes.length, positions.size());
+        for (int i = 0; i < expectedLatitudes.length; i++)
+            assertEquals(expectedLatitudes[i], positions.get(i).getLatitude(), 0.0);
+    }
+
+    private static void addPosition(ExcelRoute route, int index) {
+        route.add(index, route.createPosition(13.5, 52.6, null, null, null, null));
+    }
+
+    @Test
+    public void ignoresEmptyRowsBehindTheLastPosition() {
+        Workbook workbook = createWorkbookWithoutTitleRow();
+        workbook.getSheetAt(0).createRow(4);
+        workbook.getSheetAt(0).createRow(5);
+
+        ParserContextImpl<ExcelRoute> context = new ParserContextImpl<>();
+        new MicrosoftExcel97Format().parseWorkbook(workbook, context);
+
+        List<ExcelPosition> positions = context.getRoutes().get(0).getPositions();
+        assertEquals(3, positions.size());
+        assertEquals(52.5004, positions.get(2).getLatitude(), 0.0);
+    }
+
+    @Test
+    public void readsPositionsBehindAGapRow() {
+        Workbook workbook = createWorkbookWithoutTitleRow();
+        Row row = workbook.getSheetAt(0).createRow(5);
+        row.createCell(0).setCellValue(52.5006);
+        row.createCell(1).setCellValue(13.4009);
+
+        ParserContextImpl<ExcelRoute> context = new ParserContextImpl<>();
+        new MicrosoftExcel97Format().parseWorkbook(workbook, context);
+
+        List<ExcelPosition> positions = context.getRoutes().get(0).getPositions();
+        assertEquals(4, positions.size());
+        assertEquals(52.5006, positions.get(3).getLatitude(), 0.0);
+    }
+
+    @Test
+    public void topLeavesNoEmptyRowWithoutTitleRow() throws IOException {
+        assertLatitudesAfter(createWorkbookWithoutTitleRow(), route -> route.top(2, 0), 52.5004, 52.5, 52.5002);
+    }
+
+    @Test
+    public void bottomLeavesNoEmptyRowWithoutTitleRow() throws IOException {
+        assertLatitudesAfter(createWorkbookWithoutTitleRow(), route -> route.bottom(0, 0), 52.5002, 52.5004, 52.5);
+    }
+
+    @Test
+    public void moveLeavesNoEmptyRowWithoutTitleRow() throws IOException {
+        assertLatitudesAfter(createWorkbookWithoutTitleRow(), route -> route.move(0, 1), 52.5002, 52.5, 52.5004);
+    }
+
+    @Test
+    public void removeLeavesNoEmptyRowWithoutTitleRow() throws IOException {
+        assertLatitudesAfter(createWorkbookWithoutTitleRow(), route -> route.remove(1), 52.5, 52.5004);
+    }
+
+    @Test
+    public void addLeavesNoEmptyRowWithoutTitleRow() throws IOException {
+        assertLatitudesAfter(createWorkbookWithoutTitleRow(), route -> addPosition(route, 1), 52.5, 52.6, 52.5002, 52.5004);
+    }
+
+    @Test
+    public void topLeavesNoEmptyRowWithTitleRow() throws IOException {
+        assertLatitudesAfter(createWorkbookWithTitleRow(), route -> route.top(2, 0), 52.5004, 52.5, 52.5002);
+    }
+
+    @Test
+    public void bottomLeavesNoEmptyRowWithTitleRow() throws IOException {
+        assertLatitudesAfter(createWorkbookWithTitleRow(), route -> route.bottom(0, 0), 52.5002, 52.5004, 52.5);
+    }
+
+    @Test
+    public void moveLeavesNoEmptyRowWithTitleRow() throws IOException {
+        assertLatitudesAfter(createWorkbookWithTitleRow(), route -> route.move(0, 1), 52.5002, 52.5, 52.5004);
+    }
+
+    @Test
+    public void removeLeavesNoEmptyRowWithTitleRow() throws IOException {
+        assertLatitudesAfter(createWorkbookWithTitleRow(), route -> route.remove(1), 52.5, 52.5004);
+    }
+
+    @Test
+    public void addLeavesNoEmptyRowWithTitleRow() throws IOException {
+        assertLatitudesAfter(createWorkbookWithTitleRow(), route -> addPosition(route, 1), 52.5, 52.6, 52.5002, 52.5004);
+    }
 }
