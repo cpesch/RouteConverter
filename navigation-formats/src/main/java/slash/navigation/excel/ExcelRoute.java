@@ -58,6 +58,7 @@ import slash.navigation.tcx.TcxFormat;
 import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static org.apache.poi.ss.usermodel.CellType.FORMULA;
+import static slash.common.io.Transfer.toDouble;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteComments.createRouteName;
 import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
@@ -235,6 +237,65 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
 
         positions.add(index, position);
         bindPositionsToRows();
+    }
+
+    // bindPositionsToRows() keeps position identity (undo and the GUI hold position objects): detach every
+    // row, which copies its data elsewhere and lets the sheet row be overwritten, then re-attach the rows
+    // to the sheet in the order of the given list
+    public void order(List<ExcelPosition> positions) {
+        List<ExcelPosition> existing = new ArrayList<>(getPositions());
+        for (ExcelPosition position : existing)
+            detach(position);
+        removeDataRows();
+
+        super.order(positions);
+
+        for (ExcelPosition position : getPositions())
+            attach(position);
+        bindPositionsToRows();
+    }
+
+    private void removeDataRows() {
+        for (int rowNum = sheet.getLastRowNum(); rowNum > mapping.getHeaderRowIndex(); rowNum--) {
+            Row row = sheet.getRow(rowNum);
+            if (row != null)
+                sheet.removeRow(row);
+        }
+    }
+
+    // revert(int[]) doesn't go through order() in BaseRoute; build the same reordering it would
+    // produce and run it through order() so the sheet rows are kept in sync, too
+    public void revert(int[] indices) {
+        int[] sorted = indices.clone();
+        Arrays.sort(sorted);
+
+        List<ExcelPosition> existing = getPositions();
+        List<ExcelPosition> reverted = new ArrayList<>();
+        for (int row : sorted)
+            reverted.add(0, existing.get(row));
+
+        List<ExcelPosition> result = new ArrayList<>(existing);
+        int index = 0;
+        for (int row : sorted)
+            result.set(row, reverted.get(index++));
+
+        order(result);
+    }
+
+    // removeDuplicates() in BaseRoute shrinks the position list directly; route the removal through
+    // remove(index) so the sheet row is removed, too
+    public void removeDuplicates() {
+        List<ExcelPosition> positions = getPositions();
+        ExcelPosition previous = null;
+        int index = 0;
+        while (index < positions.size()) {
+            ExcelPosition next = positions.get(index);
+            if (previous != null && (!next.hasCoordinates() || toDouble(next.calculateDistance(previous)) <= 0.0)) {
+                remove(index);
+            } else
+                index++;
+            previous = next;
+        }
     }
 
     public ExcelPosition remove(int index) {
