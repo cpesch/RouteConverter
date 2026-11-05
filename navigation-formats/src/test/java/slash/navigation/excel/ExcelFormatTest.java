@@ -494,6 +494,8 @@ public class ExcelFormatTest {
             position.setHeading(90.0);
             position.setPressure(1013.0);
             position.setTemperature(21.5);
+            // not a column of DEFAULT: the position adds it to its own mapping copy
+            position.setHeartBeat((short) 80);
 
             route.add(1, position);
             ExcelPosition added = route.getPosition(1);
@@ -507,6 +509,7 @@ public class ExcelFormatTest {
             assertEquals(90.0, added.getHeading(), 0.0);
             assertEquals(1013.0, added.getPressure(), 0.0);
             assertEquals(21.5, added.getTemperature(), 0.0);
+            assertEquals(Short.valueOf((short) 80), added.getHeartBeat());
         }, 52.5, 52.7, 52.5002, 52.5004);
     }
 

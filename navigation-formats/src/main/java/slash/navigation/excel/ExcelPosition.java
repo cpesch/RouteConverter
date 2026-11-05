@@ -51,8 +51,9 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
         this.mapping = mapping;
     }
 
-    // a position not attached to a route gets its own copy of DEFAULT: its header row is row 0 of its own
-    // sheet, so adding a missing column would otherwise write into the position's own data row
+    // a position not attached to a route gets its own copy of DEFAULT, so a column added to it (e.g. Heartbeat)
+    // does not change DEFAULT for every route created later; its header row is its own row 0, where the value
+    // then overwrites the column name
     public ExcelPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
         Workbook workbook = new HSSFWorkbook();
         Sheet sheet = workbook.createSheet("new sheet");

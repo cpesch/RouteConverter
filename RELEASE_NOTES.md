@@ -49,7 +49,7 @@
 - No longer reports a crash from the JDK's shutdown cleanup of temporary tile image files on exit (#322)
 - Maps dialog: a `.map` file that isn't a valid offline map (e.g. a failed download) is no longer listed and no longer crashes the app when selected (#323)
 - Pressing the context-menu key in a table before any mouse click no longer crashes the app; the menu opens below the selected cell (#324)
-- Excel: a column added to one route no longer appears in every route opened or created afterwards (#341)
+- Excel: a new position list or converted .xls/.xlsx no longer gets an empty column (such as Heartbeat) left over from another Excel route edited earlier in the same session (#341)
 
 ## 3.7 — 2026-10-10
 
