@@ -20,6 +20,7 @@
 package slash.navigation.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -35,6 +36,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.excel.ColumnType.Coordinates;
 import static slash.navigation.excel.ColumnType.Unsupported;
 import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
 
@@ -73,17 +75,20 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
         }
     }
 
+    private static final int HEADER_SEARCH_ROW_LIMIT = 10;
+
     private void parseSheet(Sheet sheet, ParserContext<ExcelRoute> context) {
         if (sheet.getPhysicalNumberOfRows() < 2)
             return;
 
-        Row header = sheet.getRow(0);
+        int headerRowIndex = findHeaderRowIndex(sheet);
+        Row header = sheet.getRow(headerRowIndex);
         log.info(format("Parsing sheet '%s' with %d rows and %d columns", sheet.getSheetName(), sheet.getPhysicalNumberOfRows(), header.getLastCellNum()));
 
         ColumnTypeToRowIndexMapping mapping = parseHeader(header);
 
         List<ExcelPosition> positions = new ArrayList<>();
-        for (int i = 1, c = sheet.getPhysicalNumberOfRows(); i < c; i++) {
+        for (int i = headerRowIndex + 1, c = sheet.getPhysicalNumberOfRows(); i < c; i++) {
             Row row = sheet.getRow(i);
             // in case there is just a formatting in a line, the row is null
             if (row != null)
@@ -93,8 +98,34 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
         context.appendRoute(new ExcelRoute(this, sheet, mapping, positions));
     }
 
+    // finds the header row among the first rows, skipping an optional title row above it
+    private int findHeaderRowIndex(Sheet sheet) {
+        int limit = Math.min(HEADER_SEARCH_ROW_LIMIT, sheet.getPhysicalNumberOfRows());
+        for (int i = 0; i < limit; i++) {
+            Row row = sheet.getRow(i);
+            if (row != null && countKnownColumns(row) >= 2)
+                return i;
+        }
+        return 0;
+    }
+
+    private int countKnownColumns(Row row) {
+        int count = 0;
+        for (int i = 0, c = row.getLastCellNum(); i < c; i++) {
+            Cell cell = row.getCell(i);
+            if (cell == null || !cell.getCellType().equals(CellType.STRING))
+                continue;
+            ColumnType columnType = parseColumnType(cell.getStringCellValue());
+            if (columnType == Coordinates)
+                count += 2;
+            else if (columnType != Unsupported)
+                count++;
+        }
+        return count;
+    }
+
     private ColumnTypeToRowIndexMapping parseHeader(Row row) {
-        ColumnTypeToRowIndexMapping result = new ColumnTypeToRowIndexMapping();
+        ColumnTypeToRowIndexMapping result = new ColumnTypeToRowIndexMapping(row.getRowNum());
         for (int i = 0, c = row.getLastCellNum(); i < c; i++) {
             Cell cell = row.getCell(i);
             // empty cell

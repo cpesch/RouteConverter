@@ -19,8 +19,11 @@
 */
 package slash.navigation.gui.helpers;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import javax.imageio.ImageIO;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -35,6 +38,25 @@ import static org.junit.Assert.assertTrue;
 public class UIHelperTest {
 
     private static final String SYSTEM = "system.LookAndFeel";
+
+    private boolean previousUseCache;
+
+    @Before
+    public void setUp() {
+        previousUseCache = ImageIO.getUseCache();
+    }
+
+    @After
+    public void tearDown() {
+        ImageIO.setUseCache(previousUseCache);
+    }
+
+    @Test
+    public void testDisableImageIODiskCache() {
+        ImageIO.setUseCache(true);
+        UIHelper.disableImageIODiskCache();
+        assertFalse(ImageIO.getUseCache());
+    }
 
     @Test
     public void testAutomaticLookAndFeelFollowsOperatingSystemOnWindowsAndLinux() {

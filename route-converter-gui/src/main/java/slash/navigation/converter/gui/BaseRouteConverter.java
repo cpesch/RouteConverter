@@ -219,6 +219,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     private volatile long startupStartMillis;
 
     protected void startup() {
+        disableImageIODiskCache();
         startupStartMillis = System.currentTimeMillis();
         initializeDiagnostics();
         checkJavaPrequisites();
