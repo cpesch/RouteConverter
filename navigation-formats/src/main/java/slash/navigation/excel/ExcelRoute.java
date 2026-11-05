@@ -154,8 +154,8 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         for (int rowNum = mapping.getHeaderRowIndex() + 1, lastRowNum = sheet.getLastRowNum();
              rowNum <= lastRowNum && index < positions.size(); rowNum++) {
             Row row = sheet.getRow(rowNum);
-            // in case there is just a formatting in a line, the row is null and no position
-            if (row != null)
+            // in case there is just a formatting in a line, the row is null or has no cells and no position
+            if (row != null && row.getPhysicalNumberOfCells() > 0)
                 positions.get(index++).setRow(row);
         }
     }
