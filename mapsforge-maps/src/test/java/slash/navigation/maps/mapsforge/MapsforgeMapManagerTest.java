@@ -26,12 +26,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.maps.mapsforge.MapsforgeMapManager.isMapsforgeMapFile;
+import static slash.navigation.maps.mapsforge.MapsforgeMapManager.isMissingOnlineMap;
 
 public class MapsforgeMapManagerTest {
+    private static final String DEFAULT_URL = "https://openstreetmap.org/tiles";
 
     private File writeFile(String content) throws IOException {
         File file = File.createTempFile("MapsforgeMapManagerTest", ".map");
@@ -64,5 +68,30 @@ public class MapsforgeMapManagerTest {
     public void testNonExistentFileIsNotRecognized() {
         File file = new File("does/not/exist.map");
         assertFalse(isMapsforgeMapFile(file));
+    }
+
+    @Test
+    public void testNullStoredIsNotMissing() {
+        assertFalse(isMissingOnlineMap(null, Collections.emptyList(), DEFAULT_URL));
+    }
+
+    @Test
+    public void testStoredEqualsDefaultIsNotMissing() {
+        assertFalse(isMissingOnlineMap(DEFAULT_URL, Collections.emptyList(), DEFAULT_URL));
+    }
+
+    @Test
+    public void testStoredFileUrlIsNotMissing() {
+        assertFalse(isMissingOnlineMap("file:/x.map", Collections.emptyList(), DEFAULT_URL));
+    }
+
+    @Test
+    public void testStoredAvailableIsNotMissing() {
+        assertFalse(isMissingOnlineMap("https://a/tiles", asList("https://a/tiles"), DEFAULT_URL));
+    }
+
+    @Test
+    public void testStoredNotAvailableIsMissing() {
+        assertTrue(isMissingOnlineMap("https://gone/tiles", asList("https://a/tiles"), DEFAULT_URL));
     }
 }
