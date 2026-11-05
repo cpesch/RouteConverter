@@ -49,6 +49,7 @@
 - No longer reports a crash from the JDK's shutdown cleanup of temporary tile image files on exit (#322)
 - Maps dialog: a `.map` file that isn't a valid offline map (e.g. a failed download) is no longer listed and no longer crashes the app when selected (#323)
 - Pressing the context-menu key in a table before any mouse click no longer crashes the app; the menu opens below the selected cell (#324)
+- Excel: sorting, reverting or removing duplicate positions is no longer lost when the file is saved and reopened — the positions table showed the new order, but the saved .xls/.xlsx kept the old one (#338)
 
 ## 3.7 — 2026-10-10
 

@@ -33,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -306,16 +307,20 @@ public class ExcelFormatTest {
     // in-memory positions must show the same order as the sheet that is written
 
     private static Workbook createWorkbookWithoutTitleRow(Workbook workbook) {
+        return createWorkbookWithoutTitleRow(workbook, LATITUDES, LONGITUDES);
+    }
+
+    private static Workbook createWorkbookWithoutTitleRow(Workbook workbook, double[] latitudes, double[] longitudes) {
         Sheet sheet = workbook.createSheet("Data");
 
         Row header = sheet.createRow(0);
         header.createCell(0).setCellValue("Latitude");
         header.createCell(1).setCellValue("Longitude");
 
-        for (int i = 0; i < LATITUDES.length; i++) {
+        for (int i = 0; i < latitudes.length; i++) {
             Row row = sheet.createRow(i + 1);
-            row.createCell(0).setCellValue(LATITUDES[i]);
-            row.createCell(1).setCellValue(LONGITUDES[i]);
+            row.createCell(0).setCellValue(latitudes[i]);
+            row.createCell(1).setCellValue(longitudes[i]);
         }
         return workbook;
     }
@@ -347,6 +352,11 @@ public class ExcelFormatTest {
     private static void assertXlsAndXlsx(RouteOperation operation, double... expectedLatitudes) throws IOException {
         assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel97Format(), createWorkbookWithoutTitleRow(new HSSFWorkbook()), operation, expectedLatitudes);
         assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel2008Format(), createWorkbookWithoutTitleRow(new XSSFWorkbook()), operation, expectedLatitudes);
+    }
+
+    private static void assertXlsAndXlsx(double[] latitudes, double[] longitudes, RouteOperation operation, double... expectedLatitudes) throws IOException {
+        assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel97Format(), createWorkbookWithoutTitleRow(new HSSFWorkbook(), latitudes, longitudes), operation, expectedLatitudes);
+        assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel2008Format(), createWorkbookWithoutTitleRow(new XSSFWorkbook(), latitudes, longitudes), operation, expectedLatitudes);
     }
 
     @Test
@@ -400,6 +410,28 @@ public class ExcelFormatTest {
     @Test
     public void addKeepsInMemoryOrderInSyncWithSheet() throws IOException {
         assertXlsAndXlsx(route -> addPosition(route, 1), 52.5, 52.6, 52.5002, 52.5004);
+    }
+
+    @Test
+    public void revertKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.revert(), 52.5004, 52.5002, 52.5);
+    }
+
+    @Test
+    public void sortKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.sort(Comparator.comparingDouble(ExcelPosition::getLatitude).reversed()),
+                52.5004, 52.5002, 52.5);
+    }
+
+    @Test
+    public void revertWithIndicesKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.revert(new int[]{0, 2}), 52.5004, 52.5002, 52.5);
+    }
+
+    @Test
+    public void removeDuplicatesKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(new double[]{52.5, 52.5, 52.5004}, new double[]{13.4, 13.4, 13.4006},
+                route -> route.removeDuplicates(), 52.5, 52.5004);
     }
 
     @Test
