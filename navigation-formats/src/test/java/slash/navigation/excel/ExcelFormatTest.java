@@ -20,6 +20,7 @@
 package slash.navigation.excel;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -31,6 +32,7 @@ import slash.navigation.base.ParserContextImpl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -187,19 +189,7 @@ public class ExcelFormatTest {
     private static final double[] LONGITUDES = {13.4, 13.4003, 13.4006};
 
     private static Workbook createWorkbookWithoutTitleRow() {
-        Workbook workbook = new HSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Data");
-
-        Row header = sheet.createRow(0);
-        header.createCell(0).setCellValue("Latitude");
-        header.createCell(1).setCellValue("Longitude");
-
-        for (int i = 0; i < LATITUDES.length; i++) {
-            Row row = sheet.createRow(i + 1);
-            row.createCell(0).setCellValue(LATITUDES[i]);
-            row.createCell(1).setCellValue(LONGITUDES[i]);
-        }
-        return workbook;
+        return createWorkbookWithoutTitleRow(new HSSFWorkbook());
     }
 
     private interface RouteOperation {
@@ -447,5 +437,53 @@ public class ExcelFormatTest {
     @Test
     public void addsAPositionFromAnotherWorkbook() throws IOException {
         assertXlsAndXlsx(route -> route.add(1, new ExcelPosition(13.5, 52.7, null, null, null, "X")), 52.5, 52.7, 52.5002, 52.5004);
+    }
+
+    // both routes share the DEFAULT mapping instance, so attach() copies cells instead of transferring fields;
+    // one route is HSSF-backed and the other XSSF-backed, forcing copyCells' cell style class mismatch branch
+    @Test
+    public void attachClonesTimeCellStyleAcrossWorkbookTypes() {
+        CompactCalendar time = calendar(2026, 11, 5, 9, 32, 14);
+
+        ExcelRoute hssfRoute = new ExcelRoute(new MicrosoftExcel97Format(), "Data", new ArrayList<>());
+        ExcelPosition position = hssfRoute.createPosition(13.5, 52.7, null, null, time, "X");
+
+        ExcelRoute xssfRoute = new ExcelRoute(new MicrosoftExcel2008Format(), "Data", new ArrayList<>());
+        xssfRoute.add(0, position);
+
+        ExcelPosition attached = xssfRoute.getPosition(0);
+        assertEquals(time, attached.getTime());
+
+        Cell timeCell = attached.getRow().getCell(ColumnTypeToRowIndexMapping.DEFAULT.getIndex(ColumnType.Time));
+        assertNotEquals(0, timeCell.getCellStyle().getIndex());
+        assertEquals("m/d/yy h:mm", timeCell.getCellStyle().getDataFormatString());
+    }
+
+    // the target route's mapping only has Latitude/Longitude columns, so position.getMapping() != mapping and
+    // attach() takes the field-transfer branch instead of copyCells; assert every transferable field survives it
+    @Test
+    public void attachTransfersAllSensorFieldsWhenMappingDiffers() throws IOException {
+        CompactCalendar time = calendar(2026, 11, 5, 9, 32, 14);
+        assertXlsAndXlsx(route -> {
+            // Heartbeat is deliberately left out: it has no entry in ColumnTypeToRowIndexMapping.DEFAULT, so
+            // setting it on a DEFAULT-mapped position would add a column to that shared static mapping instance
+            ExcelPosition position = new ExcelPosition(13.5, 52.7, 123.0, 45.0, time, "X");
+            position.setHeading(90.0);
+            position.setPressure(1013.0);
+            position.setTemperature(21.5);
+
+            route.add(1, position);
+            ExcelPosition added = route.getPosition(1);
+
+            assertEquals(13.5, added.getLongitude(), 0.0);
+            assertEquals(52.7, added.getLatitude(), 0.0);
+            assertEquals(123.0, added.getElevation(), 0.0);
+            assertEquals(45.0, added.getSpeed(), 0.0);
+            assertEquals(time, added.getTime());
+            assertEquals("X", added.getDescription());
+            assertEquals(90.0, added.getHeading(), 0.0);
+            assertEquals(1013.0, added.getPressure(), 0.0);
+            assertEquals(21.5, added.getTemperature(), 0.0);
+        }, 52.5, 52.7, 52.5002, 52.5004);
     }
 }
