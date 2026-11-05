@@ -364,6 +364,28 @@ public class ExcelFormatTest {
         assertXlsAndXlsx(route -> route.move(0, 1), 52.5002, 52.5, 52.5004);
     }
 
+    // move() swaps the two given positions, like BaseRoute#move(), instead of shifting the
+    // positions between them: the row at index 1 stays where it is
+    @Test
+    public void moveWithGapKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.move(0, 2), 52.5004, 52.5002, 52.5);
+    }
+
+    @Test
+    public void topWithIndexEqualToOffsetIsANoOp() throws IOException {
+        assertXlsAndXlsx(route -> route.top(0, 0), 52.5, 52.5002, 52.5004);
+    }
+
+    @Test
+    public void bottomWithIndexEqualToOffsetIsANoOp() throws IOException {
+        assertXlsAndXlsx(route -> route.bottom(2, 0), 52.5, 52.5002, 52.5004);
+    }
+
+    @Test
+    public void moveWithEqualIndicesIsANoOp() throws IOException {
+        assertXlsAndXlsx(route -> route.move(1, 1), 52.5, 52.5002, 52.5004);
+    }
+
     @Test
     public void removeKeepsInMemoryOrderInSyncWithSheet() throws IOException {
         assertXlsAndXlsx(route -> route.remove(1), 52.5, 52.5004);
