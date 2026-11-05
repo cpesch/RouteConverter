@@ -72,7 +72,7 @@ public class MicrosoftExcel97Format extends ExcelFormat {
         if(routes.isEmpty())
             return;
 
-        Workbook workbook = routes.get(0).getWorkbook();
+        Workbook workbook = prepareWorkbook(routes);
         if(!(workbook instanceof HSSFWorkbook))
             throw new IllegalArgumentException("Workbook " + workbook + " is not HSSFWorkbook");
 

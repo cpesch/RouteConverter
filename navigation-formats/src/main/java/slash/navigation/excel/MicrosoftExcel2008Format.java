@@ -77,7 +77,7 @@ public class MicrosoftExcel2008Format extends ExcelFormat {
         if(routes.isEmpty())
             return;
 
-        Workbook workbook = routes.get(0).getWorkbook();
+        Workbook workbook = prepareWorkbook(routes);
         if(!(workbook instanceof XSSFWorkbook))
             throw new IllegalArgumentException("Workbook " + workbook + " is not XSSFWorkbook");
 
