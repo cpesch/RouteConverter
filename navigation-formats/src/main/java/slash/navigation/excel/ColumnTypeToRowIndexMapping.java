@@ -47,6 +47,20 @@ class ColumnTypeToRowIndexMapping {
     }
 
     private final Map<Integer, ColumnType> mapping = new LinkedHashMap<>();
+    // the header may be below a title row
+    private final int headerRowIndex;
+
+    ColumnTypeToRowIndexMapping() {
+        this(0);
+    }
+
+    ColumnTypeToRowIndexMapping(int headerRowIndex) {
+        this.headerRowIndex = headerRowIndex;
+    }
+
+    public int getHeaderRowIndex() {
+        return headerRowIndex;
+    }
 
     public void add(int index, ColumnType columnType) {
         mapping.put(index, columnType);

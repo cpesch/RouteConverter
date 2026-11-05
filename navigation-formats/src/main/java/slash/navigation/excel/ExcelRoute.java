@@ -135,10 +135,11 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         int rowForIndex = shiftRowToTheEnd(index);
 
         // move all rows between topOffset and rowForIndex one down
-        sheet.shiftRows(topOffset + 1, rowForIndex - 1, 1);
+        int rowForTopOffset = mapping.getHeaderRowIndex() + 1 + topOffset;
+        sheet.shiftRows(rowForTopOffset, rowForIndex - 1, 1);
 
         // move index row from the end to topOffset row
-        shiftRowFromEndTo(topOffset + 1);
+        shiftRowFromEndTo(rowForTopOffset);
 
         super.top(index, topOffset);
     }

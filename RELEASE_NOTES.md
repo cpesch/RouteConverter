@@ -6,6 +6,7 @@
 
 - Windows and Linux: modern FlatLaf look-and-feel, light or dark following the operating system setting; macOS keeps its native look. Options > General > Look and feel switches to Light, Dark or the old System look (requires restart) (#263)
 - View > POIs… shows all POIs of the chosen categories on the map, such as every bank or toilet in view, from the offline POI data or the displayed offline map; they stay while you edit the route, show their name on hover, and the map's context menu adds one to the position list (#434)
+- CSV and Excel import: a title row above the actual column headers is skipped, and a single column holding "latitude,longitude" is read when there is no separate latitude/longitude column (#318)
 
 ### Changes
 

@@ -46,7 +46,10 @@ import static java.util.Calendar.*;
 import static java.util.Locale.ROOT;
 import static java.util.Locale.US;
 import static slash.common.type.CompactCalendar.UTC;
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.fromMillis;
+import static slash.common.type.CompactCalendar.parseDate;
+import static slash.common.type.ISO8601.parseDate;
 
 /**
  * Provides value transfer functionality.
@@ -430,6 +433,44 @@ public class Transfer {
             return null;
         GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar();
         return fromMillis(gregorianCalendar.getTimeInMillis());
+    }
+
+    private static final String DATE_AND_TIME_FORMAT = "dd.MM.yy HH:mm:ss";
+    private static final String DATE_AND_TIME_WITHOUT_SECONDS_FORMAT = "dd.MM.yy HH:mm";
+    private static final String ISO_LIKE_DATE_AND_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public static CompactCalendar parseCalendar(String value) {
+        CompactCalendar calendar = parseDate(value, DATE_AND_TIME_FORMAT, false);
+        if (calendar == null)
+            calendar = parseDate(value, DATE_AND_TIME_WITHOUT_SECONDS_FORMAT, false);
+        if (calendar == null)
+            calendar = parseDate(value, ISO_LIKE_DATE_AND_TIME_FORMAT, false);
+        if (calendar == null) {
+            Calendar date = parseDate(value);
+            if (date != null)
+                calendar = fromCalendar(date);
+        }
+        return calendar;
+    }
+
+    public static double[] parseCombinedCoordinates(String value) {
+        value = trim(value);
+        if (value == null)
+            return null;
+
+        String[] parts = value.split(",");
+        if (parts.length != 2)
+            return null;
+
+        Double latitude = parseDouble(trim(parts[0]));
+        Double longitude = parseDouble(trim(parts[1]));
+        if (latitude == null || longitude == null)
+            return null;
+
+        if (Math.abs(latitude) > 90.0 || Math.abs(longitude) > 180.0)
+            return null;
+
+        return new double[]{latitude, longitude};
     }
 
     private static DatatypeFactory datatypeFactory;

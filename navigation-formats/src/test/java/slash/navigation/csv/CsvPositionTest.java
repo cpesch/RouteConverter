@@ -87,4 +87,57 @@ public class CsvPositionTest {
 
         assertSame(row, new CsvPosition(row).getRowAsMap());
     }
+
+    @Test
+    public void readsLatitudeAndLongitudeFromACombinedCoordinatesColumn() {
+        CsvPosition position = position("Coordinates", "52.5,13.4");
+
+        assertEquals(52.5, position.getLatitude(), 0.0);
+        assertEquals(13.4, position.getLongitude(), 0.0);
+    }
+
+    @Test
+    public void combinedCoordinatesColumnToleratesSurroundingSpaces() {
+        CsvPosition position = position("Coordinates", " 52.5 , 13.4 ");
+
+        assertEquals(52.5, position.getLatitude(), 0.0);
+        assertEquals(13.4, position.getLongitude(), 0.0);
+    }
+
+    @Test
+    public void unparseableCombinedCoordinatesYieldNullCoordinates() {
+        CsvPosition position = position("Coordinates", "abc");
+
+        assertNull(position.getLatitude());
+        assertNull(position.getLongitude());
+    }
+
+    @Test
+    public void outOfRangeCombinedCoordinatesYieldNullCoordinates() {
+        CsvPosition position = position("Coordinates", "95,13");
+
+        assertNull(position.getLatitude());
+        assertNull(position.getLongitude());
+    }
+
+    @Test
+    public void combinedCoordinatesColumnIsIgnoredWhenSeparateValuesArePresent() {
+        Map<String, String> row = new HashMap<>();
+        row.put("Longitude", "1.0");
+        row.put("Latitude", "2.0");
+        row.put("Coordinates", "52.5,13.4");
+
+        CsvPosition position = new CsvPosition(row);
+
+        assertEquals(1.0, position.getLongitude(), 0.0);
+        assertEquals(2.0, position.getLatitude(), 0.0);
+    }
+
+    @Test
+    public void germanCoordinatesColumnNameIsRecognized() {
+        CsvPosition position = position("Koordinaten", "52.5,13.4");
+
+        assertEquals(52.5, position.getLatitude(), 0.0);
+        assertEquals(13.4, position.getLongitude(), 0.0);
+    }
 }

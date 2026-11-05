@@ -29,6 +29,8 @@ import slash.navigation.csv.CsvPosition;
 import slash.navigation.gpx.GpxPosition;
 
 import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
+import static slash.common.io.Transfer.parseCalendar;
+import static slash.common.io.Transfer.parseCombinedCoordinates;
 import static slash.common.io.Transfer.toDouble;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExtendedSensorData;
@@ -90,15 +92,24 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
 
     private CompactCalendar getCellAsTime(ColumnType type) {
         Cell cell = getCell(type);
-        return cell != null ? fromDate(cell.getDateCellValue()) : null;
+        if (cell == null)
+            return null;
+        // tracker exports may store the time as plain text instead of a formatted date cell
+        return cell.getCellType().equals(CellType.STRING) ?
+                parseCalendar(cell.getStringCellValue()) : fromDate(cell.getDateCellValue());
+    }
+
+    private double[] getCombinedCoordinates() {
+        return parseCombinedCoordinates(getCellAsString(Coordinates));
     }
 
     private Cell getOrCreateCell(ColumnType type) {
         Integer index = mapping.getIndex(type);
         if (index == null) {
-            // create a new column for the not yet represented column type
-            index = (int)row.getLastCellNum();
-            row.getSheet().getRow(0).createCell(index).setCellValue(type.name());
+            // create a new column for the not yet represented column type behind the last column of the header and this row
+            Row header = row.getSheet().getRow(mapping.getHeaderRowIndex());
+            index = Math.max(Math.max(header.getLastCellNum(), row.getLastCellNum()), 0);
+            header.createCell(index).setCellValue(type.name());
             mapping.add(index, type);
         }
         Cell cell = row.getCell(index);
@@ -145,7 +156,13 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
     }
 
     public Double getLongitude() {
-        return getCellAsDouble(Longitude);
+        Double longitude = getCellAsDouble(Longitude);
+        if (longitude == null) {
+            double[] coordinates = getCombinedCoordinates();
+            if (coordinates != null)
+                longitude = coordinates[1];
+        }
+        return longitude;
     }
 
     public void setLongitude(Double longitude) {
@@ -153,7 +170,13 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
     }
 
     public Double getLatitude() {
-        return getCellAsDouble(Latitude);
+        Double latitude = getCellAsDouble(Latitude);
+        if (latitude == null) {
+            double[] coordinates = getCombinedCoordinates();
+            if (coordinates != null)
+                latitude = coordinates[0];
+        }
+        return latitude;
     }
 
     public void setLatitude(Double latitude) {
