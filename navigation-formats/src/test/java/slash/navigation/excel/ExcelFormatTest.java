@@ -33,6 +33,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -306,16 +307,20 @@ public class ExcelFormatTest {
     // in-memory positions must show the same order as the sheet that is written
 
     private static Workbook createWorkbookWithoutTitleRow(Workbook workbook) {
+        return createWorkbookWithoutTitleRow(workbook, LATITUDES, LONGITUDES);
+    }
+
+    private static Workbook createWorkbookWithoutTitleRow(Workbook workbook, double[] latitudes, double[] longitudes) {
         Sheet sheet = workbook.createSheet("Data");
 
         Row header = sheet.createRow(0);
         header.createCell(0).setCellValue("Latitude");
         header.createCell(1).setCellValue("Longitude");
 
-        for (int i = 0; i < LATITUDES.length; i++) {
+        for (int i = 0; i < latitudes.length; i++) {
             Row row = sheet.createRow(i + 1);
-            row.createCell(0).setCellValue(LATITUDES[i]);
-            row.createCell(1).setCellValue(LONGITUDES[i]);
+            row.createCell(0).setCellValue(latitudes[i]);
+            row.createCell(1).setCellValue(longitudes[i]);
         }
         return workbook;
     }
@@ -347,6 +352,74 @@ public class ExcelFormatTest {
     private static void assertXlsAndXlsx(RouteOperation operation, double... expectedLatitudes) throws IOException {
         assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel97Format(), createWorkbookWithoutTitleRow(new HSSFWorkbook()), operation, expectedLatitudes);
         assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel2008Format(), createWorkbookWithoutTitleRow(new XSSFWorkbook()), operation, expectedLatitudes);
+    }
+
+    // a formatting-only line between data rows: the row exists but has no cells, unlike a row that was never created
+    private static Workbook createWorkbookWithoutTitleRowAndGapRow(Workbook workbook) {
+        Sheet sheet = workbook.createSheet("Data");
+
+        Row header = sheet.createRow(0);
+        header.createCell(0).setCellValue("Latitude");
+        header.createCell(1).setCellValue("Longitude");
+
+        Row first = sheet.createRow(1);
+        first.createCell(0).setCellValue(LATITUDES[0]);
+        first.createCell(1).setCellValue(LONGITUDES[0]);
+
+        sheet.createRow(2);
+
+        Row second = sheet.createRow(3);
+        second.createCell(0).setCellValue(LATITUDES[1]);
+        second.createCell(1).setCellValue(LONGITUDES[1]);
+
+        Row third = sheet.createRow(4);
+        third.createCell(0).setCellValue(LATITUDES[2]);
+        third.createCell(1).setCellValue(LONGITUDES[2]);
+        return workbook;
+    }
+
+    private static void assertXlsAndXlsxWithGapRow(RouteOperation operation, double... expectedLatitudes) throws IOException {
+        assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel97Format(), createWorkbookWithoutTitleRowAndGapRow(new HSSFWorkbook()), operation, expectedLatitudes);
+        assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel2008Format(), createWorkbookWithoutTitleRowAndGapRow(new XSSFWorkbook()), operation, expectedLatitudes);
+    }
+
+    @Test
+    public void parsingSkipsAGapRowBetweenDataRows() {
+        Workbook workbook = createWorkbookWithoutTitleRowAndGapRow(new HSSFWorkbook());
+        ParserContextImpl<ExcelRoute> context = new ParserContextImpl<>();
+        new MicrosoftExcel97Format().parseWorkbook(workbook, context);
+
+        assertLatitudes(context.getRoutes().get(0).getPositions(), LATITUDES);
+    }
+
+    @Test
+    public void topKeepsInMemoryOrderInSyncWithSheetWithGapRow() throws IOException {
+        assertXlsAndXlsxWithGapRow(route -> route.top(2, 0), LATITUDES[2], LATITUDES[0], LATITUDES[1]);
+    }
+
+    @Test
+    public void bottomKeepsInMemoryOrderInSyncWithSheetWithGapRow() throws IOException {
+        assertXlsAndXlsxWithGapRow(route -> route.bottom(0, 0), LATITUDES[1], LATITUDES[2], LATITUDES[0]);
+    }
+
+    @Test
+    public void moveKeepsInMemoryOrderInSyncWithSheetWithGapRow() throws IOException {
+        assertXlsAndXlsxWithGapRow(route -> route.move(0, 1), LATITUDES[1], LATITUDES[0], LATITUDES[2]);
+    }
+
+    @Test
+    public void removeKeepsInMemoryOrderInSyncWithSheetWithGapRow() throws IOException {
+        assertXlsAndXlsxWithGapRow(route -> route.remove(1), LATITUDES[0], LATITUDES[2]);
+    }
+
+    @Test
+    public void addKeepsInMemoryOrderInSyncWithSheetWithGapRow() throws IOException {
+        assertXlsAndXlsxWithGapRow(route -> addPosition(route, 1), LATITUDES[0], 52.6, LATITUDES[1], LATITUDES[2]);
+    }
+
+    private static void assertXlsAndXlsx(double[] latitudes, double[] longitudes, RouteOperation operation, double... expectedLatitudes) throws IOException {
+        assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel97Format(), createWorkbookWithoutTitleRow(new HSSFWorkbook(), latitudes, longitudes), operation, expectedLatitudes);
+        assertInMemoryAndRereadLatitudesAfter(new MicrosoftExcel2008Format(), createWorkbookWithoutTitleRow(new XSSFWorkbook(), latitudes, longitudes), operation, expectedLatitudes);
     }
 
     @Test
@@ -400,6 +473,29 @@ public class ExcelFormatTest {
     @Test
     public void addKeepsInMemoryOrderInSyncWithSheet() throws IOException {
         assertXlsAndXlsx(route -> addPosition(route, 1), 52.5, 52.6, 52.5002, 52.5004);
+    }
+
+    @Test
+    public void revertKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.revert(), 52.5004, 52.5002, 52.5);
+    }
+
+    @Test
+    public void sortKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(route -> route.sort(Comparator.comparingDouble(ExcelPosition::getLatitude).reversed()),
+                52.5004, 52.5002, 52.5);
+    }
+
+    @Test
+    public void revertWithIndicesKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        // a subset, so that ignoring the indices and reverting all positions fails
+        assertXlsAndXlsx(route -> route.revert(new int[]{0, 1}), 52.5002, 52.5, 52.5004);
+    }
+
+    @Test
+    public void removeDuplicatesKeepsInMemoryOrderInSyncWithSheet() throws IOException {
+        assertXlsAndXlsx(new double[]{52.5, 52.5, 52.5004}, new double[]{13.4, 13.4, 13.4006},
+                route -> route.removeDuplicates(), 52.5, 52.5004);
     }
 
     @Test
@@ -461,22 +557,25 @@ public class ExcelFormatTest {
         assertXlsAndXlsx(route -> route.add(1, new ExcelPosition(13.5, 52.7, null, null, null, "X")), 52.5, 52.7, 52.5002, 52.5004);
     }
 
-    // both routes share the DEFAULT mapping instance, so attach() copies cells instead of transferring fields;
+    // both routes explicitly share one mapping instance, so attach() copies cells instead of transferring fields;
     // one route is HSSF-backed and the other XSSF-backed, forcing copyCells' cell style class mismatch branch
     @Test
     public void attachClonesTimeCellStyleAcrossWorkbookTypes() {
         CompactCalendar time = calendar(2026, 11, 5, 9, 32, 14);
+        ColumnTypeToRowIndexMapping sharedMapping = ColumnTypeToRowIndexMapping.DEFAULT.copy();
 
-        ExcelRoute hssfRoute = new ExcelRoute(new MicrosoftExcel97Format(), "Data", new ArrayList<>());
+        MicrosoftExcel97Format hssfFormat = new MicrosoftExcel97Format();
+        ExcelRoute hssfRoute = new ExcelRoute(hssfFormat, hssfFormat.createSheet("Data"), sharedMapping, new ArrayList<>());
         ExcelPosition position = hssfRoute.createPosition(13.5, 52.7, null, null, time, "X");
 
-        ExcelRoute xssfRoute = new ExcelRoute(new MicrosoftExcel2008Format(), "Data", new ArrayList<>());
+        MicrosoftExcel2008Format xssfFormat = new MicrosoftExcel2008Format();
+        ExcelRoute xssfRoute = new ExcelRoute(xssfFormat, xssfFormat.createSheet("Data"), sharedMapping, new ArrayList<>());
         xssfRoute.add(0, position);
 
         ExcelPosition attached = xssfRoute.getPosition(0);
         assertEquals(time, attached.getTime());
 
-        Cell timeCell = attached.getRow().getCell(ColumnTypeToRowIndexMapping.DEFAULT.getIndex(ColumnType.Time));
+        Cell timeCell = attached.getRow().getCell(sharedMapping.getIndex(ColumnType.Time));
         assertNotEquals(0, timeCell.getCellStyle().getIndex());
         assertEquals("m/d/yy h:mm", timeCell.getCellStyle().getDataFormatString());
     }
@@ -487,12 +586,12 @@ public class ExcelFormatTest {
     public void attachTransfersAllSensorFieldsWhenMappingDiffers() throws IOException {
         CompactCalendar time = calendar(2026, 11, 5, 9, 32, 14);
         assertXlsAndXlsx(route -> {
-            // Heartbeat is deliberately left out: it has no entry in ColumnTypeToRowIndexMapping.DEFAULT, so
-            // setting it on a DEFAULT-mapped position would add a column to that shared static mapping instance
             ExcelPosition position = new ExcelPosition(13.5, 52.7, 123.0, 45.0, time, "X");
             position.setHeading(90.0);
             position.setPressure(1013.0);
             position.setTemperature(21.5);
+            // not a column of DEFAULT: the position adds it to its own mapping copy
+            position.setHeartBeat((short) 80);
 
             route.add(1, position);
             ExcelPosition added = route.getPosition(1);
@@ -506,6 +605,7 @@ public class ExcelFormatTest {
             assertEquals(90.0, added.getHeading(), 0.0);
             assertEquals(1013.0, added.getPressure(), 0.0);
             assertEquals(21.5, added.getTemperature(), 0.0);
+            assertEquals(Short.valueOf((short) 80), added.getHeartBeat());
         }, 52.5, 52.7, 52.5002, 52.5004);
     }
 
@@ -711,5 +811,21 @@ public class ExcelFormatTest {
         assertLatitudes(reread.get(1).getPositions(), 52.8);
         assertEquals("Data", reread.get(0).getName());
         assertEquals("Data (2)", reread.get(1).getName());
+    }
+
+    // a column added to one new route's own mapping must not leak into DEFAULT or into a route created afterwards
+    @Test
+    public void addingAColumnToOneRouteDoesNotAffectDefaultOrALaterRoute() {
+        assertNull(ColumnTypeToRowIndexMapping.DEFAULT.getIndex(ColumnType.Heartbeat));
+
+        ExcelRoute one = new ExcelRoute(new MicrosoftExcel97Format(), "one", new ArrayList<>());
+        ExcelPosition position = one.createPosition(13.5, 52.6, null, null, null, null);
+        position.setHeartBeat((short) 80);
+
+        assertNull(ColumnTypeToRowIndexMapping.DEFAULT.getIndex(ColumnType.Heartbeat));
+
+        ExcelRoute two = new ExcelRoute(new MicrosoftExcel97Format(), "two", new ArrayList<>());
+        Sheet sheetTwo = two.getWorkbook().getSheetAt(0);
+        assertEquals(9, sheetTwo.getRow(0).getLastCellNum());
     }
 }

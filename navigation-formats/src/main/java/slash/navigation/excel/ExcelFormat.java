@@ -97,8 +97,8 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
         List<ExcelPosition> positions = new ArrayList<>();
         for (int i = headerRowIndex + 1, c = findLastDataRowIndex(sheet); i <= c; i++) {
             Row row = sheet.getRow(i);
-            // in case there is just a formatting in a line, the row is null
-            if (row != null)
+            // in case there is just a formatting in a line, the row is null or has no cells
+            if (row != null && row.getPhysicalNumberOfCells() > 0)
                 positions.add(new ExcelPosition(row, mapping));
         }
 
