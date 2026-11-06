@@ -66,6 +66,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import static org.apache.poi.ss.usermodel.CellType.FORMULA;
+import static org.apache.poi.ss.util.WorkbookUtil.createSafeSheetName;
 import static slash.common.io.Transfer.toDouble;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteComments.createRouteName;
@@ -78,15 +79,25 @@ import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
  */
 
 public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
-    private final Sheet sheet;
+    // Excel limits a sheet name to 31 characters
+    private static final int MAX_SHEET_NAME_LENGTH = 31;
+
+    private Sheet sheet;
     private ColumnTypeToRowIndexMapping mapping;
     private final List<ExcelPosition> positions;
+    private ExcelWorkbook excelWorkbook;
 
     public ExcelRoute(ExcelFormat format, Sheet sheet, ColumnTypeToRowIndexMapping mapping, List<ExcelPosition> positions) {
+        this(format, sheet, mapping, positions, new ExcelWorkbook(sheet.getWorkbook()));
+    }
+
+    ExcelRoute(ExcelFormat format, Sheet sheet, ColumnTypeToRowIndexMapping mapping, List<ExcelPosition> positions, ExcelWorkbook excelWorkbook) {
         super(format, Track);
         this.sheet = sheet;
         this.mapping = mapping;
         this.positions = positions;
+        this.excelWorkbook = excelWorkbook;
+        excelWorkbook.addRoute(this);
     }
 
     // a new route gets its own copy of DEFAULT so adding a column to it does not affect DEFAULT or other routes
@@ -126,7 +137,54 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     }
 
     Workbook getWorkbook() {
-        return sheet.getWorkbook();
+        return excelWorkbook.getWorkbook();
+    }
+
+    ExcelWorkbook getExcelWorkbook() {
+        return excelWorkbook;
+    }
+
+    // moves this route's sheet into another workbook, keeping title, header, data rows and column widths;
+    // used to bring several lists into one file before writing it, see ExcelFormat#prepareWorkbook
+    void moveTo(ExcelWorkbook target, String sheetName) {
+        Workbook targetWorkbook = target.getWorkbook();
+        Sheet targetSheet = targetWorkbook.createSheet(createUniqueSheetName(targetWorkbook, sheetName));
+
+        Map<StyleKey, CellStyle> styles = new HashMap<>();
+        for (int rowNum = 0, lastRowNum = sheet.getLastRowNum(); rowNum <= lastRowNum; rowNum++) {
+            Row sourceRow = sheet.getRow(rowNum);
+            if (sourceRow != null)
+                copyCells(sourceRow, targetSheet.createRow(rowNum), styles);
+        }
+
+        Row header = sheet.getRow(mapping.getHeaderRowIndex());
+        int columnCount = header != null ? header.getLastCellNum() : 0;
+        for (int i = 0; i < columnCount; i++)
+            targetSheet.setColumnWidth(i, sheet.getColumnWidth(i));
+
+        Workbook sourceWorkbook = sheet.getWorkbook();
+        Sheet sourceSheet = sheet;
+
+        sheet = targetSheet;
+        bindPositionsToRows();
+
+        excelWorkbook.removeRoute(this);
+        target.addRoute(this);
+        excelWorkbook = target;
+
+        sourceWorkbook.removeSheetAt(sourceWorkbook.getSheetIndex(sourceSheet));
+    }
+
+    private static String createUniqueSheetName(Workbook workbook, String nameProposal) {
+        String safeName = createSafeSheetName(nameProposal);
+        String name = safeName;
+        for (int suffix = 2; workbook.getSheet(name) != null; suffix++) {
+            String appendix = " (" + suffix + ")";
+            int maxLength = Math.max(0, MAX_SHEET_NAME_LENGTH - appendix.length());
+            String truncated = safeName.length() > maxLength ? safeName.substring(0, maxLength) : safeName;
+            name = createSafeSheetName(truncated + appendix);
+        }
+        return name;
     }
 
     private int getRowNum(int index) {
@@ -447,8 +505,11 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     }
 
     protected ExcelRoute asExcelFormat(ExcelFormat format) {
-        List<ExcelPosition> excelPositions = new ArrayList<>(getPositions());
-        return new ExcelRoute(format, getName(), excelPositions);
+        ExcelRoute route = new ExcelRoute(format, getName(), new ArrayList<>());
+        List<ExcelPosition> existingPositions = getPositions();
+        for (int i = 0; i < existingPositions.size(); i++)
+            route.add(i, existingPositions.get(i));
+        return route;
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat<GoPalRoute> format) {
