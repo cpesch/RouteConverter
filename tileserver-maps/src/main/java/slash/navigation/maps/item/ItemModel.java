@@ -45,6 +45,10 @@ public abstract class ItemModel<T extends Item> {
         this.defaultValue = defaultValue;
     }
 
+    public String getStoredValue() {
+        return preferences.get(preferenceName, null);
+    }
+
     public T getItem() {
         try {
             T item = stringToItem(preferences.get(preferenceName, defaultValue));

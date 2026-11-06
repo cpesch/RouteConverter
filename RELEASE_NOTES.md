@@ -12,6 +12,12 @@
 
 - Windows and Linux: sharper toolbar and menu icons on scaled displays; disabled menu items show greyed icons (#284)
 - Options > API Keys: a field holding a whole URL instead of a key gets a red border and a tooltip saying so (#306)
+- Linux on a scaled GNOME or KDE desktop: menus, map and icons follow the display scale, and dark mode follows the desktop setting
+- Linux: the RouteConverter jar tells which Java version to install instead of failing silently on a Java that is too old
+- The bundled Java no longer trusts the eMudhra emSign and Sectigo AAA Certificate Services roots that forged certificates for any host chain up to (CVE-2026-111943)
+- The update check also reports whether RouteConverter runs on its bundled Java
+- Find places reads the bounds of the offline POI files only once instead of on every first search (#279)
+- Options: the font size setting added in 3.7 is removed; on scaled Windows displays the text follows the display scale again, so it is no longer needed (#442)
 
 ### Fixes
 
@@ -25,10 +31,28 @@
 - Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand no longer adds a no-op step to Undo/Redo or marks the row changed (#309)
 - Clicking into a cell of the positions table and leaving it unchanged no longer adds a step to Undo/Redo or marks the file modified (#311)
 - Maps dialog: selecting a map with no known extent no longer crashes the app (#303)
+- Windows with display scaling above 100 %: text and icons follow the display scale again instead of being scaled twice, and the map is sharp instead of blurred; macOS Retina and Linux HiDPI get the sharp map too (#442, #449). This resolves the 3.7 known issue (#343)
+- Save as keeps typed file names that contain a dot, and suggested file names are no longer cut at 64 characters (#287)
+- Automatic geocoding no longer calls Google when no Google API key is set (#288)
+- Map context menu: Delete works on the point you clicked and is enabled when it applies; in 3.7 it used an earlier click point (#441)
+- Hover coordinates on the map show at start when the option is on, not only after switching it off and on (#443)
+- Unchanged downloads such as the map and routing catalogs are no longer downloaded again on every start (#440)
+- macOS: opening a route no longer fits the map one zoom level too close (#274)
+- Crash reports no longer carry credentials that a URL in an exception message embeds (#296)
+- A tile server API key holding a whole URL no longer throws an error for every map tile (#295)
+- The bundled Java reads GPX and KML files in Japanese, Chinese, Hebrew, Arabic and Thai encodings instead of garbling their names
+- Linux Flatpak: starts on Wayland desktops, keeps settings and maps across restarts, and opens help, web pages and mail in the desktop's browser and mail program
+- Routing: when a route segment takes too long or no route is found, a notification says how many segments failed and with which routing service; segments without a route are drawn as straight lines (#317)
 - Login dialog: the login and failure messages now say they ask for the RouteConverter service account, not the forum account, and point to the Register tab; registering requires a password of at least 8 characters, matching what the server accepts (#319)
+- If the online map you used last has been removed from the catalog, RouteConverter now tells you once that it switched to OpenStreetMap, instead of silently showing OpenStreetMap without explanation (#320)
 - Fast mouse-wheel zooming on the map no longer crashes the app (#321)
 - No longer reports a crash from the JDK's shutdown cleanup of temporary tile image files on exit (#322)
 - Maps dialog: a `.map` file that isn't a valid offline map (e.g. a failed download) is no longer listed and no longer crashes the app when selected (#323)
+- Pressing the context-menu key in a table before any mouse click no longer crashes the app; the menu opens below the selected cell (#324)
+- Excel: sorting or reverting positions now survives saving and reopening the .xls/.xlsx; before, the positions table showed the new order but the saved file kept the old one (#338)
+- Excel: a new position list or converted .xls/.xlsx no longer gets an empty column (such as Heartbeat) left over from another Excel route edited earlier in the same session (#341)
+- Excel: moving a position to the top or bottom, or removing one, on a sheet with an empty row between positions no longer leaves a position without coordinates after saving and reopening the file (#340)
+- Excel: saving as .xlsx/.xls, splitting a list, creating a new list and deleting a list no longer lose positions or bring a deleted list back on the next save (#339)
 - Maps and Downloads dialogs: with a sorted table, selecting, displaying, stopping, restarting or removing now acts on the row you selected, not another one (#333)
 
 ## 3.7 — 2026-10-10

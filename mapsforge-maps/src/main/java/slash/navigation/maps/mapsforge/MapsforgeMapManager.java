@@ -43,6 +43,7 @@ import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -368,6 +369,23 @@ public class MapsforgeMapManager {
             downloads.add(dataSourceManager.queueForDownload(dataSource, downloadable));
         }
         dataSourceManager.getDownloadManager().waitForCompletion(downloads);
+    }
+
+    static boolean isMissingOnlineMap(String storedUrl, Collection<String> availableUrls, String defaultUrl) {
+        return storedUrl != null && !storedUrl.equals(defaultUrl) && !storedUrl.startsWith("file:") &&
+                !availableUrls.contains(storedUrl);
+    }
+
+    public boolean isDisplayedOnlineMapMissing() {
+        List<TileDownloadMap> onlineMaps = availableOnlineMapsModel.getItems();
+        if (onlineMaps.size() == 1 && OPENSTREETMAP_URL.equals(onlineMaps.get(0).getUrl()))
+            return false;
+
+        List<String> availableUrls = new ArrayList<>();
+        for (int i = 0; i < availableMapsModel.getRowCount(); i++)
+            availableUrls.add(availableMapsModel.getItem(i).getUrl());
+
+        return isMissingOnlineMap(displayedMapModel.getStoredValue(), availableUrls, OPENSTREETMAP_URL);
     }
 
     public void delete(List<? extends LocalMap> maps) throws IOException {

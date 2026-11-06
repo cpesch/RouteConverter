@@ -81,4 +81,11 @@ class ColumnTypeToRowIndexMapping {
     public ColumnType getColumnType(Integer index) {
         return mapping.get(index);
     }
+
+    // a new route must not add columns to DEFAULT itself, which is shared by the whole JVM
+    ColumnTypeToRowIndexMapping copy() {
+        ColumnTypeToRowIndexMapping copy = new ColumnTypeToRowIndexMapping(headerRowIndex);
+        copy.mapping.putAll(mapping);
+        return copy;
+    }
 }
