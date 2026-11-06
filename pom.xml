@@ -282,7 +282,7 @@
                          bound anywhere, so it silently never ran). -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
-                    <version>3.6.3</version>
+                    <version>3.7.0</version>
                     <executions>
                         <execution>
                             <id>enforce-maven</id>
@@ -427,7 +427,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.15</version>
+                    <version>0.8.16</version>
                 </plugin>
                 <plugin>
                     <groupId>org.owasp</groupId>
