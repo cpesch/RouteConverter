@@ -215,6 +215,7 @@ public class MapsforgeMapView extends BaseMapView {
         handleShadedHills();
         handleMapAndThemeUpdate(false, false);
     };
+    private final ChangeListener showNonSelectedPositionListsListener = e -> updateNonSelectedPositionLists();
 
     private MapSelector mapSelector;
     private AwtGraphicMapView mapView;
@@ -435,6 +436,7 @@ public class MapsforgeMapView extends BaseMapView {
         preferencesModel.getUnitSystemModel().addChangeListener(unitSystemListener);
         preferencesModel.getShowCoordinatesModel().addChangeListener(showCoordinatesListener);
         preferencesModel.getShowShadedHills().addChangeListener(shadedHillsListener);
+        preferencesModel.getShowNonSelectedPositionListsModel().addChangeListener(showNonSelectedPositionListsListener);
         preferencesModel.getFixMapModeModel().addChangeListener(repaintPositionListListener);
         preferencesModel.getRouteColorModel().addChangeListener(repaintPositionListListener);
         preferencesModel.getRouteLineWidthModel().addChangeListener(repaintPositionListListener);
@@ -450,7 +452,8 @@ public class MapsforgeMapView extends BaseMapView {
                 preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
         nonSelectedPositionListsRenderer = new NonSelectedPositionListsRenderer(this, positionListsModel,
                 preferencesModel.getRouteColorModel(), preferencesModel.getTrackColorModel(),
-                preferencesModel.getRouteLineWidthModel(), preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
+                preferencesModel.getRouteLineWidthModel(), preferencesModel.getTrackLineWidthModel(),
+                preferencesModel.getShowNonSelectedPositionListsModel(), GRAPHIC_FACTORY);
         poiOverlayRenderer = new PoiOverlayRenderer(this);
     }
 
@@ -981,6 +984,7 @@ public class MapsforgeMapView extends BaseMapView {
         preferencesModel.getUnitSystemModel().removeChangeListener(unitSystemListener);
         preferencesModel.getShowCoordinatesModel().removeChangeListener(showCoordinatesListener);
         preferencesModel.getShowShadedHills().removeChangeListener(shadedHillsListener);
+        preferencesModel.getShowNonSelectedPositionListsModel().removeChangeListener(showNonSelectedPositionListsListener);
         preferencesModel.getFixMapModeModel().removeChangeListener(repaintPositionListListener);
         preferencesModel.getRouteColorModel().removeChangeListener(repaintPositionListListener);
         preferencesModel.getRouteLineWidthModel().removeChangeListener(repaintPositionListListener);

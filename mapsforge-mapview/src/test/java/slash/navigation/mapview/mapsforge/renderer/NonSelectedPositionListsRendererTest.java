@@ -22,8 +22,10 @@ package slash.navigation.mapview.mapsforge.renderer;
 import org.junit.Test;
 import org.mapsforge.core.graphics.GraphicFactory;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.PositionListsModel;
+import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.gui.models.IntegerModel;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 
@@ -33,8 +35,13 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.awt.EventQueue.invokeAndWait;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.mapview.mapsforge.renderer.NonSelectedPositionListsRenderer.lighten;
 
 public class NonSelectedPositionListsRendererTest {
@@ -54,7 +61,7 @@ public class NonSelectedPositionListsRendererTest {
     private NonSelectedPositionListsRenderer newRenderer(PositionListsModel model) {
         return new NonSelectedPositionListsRenderer(mock(MapsforgeMapView.class), model,
                 mock(ColorModel.class), mock(ColorModel.class),
-                mock(IntegerModel.class), mock(IntegerModel.class), mock(GraphicFactory.class));
+                mock(IntegerModel.class), mock(IntegerModel.class), mock(BooleanModel.class), mock(GraphicFactory.class));
     }
 
     @Test
@@ -89,6 +96,50 @@ public class NonSelectedPositionListsRendererTest {
 
         invokeAndWait(() -> { });   // drain the EDT
         assertEquals("50 rapid updates must coalesce into a single rebuild", 1, model.reads.get());
+    }
+
+    /**
+     * A file with a selected list plus one non-selected waypoint list holding a single
+     * position with coordinates - exactly one marker when the non-selected lists are shown.
+     */
+    private static class TwoListsModel implements PositionListsModel {
+        final BaseRoute<?, ?> selected = mock(BaseRoute.class);
+        final BaseRoute<?, ?> other = mock(BaseRoute.class);
+
+        TwoListsModel() {
+            NavigationPosition position = mock(NavigationPosition.class);
+            when(position.hasCoordinates()).thenReturn(true);
+            when(other.getCharacteristics()).thenReturn(Waypoints);
+            doReturn(singletonList(position)).when(other).getPositions();
+        }
+
+        public List<BaseRoute<?, ?>> getRoutes() { List<BaseRoute<?, ?>> routes = new ArrayList<>(); routes.add(selected); routes.add(other); return routes; }
+        public BaseRoute<?, ?> getSelectedRoute() { return selected; }
+        public void addListDataListener(ListDataListener l) { }
+        public void removeListDataListener(ListDataListener l) { }
+    }
+
+    private int rebuildLayerCount(boolean show) throws Exception {
+        BooleanModel showModel = mock(BooleanModel.class);
+        when(showModel.getBoolean()).thenReturn(show);
+        NonSelectedPositionListsRenderer renderer = new NonSelectedPositionListsRenderer(
+                mock(MapsforgeMapView.class, RETURNS_DEEP_STUBS), new TwoListsModel(),
+                mock(ColorModel.class), mock(ColorModel.class),
+                mock(IntegerModel.class), mock(IntegerModel.class), showModel, mock(GraphicFactory.class));
+        invokeAndWait(renderer::update);
+        invokeAndWait(() -> { });   // drain the EDT so the deferred rebuild runs
+        return renderer.getLayer().layers.size();
+    }
+
+    @Test
+    public void shownDrawsTheNonSelectedList() throws Exception {
+        assertEquals(1, rebuildLayerCount(true));
+    }
+
+    @Test
+    public void hiddenDrawsNothing() throws Exception {
+        // forum thread 4174: a Google Timeline with thousands of daily tracks covers the map
+        assertEquals(0, rebuildLayerCount(false));
     }
 
     @Test

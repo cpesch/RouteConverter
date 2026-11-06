@@ -110,6 +110,8 @@ public class JMenuHelper {
         Application.getInstance().getContext().getActionManager().register(name, action);
         JCheckBoxMenuItem item = new JCheckBoxMenuItem(action);
         item.setState(booleanModel.getBoolean());
+        // follow changes made elsewhere, e.g. by a toggle button bound to the same model
+        booleanModel.addChangeListener(e -> item.setState(booleanModel.getBoolean()));
         initializeItem(name, item);
         return item;
     }
