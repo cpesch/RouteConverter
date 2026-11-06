@@ -283,6 +283,112 @@ jobs:
           git commit -am "routeconverter ${VERSION}"
           git push
 
+  bump-winget:
+    # Open the microsoft/winget-pkgs PR for Pesch.RouteConverter on each
+    # release tag (rc/RouteConverter#315, rc-meta specs/00059
+    # P2-winget-automation). Replaces the hand-made manifest PRs (3.6:
+    # winget-pkgs#432401, 3.7: #451829). komac copies the previous manifest
+    # (InstallerType: portable -- RouteConverter.nsi writes no ARP entry, so
+    # `nsis` fails winget validation) and swaps version, URL and hash.
+    # The tag filter above admits stable X.Y / X.Y.Z only; prereleases come
+    # from prerelease.yml and never reach this job.
+    # WINGET_PAT: classic PAT on cpesch, scope public_repo only (a
+    # fine-grained token cannot open PRs on microsoft/winget-pkgs); 1P
+    # `github-pat-winget`, expires 2027-10-29. komac pushes to the existing
+    # cpesch/winget-pkgs fork. The maintainer still posts the CLA agreement
+    # and a winget moderator approves -- the job only writes the PR.
+    needs: publish
+    runs-on: ubuntu-latest
+    env:
+      KOMAC_VERSION: 2.17.1
+      VERSION: ${{ github.ref_name }}
+    steps:
+      - name: Check the published Windows installer and its sha256
+        run: |
+          set -euo pipefail
+          url="https://releases.routeconverter.com/previous-releases/${VERSION}/RouteConverterWindows.exe"
+          want=$(curl -fsSL "${url}.sha256" | awk '{print $1}')
+          [[ "$want" =~ ^[0-9a-f]{64}$ ]] || { echo "::error::bad sha256 for ${url}: '$want'"; exit 1; }
+          got=$(curl -fsSL "$url" | sha256sum | awk '{print $1}')
+          [[ "$got" == "$want" ]] || { echo "::error::${url} hashes to $got, its .sha256 says $want"; exit 1; }
+          echo "installer_url=$url" >> "$GITHUB_ENV"
+      - name: Skip if winget already has this version or an open PR for it
+        # A re-run must not open a second PR.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if gh api "repos/microsoft/winget-pkgs/contents/manifests/p/Pesch/RouteConverter/${VERSION}" >/dev/null 2>&1; then
+            echo "::notice::winget-pkgs already has Pesch.RouteConverter ${VERSION}; nothing to submit"
+            echo "skip=true" >> "$GITHUB_ENV"; exit 0
+          fi
+          open=$(gh api -X GET search/issues \
+            -f q="repo:microsoft/winget-pkgs is:pr is:open in:title Pesch.RouteConverter ${VERSION}" \
+            --jq '[.items[] | select(.title | test("Pesch\\.RouteConverter version " + env.VERSION + "( |$)"))] | length')
+          if [[ "$open" != "0" ]]; then
+            echo "::notice::an open winget-pkgs PR for Pesch.RouteConverter ${VERSION} exists; nothing to submit"
+            echo "skip=true" >> "$GITHUB_ENV"; exit 0
+          fi
+          echo "skip=false" >> "$GITHUB_ENV"
+      - name: Install komac (pinned, checksum-verified)
+        if: env.skip == 'false'
+        run: |
+          set -euo pipefail
+          base="https://github.com/russellbanks/Komac/releases/download/v${KOMAC_VERSION}"
+          tgz="komac-${KOMAC_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          curl -fsSLO "${base}/${tgz}"
+          # SHA256SUMS lines are "<hash> *<file>" (binary mode); match the name exactly.
+          curl -fsSL "${base}/SHA256SUMS" | awk -v f="$tgz" '{n=$2; sub(/^\*/, "", n)} n == f' > komac.sha256
+          [[ -s komac.sha256 ]] || { echo "::error::${tgz} not listed in SHA256SUMS"; exit 1; }
+          sha256sum -c komac.sha256
+          mkdir -p "$RUNNER_TEMP/komac"
+          tar -xzf "$tgz" -C "$RUNNER_TEMP/komac"
+          bin=$(find "$RUNNER_TEMP/komac" -type f -name komac | head -1)
+          [[ -x "$bin" ]] || { echo "::error::komac binary not found in ${tgz}"; exit 1; }
+          dirname "$bin" >> "$GITHUB_PATH"
+      - name: Submit the winget-pkgs PR
+        # Not `komac update --submit`: komac re-detects the installer and gets
+        # it wrong for us. RouteConverterWindows.exe is a 32-bit NSIS
+        # self-extractor (PE i386) around a 64-bit JRE, so komac writes
+        # `InstallerType: nullsoft` + `Architecture: x86`. nullsoft fails
+        # winget validation (RouteConverter.nsi writes no ARP entry), and x86
+        # would offer the package to 32-bit Windows, where the JRE cannot run.
+        # 3.6/3.7 went out as portable/x64. So: copy the newest published
+        # manifests, swap version, URL and hash, and submit them unchanged
+        # otherwise. komac without a TTY only runs with --submit/--dry-run,
+        # and --dry-run writes no files, hence `show` + `submit`.
+        if: env.skip == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.WINGET_PAT }}
+        run: |
+          set -euo pipefail
+          [[ -n "$GITHUB_TOKEN" ]] || { echo "::error::WINGET_PAT secret is not set"; exit 1; }
+          id=Pesch.RouteConverter
+          prev=$(komac list "$id" | grep -E '^[0-9]+(\.[0-9]+)+$' | grep -vxF "$VERSION" | sort -V | tail -1)
+          [[ -n "$prev" ]] || { echo "::error::no published $id version to copy"; exit 1; }
+          sha=$(curl -fsSL "${installer_url}.sha256" | awk '{print toupper($1)}')
+          dir="$RUNNER_TEMP/winget/manifests/p/Pesch/RouteConverter/$VERSION"
+          mkdir -p "$dir"
+          komac show "$id" --version "$prev" --version-manifest      > "$dir/$id.yaml"
+          komac show "$id" --version "$prev" --installer-manifest    > "$dir/$id.installer.yaml"
+          komac show "$id" --version "$prev" --defaultlocale-manifest > "$dir/$id.locale.en-US.yaml"
+          sed -i -E "s/^PackageVersion: .*/PackageVersion: '${VERSION}'/" "$dir"/*.yaml
+          sed -i -E "s#^(  InstallerUrl: ).*#\1${installer_url}#; s/^(  InstallerSha256: ).*/\1${sha}/" "$dir/$id.installer.yaml"
+          sed -i -E "s#^(ReleaseNotesUrl: .*/releases/tag/).*#\1${VERSION}#" "$dir/$id.locale.en-US.yaml"
+          if grep -q '^ReleaseNotesUrl:' "$dir/$id.locale.en-US.yaml"; then
+            grep -qE "^ReleaseNotesUrl: .*/releases/tag/${VERSION}$" "$dir/$id.locale.en-US.yaml" \
+              || { echo "::error::ReleaseNotesUrl not moved to ${VERSION}"; exit 1; }
+          fi
+          # Everything the swap must not change, checked rather than trusted.
+          inst="$dir/$id.installer.yaml"
+          for want in 'InstallerType: portable' '- Architecture: x64' "  InstallerUrl: ${installer_url}" "  InstallerSha256: ${sha}"; do
+            grep -qxF -- "$want" "$inst" || { echo "::error::installer manifest lacks '$want':"; cat "$inst"; exit 1; }
+          done
+          [[ $(grep -c "^PackageVersion: '${VERSION}'$" "$dir"/*.yaml | awk -F: '{s+=$2} END {print s}') == 3 ]] \
+            || { echo "::error::PackageVersion not set in all three manifests"; exit 1; }
+          head -n 50 "$dir"/*.yaml
+          komac submit "$dir" --yes
+
   publish-javadoc:
     needs: publish
     runs-on: ubuntu-latest
