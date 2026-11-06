@@ -82,7 +82,7 @@
              TimeAlbumProWindows (via NSI resource filtering, ${jre.version}),
              and the build-windows-jre / build-mac-jre / prerelease / release
              GitHub workflows (grep on this pom). -->
-        <jre.version>21.0.12</jre.version>
+        <jre.version>21.0.13</jre.version>
 
         <java.version>21</java.version>
         <!-- Floor tracks .mvn/wrapper/maven-wrapper.properties (the wrapper

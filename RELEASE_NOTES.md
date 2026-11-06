@@ -15,6 +15,7 @@
 - Linux on a scaled GNOME or KDE desktop: menus, map and icons follow the display scale, and dark mode follows the desktop setting
 - Linux: the RouteConverter jar tells which Java version to install instead of failing silently on a Java that is too old
 - The bundled Java no longer trusts the eMudhra emSign and Sectigo AAA Certificate Services roots that forged certificates for any host chain up to (CVE-2026-111943)
+- The bundled Java is updated to 21.0.13
 - The update check also reports whether RouteConverter runs on its bundled Java
 - Find places reads the bounds of the offline POI files only once instead of on every first search (#279)
 - Options: the font size setting added in 3.7 is removed; on scaled Windows displays the text follows the display scale again, so it is no longer needed (#442)
