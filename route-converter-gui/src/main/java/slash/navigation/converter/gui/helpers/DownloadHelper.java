@@ -38,7 +38,7 @@ public class DownloadHelper {
         int[] selectedRows = table.getSelectedRows();
         List<Download> downloads = new ArrayList<>();
         for (int selectedRow : selectedRows) {
-            int row = table.convertRowIndexToView(selectedRow);
+            int row = table.convertRowIndexToModel(selectedRow);
             downloads.add(((DownloadTableModel) table.getModel()).getDownload(row));
         }
         return downloads;

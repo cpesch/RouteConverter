@@ -59,7 +59,7 @@ public class DisplayMapAction extends DialogAction {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1)
             return;
-        LocalMap map = (LocalMap) table.getModel().getValueAt(table.convertRowIndexToView(selectedRow), 0);
+        LocalMap map = (LocalMap) table.getModel().getValueAt(table.convertRowIndexToModel(selectedRow), 0);
         mapManager.getDisplayedMapModel().setItem(map);
         getNotificationManager().showNotification(format(BaseRouteConverter.getBundle().getString("map-displayed"), map.description()), getAction());
     }
