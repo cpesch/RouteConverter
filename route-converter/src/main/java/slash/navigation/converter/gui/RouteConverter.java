@@ -141,8 +141,9 @@ public class RouteConverter extends BaseRouteConverter {
             viewMenu.add(overlaysMenu, 4);
             new OverlaysMenu(overlaysMenu, getTileServerMapManager().getAvailableOverlaysModel(), getTileServerMapManager().getAppliedOverlaysModel());
             viewMenu.add(createCheckBoxItem("show-shaded-hills", getMapPreferencesModel().getShowShadedHills()), 5);
-            viewMenu.add(createItem("show-pois"), 6);
-            viewMenu.add(new JPopupMenu.Separator(), 7);
+            viewMenu.add(createCheckBoxItem("show-non-selected-positionlists", getMapPreferencesModel().getShowNonSelectedPositionListsModel()), 6);
+            viewMenu.add(createItem("show-pois"), 7);
+            viewMenu.add(new JPopupMenu.Separator(), 8);
         }
     }
 

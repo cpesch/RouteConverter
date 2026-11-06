@@ -37,6 +37,7 @@ public class MapPreferencesModel {
     private static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
     private static final String SHOW_SHADED_HILLS_PREFERENCE = "showShadedHills";
     private static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
+    private static final String SHOW_NON_SELECTED_POSITION_LISTS_PREFERENCE = "showNonSelectedPositionLists";
 
     private final RoutingPreferencesModel routingPreferencesModel;
     private final CharacteristicsModel characteristicsModel;
@@ -44,6 +45,7 @@ public class MapPreferencesModel {
     private final BooleanModel showCoordinatesModel = new BooleanModel(SHOW_COORDINATES_PREFERENCE, false);
     private final BooleanModel showShadedHills = new BooleanModel(SHOW_SHADED_HILLS_PREFERENCE, false);
     private final BooleanModel showWaypointDescriptionModel = new BooleanModel(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false); // only BrowserMapView
+    private final BooleanModel showNonSelectedPositionListsModel = new BooleanModel(SHOW_NON_SELECTED_POSITION_LISTS_PREFERENCE, true);
     private final ColorModel routeColorModel = new ColorModel("route", "C86CB1F3"); // "6CB1F3" w 0.8 alpha
     private final IntegerModel routeLineWidthModel = new IntegerModel(ROUTE_LINE_WIDTH_PREFERENCE, 4);
     private final ColorModel trackColorModel = new ColorModel("track", "FF0033FF"); // "0033FF" w 1.0 alpha
@@ -81,6 +83,10 @@ public class MapPreferencesModel {
 
     public BooleanModel getShowWaypointDescriptionModel() {
         return showWaypointDescriptionModel;
+    }
+
+    public BooleanModel getShowNonSelectedPositionListsModel() {
+        return showNonSelectedPositionListsModel;
     }
 
     public ColorModel getRouteColorModel() {

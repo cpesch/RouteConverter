@@ -32,6 +32,7 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.PositionListsModel;
+import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.gui.models.IntegerModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
@@ -252,7 +253,7 @@ public class MapsforgeMapViewTest {
         CountingPositionListsModel positionListsModel = new CountingPositionListsModel();
         NonSelectedPositionListsRenderer renderer = new NonSelectedPositionListsRenderer(mapView, positionListsModel,
                 mock(ColorModel.class), mock(ColorModel.class), mock(IntegerModel.class), mock(IntegerModel.class),
-                mock(GraphicFactory.class));
+                mock(BooleanModel.class), mock(GraphicFactory.class));
         setField(mapView, "nonSelectedPositionListsRenderer", renderer);
         setField(mapView, "updateDecoupler", mock(UpdateDecoupler.class));
 

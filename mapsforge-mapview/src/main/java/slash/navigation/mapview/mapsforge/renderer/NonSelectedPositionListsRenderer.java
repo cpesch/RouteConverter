@@ -30,6 +30,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.PositionListsModel;
+import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.gui.models.IntegerModel;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
@@ -47,8 +48,9 @@ import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
  * Renders every position list of a file that is not the selected one as a read-only,
  * gray, non-interactive overlay for the {@link MapsforgeMapView}. The layers live on a
  * dedicated {@link GroupLayer} the map view keeps below the selected list and its
- * selection markers. Route-type lists are drawn from their stored positions - the
- * routing engine and distance/time computation stay reserved for the selected list.
+ * selection markers. The user can hide them via {@link #showModel}: a Google Timeline with
+ * thousands of daily tracks otherwise covers the map. Route-type lists are drawn from
+ * their stored positions - the routing engine and distance/time computation stay reserved for the selected list.
  *
  * @author Christian Pesch
  */
@@ -67,6 +69,7 @@ public class NonSelectedPositionListsRenderer {
     private final ColorModel trackColorModel;
     private final IntegerModel routeLineWidthModel;
     private final IntegerModel trackLineWidthModel;
+    private final BooleanModel showModel;
     private final GraphicFactory graphicFactory;
     private final GroupLayer layer = new GroupLayer();
     private final AtomicBoolean updatePending = new AtomicBoolean(false);
@@ -75,13 +78,14 @@ public class NonSelectedPositionListsRenderer {
     public NonSelectedPositionListsRenderer(MapsforgeMapView mapView, PositionListsModel positionListsModel,
                                             ColorModel routeColorModel, ColorModel trackColorModel,
                                             IntegerModel routeLineWidthModel, IntegerModel trackLineWidthModel,
-                                            GraphicFactory graphicFactory) {
+                                            BooleanModel showModel, GraphicFactory graphicFactory) {
         this.mapView = mapView;
         this.positionListsModel = positionListsModel;
         this.routeColorModel = routeColorModel;
         this.trackColorModel = trackColorModel;
         this.routeLineWidthModel = routeLineWidthModel;
         this.trackLineWidthModel = trackLineWidthModel;
+        this.showModel = showModel;
         this.graphicFactory = graphicFactory;
     }
 
@@ -114,7 +118,7 @@ public class NonSelectedPositionListsRenderer {
 
             List<BaseRoute<?, ?>> routes = positionListsModel.getRoutes();
             BaseRoute<?, ?> selectedRoute = positionListsModel.getSelectedRoute();
-            if (routes != null) {
+            if (showModel.getBoolean() && routes != null) {
                 for (BaseRoute<?, ?> route : routes) {
                     if (route == null || route == selectedRoute)
                         continue;
