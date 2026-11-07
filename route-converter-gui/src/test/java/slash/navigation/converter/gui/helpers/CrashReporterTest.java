@@ -28,9 +28,18 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.nio.file.Files.createTempDirectory;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CrashReporterTest {
 
@@ -48,9 +57,76 @@ public class CrashReporterTest {
         }
     }
 
+    /**
+     * Blocks the first {@code send} call until released, so a test can issue further
+     * flush requests while that first send is still in flight. Counts sends per payload
+     * to detect duplicate sends.
+     */
+    private static class BlockingSender extends CrashReportSender {
+        final Map<String, Integer> sendCountByPayload = new ConcurrentHashMap<>();
+        final CountDownLatch firstSendEntered = new CountDownLatch(1);
+        private final CountDownLatch releaseFirstSend;
+        private final AtomicBoolean blockedOnce = new AtomicBoolean(false);
+
+        BlockingSender(CountDownLatch releaseFirstSend) {
+            this.releaseFirstSend = releaseFirstSend;
+        }
+
+        public boolean send(String apiUrl, String json) {
+            if (blockedOnce.compareAndSet(false, true)) {
+                firstSendEntered.countDown();
+                try {
+                    releaseFirstSend.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            sendCountByPayload.merge(json, 1, Integer::sum);
+            return true;
+        }
+    }
+
+    /** Counts calls to {@link #list()} so a test can assert how many flush passes ran. */
+    private static class CountingSpool extends CrashReportSpool {
+        final AtomicInteger listCalls = new AtomicInteger();
+
+        CountingSpool(File directory) {
+            super(directory);
+        }
+
+        public List<File> list() {
+            listCalls.incrementAndGet();
+            return super.list();
+        }
+    }
+
+    /** Runs every submitted task on its own real thread, so a test can wait for them all. */
+    private static class ThreadPerTaskExecutor implements Executor {
+        private final List<Thread> threads = new CopyOnWriteArrayList<>();
+
+        public void execute(Runnable command) {
+            Thread thread = new Thread(command, "test-crash-report-sender");
+            threads.add(thread);
+            thread.start();
+        }
+
+        void awaitIdle() throws InterruptedException {
+            for (Thread thread : threads)
+                thread.join(SECONDS.toMillis(5));
+        }
+    }
+
     private CrashReportSpool spoolWithReports(int count) throws IOException {
         File directory = createTempDirectory("crash-reporter-test").toFile();
         CrashReportSpool spool = new CrashReportSpool(directory);
+        for (int i = 0; i < count; i++)
+            spool.write("{\"schema_version\":1,\"n\":" + i + "}");
+        return spool;
+    }
+
+    private CountingSpool countingSpoolWithReports(int count) throws IOException {
+        File directory = createTempDirectory("crash-reporter-test").toFile();
+        CountingSpool spool = new CountingSpool(directory);
         for (int i = 0; i < count; i++)
             spool.write("{\"schema_version\":1,\"n\":" + i + "}");
         return spool;
@@ -103,5 +179,72 @@ public class CrashReporterTest {
 
         assertEquals(2, sender.sent.size());
         assertEquals("a failed send must leave the report for the next launch", 2, spool.list().size());
+    }
+
+    @Test
+    public void testConcurrentRequestsSendEachReportOnce() throws Exception {
+        CrashReportSpool spool = spoolWithReports(3);
+        CountDownLatch releaseFirstSend = new CountDownLatch(1);
+        BlockingSender sender = new BlockingSender(releaseFirstSend);
+        ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
+        CrashReporter reporter = new CrashReporter(spool, sender, () -> true, () -> "http://localhost/", executor);
+
+        reporter.flushSpooledReportsAsync();
+        assertTrue(sender.firstSendEntered.await(5, SECONDS));
+
+        for (int i = 0; i < 4; i++)
+            reporter.flushSpooledReportsAsync();
+
+        releaseFirstSend.countDown();
+        executor.awaitIdle();
+
+        assertEquals(3, sender.sendCountByPayload.size());
+        for (int count : sender.sendCountByPayload.values())
+            assertEquals(1, (int) count);
+        assertEquals(0, spool.list().size());
+    }
+
+    @Test
+    public void testCrashDuringFlushIsStillSent() throws Exception {
+        CrashReportSpool spool = spoolWithReports(3);
+        CountDownLatch releaseFirstSend = new CountDownLatch(1);
+        BlockingSender sender = new BlockingSender(releaseFirstSend);
+        ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
+        CrashReporter reporter = new CrashReporter(spool, sender, () -> true, () -> "http://localhost/", executor);
+
+        reporter.flushSpooledReportsAsync();
+        assertTrue(sender.firstSendEntered.await(5, SECONDS));
+
+        spool.write("{\"schema_version\":1,\"n\":3}");
+        reporter.flushSpooledReportsAsync();
+
+        releaseFirstSend.countDown();
+        executor.awaitIdle();
+
+        assertEquals(4, sender.sendCountByPayload.size());
+        for (int count : sender.sendCountByPayload.values())
+            assertEquals(1, (int) count);
+        assertEquals(0, spool.list().size());
+    }
+
+    @Test
+    public void testRequestsCollapseIntoAtMostOneExtraPass() throws Exception {
+        CountingSpool spool = countingSpoolWithReports(3);
+        spool.listCalls.set(0); // CrashReportSpool.write() also calls list() via cap() -- count only the flushes
+        CountDownLatch releaseFirstSend = new CountDownLatch(1);
+        BlockingSender sender = new BlockingSender(releaseFirstSend);
+        ThreadPerTaskExecutor executor = new ThreadPerTaskExecutor();
+        CrashReporter reporter = new CrashReporter(spool, sender, () -> true, () -> "http://localhost/", executor);
+
+        reporter.flushSpooledReportsAsync();
+        assertTrue(sender.firstSendEntered.await(5, SECONDS));
+
+        for (int i = 0; i < 4; i++)
+            reporter.flushSpooledReportsAsync();
+
+        releaseFirstSend.countDown();
+        executor.awaitIdle();
+
+        assertTrue("spool.list() must be called at most twice by the flushes", spool.listCalls.get() <= 2);
     }
 }
