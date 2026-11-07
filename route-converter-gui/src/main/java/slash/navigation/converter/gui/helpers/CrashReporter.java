@@ -134,17 +134,29 @@ public class CrashReporter implements CrashHandler {
     void flushSpooledReportsAsync() {
         flushRequested.set(true);
         if (flushRunning.compareAndSet(false, true))
+            submitDrain();
+    }
+
+    private void submitDrain() {
+        try {
             executor.execute(this::drainSpooledReports);
+        } catch (Exception e) {
+            flushRunning.set(false);
+            log.log(WARNING, "Cannot submit crash report flush", e);
+        }
     }
 
     private void drainSpooledReports() {
-        while (flushRequested.getAndSet(false))
-            flushSpooledReports();
-        flushRunning.set(false);
-        // close the lost-wakeup window: a request arriving between the last loop
-        // check and clearing flushRunning must still start a new drain
-        if (flushRequested.get() && flushRunning.compareAndSet(false, true))
-            executor.execute(this::drainSpooledReports);
+        try {
+            while (flushRequested.getAndSet(false))
+                flushSpooledReports();
+        } finally {
+            flushRunning.set(false);
+            // close the lost-wakeup window: a request arriving between the last loop
+            // check and clearing flushRunning must still start a new drain
+            if (flushRequested.get() && flushRunning.compareAndSet(false, true))
+                submitDrain();
+        }
     }
 
     void flushSpooledReports() {
