@@ -30,6 +30,8 @@ import slash.navigation.gui.helpers.BackgroundExecutor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -62,6 +64,10 @@ public class CrashReporter implements CrashHandler {
     private final CrashReportSender sender;
     private final BooleanSupplier telemetryOptedIn;
     private final Supplier<String> apiUrl;
+    private final Executor executor;
+
+    private final AtomicBoolean flushRunning = new AtomicBoolean(false);
+    private final AtomicBoolean flushRequested = new AtomicBoolean(false);
 
     public CrashReporter() {
         this(CrashReportSpool.createDefault(), new CrashReportSender(),
@@ -71,10 +77,17 @@ public class CrashReporter implements CrashHandler {
 
     CrashReporter(CrashReportSpool spool, CrashReportSender sender,
                   BooleanSupplier telemetryOptedIn, Supplier<String> apiUrl) {
+        this(spool, sender, telemetryOptedIn, apiUrl,
+                task -> BackgroundExecutor.submit("CrashReportSender", task));
+    }
+
+    CrashReporter(CrashReportSpool spool, CrashReportSender sender,
+                  BooleanSupplier telemetryOptedIn, Supplier<String> apiUrl, Executor executor) {
         this.spool = spool;
         this.sender = sender;
         this.telemetryOptedIn = telemetryOptedIn;
         this.apiUrl = apiUrl;
+        this.executor = executor;
     }
 
     public void handleCrash(Thread thread, Throwable throwable) {
@@ -113,9 +126,37 @@ public class CrashReporter implements CrashHandler {
      * Sends every spooled report silently on a daemon thread, deleting each on a
      * successful send and leaving the rest for the next launch. Fail-silent: never
      * throws, never blocks startup or shutdown.
+     * <p>
+     * Single-flight: at most one flush runs at a time. A request made while a flush is
+     * already running is not dropped -- the running flush makes one more pass after it
+     * finishes -- and several such requests collapse into that single extra pass.
      */
     void flushSpooledReportsAsync() {
-        BackgroundExecutor.submit("CrashReportSender", this::flushSpooledReports);
+        flushRequested.set(true);
+        if (flushRunning.compareAndSet(false, true))
+            submitDrain();
+    }
+
+    private void submitDrain() {
+        try {
+            executor.execute(this::drainSpooledReports);
+        } catch (Exception e) {
+            flushRunning.set(false);
+            log.log(WARNING, "Cannot submit crash report flush", e);
+        }
+    }
+
+    private void drainSpooledReports() {
+        try {
+            while (flushRequested.getAndSet(false))
+                flushSpooledReports();
+        } finally {
+            flushRunning.set(false);
+            // close the lost-wakeup window: a request arriving between the last loop
+            // check and clearing flushRunning must still start a new drain
+            if (flushRequested.get() && flushRunning.compareAndSet(false, true))
+                submitDrain();
+        }
     }
 
     void flushSpooledReports() {
