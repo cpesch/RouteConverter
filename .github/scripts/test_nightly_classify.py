@@ -300,6 +300,24 @@ class ClassifyTest(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0].klass, "forward_compat")
 
+    def test_jdk_ea_canary_compile_error_stays_forward_compat(self):
+        log = "[ERROR] COMPILATION ERROR :\n[ERROR] /src/Foo.java:[1,1] cannot find symbol"
+        first = [JobResult(name="Compile on JDK EA", conclusion="failure", failed_step="Compile with Maven", log=log)]
+        findings = nightly_classify.classify("jdk-ea-canary", first, None, {})
+        self.assertEqual([f.klass for f in findings], ["forward_compat"])
+
+    def test_jdk_ea_canary_setup_jdk_download_504_is_infra(self):
+        log = "Unexpected HTTP response: 504\n##[error]HTTP 504: Unexpected HTTP response: 504"
+        first = [JobResult(name="Compile on JDK EA", conclusion="failure", failed_step="Set up JDK 28-ea", log=log)]
+        findings = nightly_classify.classify("jdk-ea-canary", first, None, {})
+        self.assertEqual([f.klass for f in findings], ["infra"])
+
+    def test_jdk_ea_canary_maven_transfer_failure_is_infra(self):
+        log = "[ERROR] Could not transfer artifact org.foo:bar:pom:1.0 from/to central: status code: 503"
+        first = [JobResult(name="Compile on JDK EA", conclusion="failure", failed_step="Compile with Maven", log=log)]
+        findings = nightly_classify.classify("jdk-ea-canary", first, None, {})
+        self.assertEqual([f.klass for f in findings], ["infra"])
+
     def test_cancelled_job_from_fail_fast_is_not_a_flaky_finding(self):
         log = "[ERROR] Tests run: 1, Failures: 1"
         first = [

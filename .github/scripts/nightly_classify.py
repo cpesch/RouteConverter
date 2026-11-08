@@ -252,7 +252,12 @@ def classify(workflow, first, rerun, reports):
             if job.name in fail_fast_cancelled:
                 continue
             if _is_failed(job):
-                findings.append(_build_finding("forward_compat", job, reports, workflow))
+                # A failed setup step (e.g. the EA JDK download returning 504)
+                # or an infra pattern in the log is infra, not a forward-compat
+                # break: it goes to ntfy + the infra-streak ledger instead of
+                # filing an issue on the first night.
+                klass = "infra" if is_infra(job, workflow) else "forward_compat"
+                findings.append(_build_finding(klass, job, reports, workflow))
         return _merge(findings)
 
     timeout = rerun is TIMEOUT
