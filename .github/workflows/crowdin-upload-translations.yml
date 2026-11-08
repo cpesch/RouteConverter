@@ -11,6 +11,12 @@ name: Crowdin upload translations
 # A merged l10n_master PR re-uploads values identical to Crowdin's, which
 # Crowdin skips.
 #
+# import_eq_suggestions: Crowdin skips an imported value that equals the
+# English source unless this is set. Such values are deliberate ("System",
+# "POIs", "{0} POIs" in German), so without it Crowdin never stores them, every
+# l10n_master PR drops the keys, ResourceBundleTest fails and patcher-bot
+# restores them. That loop ran on #511 and #512.
+#
 # The native integration keeps the files under the Crowdin branch `master`;
 # without crowdin_branch_name the CLI fails with "Source file ... does not
 # exist in the project".
@@ -43,6 +49,7 @@ jobs:
           upload_sources: false
           upload_translations: true
           auto_approve_imported: true
+          import_eq_suggestions: true
           download_translations: false
           create_pull_request: false
         env:
