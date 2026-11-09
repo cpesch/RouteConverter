@@ -43,7 +43,16 @@ public class RouteModelHelper {
         int[] selectedRows = table.getSelectedRows();
         List<RouteModel> routeModels = new ArrayList<>();
         for (int selectedRow : selectedRows) {
-            int row = table.convertRowIndexToModel(selectedRow);
+            if (selectedRow < 0 || selectedRow >= table.getRowCount())
+                continue;
+
+            int row;
+            try {
+                row = table.convertRowIndexToModel(selectedRow);
+            } catch (IndexOutOfBoundsException e) {
+                // the row sorter still refers to a row the table no longer has, e.g. after a reload
+                continue;
+            }
             if(table.getModel().getRowCount() <= row)
                 continue;
 
