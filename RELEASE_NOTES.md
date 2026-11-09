@@ -19,6 +19,7 @@
 - The update check also reports whether RouteConverter runs on its bundled Java
 - Find places reads the bounds of the offline POI files only once instead of on every first search (#279)
 - Options: the font size setting added in 3.7 is removed; on scaled Windows displays the text follows the display scale again, so it is no longer needed (#442)
+- Crash reports: an out-of-memory crash is reported once per session instead of once per thread, and every crash report includes how much memory RouteConverter had and used (#353)
 
 ### Fixes
 
