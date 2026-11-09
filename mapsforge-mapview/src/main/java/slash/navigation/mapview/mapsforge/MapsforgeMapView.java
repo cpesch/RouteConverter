@@ -1251,11 +1251,16 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     org.mapsforge.core.model.BoundingBox asMapsforgeBoundingBox(BoundingBox boundingBox) {
+        double south = clampLatitude(boundingBox.southWest().getLatitude());
+        double north = clampLatitude(boundingBox.northEast().getLatitude());
+        double west = clampLongitude(boundingBox.southWest().getLongitude());
+        double east = clampLongitude(boundingBox.northEast().getLongitude());
+        // south/north (or west/east) can invert if only one corner was NaN and clamped to 0.0
+        // while the other corner was a valid but out-of-range value clamped to a bound on the
+        // opposite side of 0.0; re-sorting after clamping keeps min <= max in every case.
         return new org.mapsforge.core.model.BoundingBox(
-                clampLatitude(boundingBox.southWest().getLatitude()),
-                clampLongitude(boundingBox.southWest().getLongitude()),
-                clampLatitude(boundingBox.northEast().getLatitude()),
-                clampLongitude(boundingBox.northEast().getLongitude())
+                Math.min(south, north), Math.min(west, east),
+                Math.max(south, north), Math.max(west, east)
         );
     }
 

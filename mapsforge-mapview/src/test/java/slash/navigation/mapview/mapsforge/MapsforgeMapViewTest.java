@@ -149,6 +149,18 @@ public class MapsforgeMapViewTest {
     }
 
     @Test
+    public void testAsMapsforgeBoundingBoxReordersAfterClampingNaNCorner() {
+        // southWest latitude is NaN (clamps to 0.0), northEast latitude is a valid but
+        // out-of-range value (clamps to -90.0): clamping each corner independently would
+        // invert minLatitude/maxLatitude and crash the mapsforge BoundingBox constructor.
+        BoundingBox from = new BoundingBox(new SimpleNavigationPosition(10.0, -95.0), new SimpleNavigationPosition(5.0, Double.NaN));
+        org.mapsforge.core.model.BoundingBox to = mapView.asMapsforgeBoundingBox(from);
+        assertNotNull(to);
+        assertEquals(-90.0, to.minLatitude, 0.0);
+        assertEquals(0.0, to.maxLatitude, 0.0);
+    }
+
+    @Test
     public void testThemeStylesAreDuplicatedWhenMenuContainsEquivalentLayers() throws Exception {
         XmlRenderThemeStyleMenu renderThemeStyleMenu = mock(XmlRenderThemeStyleMenu.class);
         XmlRenderThemeStyleLayer hiking = createStyleLayer("hiking", "Hiking", "paths");
