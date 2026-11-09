@@ -19,6 +19,7 @@
 - The update check also reports whether RouteConverter runs on its bundled Java
 - Find places reads the bounds of the offline POI files only once instead of on every first search (#279)
 - Options: the font size setting added in 3.7 is removed; on scaled Windows displays the text follows the display scale again, so it is no longer needed (#442)
+- macOS: RouteConverter may use up to a quarter of the Mac's memory instead of a fixed 1 GB, like on Windows, so large maps and long sessions no longer run out of memory (#352)
 
 ### Fixes
 
