@@ -102,8 +102,17 @@ public class DiagnosticReport {
     private final String os;
     private final String java;
     private final boolean bundledJre;
+    private final long heapMaxMb;
+    private final long heapUsedMb;
 
     public DiagnosticReport(String threadName, Throwable throwable, String appVersion, String build) {
+        this(threadName, throwable, appVersion, build,
+                Runtime.getRuntime().maxMemory() / (1024 * 1024),
+                (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024));
+    }
+
+    DiagnosticReport(String threadName, Throwable throwable, String appVersion, String build,
+                      long heapMaxMb, long heapUsedMb) {
         List<Throwable> chain = getCauseChain(throwable);
         this.threadName = threadName;
         this.rootCauseClass = getRootCause(throwable).getClass().getName();
@@ -116,6 +125,8 @@ public class DiagnosticReport {
         this.os = getPlatform();
         this.java = getJava();
         this.bundledJre = isBundledJava();
+        this.heapMaxMb = heapMaxMb;
+        this.heapUsedMb = heapUsedMb;
     }
 
     String getRootCauseClass() {
@@ -228,6 +239,8 @@ public class DiagnosticReport {
         members.add(member("os", string(os)));
         members.add(member("java", string(java)));
         members.add(member("bundled_jre", Boolean.toString(bundledJre)));
+        members.add(member("heap_max_mb", Long.toString(heapMaxMb)));
+        members.add(member("heap_used_mb", Long.toString(heapUsedMb)));
         return "{\n  " + String.join(",\n  ", members) + "\n}";
     }
 
