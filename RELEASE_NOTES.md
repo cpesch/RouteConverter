@@ -19,6 +19,8 @@
 - The update check also reports whether RouteConverter runs on its bundled Java
 - Find places reads the bounds of the offline POI files only once instead of on every first search (#279)
 - Options: the font size setting added in 3.7 is removed; on scaled Windows displays the text follows the display scale again, so it is no longer needed (#442)
+- Crash reports: an out-of-memory crash is reported once per session instead of once per thread, and every crash report includes how much memory RouteConverter had and used (#353)
+- macOS: RouteConverter may use up to a quarter of the Mac's memory instead of a fixed 1 GB, like on Windows, so large maps and long sessions no longer run out of memory (#352)
 
 ### Fixes
 
@@ -38,6 +40,7 @@
 - Map context menu: Delete works on the point you clicked and is enabled when it applies; in 3.7 it used an earlier click point (#441)
 - Hover coordinates on the map show at start when the option is on, not only after switching it off and on (#443)
 - Unchanged downloads such as the map and routing catalogs are no longer downloaded again on every start (#440)
+- Map and theme selection lists: typing a letter or clicking the separator line no longer crashes the app; typing a letter jumps to the next map or theme whose name starts with it (#350)
 - macOS: opening a route no longer fits the map one zoom level too close (#274)
 - Crash reports no longer carry credentials that a URL in an exception message embeds (#296)
 - A tile server API key holding a whole URL no longer throws an error for every map tile (#295)
@@ -56,6 +59,8 @@
 - Excel: saving as .xlsx/.xls, splitting a list, creating a new list and deleting a list no longer lose positions or bring a deleted list back on the next save (#339)
 - Maps and Downloads dialogs: with a sorted table, selecting, displaying, stopping, restarting or removing now acts on the row you selected, not another one (#333)
 - Crash reports are sent once each; a burst of crashes no longer sends the same report several times (#348)
+- A position list with a latitude beyond ±90° or a longitude beyond ±180° no longer crashes the map; such positions are drawn at the edge of the map (#354)
+- Browse: selecting a route while the route list reloads no longer crashes the app (#351)
 
 ## 3.7 — 2026-10-10
 
