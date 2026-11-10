@@ -36,7 +36,9 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
+import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.WARNING;
+import static slash.common.helpers.ExceptionHelper.getCauseChain;
 import static slash.common.system.Version.parseVersionFromManifest;
 
 /**
@@ -68,6 +70,7 @@ public class CrashReporter implements CrashHandler {
 
     private final AtomicBoolean flushRunning = new AtomicBoolean(false);
     private final AtomicBoolean flushRequested = new AtomicBoolean(false);
+    private final AtomicBoolean outOfMemoryReported = new AtomicBoolean(false);
 
     public CrashReporter() {
         this(CrashReportSpool.createDefault(), new CrashReportSender(),
@@ -91,6 +94,11 @@ public class CrashReporter implements CrashHandler {
     }
 
     public void handleCrash(Thread thread, Throwable throwable) {
+        if (isOutOfMemory(throwable) && outOfMemoryReported.getAndSet(true)) {
+            log.log(FINE, "Suppressing repeat OutOfMemoryError report for this session");
+            return;
+        }
+
         Version version = parseVersionFromManifest();
         DiagnosticReport report = new DiagnosticReport(thread.getName(), throwable, version.getVersion(), version.getDate());
         String json = report.toJson();
@@ -173,5 +181,13 @@ public class CrashReporter implements CrashHandler {
                 log.log(WARNING, "Cannot send spooled crash report " + file, e);
             }
         }
+    }
+
+    private static boolean isOutOfMemory(Throwable throwable) {
+        for (Throwable cause : getCauseChain(throwable)) {
+            if (cause instanceof OutOfMemoryError)
+                return true;
+        }
+        return false;
     }
 }
