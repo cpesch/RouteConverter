@@ -43,16 +43,12 @@ public class RouteModelHelper {
         int[] selectedRows = table.getSelectedRows();
         List<RouteModel> routeModels = new ArrayList<>();
         for (int selectedRow : selectedRows) {
+            // the selection can hold a row the table no longer has: with drag enabled, the table UI
+            // selects the row pressed on mouse release, and the routes may have been reloaded in between
             if (selectedRow < 0 || selectedRow >= table.getRowCount())
                 continue;
 
-            int row;
-            try {
-                row = table.convertRowIndexToModel(selectedRow);
-            } catch (IndexOutOfBoundsException e) {
-                // the row sorter still refers to a row the table no longer has, e.g. after a reload
-                continue;
-            }
+            int row = table.convertRowIndexToModel(selectedRow);
             if(table.getModel().getRowCount() <= row)
                 continue;
 
