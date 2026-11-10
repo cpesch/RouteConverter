@@ -56,6 +56,7 @@
 - Excel: saving as .xlsx/.xls, splitting a list, creating a new list and deleting a list no longer lose positions or bring a deleted list back on the next save (#339)
 - Maps and Downloads dialogs: with a sorted table, selecting, displaying, stopping, restarting or removing now acts on the row you selected, not another one (#333)
 - Crash reports are sent once each; a burst of crashes no longer sends the same report several times (#348)
+- A position list with a latitude beyond ±90° or a longitude beyond ±180° no longer crashes the map; such positions are drawn at the edge of the map (#354)
 
 ## 3.7 — 2026-10-10
 
