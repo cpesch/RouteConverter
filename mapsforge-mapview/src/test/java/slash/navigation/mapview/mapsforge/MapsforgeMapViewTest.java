@@ -31,6 +31,9 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.ColorModel;
+import slash.navigation.converter.gui.models.FixMapMode;
+import slash.navigation.converter.gui.models.FixMapModeModel;
+import slash.navigation.converter.gui.models.MapPreferencesModel;
 import slash.navigation.converter.gui.models.PositionListsModel;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.gui.models.IntegerModel;
@@ -85,6 +88,15 @@ public class MapsforgeMapViewTest {
         Field mapViewCallback = MapsforgeMapView.class.getDeclaredField("mapViewCallback");
         mapViewCallback.setAccessible(true);
         mapViewCallback.set(mapView, callback);
+
+        MapPreferencesModel preferencesModel = mock(MapPreferencesModel.class);
+        FixMapModeModel fixMapModeModel = mock(FixMapModeModel.class);
+        when(fixMapModeModel.getFixMapMode()).thenReturn(FixMapMode.No);
+        when(preferencesModel.getFixMapModeModel()).thenReturn(fixMapModeModel);
+
+        Field preferencesModelField = MapsforgeMapView.class.getDeclaredField("preferencesModel");
+        preferencesModelField.setAccessible(true);
+        preferencesModelField.set(mapView, preferencesModel);
     }
 
     @Test
@@ -94,6 +106,58 @@ public class MapsforgeMapViewTest {
         assertNotNull(to);
         BoundingBox roundtrip = toBoundingBox(to);
         assertEquals(roundtrip, from);
+    }
+
+    @Test
+    public void testClampLatitude() {
+        assertEquals(90.0, MapsforgeMapView.clampLatitude(95.3), 0.0);
+        assertEquals(-90.0, MapsforgeMapView.clampLatitude(-120.0), 0.0);
+        assertEquals(45.5, MapsforgeMapView.clampLatitude(45.5), 0.0);
+        assertEquals(0.0, MapsforgeMapView.clampLatitude(Double.NaN), 0.0);
+    }
+
+    @Test
+    public void testClampLongitude() {
+        assertEquals(180.0, MapsforgeMapView.clampLongitude(200.0), 0.0);
+        assertEquals(-180.0, MapsforgeMapView.clampLongitude(-181.0), 0.0);
+        assertEquals(0.0, MapsforgeMapView.clampLongitude(Double.NaN), 0.0);
+    }
+
+    @Test
+    public void testAsLatLongClampsOutOfRangeLatitude() {
+        LatLong latLong = mapView.asLatLong(new SimpleNavigationPosition(10.0, 95.3));
+        assertNotNull(latLong);
+        assertEquals(90.0, latLong.latitude, 0.0);
+        assertEquals(10.0, latLong.longitude, 0.0);
+    }
+
+    @Test
+    public void testAsLatLongLeavesInRangePositionUnchanged() {
+        LatLong latLong = mapView.asLatLong(new SimpleNavigationPosition(10.18587, 53.49249));
+        assertNotNull(latLong);
+        assertEquals(53.49249, latLong.latitude, 0.0);
+        assertEquals(10.18587, latLong.longitude, 0.0);
+    }
+
+    @Test
+    public void testAsMapsforgeBoundingBoxClampsOutOfRangeLatitude() {
+        BoundingBox from = new BoundingBox(new SimpleNavigationPosition(10.0, 95.0), new SimpleNavigationPosition(5.0, 50.0));
+        org.mapsforge.core.model.BoundingBox to = mapView.asMapsforgeBoundingBox(from);
+        assertNotNull(to);
+        assertEquals(90.0, to.maxLatitude, 0.0);
+        assertEquals(50.0, to.minLatitude, 0.0);
+    }
+
+    @Test
+    public void testAsMapsforgeBoundingBoxReordersAfterClampingNaNCorner() {
+        // southWest latitude is NaN (clamps to 0.0), northEast latitude is a valid but
+        // out-of-range value (clamps to -90.0): clamping each corner independently would
+        // invert minLatitude/maxLatitude and crash the mapsforge BoundingBox constructor.
+        BoundingBox from = new BoundingBox(new SimpleNavigationPosition(10.0, -95.0), new SimpleNavigationPosition(5.0, Double.NaN));
+        org.mapsforge.core.model.BoundingBox to = mapView.asMapsforgeBoundingBox(from);
+        assertNotNull(to);
+        assertEquals(-90.0, to.minLatitude, 0.0);
+        assertEquals(0.0, to.maxLatitude, 0.0);
     }
 
     @Test
