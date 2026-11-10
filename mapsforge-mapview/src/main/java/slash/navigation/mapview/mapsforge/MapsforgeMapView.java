@@ -1204,6 +1204,18 @@ public class MapsforgeMapView extends BaseMapView {
         return fixMapMode.equals(Yes) && isGoogleMap(map) && isPositionInChina(longitude, latitude);
     }
 
+    static double clampLatitude(double latitude) {
+        if (Double.isNaN(latitude))
+            return 0.0;
+        return Math.min(Math.max(latitude, -90.0), 90.0);
+    }
+
+    static double clampLongitude(double longitude) {
+        if (Double.isNaN(longitude))
+            return 0.0;
+        return Math.min(Math.max(longitude, -180.0), 180.0);
+    }
+
     public LatLong asLatLong(NavigationPosition position) {
         if (position == null)
             return null;
@@ -1215,7 +1227,7 @@ public class MapsforgeMapView extends BaseMapView {
             longitude += delta[1];
             latitude += delta[0];
         }
-        return new LatLong(latitude, longitude);
+        return new LatLong(clampLatitude(latitude), clampLongitude(longitude));
     }
 
     public List<LatLong> asLatLong(List<NavigationPosition> positions) {
@@ -1239,11 +1251,16 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     org.mapsforge.core.model.BoundingBox asMapsforgeBoundingBox(BoundingBox boundingBox) {
+        double south = clampLatitude(boundingBox.southWest().getLatitude());
+        double north = clampLatitude(boundingBox.northEast().getLatitude());
+        double west = clampLongitude(boundingBox.southWest().getLongitude());
+        double east = clampLongitude(boundingBox.northEast().getLongitude());
+        // south/north (or west/east) can invert if only one corner was NaN and clamped to 0.0
+        // while the other corner was a valid but out-of-range value clamped to a bound on the
+        // opposite side of 0.0; re-sorting after clamping keeps min <= max in every case.
         return new org.mapsforge.core.model.BoundingBox(
-                boundingBox.southWest().getLatitude(),
-                boundingBox.southWest().getLongitude(),
-                boundingBox.northEast().getLatitude(),
-                boundingBox.northEast().getLongitude()
+                Math.min(south, north), Math.min(west, east),
+                Math.max(south, north), Math.max(west, east)
         );
     }
 
