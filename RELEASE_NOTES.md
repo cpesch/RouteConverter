@@ -39,6 +39,7 @@
 - Map context menu: Delete works on the point you clicked and is enabled when it applies; in 3.7 it used an earlier click point (#441)
 - Hover coordinates on the map show at start when the option is on, not only after switching it off and on (#443)
 - Unchanged downloads such as the map and routing catalogs are no longer downloaded again on every start (#440)
+- Map and theme selection lists: typing a letter or clicking the separator line no longer crashes the app; typing a letter jumps to the next map or theme whose name starts with it (#350)
 - macOS: opening a route no longer fits the map one zoom level too close (#274)
 - Crash reports no longer carry credentials that a URL in an exception message embeds (#296)
 - A tile server API key holding a whole URL no longer throws an error for every map tile (#295)
