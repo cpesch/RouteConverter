@@ -60,6 +60,7 @@
 - Maps and Downloads dialogs: with a sorted table, selecting, displaying, stopping, restarting or removing now acts on the row you selected, not another one (#333)
 - Crash reports are sent once each; a burst of crashes no longer sends the same report several times (#348)
 - A position list with a latitude beyond ±90° or a longitude beyond ±180° no longer crashes the map; such positions are drawn at the edge of the map (#354)
+- Browse: selecting a route while the route list reloads no longer crashes the app (#351)
 
 ## 3.7 — 2026-10-10
 
