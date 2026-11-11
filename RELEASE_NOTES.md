@@ -61,6 +61,7 @@
 - Crash reports are sent once each; a burst of crashes no longer sends the same report several times (#348)
 - A position list with a latitude beyond ±90° or a longitude beyond ±180° no longer crashes the map; such positions are drawn at the edge of the map (#354)
 - Browse: selecting a route while the route list reloads no longer crashes the app (#351)
+- Windows: Paste no longer stays disabled after positions were copied in a second RouteConverter window (#360)
 
 ## 3.7 — 2026-10-10
 
