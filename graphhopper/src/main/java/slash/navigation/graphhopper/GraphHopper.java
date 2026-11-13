@@ -23,7 +23,10 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.ResponsePath;
 import com.graphhopper.config.Profile;
+import com.graphhopper.routing.ev.VehicleAccess;
+import com.graphhopper.routing.util.AccessFilter;
 import com.graphhopper.routing.util.EdgeFilter;
+import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.storage.index.Snap;
 import com.graphhopper.util.CustomModel;
@@ -215,13 +218,27 @@ public class GraphHopper extends BaseRoutingService {
         }
     }
 
+    /**
+     * Snap only to edges the travel mode may use, in either direction: with all edges, a bicycle
+     * position next to a motorway snaps onto the motorway and a car position next to a cycleway
+     * onto the cycleway. Every profile from {@link #createHopper()} has a {@code <mode>_access}
+     * encoded value; falls back to all edges if the graph lacks it.
+     */
+    static EdgeFilter createSnapFilter(EncodingManager encodingManager, TravelMode travelMode) {
+        String accessKey = VehicleAccess.key(travelMode.name());
+        if (!encodingManager.hasEncodedValue(accessKey))
+            return EdgeFilter.ALL_EDGES;
+        return AccessFilter.allEdges(encodingManager.getBooleanEncodedValue(accessKey));
+    }
+
     public NavigationPosition getSnapToRoadPosition(NavigationPosition position, TravelMode travelMode) {
         try {
             com.graphhopper.GraphHopper hopper = this.hopper;
             if (hopper == null)
                 return null;
             LocationIndex locationIndex = hopper.getLocationIndex();
-            Snap snap = locationIndex.findClosest(position.getLatitude(), position.getLongitude(), EdgeFilter.ALL_EDGES);
+            EdgeFilter filter = createSnapFilter(hopper.getEncodingManager(), travelMode != null ? travelMode : getPreferredTravelMode());
+            Snap snap = locationIndex.findClosest(position.getLatitude(), position.getLongitude(), filter);
 
             log.info(format("Found snapping position %s for %s with query distance %s",
                     snap.getSnappedPoint(), position, snap.getQueryDistance()));
