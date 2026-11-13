@@ -355,8 +355,10 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         if (babelFile == null && !isWindows()) {
             babelFile = checkIfBabelExists(getApplicationDirectory("thirdparty/gpsbabel") + "/gpsbabel");
             // the download extracts the zip without file permissions
-            if (babelFile != null && !babelFile.canExecute() && !babelFile.setExecutable(true))
+            if (babelFile != null && !babelFile.canExecute() && !babelFile.setExecutable(true)) {
                 log.warning("Cannot make " + babelFile + " executable");
+                babelFile = null;
+            }
         }
 
         // 8. look for unqualified "gpsbabel"
