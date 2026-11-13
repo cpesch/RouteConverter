@@ -4,7 +4,7 @@
 [![Latest release](https://img.shields.io/github/v/release/cpesch/RouteConverter)](https://github.com/cpesch/RouteConverter/releases/latest)
 [![Test Coverage](https://codecov.io/gh/cpesch/RouteConverter/branch/master/graph/badge.svg)](https://codecov.io/gh/cpesch/RouteConverter)
 [![Translation status](https://badges.crowdin.net/routeconverter/localized.svg)](https://crowdin.com/project/routeconverter)
-[![License: GPL v2](https://img.shields.io/badge/license-GPL--2.0-blue.svg)](LICENSE-GPL.txt)
+[![License: GPL v2](https://img.shields.io/badge/license-GPL--2.0-blue.svg)](LICENSE)
 [![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://adoptium.net/)
 
 **RouteConverter** is a popular, free open-source tool to **display, edit, enrich and
@@ -81,7 +81,8 @@ request a signature, not extract the key.
 ## License
 
 RouteConverter is licensed under the **GNU General Public License v2** — see
-[`LICENSE-GPL.txt`](LICENSE-GPL.txt). By contributing, you agree your code ships
-under the GPL.
+[`LICENSE`](LICENSE). Some modules are additionally available under the Apache
+License 2.0 — see [`NOTICE.txt`](NOTICE.txt). By contributing, you agree your
+code ships under the GPL.
 
 Have fun! — Christian Pesch ([@cpesch](https://github.com/cpesch))

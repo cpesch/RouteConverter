@@ -19,12 +19,12 @@
             </resource>
             <!-- Canonical license, bundled at jar root. Replaces the deleted
                  route-converter-license module (spec 00045): this gui jar is a
-                 transitive dependency of every build, so LICENSE-GPL.txt flows
-                 into each fat jar exactly as the old license jar did. -->
+                 transitive dependency of every build, so LICENSE flows into
+                 each fat jar (the shade filters drop root *.txt, not LICENSE). -->
             <resource>
                 <directory>${project.basedir}/..</directory>
                 <includes>
-                    <include>LICENSE-GPL.txt</include>
+                    <include>LICENSE</include>
                 </includes>
             </resource>
         </resources>

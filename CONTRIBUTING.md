@@ -40,5 +40,5 @@ touch the `_en`/`_de` bundles (see `AGENTS.md`).
 ## License
 
 By contributing, you agree your code ships under the **GNU GPL v2** (see
-[`LICENSE-GPL.txt`](LICENSE-GPL.txt)). Contributors are listed in
+[`LICENSE`](LICENSE)). Contributors are listed in
 [`CONTRIBUTORS.txt`](CONTRIBUTORS.txt).
