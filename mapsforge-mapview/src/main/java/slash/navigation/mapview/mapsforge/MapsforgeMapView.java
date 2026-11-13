@@ -1492,7 +1492,7 @@ public class MapsforgeMapView extends BaseMapView {
             } else {
 
                 if(preferencesModel.getCharacteristicsModel().getSelectedCharacteristics().equals(Route)) {
-                    NavigationPosition roadPosition = mapViewCallback.getRoutingService().getSnapToRoadPosition(new SimpleNavigationPosition(longitude, latitude));
+                    NavigationPosition roadPosition = mapViewCallback.getRoutingService().getSnapToRoadPosition(new SimpleNavigationPosition(longitude, latitude), mapViewCallback.getTravelMode());
                     if (roadPosition != null) {
                         longitude = roadPosition.getLongitude();
                         latitude = roadPosition.getLatitude();
@@ -1606,7 +1606,7 @@ public class MapsforgeMapView extends BaseMapView {
             LatLong latLong = getMousePosition();
             if (latLong != null) {
                 if(preferencesModel.getCharacteristicsModel().getSelectedCharacteristics().equals(Route)) {
-                    NavigationPosition roadPosition = mapViewCallback.getRoutingService().getSnapToRoadPosition(asNavigationPosition(latLong));
+                    NavigationPosition roadPosition = mapViewCallback.getRoutingService().getSnapToRoadPosition(asNavigationPosition(latLong), mapViewCallback.getTravelMode());
                     if (roadPosition != null) {
                         latLong = asLatLong(roadPosition);
                     }
@@ -1676,7 +1676,7 @@ public class MapsforgeMapView extends BaseMapView {
         public void run() {
             List<NavigationPosition> selectedPositions = toPositions(selectionUpdater.getPositionWithLayers());
             for(NavigationPosition position : selectedPositions) {
-                NavigationPosition roadPosition = mapViewCallback.getRoutingService().getSnapToRoadPosition(position);
+                NavigationPosition roadPosition = mapViewCallback.getRoutingService().getSnapToRoadPosition(position, mapViewCallback.getTravelMode());
                 if(roadPosition != null) {
                     updatePosition(position, roadPosition);
                 }
