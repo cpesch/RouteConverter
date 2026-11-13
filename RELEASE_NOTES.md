@@ -21,9 +21,11 @@
 - Options: the font size setting added in 3.7 is removed; on scaled Windows displays the text follows the display scale again, so it is no longer needed (#442)
 - Crash reports: an out-of-memory crash is reported once per session instead of once per thread, and every crash report includes how much memory RouteConverter had and used (#353)
 - macOS: RouteConverter may use up to a quarter of the Mac's memory instead of a fixed 1 GB, like on Windows, so large maps and long sessions no longer run out of memory (#352)
+- Windows and macOS: the GPSBabel that RouteConverter downloads is updated from 1.5.4 to 1.10.0; on macOS it runs natively on Apple Silicon
 
 ### Fixes
 
+- macOS: the downloaded GPSBabel is made executable; before, formats read through GPSBabel failed when no other GPSBabel was installed
 - Windows: dates, times and numbers follow the regional settings again — the 3.7 installer bundled a Java runtime without locale data (#415, #470)
 - Find places finds matches in the downloaded offline POI data; with the current POI downloads it found none (#276)
 - Find places in the offline POI data ignores the case of umlauts and other non-ASCII letters: "überseering" finds "Überseering" (#277)
