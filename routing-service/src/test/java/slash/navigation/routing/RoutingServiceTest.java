@@ -143,7 +143,7 @@ public class RoutingServiceTest {
             throw new UnsupportedOperationException();
         }
 
-        public NavigationPosition getSnapToRoadPosition(NavigationPosition position) {
+        public NavigationPosition getSnapToRoadPosition(NavigationPosition position, TravelMode travelMode) {
             throw new UnsupportedOperationException();
         }
 

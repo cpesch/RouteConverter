@@ -183,7 +183,7 @@ public class GoogleRoutingService extends BaseRoutingService {
         return new SimpleNavigationPosition(location.getLng().doubleValue(), location.getLat().doubleValue());
     }
 
-    public NavigationPosition getSnapToRoadPosition(NavigationPosition position) {
+    public NavigationPosition getSnapToRoadPosition(NavigationPosition position, TravelMode travelMode) {
         return null;
     }
 

@@ -47,7 +47,16 @@ public interface RoutingService {
     void setPath(String path);
 
     RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode, TravelRestrictions travelRestrictions);
-    NavigationPosition getSnapToRoadPosition(NavigationPosition position);
+    /**
+     * Returns the position on the nearest way that is usable with the given travel mode, or
+     * {@code null} if there is none nearby. The travel mode matters: a cycleway is the nearest
+     * usable way for a bicycle profile but not for a car profile.
+     *
+     * @param position the position to snap
+     * @param travelMode the travel mode the user routes with; {@code null} uses {@link #getPreferredTravelMode()}
+     * @return the snapped position or {@code null}
+     */
+    NavigationPosition getSnapToRoadPosition(NavigationPosition position, TravelMode travelMode);
 
     DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes);
     long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors);

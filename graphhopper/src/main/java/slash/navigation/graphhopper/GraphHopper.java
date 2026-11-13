@@ -215,7 +215,7 @@ public class GraphHopper extends BaseRoutingService {
         }
     }
 
-    public NavigationPosition getSnapToRoadPosition(NavigationPosition position) {
+    public NavigationPosition getSnapToRoadPosition(NavigationPosition position, TravelMode travelMode) {
         try {
             com.graphhopper.GraphHopper hopper = this.hopper;
             if (hopper == null)
