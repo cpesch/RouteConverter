@@ -1,0 +1,12 @@
+RouteConverter is licensed under the GNU General Public License, version 2
+(GPL-2.0, see LICENSE).
+
+Please note that to enable reuse of RouteConverter code in non-GPL software projects, the following individual modules
+underly the Apache License 2 (see APACHE-2.0.txt) in addition to the GPL 2 (LICENSE) and are thus dual-licensed:
+
+* common
+* common-navigation
+* googlemaps
+* gpx
+* kml
+* navigation-formats

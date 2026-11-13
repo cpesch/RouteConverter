@@ -30,7 +30,9 @@
                 <directory>${basedir}/../</directory>
                 <targetPath>RouteConverterPortable/Other/Source</targetPath>
                 <includes>
-                    <include>LICENSE*.txt</include>
+                    <include>LICENSE</include>
+                    <include>APACHE-2.0.txt</include>
+                    <include>NOTICE.txt</include>
                     <include>README.*</include>
                 </includes>
             </resource>
