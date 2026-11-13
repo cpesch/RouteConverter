@@ -1413,16 +1413,22 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
 
     protected abstract void updateRoutingServices();
 
+    private static final String THIRDPARTY_URL = "https://static.routeconverter.com/thirdparty/";
+    private static final String GPSBABEL_VERSION = "1.10.0";
+
     protected void downloadDependencies() {
         if (isMac() || isWindows()) {
+            // the unversioned zip holds GPSBabel 1.5.4 and stays on the server for older releases
+            getDownloadManager().removeDownload(THIRDPARTY_URL + "gpsbabel-" + getOperationSystem() + ".zip");
+
             File directory = getApplicationDirectory("thirdparty/gpsbabel");
             File executable = new File(directory, isWindows() ? "gpsbabel.exe" : "gpsbabel");
             // content length + SHA-1 of the extracted gpsbabel binary; last modified omitted (timezone-dependent)
             Checksum checksum = isWindows()
-                    ? new Checksum(null, 1903616L, "5EA41DED616F17DCC2B52C5C86C82B9211592A61")
-                    : new Checksum(null, 2634236L, "A985795384A707228697FB29F23FF6F74F4EE40D");
-            getDownloadManager().executeDownload("GPSBabel for " + getOperationSystem(),
-                    "https://static.routeconverter.com/thirdparty/" + "gpsbabel-" + getOperationSystem() + ".zip",
+                    ? new Checksum(null, 1839616L, "E5BEC76D284E6A2FE7E5E9AA964A496BD607B53A")
+                    : new Checksum(null, 5606096L, "AD79652871DB6C0108CFA950E5831F5D170C019D");
+            getDownloadManager().executeDownload("GPSBabel " + GPSBABEL_VERSION + " for " + getOperationSystem(),
+                    THIRDPARTY_URL + "gpsbabel-" + GPSBABEL_VERSION + "-" + getOperationSystem() + ".zip",
                     Extract, directory, singletonList(new FileAndChecksum(executable, checksum)), null);
         }
     }
