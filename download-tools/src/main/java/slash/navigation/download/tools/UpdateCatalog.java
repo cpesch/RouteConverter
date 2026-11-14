@@ -140,6 +140,35 @@ public class UpdateCatalog extends BaseDownloadTool {
         return result;
     }
 
+    /**
+     * Describes the {@code .hgt} entries of a partially downloaded zip by their local headers.
+     * A partial download holds only the first 16 KB, padded with zeros up to the full length, so the
+     * entry data is never hashed (rc/RouteConverter#362): the fragments carry last modified and size, but no SHA-1.
+     * Reading stops at the first entry whose data lies beyond the downloaded range; the fragments
+     * found up to then are kept.
+     */
+    static List<FragmentType> extractHgtFragments(java.io.File zipFile) {
+        List<FragmentType> result = new ArrayList<>();
+        try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile))) {
+            ZipEntry entry = zipInputStream.getNextEntry();
+            while (entry != null) {
+                String entryName = extractFileName(entry.getName());
+                if (!entry.isDirectory() && entryName.endsWith(DOT_HGT)) {
+                    log.info(format("Found elevation data %s in %s", entryName, zipFile));
+                    long time = entry.getTime();
+                    long size = entry.getSize();
+                    result.add(createFragmentType(entryName, time != -1 ? Long.valueOf(time) : null,
+                            size != -1 ? Long.valueOf(size) : null));
+                }
+                // skipping the entry data runs into the zero padding behind the downloaded range
+                entry = zipInputStream.getNextEntry();
+            }
+        } catch (IOException e) {
+            log.warning(format("Stopped reading ZIP file %s after %d fragments: %s", zipFile, result.size(), e));
+        }
+        return result;
+    }
+
     private void updateFile(DatasourceType datasourceType, File file) throws IOException {
         String url = datasourceType.getBaseUrl() + file.getUri();
 
@@ -161,33 +190,13 @@ public class UpdateCatalog extends BaseDownloadTool {
         datasourceType.getFile().add(fileType);
 
         if (file.getUri().endsWith(DOT_ZIP)) {
-            // GET with range for .pbf header
-            if (!download.getFile().getFile().exists())
-                download = downloadPartial(url, checksum.getContentLength());
-
-            List<FragmentType> fragmentTypes = new ArrayList<>();
-            try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(download.getFile().getFile()))) {
-                ZipEntry entry = zipInputStream.getNextEntry();
-                while (entry != null) {
-                    String entryName = extractFileName(entry.getName());
-                    if (!entry.isDirectory() && entryName.endsWith(DOT_HGT)) {
-                        log.info(format("Found elevation data %s in URI %s", entryName, file.getUri()));
-                        fragmentTypes.add(createFragmentType(entryName, entry, zipInputStream));
-
-                        // do not close zip input stream and cope with partially copied zips
-                        try {
-                            zipInputStream.closeEntry();
-                        } catch (EOFException e) {
-                            // intentionally left empty
-                        }
-                    }
-                    entry = zipInputStream.getNextEntry();
-                }
-            }
-            catch(Exception e) {
-                log.warning(format("Error reading ZIP file %s: %s", download.getFile().getFile(), e));
-            }
-            fileType.getFragment().addAll(fragmentTypes);
+            // GET with range for the .zip header; always refetched, since a mirror file left by an
+            // earlier run holds the header of the previous build (HEAD never updates it)
+            download = downloadPartial(url, checksum.getContentLength());
+            if (download.getState().equals(Failed))
+                log.severe(format("Failed to download %s partially as a zip", file.getUri()));
+            else
+                fileType.getFragment().addAll(extractHgtFragments(download.getFile().getFile()));
 
         } else if (file.getUri().endsWith(DOT_PBF)) {
             // GET with range for .pbf header
