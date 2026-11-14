@@ -21,7 +21,6 @@
 - Options: the font size setting added in 3.7 is removed; on scaled Windows displays the text follows the display scale again, so it is no longer needed (#442)
 - Crash reports: an out-of-memory crash is reported once per session instead of once per thread, and every crash report includes how much memory RouteConverter had and used (#353)
 - macOS: RouteConverter may use up to a quarter of the Mac's memory instead of a fixed 1 GB, like on Windows, so large maps and long sessions no longer run out of memory (#352)
-- Windows and macOS: the GPSBabel that RouteConverter downloads is updated from 1.5.4 to 1.10.0; on macOS it runs natively on Apple Silicon
 
 ### Fixes
 
