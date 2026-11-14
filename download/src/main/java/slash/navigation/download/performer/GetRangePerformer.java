@@ -26,7 +26,6 @@ import slash.navigation.rest.Get;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -60,16 +59,17 @@ public class GetRangePerformer implements ActionPerformer {
         if (getDownload().getETag() != null)
             request.setIfNoneMatch(getDownload().getETag());
 
-        log.info(format("GET 0-%d for %s returned with status code %s and content length %d", RANGE_END_INDEX, getDownload().getUrl(), request.getStatusCode(), request.getContentLength()));
-
         request.execute(response -> {
-            InputStream inputStream = response.getEntity().getContent();
+            // status and headers exist only once the request has been executed (rc/RouteConverter#362)
+            log.info(format("GET 0-%d for %s returned with status code %s and content length %d", RANGE_END_INDEX, getDownload().getUrl(), request.getStatusCode(), request.getContentLength()));
+
+            // a 304 Not Modified carries no entity
             if (request.isPartialContent()) {
-                writePartialFile(inputStream, getDownload().getFile().getExpectedChecksum().getContentLength(), getDownload().getFile().getFile());
+                writePartialFile(response.getEntity().getContent(), getDownload().getFile().getExpectedChecksum().getContentLength(), getDownload().getFile().getFile());
 
             } else if (request.isOk()) {
                 // HTTP Range not supported
-                copyAndClose(inputStream, new FileOutputStream(getDownload().getFile().getFile()));
+                copyAndClose(response.getEntity().getContent(), new FileOutputStream(getDownload().getFile().getFile()));
                 setLastModified(getDownload().getFile().getFile(), request.getLastModified());
             }
             return null;
