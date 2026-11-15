@@ -1,6 +1,8 @@
 # Release notes
 
-## Next release
+## 3.8 — 2026-11-15
+
+**GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.8
 
 ### New features
 
