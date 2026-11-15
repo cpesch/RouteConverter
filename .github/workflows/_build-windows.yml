@@ -354,6 +354,7 @@ jobs:
 
       - name: Ask for SignPath approval (windows-installers)
         if: ${{ inputs.sign && inputs.signing-policy-slug == 'release-signing' }}
+        shell: bash
         env:
           NTFY_PUBLISHER_TOKEN: ${{ secrets.NTFY_PUBLISHER_TOKEN }}
         run: |
