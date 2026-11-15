@@ -292,9 +292,14 @@ jobs:
     # `nsis` fails winget validation) and swaps version, URL and hash.
     # The tag filter above admits stable X.Y / X.Y.Z only; prereleases come
     # from prerelease.yml and never reach this job.
-    # WINGET_PAT: classic PAT on cpesch, scope public_repo only (a
-    # fine-grained token cannot open PRs on microsoft/winget-pkgs); 1P
-    # `github-pat-winget`, expires 2027-10-29. komac pushes to the existing
+    # WINGET_PAT: classic PAT on cpesch, scopes public_repo (or repo) +
+    # workflow (a fine-grained token cannot open PRs on
+    # microsoft/winget-pkgs); 1P `github-pat-winget`, expires 2027-11-14.
+    # workflow: komac creates its branch in the fork at upstream HEAD; when
+    # winget-pkgs changed a .github/workflows file since the fork's last
+    # sync, GitHub refuses that CreateRef without the scope (3.8 failed with
+    # "does not have the correct permissions to execute CreateRef" until
+    # `gh repo sync cpesch/winget-pkgs`). komac pushes to the existing
     # cpesch/winget-pkgs fork. The maintainer still posts the CLA agreement
     # and a winget moderator approves -- the job only writes the PR.
     needs: publish
