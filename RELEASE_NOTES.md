@@ -6,63 +6,53 @@
 
 - Windows and Linux: modern FlatLaf look-and-feel, light or dark following the operating system setting; macOS keeps its native look. Options > General > Look and feel switches to Light, Dark or the old System look (requires restart) (#263)
 - View > POIs… shows all POIs of the chosen categories on the map, such as every bank or toilet in view, from the offline POI data or the displayed offline map; they stay while you edit the route, show their name on hover, and the map's context menu adds one to the position list (#434)
+- View > Show Other Position Lists and a button next to the position list switch off drawing the file's other position lists on the map, e.g. the thousands of daily tracks of a Google Timeline export
 - CSV and Excel import: a title row above the actual column headers is skipped, and a single column holding "latitude,longitude" is read when there is no separate latitude/longitude column (#318)
 
 ### Changes
 
+- Windows with display scaling above 100 %: text and icons follow the display scale again instead of being scaled twice, and the map is sharp instead of blurred; macOS Retina and Linux HiDPI get the sharp map too. The font size setting added in 3.7 is therefore removed from Options (#442, #449)
+- macOS: RouteConverter may use up to a quarter of the Mac's memory instead of a fixed 1 GB, like on Windows, so large maps and long sessions no longer run out of memory (#352)
 - Windows and Linux: sharper toolbar and menu icons on scaled displays; disabled menu items show greyed icons (#284)
-- Options > API Keys: a field holding a whole URL instead of a key gets a red border and a tooltip saying so (#306)
 - Linux on a scaled GNOME or KDE desktop: menus, map and icons follow the display scale, and dark mode follows the desktop setting
 - Linux: the RouteConverter jar tells which Java version to install instead of failing silently on a Java that is too old
-- The bundled Java no longer trusts the eMudhra emSign and Sectigo AAA Certificate Services roots that forged certificates for any host chain up to (CVE-2026-111943)
-- The bundled Java is updated to 21.0.13
-- The update check also reports whether RouteConverter runs on its bundled Java
-- Find places reads the bounds of the offline POI files only once instead of on every first search (#279)
-- Options: the font size setting added in 3.7 is removed; on scaled Windows displays the text follows the display scale again, so it is no longer needed (#442)
-- Crash reports: an out-of-memory crash is reported once per session instead of once per thread, and every crash report includes how much memory RouteConverter had and used (#353)
-- macOS: RouteConverter may use up to a quarter of the Mac's memory instead of a fixed 1 GB, like on Windows, so large maps and long sessions no longer run out of memory (#352)
+- The bundled Java is updated to 21.0.13 and no longer trusts the eMudhra emSign and Sectigo AAA Certificate Services roots that forged certificates for any host chain up to (CVE-2026-111943)
 
 ### Fixes
 
-- macOS: the downloaded GPSBabel is made executable; before, formats read through GPSBabel failed when no other GPSBabel was installed
+- Excel (.xls/.xlsx): sorting, reverting, moving and removing positions, Save as, Split, New position list and deleting a list are saved correctly; before, the saved file could keep the old order, lose positions, bring a deleted list back, leave a position without coordinates or gain an empty column from another file (#338, #339, #340, #341)
 - Windows: dates, times and numbers follow the regional settings again — the 3.7 installer bundled a Java runtime without locale data (#415, #470)
-- Find places finds matches in the downloaded offline POI data; with the current POI downloads it found none (#276)
-- Find places in the offline POI data ignores the case of umlauts and other non-ASCII letters: "überseering" finds "Überseering" (#277)
-- Find places searches the downloaded offline POI data also while an online map is displayed (#278)
-- The log and error reports no longer contain API keys for Google and GeoNames (#280)
-- Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand shows a message and keeps the old value, instead of crashing; a date and time without seconds such as "2026-08-18 10:00" is accepted (#294)
-- Send error report: the log shown, sent and copied no longer carries credentials a tile or routing-service URL embeds, e.g. an API key or session token (#305)
-- Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand no longer adds a no-op step to Undo/Redo or marks the row changed (#309)
-- Clicking into a cell of the positions table and leaving it unchanged no longer adds a step to Undo/Redo or marks the file modified (#311)
-- Maps dialog: selecting a map with no known extent no longer crashes the app (#303)
-- Windows with display scaling above 100 %: text and icons follow the display scale again instead of being scaled twice, and the map is sharp instead of blurred; macOS Retina and Linux HiDPI get the sharp map too (#442, #449). This resolves the 3.7 known issue (#343)
-- Save as keeps typed file names that contain a dot, and suggested file names are no longer cut at 64 characters (#287)
-- Automatic geocoding no longer calls Google when no Google API key is set (#288)
-- Map context menu: Delete works on the point you clicked and is enabled when it applies; in 3.7 it used an earlier click point (#441)
-- Hover coordinates on the map show at start when the option is on, not only after switching it off and on (#443)
-- Unchanged downloads such as the map and routing catalogs are no longer downloaded again on every start (#440)
 - Map and theme selection lists: typing a letter or clicking the separator line no longer crashes the app; typing a letter jumps to the next map or theme whose name starts with it (#350)
-- macOS: opening a route no longer fits the map one zoom level too close (#274)
-- Crash reports no longer carry credentials that a URL in an exception message embeds (#296)
+- Fast mouse-wheel zooming on the map no longer crashes the app (#321)
+- A position list with a latitude beyond ±90° or a longitude beyond ±180° no longer crashes the map; such positions are drawn at the edge of the map (#354)
+- Typing a longitude, latitude, elevation, speed, date or time the positions table can't understand shows a message and keeps the old value instead of crashing; a date and time without seconds such as "2026-08-18 10:00" is accepted (#294)
+- Maps dialog: selecting a map with no known extent, or a `.map` file that isn't a valid offline map (e.g. a failed download), no longer crashes the app; invalid files are no longer listed (#303, #323)
+- Browse: selecting a route while the route list reloads no longer crashes the app (#351)
+- Pressing the context-menu key in a table before any mouse click no longer crashes the app; the menu opens below the selected cell (#324)
+- Map context menu: Delete works on the point you clicked and is enabled when it applies; in 3.7 it used an earlier click point (#441)
+- Save as keeps typed file names that contain a dot, and suggested file names are no longer cut at 64 characters (#287)
+- Adding or moving a position on the map snaps it to a road the selected travel mode may use: with a bike profile a position on a cycleway stays there instead of jumping to the road next to it
+- Find places in the downloaded offline POI data works again: it finds matches with the current POI downloads, also while an online map is displayed, and ignores the case of umlauts — "überseering" finds "Überseering" (#276, #277, #278)
+- Routing: when a route segment takes too long or no route is found, a notification says how many segments failed and with which routing service; segments without a route are drawn as straight lines (#317)
+- Maps and Downloads dialogs: with a sorted table, selecting, displaying, stopping, restarting or removing acts on the row you selected, not another one (#333)
+- Unchanged downloads such as the map and routing catalogs are no longer downloaded again on every start (#440)
+- If the online map you used last has been removed from the catalog, RouteConverter tells you once that it switched to OpenStreetMap (#320)
+- Undo/Redo: clicking into a cell of the positions table and leaving it unchanged, or typing something invalid, no longer adds a step or marks the file modified (#309, #311)
+- Logs, error reports and crash reports no longer contain API keys, session tokens or other credentials, including those embedded in tile or routing-service URLs (#280, #296, #305)
+- Automatic geocoding no longer calls Google when no Google API key is set (#288)
 - A tile server API key holding a whole URL no longer throws an error for every map tile (#295)
+- Windows: Paste no longer stays disabled after positions were copied in a second RouteConverter window (#360)
+- macOS: opening a route no longer fits the map one zoom level too close (#274)
+- macOS: the downloaded GPSBabel is made executable; before, formats read through GPSBabel failed when no other GPSBabel was installed
+- Hover coordinates on the map show at start when the option is on, not only after switching it off and on (#443)
+- Login dialog: the messages say they ask for the RouteConverter service account, not the forum account, and point to the Register tab; registering requires a password of at least 8 characters, matching what the server accepts (#319)
 - The bundled Java reads GPX and KML files in Japanese, Chinese, Hebrew, Arabic and Thai encodings instead of garbling their names
 - Linux Flatpak: starts on Wayland desktops, keeps settings and maps across restarts, and opens help, web pages and mail in the desktop's browser and mail program
-- Routing: when a route segment takes too long or no route is found, a notification says how many segments failed and with which routing service; segments without a route are drawn as straight lines (#317)
-- Login dialog: the login and failure messages now say they ask for the RouteConverter service account, not the forum account, and point to the Register tab; registering requires a password of at least 8 characters, matching what the server accepts (#319)
-- If the online map you used last has been removed from the catalog, RouteConverter now tells you once that it switched to OpenStreetMap, instead of silently showing OpenStreetMap without explanation (#320)
-- Fast mouse-wheel zooming on the map no longer crashes the app (#321)
-- No longer reports a crash from the JDK's shutdown cleanup of temporary tile image files on exit (#322)
-- Maps dialog: a `.map` file that isn't a valid offline map (e.g. a failed download) is no longer listed and no longer crashes the app when selected (#323)
-- Pressing the context-menu key in a table before any mouse click no longer crashes the app; the menu opens below the selected cell (#324)
-- Excel: sorting or reverting positions now survives saving and reopening the .xls/.xlsx; before, the positions table showed the new order but the saved file kept the old one (#338)
-- Excel: a new position list or converted .xls/.xlsx no longer gets an empty column (such as Heartbeat) left over from another Excel route edited earlier in the same session (#341)
-- Excel: moving a position to the top or bottom, or removing one, on a sheet with an empty row between positions no longer leaves a position without coordinates after saving and reopening the file (#340)
-- Excel: saving as .xlsx/.xls, splitting a list, creating a new list and deleting a list no longer lose positions or bring a deleted list back on the next save (#339)
-- Maps and Downloads dialogs: with a sorted table, selecting, displaying, stopping, restarting or removing now acts on the row you selected, not another one (#333)
-- Crash reports are sent once each; a burst of crashes no longer sends the same report several times (#348)
-- A position list with a latitude beyond ±90° or a longitude beyond ±180° no longer crashes the map; such positions are drawn at the edge of the map (#354)
-- Browse: selecting a route while the route list reloads no longer crashes the app (#351)
-- Windows: Paste no longer stays disabled after positions were copied in a second RouteConverter window (#360)
+
+### Upgrade notes
+
+- Options: the font size setting from 3.7 is gone; text follows the Windows display scale. If you raised the font size in 3.7, check the display scale in Windows Settings instead.
+- Windows and Linux start with the new FlatLaf look; Options > General > Look and feel > System restores the previous look.
 
 ## 3.7 — 2026-10-10
 
