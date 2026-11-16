@@ -299,10 +299,19 @@ DRAFTS_NOTES = (
     "\n"
     "RouteConverter 3.8 is faster.\n"
     "\n"
+    "Most important fixes:\n"
+    "\n"
+    "- Starts again on macOS 15.\n"
+    "- Opens GPX files with a BOM again.\n"
+    "\n"
     "### Was ist neu (DE)\n"
     "\n"
-    "RouteConverter 3.8 ist schneller\n"
-    "und kann mehr.\n"
+    "RouteConverter 3.8 ist schneller.\n"
+    "\n"
+    "Die wichtigsten Fehlerbehebungen:\n"
+    "\n"
+    "- Startet wieder unter macOS 15.\n"
+    "- Öffnet GPX-Dateien wieder mit BOM.\n"
     "\n"
     "### New features\n"
     "\n"
@@ -315,9 +324,9 @@ DRAFTS_NOTES = (
     "\n"
     "- Starts again on macOS 15 (#393)\n"
     "\n"
-    "### Known issues\n"
+    "### Upgrade notes\n"
     "\n"
-    "- Blurry text with display scaling (#343)\n"
+    "- Java runtime requirement stays at 21 or later.\n"
     "\n"
     "## 3.7 — 2026-10-10\n"
     "\n"
@@ -332,18 +341,33 @@ FORUM_EN = (
     "RouteConverter 3.8 is available: https://www.routeconverter.com/downloads/\n"
     "Release notes: https://www.routeconverter.com/releases/3-8/\n"
     "\n"
-    "New features\n"
+    "RouteConverter 3.8 is faster.\n"
     "\n"
-    "- Reads the phone's Timeline.json export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
-    "- Maintainer's favourite: a font-size setting\n"
+    "[b]Most important fixes:[/b]\n"
     "\n"
-    "Fixes\n"
+    "[list]\n"
+    "[*]Starts again on macOS 15.\n"
+    "[*]Opens GPX files with a BOM again.\n"
+    "[/list]\n"
     "\n"
-    "- Starts again on macOS 15 (#393)\n"
+    "[b]New features[/b]\n"
     "\n"
-    "Known issues\n"
+    "[list]\n"
+    "[*]Reads the phone's Timeline.json export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
+    "[*]Maintainer's favourite: a font-size setting\n"
+    "[/list]\n"
     "\n"
-    "- Blurry text with display scaling (#343)\n"
+    "[b]Fixes[/b]\n"
+    "\n"
+    "[list]\n"
+    "[*]Starts again on macOS 15 (#393)\n"
+    "[/list]\n"
+    "\n"
+    "[b]Upgrade notes[/b]\n"
+    "\n"
+    "[list]\n"
+    "[*]Java runtime requirement stays at 21 or later.\n"
+    "[/list]\n"
 )
 
 FORUM_DE = (
@@ -352,22 +376,35 @@ FORUM_DE = (
     "RouteConverter 3.8 steht zum Download bereit: https://www.routeconverter.de/downloads/\n"
     "Versionshinweise: https://www.routeconverter.de/releases/3-8/\n"
     "\n"
-    "RouteConverter 3.8 ist schneller und kann mehr.\n"
+    "RouteConverter 3.8 ist schneller.\n"
+    "\n"
+    "[b]Die wichtigsten Fehlerbehebungen:[/b]\n"
+    "\n"
+    "[list]\n"
+    "[*]Startet wieder unter macOS 15.\n"
+    "[*]Öffnet GPX-Dateien wieder mit BOM.\n"
+    "[/list]\n"
     "\n"
     "TODO: Stichpunkte übersetzen\n"
     "\n"
-    "Neue Funktionen\n"
+    "[b]Neue Funktionen[/b]\n"
     "\n"
-    "- Reads the phone's Timeline.json export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
-    "- Maintainer's favourite: a font-size setting\n"
+    "[list]\n"
+    "[*]Reads the phone's Timeline.json export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
+    "[*]Maintainer's favourite: a font-size setting\n"
+    "[/list]\n"
     "\n"
-    "Fehlerbehebungen\n"
+    "[b]Fehlerbehebungen[/b]\n"
     "\n"
-    "- Starts again on macOS 15 (#393)\n"
+    "[list]\n"
+    "[*]Starts again on macOS 15 (#393)\n"
+    "[/list]\n"
     "\n"
-    "Bekannte Probleme\n"
+    "[b]Hinweise zum Update[/b]\n"
     "\n"
-    "- Blurry text with display scaling (#343)\n"
+    "[list]\n"
+    "[*]Java runtime requirement stays at 21 or later.\n"
+    "[/list]\n"
 )
 
 PAGE_BULLETS = (
@@ -385,7 +422,7 @@ PAGE_EN = (
     "provenance: hand-authored\n"
     "last_modified: '2026-12-01'\n"
     "seo_title: 'RouteConverter 3.8 release notes (1 Dec 2026)'\n"
-    "description: 'What is new in RouteConverter 3.8 (1 Dec 2026): Reads the phone''s `Timeline.json` export from the Google Maps app without dropping a single point.'\n"
+    "description: 'What is new in RouteConverter 3.8 (1 Dec 2026): RouteConverter 3.8 is faster.'\n"
     "categories:\n"
     "- release\n"
     "---\n"
@@ -403,7 +440,7 @@ PAGE_DE = (
     "provenance: hand-authored\n"
     "last_modified: '2026-12-01'\n"
     "seo_title: 'RouteConverter 3.8 Release Notes (1. Dezember 2026)'\n"
-    "description: 'Neu in RouteConverter 3.8 (1. Dezember 2026): TODO'\n"
+    "description: 'Neu in RouteConverter 3.8 (1. Dezember 2026): RouteConverter 3.8 ist schneller.'\n"
     "categories:\n"
     "- release\n"
     "---\n"
@@ -413,6 +450,18 @@ PAGE_DE = (
     "<!-- TODO: übersetzen -->\n"
     "\n" + PAGE_BULLETS
 )
+
+
+def _description(content):
+    """Return the decoded value of the single-quoted YAML ``description:``
+    line in CONTENT (YAML escapes ``'`` inside single quotes as ``''``)."""
+    for line in content.splitlines():
+        if line.startswith("description: "):
+            value = line[len("description: "):]
+            if len(value) >= 2 and value[0] == value[-1] == "'":
+                value = value[1:-1].replace("''", "'")
+            return value
+    raise AssertionError("no description line found")
 
 
 class TruncateTest(unittest.TestCase):
@@ -450,17 +499,176 @@ class DraftsTest(CliTestCase):
     def test_forum_de(self):
         self.assertEqual(FORUM_DE, self.draft("forum-3.8-de.txt"))
 
+    def test_forum_en_and_de_have_same_bullet_and_list_counts(self):
+        en, de = self.draft("forum-3.8-en.txt"), self.draft("forum-3.8-de.txt")
+        self.assertEqual(en.count("[*]"), de.count("[*]"))
+        self.assertEqual(en.count("[list]"), de.count("[list]"))
+        self.assertEqual(en.count("[list]"), en.count("[/list]"))
+
+    def test_highlights_list_not_joined_into_paragraph(self):
+        en = self.draft("forum-3.8-en.txt")
+        self.assertIn("[b]Most important fixes:[/b]\n\n[list]\n[*]Starts again on macOS 15.", en)
+        self.assertNotIn("Most important fixes: -", en)
+
+    def test_upgrade_notes_present_known_issues_absent(self):
+        en, de = self.draft("forum-3.8-en.txt"), self.draft("forum-3.8-de.txt")
+        self.assertIn("[b]Upgrade notes[/b]", en)
+        self.assertIn("[b]Hinweise zum Update[/b]", de)
+        self.assertNotIn("Known issues", en)
+        self.assertNotIn("Bekannte Probleme", de)
+
+    def test_first_line_is_subject_second_line_blank(self):
+        en_lines = self.draft("forum-3.8-en.txt").splitlines()
+        de_lines = self.draft("forum-3.8-de.txt").splitlines()
+        self.assertEqual("RouteConverter 3.8 released", en_lines[0])
+        self.assertEqual("", en_lines[1])
+        self.assertEqual("RouteConverter 3.8 ist erschienen", de_lines[0])
+        self.assertEqual("", de_lines[1])
+
     def test_rc_content_en(self):
         self.assertEqual(PAGE_EN, self.draft("rc-content-en-3-8-index.md"))
 
     def test_rc_content_de(self):
         self.assertEqual(PAGE_DE, self.draft("rc-content-de-3-8-index.md"))
 
+    def test_descriptions_fit_and_use_highlights(self):
+        en = _description(self.draft("rc-content-en-3-8-index.md"))
+        de = _description(self.draft("rc-content-de-3-8-index.md"))
+        for description, prefix in ((en, "What is new in RouteConverter 3.8 (1 Dec 2026): "),
+                                     (de, "Neu in RouteConverter 3.8 (1. Dezember 2026): ")):
+            self.assertLessEqual(len(description), 160)
+            self.assertTrue(description.startswith(prefix))
+            self.assertTrue(description.endswith("."))
+            self.assertNotIn("TODO", description)
+
     def test_missing_version_fails(self):
         path = self.write(DRAFTS_NOTES)
         code, _, err = self.run_cli("--file", path, "drafts", "3.9", "2026-12-01", "--out", self.out)
         self.assertEqual(1, code)
         self.assertIn('no "## 3.9 — …" section', err)
+
+
+NO_HIGHLIGHTS_NOTES = (
+    "# Release notes\n"
+    "\n"
+    "## 3.9 — 2026-12-15\n"
+    "\n"
+    "### New features\n"
+    "\n"
+    "- Adds a dark mode toggle for the map.\n"
+    "\n"
+    "### Fixes\n"
+    "\n"
+    "- Starts again on macOS 16.\n"
+)
+
+
+class RcContentFallbackTest(CliTestCase):
+    def test_falls_back_to_first_feature_bullet_and_de_todo_without_highlights(self):
+        out = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, out)
+        path = self.write(NO_HIGHLIGHTS_NOTES)
+        code, _, _ = self.run_cli("--file", path, "drafts", "3.9", "2026-12-15", "--out", out)
+        self.assertEqual(0, code)
+        en = self.read(os.path.join(out, "rc-content-en-3-9-index.md"))
+        de = self.read(os.path.join(out, "rc-content-de-3-9-index.md"))
+        self.assertIn(
+            "description: 'What is new in RouteConverter 3.9 (15 Dec 2026): Adds a dark mode toggle for the map.'",
+            en)
+        self.assertIn("description: 'Neu in RouteConverter 3.9 (15. Dezember 2026): TODO'", de)
+
+
+class BbcodeTest(unittest.TestCase):
+    def test_hard_wrapped_paragraph_joined_into_one_line(self):
+        self.assertEqual(
+            ["RouteConverter 3.8 is faster and looks fresh.", "", "[b]Most important fixes:[/b]", "",
+             "[list]", "[*]Starts again.", "[/list]"],
+            release_notes._bbcode(["RouteConverter 3.8 is faster", "and looks fresh.", "",
+                                   "Most important fixes:", "", "- Starts again."]))
+
+    def test_paragraph_runs_up_to_a_label_without_blank_line(self):
+        self.assertEqual(
+            ["Intro line one line two.", "[b]Fixes:[/b]", "[list]", "[*]A", "[*]B", "[/list]"],
+            release_notes._bbcode(["Intro line one", "line two.", "Fixes:", "- A", "", "- B"]))
+
+    def test_colon_line_without_bullets_stays_paragraph_text(self):
+        self.assertEqual(["Note: nothing else changed. Enjoy:"],
+                         release_notes._bbcode(["Note: nothing else changed.", "Enjoy:"]))
+
+    def test_backticks_stripped(self):
+        self.assertEqual(["Reads Timeline.json now."], release_notes._bbcode(["Reads `Timeline.json` now."]))
+
+
+class FirstSentenceTest(unittest.TestCase):
+    def test_period(self):
+        self.assertEqual("It is faster.", release_notes._first_sentence("It is faster. And more."))
+
+    def test_exclamation_and_question_marks_end_a_sentence(self):
+        self.assertEqual("Big news!", release_notes._first_sentence("Big news! More follows."))
+        self.assertEqual("Ready?", release_notes._first_sentence("Ready? Here it is."))
+
+    def test_no_period_appended_after_exclamation_or_question_mark(self):
+        self.assertEqual("Big news!", release_notes._first_sentence("Big news!"))
+        self.assertEqual("Ready?", release_notes._first_sentence("Ready?"))
+        self.assertEqual("P: Big news!", release_notes._highlight_description("P: ", "Big news!"))
+
+    def test_text_without_end_gets_period(self):
+        self.assertEqual("It is faster.", release_notes._first_sentence("It is faster"))
+
+
+class HighlightDescriptionTest(unittest.TestCase):
+    PREFIX = "What is new in RouteConverter 3.8 (15 Nov 2026): "
+
+    def test_long_sentence_cut_at_first_clause(self):
+        sentence = ("RouteConverter 3.8 gets a fresh look on Windows and Linux: a modern light or dark theme "
+                    "that follows your system, with sharp text, icons and maps on high-resolution displays.")
+        self.assertEqual(self.PREFIX + "RouteConverter 3.8 gets a fresh look on Windows and Linux.",
+                         release_notes._highlight_description(self.PREFIX, sentence))
+
+    def test_long_sentence_without_clause_truncated_at_word_boundary(self):
+        sentence = "RouteConverter 3.8 " + "makes everything much faster " * 6 + "for your daily work."
+        description = release_notes._highlight_description(self.PREFIX, sentence)
+        self.assertLessEqual(len(description), 160)
+        self.assertTrue(description.endswith("."))
+        last_word = description.rstrip(".").split(" ")[-1].lower()
+        self.assertNotIn(last_word, release_notes.DANGLING_WORDS)
+
+    def test_possessive_never_ends_a_cut(self):
+        self.assertEqual("light or dark theme that follows",
+                         release_notes._truncate("light or dark theme that follows your system", 37))
+
+
+class DescriptionApostropheTest(CliTestCase):
+    def test_apostrophe_survives_yaml_quoting(self):
+        out = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, out)
+        notes = DRAFTS_NOTES.replace("RouteConverter 3.8 is faster.", "RouteConverter 3.8 isn't slower.")
+        path = self.write(notes)
+        code, _, _ = self.run_cli("--file", path, "drafts", "3.8", "2026-12-01", "--out", out)
+        self.assertEqual(0, code)
+        content = self.read(os.path.join(out, "rc-content-en-3-8-index.md"))
+        self.assertIn("isn''t slower.'", content)
+        self.assertEqual("What is new in RouteConverter 3.8 (1 Dec 2026): RouteConverter 3.8 isn't slower.",
+                         _description(content))
+
+
+REAL_RELEASE_NOTES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "RELEASE_NOTES.md")
+
+
+class RealDraftsTest(CliTestCase):
+    def test_3_8_drafts_match_the_posted_forum_threads(self):
+        # Threads 4196 (EN) / 4197 (DE) as posted for 3.8: 44 list items in 5 lists each.
+        if not os.path.exists(REAL_RELEASE_NOTES):
+            self.skipTest("RELEASE_NOTES.md not present")
+        out = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, out)
+        code, _, _ = self.run_cli("--file", REAL_RELEASE_NOTES, "drafts", "3.8", "2026-11-15", "--out", out)
+        self.assertEqual(0, code)
+        for name in ("forum-3.8-en.txt", "forum-3.8-de.txt"):
+            forum = self.read(os.path.join(out, name))
+            self.assertEqual(44, forum.count("[*]"), name)
+            self.assertEqual(5, forum.count("[list]"), name)
+            self.assertEqual(5, forum.count("[/list]"), name)
 
 
 class ParseTest(unittest.TestCase):
@@ -488,7 +696,7 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(["Starts again on macOS 15."], sections[0].subsections["Fixes"])
 
     def test_parses_real_release_notes(self):
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "RELEASE_NOTES.md")
+        path = REAL_RELEASE_NOTES
         if not os.path.exists(path):
             self.skipTest("RELEASE_NOTES.md not present")
         with open(path, encoding="utf-8") as f:
