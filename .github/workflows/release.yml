@@ -351,6 +351,19 @@ jobs:
           bin=$(find "$RUNNER_TEMP/komac" -type f -name komac | head -1)
           [[ -x "$bin" ]] || { echo "::error::komac binary not found in ${tgz}"; exit 1; }
           dirname "$bin" >> "$GITHUB_PATH"
+      - name: Sync the winget-pkgs fork
+        # komac creates its branch in the cpesch/winget-pkgs fork at upstream
+        # HEAD; if microsoft/winget-pkgs changed a .github/workflows file
+        # since the fork's last sync, GitHub refuses that CreateRef without
+        # the `workflow` scope (3.8 retro, #369). The scope probe in
+        # _release-credentials.yml is the real guard, so a sync failure here
+        # is only a warning.
+        if: env.skip == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.WINGET_PAT }}
+        run: |
+          gh repo sync cpesch/winget-pkgs --source microsoft/winget-pkgs \
+            || echo "::warning::fork sync failed; komac may hit CreateRef"
       - name: Submit the winget-pkgs PR
         # Not `komac update --submit`: komac re-detects the installer and gets
         # it wrong for us. RouteConverterWindows.exe is a 32-bit NSIS
