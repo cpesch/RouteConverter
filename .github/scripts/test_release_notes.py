@@ -452,6 +452,18 @@ PAGE_DE = (
 )
 
 
+def _description(content):
+    """Return the decoded value of the single-quoted YAML ``description:``
+    line in CONTENT (YAML escapes ``'`` inside single quotes as ``''``)."""
+    for line in content.splitlines():
+        if line.startswith("description: "):
+            value = line[len("description: "):]
+            if len(value) >= 2 and value[0] == value[-1] == "'":
+                value = value[1:-1].replace("''", "'")
+            return value
+    raise AssertionError("no description line found")
+
+
 class TruncateTest(unittest.TestCase):
     def test_short_text_kept_without_final_period(self):
         self.assertEqual("Faster startup", release_notes._truncate("Faster startup.", 120))
@@ -519,15 +531,9 @@ class DraftsTest(CliTestCase):
     def test_rc_content_de(self):
         self.assertEqual(PAGE_DE, self.draft("rc-content-de-3-8-index.md"))
 
-    def description(self, content):
-        for line in content.splitlines():
-            if line.startswith("description: "):
-                return line[len("description: "):].strip("'")
-        raise AssertionError("no description line found")
-
     def test_descriptions_fit_and_use_highlights(self):
-        en = self.description(self.draft("rc-content-en-3-8-index.md"))
-        de = self.description(self.draft("rc-content-de-3-8-index.md"))
+        en = _description(self.draft("rc-content-en-3-8-index.md"))
+        de = _description(self.draft("rc-content-de-3-8-index.md"))
         for description, prefix in ((en, "What is new in RouteConverter 3.8 (1 Dec 2026): "),
                                      (de, "Neu in RouteConverter 3.8 (1. Dezember 2026): ")):
             self.assertLessEqual(len(description), 160)
@@ -572,6 +578,99 @@ class RcContentFallbackTest(CliTestCase):
         self.assertIn("description: 'Neu in RouteConverter 3.9 (15. Dezember 2026): TODO'", de)
 
 
+class BbcodeTest(unittest.TestCase):
+    def test_hard_wrapped_paragraph_joined_into_one_line(self):
+        self.assertEqual(
+            ["RouteConverter 3.8 is faster and looks fresh.", "", "[b]Most important fixes:[/b]", "",
+             "[list]", "[*]Starts again.", "[/list]"],
+            release_notes._bbcode(["RouteConverter 3.8 is faster", "and looks fresh.", "",
+                                   "Most important fixes:", "", "- Starts again."]))
+
+    def test_paragraph_runs_up_to_a_label_without_blank_line(self):
+        self.assertEqual(
+            ["Intro line one line two.", "[b]Fixes:[/b]", "[list]", "[*]A", "[*]B", "[/list]"],
+            release_notes._bbcode(["Intro line one", "line two.", "Fixes:", "- A", "", "- B"]))
+
+    def test_colon_line_without_bullets_stays_paragraph_text(self):
+        self.assertEqual(["Note: nothing else changed. Enjoy:"],
+                         release_notes._bbcode(["Note: nothing else changed.", "Enjoy:"]))
+
+    def test_backticks_stripped(self):
+        self.assertEqual(["Reads Timeline.json now."], release_notes._bbcode(["Reads `Timeline.json` now."]))
+
+
+class FirstSentenceTest(unittest.TestCase):
+    def test_period(self):
+        self.assertEqual("It is faster.", release_notes._first_sentence("It is faster. And more."))
+
+    def test_exclamation_and_question_marks_end_a_sentence(self):
+        self.assertEqual("Big news!", release_notes._first_sentence("Big news! More follows."))
+        self.assertEqual("Ready?", release_notes._first_sentence("Ready? Here it is."))
+
+    def test_no_period_appended_after_exclamation_or_question_mark(self):
+        self.assertEqual("Big news!", release_notes._first_sentence("Big news!"))
+        self.assertEqual("Ready?", release_notes._first_sentence("Ready?"))
+        self.assertEqual("P: Big news!", release_notes._highlight_description("P: ", "Big news!"))
+
+    def test_text_without_end_gets_period(self):
+        self.assertEqual("It is faster.", release_notes._first_sentence("It is faster"))
+
+
+class HighlightDescriptionTest(unittest.TestCase):
+    PREFIX = "What is new in RouteConverter 3.8 (15 Nov 2026): "
+
+    def test_long_sentence_cut_at_first_clause(self):
+        sentence = ("RouteConverter 3.8 gets a fresh look on Windows and Linux: a modern light or dark theme "
+                    "that follows your system, with sharp text, icons and maps on high-resolution displays.")
+        self.assertEqual(self.PREFIX + "RouteConverter 3.8 gets a fresh look on Windows and Linux.",
+                         release_notes._highlight_description(self.PREFIX, sentence))
+
+    def test_long_sentence_without_clause_truncated_at_word_boundary(self):
+        sentence = "RouteConverter 3.8 " + "makes everything much faster " * 6 + "for your daily work."
+        description = release_notes._highlight_description(self.PREFIX, sentence)
+        self.assertLessEqual(len(description), 160)
+        self.assertTrue(description.endswith("."))
+        last_word = description.rstrip(".").split(" ")[-1].lower()
+        self.assertNotIn(last_word, release_notes.DANGLING_WORDS)
+
+    def test_possessive_never_ends_a_cut(self):
+        self.assertEqual("light or dark theme that follows",
+                         release_notes._truncate("light or dark theme that follows your system", 37))
+
+
+class DescriptionApostropheTest(CliTestCase):
+    def test_apostrophe_survives_yaml_quoting(self):
+        out = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, out)
+        notes = DRAFTS_NOTES.replace("RouteConverter 3.8 is faster.", "RouteConverter 3.8 isn't slower.")
+        path = self.write(notes)
+        code, _, _ = self.run_cli("--file", path, "drafts", "3.8", "2026-12-01", "--out", out)
+        self.assertEqual(0, code)
+        content = self.read(os.path.join(out, "rc-content-en-3-8-index.md"))
+        self.assertIn("isn''t slower.'", content)
+        self.assertEqual("What is new in RouteConverter 3.8 (1 Dec 2026): RouteConverter 3.8 isn't slower.",
+                         _description(content))
+
+
+REAL_RELEASE_NOTES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "RELEASE_NOTES.md")
+
+
+class RealDraftsTest(CliTestCase):
+    def test_3_8_drafts_match_the_posted_forum_threads(self):
+        # Threads 4196 (EN) / 4197 (DE) as posted for 3.8: 44 list items in 5 lists each.
+        if not os.path.exists(REAL_RELEASE_NOTES):
+            self.skipTest("RELEASE_NOTES.md not present")
+        out = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, out)
+        code, _, _ = self.run_cli("--file", REAL_RELEASE_NOTES, "drafts", "3.8", "2026-11-15", "--out", out)
+        self.assertEqual(0, code)
+        for name in ("forum-3.8-en.txt", "forum-3.8-de.txt"):
+            forum = self.read(os.path.join(out, name))
+            self.assertEqual(44, forum.count("[*]"), name)
+            self.assertEqual(5, forum.count("[list]"), name)
+            self.assertEqual(5, forum.count("[/list]"), name)
+
+
 class ParseTest(unittest.TestCase):
     def test_multi_line_bullet_joined(self):
         sections = release_notes.parse(
@@ -597,7 +696,7 @@ class ParseTest(unittest.TestCase):
         self.assertEqual(["Starts again on macOS 15."], sections[0].subsections["Fixes"])
 
     def test_parses_real_release_notes(self):
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "RELEASE_NOTES.md")
+        path = REAL_RELEASE_NOTES
         if not os.path.exists(path):
             self.skipTest("RELEASE_NOTES.md not present")
         with open(path, encoding="utf-8") as f:

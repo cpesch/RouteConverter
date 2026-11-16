@@ -246,12 +246,25 @@ def _block(section_text, subsection):
     return body
 
 
+def _introduces_bullets(lines, i):
+    """True if LINES[i] is a non-bullet line ending in ``:`` that is directly
+    followed (blank lines allowed) by a ``- `` line."""
+    line = lines[i]
+    if line.startswith("- ") or not line.rstrip().endswith(":"):
+        return False
+    j = i + 1
+    while j < len(lines) and not lines[j].strip():
+        j += 1
+    return j < len(lines) and lines[j].startswith("- ")
+
+
 def _bbcode(lines):
     """Convert raw LINES to MyBB BBCode: a run of consecutive ``- `` lines
     (blank lines inside a run dropped) becomes ``[list]``/``[*]``/``[/list]``;
     a non-bullet line ending in ``:`` directly followed (blank lines allowed)
-    by a bullet run becomes ``[b]...[/b]``; other lines pass through;
-    backticks are stripped throughout."""
+    by a bullet run becomes ``[b]...[/b]``; consecutive other non-blank lines
+    are one hard-wrapped paragraph and are joined into one line; blank lines
+    pass through; backticks are stripped throughout."""
     out = []
     i, n = 0, len(lines)
     while i < n:
@@ -276,25 +289,33 @@ def _bbcode(lines):
             out.extend(f"[*]{bullet}" for bullet in bullets)
             out.append("[/list]")
             continue
-        if line.rstrip().endswith(":"):
-            j = i + 1
-            while j < n and not lines[j].strip():
-                j += 1
-            if j < n and lines[j].startswith("- "):
-                out.append(f"[b]{line.rstrip().replace('`', '')}[/b]")
-                i += 1
-                continue
-        out.append(line.replace("`", ""))
-        i += 1
+        if _introduces_bullets(lines, i):
+            out.append(f"[b]{line.rstrip().replace('`', '')}[/b]")
+            i += 1
+            continue
+        if not line.strip():
+            out.append("")
+            i += 1
+            continue
+        paragraph = []
+        while (i < n and lines[i].strip() and not lines[i].startswith("- ")
+               and not _introduces_bullets(lines, i)):
+            paragraph.append(lines[i].strip().replace("`", ""))
+            i += 1
+        out.append(" ".join(paragraph))
     return out
 
 
+SENTENCE_ENDS = (".", "!", "?")
+
+
 def _first_sentence(text):
-    """Return TEXT up to and including the end of its first sentence."""
-    end = text.find(". ")
-    if end != -1:
-        return text[:end + 1]
-    return text if text.endswith(".") else text + "."
+    """Return TEXT up to and including the end of its first sentence (ended
+    by ``.``, ``!`` or ``?``); a text without one gets a final period."""
+    ends = [pos for pos in (text.find(f"{end} ") for end in SENTENCE_ENDS) if pos != -1]
+    if ends:
+        return text[:min(ends) + 1]
+    return text if text.endswith(SENTENCE_ENDS) else text + "."
 
 
 def _highlight_description(prefix, highlight):
@@ -304,11 +325,17 @@ def _highlight_description(prefix, highlight):
     if len(prefix) + len(sentence) <= DESCRIPTION_MAX:
         return f"{prefix}{sentence}"
     limit = DESCRIPTION_MAX - len(prefix) - 1
+    # Too long: prefer the sentence's first clause (up to ": " or "; ") over a
+    # mid-clause word cut, e.g. "RouteConverter 3.8 gets a fresh look on Windows and Linux."
+    clauses = [pos for pos in (sentence.find(": "), sentence.find("; ")) if pos != -1]
+    if clauses and min(clauses) <= limit:
+        return f"{prefix}{sentence[:min(clauses)]}."
     return f"{prefix}{_truncate(sentence, limit)}."
 
 
 DANGLING_WORDS = {"a", "an", "and", "as", "at", "by", "for", "from", "in", "of", "on", "or", "the",
-                  "to", "with", "without"}
+                  "to", "with", "without", "your", "its", "their", "our", "my", "this", "that",
+                  "these", "those"}
 
 
 def _truncate(text, limit=DESCRIPTION_LIMIT):
