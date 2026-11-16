@@ -47,6 +47,12 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    # Windows defaults to pwsh; almost every step here is bash. A step added
+    # without its own shell: silently runs under pwsh instead (#489, fixed by
+    # hand in #365 on just the one step that broke release.yml for 3.8).
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v7
 

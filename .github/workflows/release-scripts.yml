@@ -2,15 +2,17 @@ name: Release scripts
 
 # Unit tests for the release helper scripts in .github/scripts
 # (release_notes.py is called by release-prepare.yml; verify-published.sh's
-# archive -> latest/ name mapping by release.yml) and well-formedness of the
-# PAD catalog templates in .github/release (rendered by release.yml).
+# archive -> latest/ name mapping by release.yml; test_workflow_shells.py
+# scans every workflow for a Windows job step missing shell:, #489/#365) and
+# well-formedness of the PAD catalog templates in .github/release (rendered
+# by release.yml).
 
 on:
   pull_request:
-    paths: ['.github/scripts/**', '.github/release/**']
+    paths: ['.github/scripts/**', '.github/release/**', '.github/workflows/**']
   push:
     branches: [master]
-    paths: ['.github/scripts/**', '.github/release/**']
+    paths: ['.github/scripts/**', '.github/release/**', '.github/workflows/**']
 
 permissions:
   contents: read
