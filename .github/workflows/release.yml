@@ -391,6 +391,23 @@ jobs:
           done
           [[ $(grep -c "^PackageVersion: '${VERSION}'$" "$dir"/*.yaml | awk -F: '{s+=$2} END {print s}') == 3 ]] \
             || { echo "::error::PackageVersion not set in all three manifests"; exit 1; }
+          # komac copies the previous version's URLs forward unchanged, so a
+          # URL that went stale since that version (e.g. rc/RouteConverter#515
+          # renaming LICENSE-GPL.txt to LICENSE) is copied into this manifest
+          # too and fails winget's bot validation after the PR is already
+          # open. Check every *Url value here instead, so the job fails with
+          # a clear message and opens no PR.
+          urls=$(grep -hoE '^[[:space:]]*[A-Za-z]*Url: *[^[:space:]]+' "$dir"/*.yaml | sed -E 's/^[^:]+: *//' | tr -d '\r' | sort -u)
+          url_fail=0
+          while IFS= read -r url; do
+            [[ -n "$url" ]] || continue
+            code=$(curl -fsSL -o /dev/null -w '%{http_code}' -r 0-0 --max-time 30 -A 'Mozilla/5.0 (RouteConverter release bot)' "$url") || true
+            if [[ "$code" != 2[0-9][0-9] ]]; then
+              echo "::error::winget manifest URL ${url} returns ${code} — fix it in the copied manifest (bump-winget copies the previous version's URLs)"
+              url_fail=1
+            fi
+          done <<< "$urls"
+          [[ "$url_fail" == 0 ]] || exit 1
           head -n 50 "$dir"/*.yaml
           komac submit "$dir" --yes
 
