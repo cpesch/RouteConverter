@@ -192,29 +192,10 @@ DESCRIPTION_LIMIT = 120
 DESCRIPTION_MAX = 160
 
 
-def _paragraph(section_text, subsection):
-    """Return the non-bullet paragraph text of a ``### subsection`` (lines
-    joined, ``- `` lines skipped), or None."""
-    lines = section_text.splitlines()
-    heading = f"### {subsection}"
-    for start, line in enumerate(lines):
-        if line.rstrip() == heading:
-            body = []
-            for line in lines[start + 1:]:
-                if line.startswith("#"):
-                    break
-                stripped = line.strip()
-                if stripped.startswith("- "):
-                    continue
-                body.append(stripped)
-            text = " ".join(part for part in body if part)
-            return text or None
-    return None
-
-
-def _block(section_text, subsection):
-    """Return the raw lines of a ``### subsection``, trailing whitespace
-    stripped and leading/trailing blank lines removed, or [] if absent."""
+def _subsection_lines(section_text, subsection):
+    """Return the raw lines of a ``### subsection`` (trailing whitespace
+    stripped), up to the next ``#`` heading, or None if the heading is
+    absent."""
     lines = section_text.splitlines()
     heading = f"### {subsection}"
     for start, line in enumerate(lines):
@@ -224,12 +205,37 @@ def _block(section_text, subsection):
                 if line.startswith("#"):
                     break
                 body.append(line.rstrip())
-            while body and not body[0].strip():
-                body.pop(0)
-            while body and not body[-1].strip():
-                body.pop()
             return body
-    return []
+    return None
+
+
+def _paragraph(section_text, subsection):
+    """Return the non-bullet paragraph text of a ``### subsection`` (lines
+    joined, ``- `` lines skipped), or None."""
+    body = _subsection_lines(section_text, subsection)
+    if body is None:
+        return None
+    parts = []
+    for line in body:
+        stripped = line.strip()
+        if stripped.startswith("- "):
+            continue
+        parts.append(stripped)
+    text = " ".join(part for part in parts if part)
+    return text or None
+
+
+def _block(section_text, subsection):
+    """Return the raw lines of a ``### subsection``, trailing whitespace
+    stripped and leading/trailing blank lines removed, or [] if absent."""
+    body = _subsection_lines(section_text, subsection)
+    if body is None:
+        return []
+    while body and not body[0].strip():
+        body.pop(0)
+    while body and not body[-1].strip():
+        body.pop()
+    return body
 
 
 def _bbcode(lines):

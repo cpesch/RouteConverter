@@ -12,28 +12,6 @@
 
 **GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.8
 
-### Highlights (EN)
-
-RouteConverter 3.8 brings a modern FlatLaf look and on-map POI display.
-
-Most important fixes:
-
-- Excel files keep their order and content through sorting, reverting, moving, Save as and Split (#338, #339, #340, #341)
-- Windows follows the regional date, time and number settings again (#415, #470)
-- Find places works again with the downloaded offline POI data (#276, #277, #278)
-- Logs, error reports and crash reports no longer contain API keys or session tokens (#280, #296, #305)
-
-### Was ist neu (DE)
-
-RouteConverter 3.8 bringt einen modernen FlatLaf-Look und zeigt POIs direkt auf der Karte.
-
-Die wichtigsten Fehlerbehebungen:
-
-- Excel-Dateien behalten beim Sortieren, Zurücksetzen, Verschieben, Speichern unter und Split ihre Reihenfolge und ihren Inhalt (#338, #339, #340, #341)
-- Windows folgt wieder den Regionseinstellungen für Datum, Uhrzeit und Zahlen (#415, #470)
-- „Orte finden" funktioniert wieder mit den heruntergeladenen Offline-POI-Daten (#276, #277, #278)
-- Logs, Fehler- und Absturzberichte enthalten keine API-Schlüssel oder Sitzungs-Token mehr (#280, #296, #305)
-
 ### New features
 
 - Windows and Linux: modern FlatLaf look-and-feel, light or dark following the operating system setting; macOS keeps its native look. Options > General > Look and feel switches to Light, Dark or the old System look (requires restart) (#263)
