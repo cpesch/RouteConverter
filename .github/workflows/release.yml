@@ -351,6 +351,19 @@ jobs:
           bin=$(find "$RUNNER_TEMP/komac" -type f -name komac | head -1)
           [[ -x "$bin" ]] || { echo "::error::komac binary not found in ${tgz}"; exit 1; }
           dirname "$bin" >> "$GITHUB_PATH"
+      - name: Sync the winget-pkgs fork
+        # komac creates its branch in the cpesch/winget-pkgs fork at upstream
+        # HEAD; if microsoft/winget-pkgs changed a .github/workflows file
+        # since the fork's last sync, GitHub refuses that CreateRef without
+        # the `workflow` scope (3.8 retro, #369). The scope probe in
+        # _release-credentials.yml is the real guard, so a sync failure here
+        # is only a warning.
+        if: env.skip == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.WINGET_PAT }}
+        run: |
+          gh repo sync cpesch/winget-pkgs --source microsoft/winget-pkgs \
+            || echo "::warning::fork sync failed; komac may hit CreateRef"
       - name: Submit the winget-pkgs PR
         # Not `komac update --submit`: komac re-detects the installer and gets
         # it wrong for us. RouteConverterWindows.exe is a 32-bit NSIS
@@ -391,6 +404,23 @@ jobs:
           done
           [[ $(grep -c "^PackageVersion: '${VERSION}'$" "$dir"/*.yaml | awk -F: '{s+=$2} END {print s}') == 3 ]] \
             || { echo "::error::PackageVersion not set in all three manifests"; exit 1; }
+          # komac copies the previous version's URLs forward unchanged, so a
+          # URL that went stale since that version (e.g. rc/RouteConverter#515
+          # renaming LICENSE-GPL.txt to LICENSE) is copied into this manifest
+          # too and fails winget's bot validation after the PR is already
+          # open. Check every *Url value here instead, so the job fails with
+          # a clear message and opens no PR.
+          urls=$(grep -hoE '^[[:space:]]*[A-Za-z]*Url: *[^[:space:]]+' "$dir"/*.yaml | sed -E 's/^[^:]+: *//' | tr -d '\r' | sort -u)
+          url_fail=0
+          while IFS= read -r url; do
+            [[ -n "$url" ]] || continue
+            code=$(curl -fsSL -o /dev/null -w '%{http_code}' -r 0-0 --max-time 30 -A 'Mozilla/5.0 (RouteConverter release bot)' "$url") || true
+            if [[ "$code" != 2[0-9][0-9] ]]; then
+              echo "::error::winget manifest URL ${url} returns ${code} — fix it in the copied manifest (bump-winget copies the previous version's URLs)"
+              url_fail=1
+            fi
+          done <<< "$urls"
+          [[ "$url_fail" == 0 ]] || exit 1
           head -n 50 "$dir"/*.yaml
           komac submit "$dir" --yes
 
