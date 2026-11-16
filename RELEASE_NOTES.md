@@ -12,6 +12,28 @@
 
 **GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.8
 
+### Highlights (EN)
+
+RouteConverter 3.8 gets a fresh look on Windows and Linux: a modern light or dark theme that follows your system, with sharp text, icons and maps on high-resolution displays. View > POIs shows every bank, toilet or other category of points of interest on the map, and you can hide the other position lists of a file, such as the thousands of daily tracks of a Google Timeline export.
+
+Most important fixes:
+
+- Excel files keep sorted, reverted and moved positions when saved
+- The crashes reported most often from 3.7 are fixed
+- Windows: dates and times follow your regional settings again
+- macOS: large maps no longer run out of memory
+
+### Was ist neu (DE)
+
+RouteConverter 3.8 bekommt unter Windows und Linux ein neues Gesicht: ein modernes helles oder dunkles Design passend zur Systemeinstellung, dazu scharfe Schrift, Symbole und Karten auf hochauflösenden Bildschirmen. Unter Ansicht > POIs zeigt die Karte alle Banken, Toiletten oder andere POI-Kategorien an, und die übrigen Positionslisten einer Datei lassen sich ausblenden – etwa die tausenden Tagestracks einer Google-Zeitachse.
+
+Die wichtigsten Fehlerbehebungen:
+
+- Excel-Dateien behalten sortierte, umgekehrte und verschobene Positionen beim Speichern
+- Die am häufigsten gemeldeten Abstürze von 3.7 sind behoben
+- Windows: Datum und Uhrzeit folgen wieder den Regionseinstellungen
+- macOS: Bei großen Karten geht nicht mehr der Speicher aus
+
 ### New features
 
 - Windows and Linux: modern FlatLaf look-and-feel, light or dark following the operating system setting; macOS keeps its native look. Options > General > Look and feel switches to Light, Dark or the old System look (requires restart) (#263)
