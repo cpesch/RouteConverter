@@ -299,10 +299,19 @@ DRAFTS_NOTES = (
     "\n"
     "RouteConverter 3.8 is faster.\n"
     "\n"
+    "Most important fixes:\n"
+    "\n"
+    "- Starts again on macOS 15.\n"
+    "- Opens GPX files with a BOM again.\n"
+    "\n"
     "### Was ist neu (DE)\n"
     "\n"
-    "RouteConverter 3.8 ist schneller\n"
-    "und kann mehr.\n"
+    "RouteConverter 3.8 ist schneller.\n"
+    "\n"
+    "Die wichtigsten Fehlerbehebungen:\n"
+    "\n"
+    "- Startet wieder unter macOS 15.\n"
+    "- Öffnet GPX-Dateien wieder mit BOM.\n"
     "\n"
     "### New features\n"
     "\n"
@@ -315,9 +324,9 @@ DRAFTS_NOTES = (
     "\n"
     "- Starts again on macOS 15 (#393)\n"
     "\n"
-    "### Known issues\n"
+    "### Upgrade notes\n"
     "\n"
-    "- Blurry text with display scaling (#343)\n"
+    "- Java runtime requirement stays at 21 or later.\n"
     "\n"
     "## 3.7 — 2026-10-10\n"
     "\n"
@@ -332,18 +341,33 @@ FORUM_EN = (
     "RouteConverter 3.8 is available: https://www.routeconverter.com/downloads/\n"
     "Release notes: https://www.routeconverter.com/releases/3-8/\n"
     "\n"
-    "New features\n"
+    "RouteConverter 3.8 is faster.\n"
     "\n"
-    "- Reads the phone's Timeline.json export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
-    "- Maintainer's favourite: a font-size setting\n"
+    "[b]Most important fixes:[/b]\n"
     "\n"
-    "Fixes\n"
+    "[list]\n"
+    "[*]Starts again on macOS 15.\n"
+    "[*]Opens GPX files with a BOM again.\n"
+    "[/list]\n"
     "\n"
-    "- Starts again on macOS 15 (#393)\n"
+    "[b]New features[/b]\n"
     "\n"
-    "Known issues\n"
+    "[list]\n"
+    "[*]Reads the phone's Timeline.json export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
+    "[*]Maintainer's favourite: a font-size setting\n"
+    "[/list]\n"
     "\n"
-    "- Blurry text with display scaling (#343)\n"
+    "[b]Fixes[/b]\n"
+    "\n"
+    "[list]\n"
+    "[*]Starts again on macOS 15 (#393)\n"
+    "[/list]\n"
+    "\n"
+    "[b]Upgrade notes[/b]\n"
+    "\n"
+    "[list]\n"
+    "[*]Java runtime requirement stays at 21 or later.\n"
+    "[/list]\n"
 )
 
 FORUM_DE = (
@@ -352,22 +376,35 @@ FORUM_DE = (
     "RouteConverter 3.8 steht zum Download bereit: https://www.routeconverter.de/downloads/\n"
     "Versionshinweise: https://www.routeconverter.de/releases/3-8/\n"
     "\n"
-    "RouteConverter 3.8 ist schneller und kann mehr.\n"
+    "RouteConverter 3.8 ist schneller.\n"
+    "\n"
+    "[b]Die wichtigsten Fehlerbehebungen:[/b]\n"
+    "\n"
+    "[list]\n"
+    "[*]Startet wieder unter macOS 15.\n"
+    "[*]Öffnet GPX-Dateien wieder mit BOM.\n"
+    "[/list]\n"
     "\n"
     "TODO: Stichpunkte übersetzen\n"
     "\n"
-    "Neue Funktionen\n"
+    "[b]Neue Funktionen[/b]\n"
     "\n"
-    "- Reads the phone's Timeline.json export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
-    "- Maintainer's favourite: a font-size setting\n"
+    "[list]\n"
+    "[*]Reads the phone's Timeline.json export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
+    "[*]Maintainer's favourite: a font-size setting\n"
+    "[/list]\n"
     "\n"
-    "Fehlerbehebungen\n"
+    "[b]Fehlerbehebungen[/b]\n"
     "\n"
-    "- Starts again on macOS 15 (#393)\n"
+    "[list]\n"
+    "[*]Starts again on macOS 15 (#393)\n"
+    "[/list]\n"
     "\n"
-    "Bekannte Probleme\n"
+    "[b]Hinweise zum Update[/b]\n"
     "\n"
-    "- Blurry text with display scaling (#343)\n"
+    "[list]\n"
+    "[*]Java runtime requirement stays at 21 or later.\n"
+    "[/list]\n"
 )
 
 PAGE_BULLETS = (
@@ -385,7 +422,7 @@ PAGE_EN = (
     "provenance: hand-authored\n"
     "last_modified: '2026-12-01'\n"
     "seo_title: 'RouteConverter 3.8 release notes (1 Dec 2026)'\n"
-    "description: 'What is new in RouteConverter 3.8 (1 Dec 2026): Reads the phone''s `Timeline.json` export from the Google Maps app without dropping a single point.'\n"
+    "description: 'What is new in RouteConverter 3.8 (1 Dec 2026): RouteConverter 3.8 is faster.'\n"
     "categories:\n"
     "- release\n"
     "---\n"
@@ -403,7 +440,7 @@ PAGE_DE = (
     "provenance: hand-authored\n"
     "last_modified: '2026-12-01'\n"
     "seo_title: 'RouteConverter 3.8 Release Notes (1. Dezember 2026)'\n"
-    "description: 'Neu in RouteConverter 3.8 (1. Dezember 2026): TODO'\n"
+    "description: 'Neu in RouteConverter 3.8 (1. Dezember 2026): RouteConverter 3.8 ist schneller.'\n"
     "categories:\n"
     "- release\n"
     "---\n"
@@ -450,17 +487,89 @@ class DraftsTest(CliTestCase):
     def test_forum_de(self):
         self.assertEqual(FORUM_DE, self.draft("forum-3.8-de.txt"))
 
+    def test_forum_en_and_de_have_same_bullet_and_list_counts(self):
+        en, de = self.draft("forum-3.8-en.txt"), self.draft("forum-3.8-de.txt")
+        self.assertEqual(en.count("[*]"), de.count("[*]"))
+        self.assertEqual(en.count("[list]"), de.count("[list]"))
+        self.assertEqual(en.count("[list]"), en.count("[/list]"))
+
+    def test_highlights_list_not_joined_into_paragraph(self):
+        en = self.draft("forum-3.8-en.txt")
+        self.assertIn("[b]Most important fixes:[/b]\n\n[list]\n[*]Starts again on macOS 15.", en)
+        self.assertNotIn("Most important fixes: -", en)
+
+    def test_upgrade_notes_present_known_issues_absent(self):
+        en, de = self.draft("forum-3.8-en.txt"), self.draft("forum-3.8-de.txt")
+        self.assertIn("[b]Upgrade notes[/b]", en)
+        self.assertIn("[b]Hinweise zum Update[/b]", de)
+        self.assertNotIn("Known issues", en)
+        self.assertNotIn("Bekannte Probleme", de)
+
+    def test_first_line_is_subject_second_line_blank(self):
+        en_lines = self.draft("forum-3.8-en.txt").splitlines()
+        de_lines = self.draft("forum-3.8-de.txt").splitlines()
+        self.assertEqual("RouteConverter 3.8 released", en_lines[0])
+        self.assertEqual("", en_lines[1])
+        self.assertEqual("RouteConverter 3.8 ist erschienen", de_lines[0])
+        self.assertEqual("", de_lines[1])
+
     def test_rc_content_en(self):
         self.assertEqual(PAGE_EN, self.draft("rc-content-en-3-8-index.md"))
 
     def test_rc_content_de(self):
         self.assertEqual(PAGE_DE, self.draft("rc-content-de-3-8-index.md"))
 
+    def description(self, content):
+        for line in content.splitlines():
+            if line.startswith("description: "):
+                return line[len("description: "):].strip("'")
+        raise AssertionError("no description line found")
+
+    def test_descriptions_fit_and_use_highlights(self):
+        en = self.description(self.draft("rc-content-en-3-8-index.md"))
+        de = self.description(self.draft("rc-content-de-3-8-index.md"))
+        for description, prefix in ((en, "What is new in RouteConverter 3.8 (1 Dec 2026): "),
+                                     (de, "Neu in RouteConverter 3.8 (1. Dezember 2026): ")):
+            self.assertLessEqual(len(description), 160)
+            self.assertTrue(description.startswith(prefix))
+            self.assertTrue(description.endswith("."))
+            self.assertNotIn("TODO", description)
+
     def test_missing_version_fails(self):
         path = self.write(DRAFTS_NOTES)
         code, _, err = self.run_cli("--file", path, "drafts", "3.9", "2026-12-01", "--out", self.out)
         self.assertEqual(1, code)
         self.assertIn('no "## 3.9 — …" section', err)
+
+
+NO_HIGHLIGHTS_NOTES = (
+    "# Release notes\n"
+    "\n"
+    "## 3.9 — 2026-12-15\n"
+    "\n"
+    "### New features\n"
+    "\n"
+    "- Adds a dark mode toggle for the map.\n"
+    "\n"
+    "### Fixes\n"
+    "\n"
+    "- Starts again on macOS 16.\n"
+)
+
+
+class RcContentFallbackTest(CliTestCase):
+    def test_falls_back_to_first_feature_bullet_and_de_todo_without_highlights(self):
+        out = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, out)
+        path = self.write(NO_HIGHLIGHTS_NOTES)
+        code, _, _ = self.run_cli("--file", path, "drafts", "3.9", "2026-12-15", "--out", out)
+        self.assertEqual(0, code)
+        en = self.read(os.path.join(out, "rc-content-en-3-9-index.md"))
+        de = self.read(os.path.join(out, "rc-content-de-3-9-index.md"))
+        self.assertIn(
+            "description: 'What is new in RouteConverter 3.9 (15 Dec 2026): Adds a dark mode toggle for the map.'",
+            en)
+        self.assertIn("description: 'Neu in RouteConverter 3.9 (15. Dezember 2026): TODO'", de)
 
 
 class ParseTest(unittest.TestCase):
