@@ -211,15 +211,23 @@ def _subsection_lines(section_text, subsection):
 
 def _paragraph(section_text, subsection):
     """Return the non-bullet paragraph text of a ``### subsection`` (lines
-    joined, ``- `` lines skipped), or None."""
+    joined, ``- `` lines skipped, and a label line that introduces one of
+    those bullet runs skipped along with it), or None."""
     body = _subsection_lines(section_text, subsection)
     if body is None:
         return None
+    n = len(body)
     parts = []
-    for line in body:
+    for i, line in enumerate(body):
         stripped = line.strip()
         if stripped.startswith("- "):
             continue
+        if stripped.endswith(":"):
+            j = i + 1
+            while j < n and not body[j].strip():
+                j += 1
+            if j < n and body[j].strip().startswith("- "):
+                continue
         parts.append(stripped)
     text = " ".join(part for part in parts if part)
     return text or None
