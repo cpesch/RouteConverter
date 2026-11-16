@@ -4,7 +4,7 @@ These files are unmodified copies from the GPSBabel project
 (https://github.com/GPSBabel/gpsbabel), licensed under the GNU General Public License,
 version 2 or (at your option) any later version — see `COPYING` and each file's header.
 
-They are **reference material only**: nothing here is compiled or packaged. They exist so the
+They are **reference material only**: nothing here is compiled or packaged, and `src/cc` is outside every Maven source and resource root. They exist so the
 factory builder, which has no web access, can read the C++ code it translates to Java while
 RouteConverter replaces its GPSBabel-backed formats with native ones
 (rc-meta spec 00083, `specs/00083-gpsbabel-replacement.md`).
