@@ -181,7 +181,7 @@ FORUM_SUBSECTIONS = (
     ("New features", "Neue Funktionen"),
     ("Changes", "Änderungen"),
     ("Fixes", "Fehlerbehebungen"),
-    ("Known issues", "Bekannte Probleme"),
+    ("Upgrade notes", "Hinweise zum Update"),
 )
 DE_HIGHLIGHTS = "Was ist neu (DE)"
 MONTHS_EN = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
@@ -192,8 +192,10 @@ DESCRIPTION_LIMIT = 120
 DESCRIPTION_MAX = 160
 
 
-def _paragraph(section_text, subsection):
-    """Return the paragraph text of a ``### subsection`` (lines joined), or None."""
+def _subsection_lines(section_text, subsection):
+    """Return the raw lines of a ``### subsection`` (trailing whitespace
+    stripped), up to the next ``#`` heading, or None if the heading is
+    absent."""
     lines = section_text.splitlines()
     heading = f"### {subsection}"
     for start, line in enumerate(lines):
@@ -202,14 +204,138 @@ def _paragraph(section_text, subsection):
             for line in lines[start + 1:]:
                 if line.startswith("#"):
                     break
-                body.append(line.strip())
-            text = " ".join(part for part in body if part)
-            return text or None
+                body.append(line.rstrip())
+            return body
     return None
 
 
+def _paragraph(section_text, subsection):
+    """Return the non-bullet paragraph text of a ``### subsection`` (lines
+    joined, ``- `` lines skipped, and a label line that introduces one of
+    those bullet runs skipped along with it), or None."""
+    body = _subsection_lines(section_text, subsection)
+    if body is None:
+        return None
+    n = len(body)
+    parts = []
+    for i, line in enumerate(body):
+        stripped = line.strip()
+        if stripped.startswith("- "):
+            continue
+        if stripped.endswith(":"):
+            j = i + 1
+            while j < n and not body[j].strip():
+                j += 1
+            if j < n and body[j].strip().startswith("- "):
+                continue
+        parts.append(stripped)
+    text = " ".join(part for part in parts if part)
+    return text or None
+
+
+def _block(section_text, subsection):
+    """Return the raw lines of a ``### subsection``, trailing whitespace
+    stripped and leading/trailing blank lines removed, or [] if absent."""
+    body = _subsection_lines(section_text, subsection)
+    if body is None:
+        return []
+    while body and not body[0].strip():
+        body.pop(0)
+    while body and not body[-1].strip():
+        body.pop()
+    return body
+
+
+def _introduces_bullets(lines, i):
+    """True if LINES[i] is a non-bullet line ending in ``:`` that is directly
+    followed (blank lines allowed) by a ``- `` line."""
+    line = lines[i]
+    if line.startswith("- ") or not line.rstrip().endswith(":"):
+        return False
+    j = i + 1
+    while j < len(lines) and not lines[j].strip():
+        j += 1
+    return j < len(lines) and lines[j].startswith("- ")
+
+
+def _bbcode(lines):
+    """Convert raw LINES to MyBB BBCode: a run of consecutive ``- `` lines
+    (blank lines inside a run dropped) becomes ``[list]``/``[*]``/``[/list]``;
+    a non-bullet line ending in ``:`` directly followed (blank lines allowed)
+    by a bullet run becomes ``[b]...[/b]``; consecutive other non-blank lines
+    are one hard-wrapped paragraph and are joined into one line; blank lines
+    pass through; backticks are stripped throughout."""
+    out = []
+    i, n = 0, len(lines)
+    while i < n:
+        line = lines[i]
+        if line.startswith("- "):
+            bullets = []
+            while i < n:
+                if lines[i].startswith("- "):
+                    bullets.append(lines[i][2:].strip().replace("`", ""))
+                    i += 1
+                elif not lines[i].strip():
+                    j = i
+                    while j < n and not lines[j].strip():
+                        j += 1
+                    if j < n and lines[j].startswith("- "):
+                        i = j
+                    else:
+                        break
+                else:
+                    break
+            out.append("[list]")
+            out.extend(f"[*]{bullet}" for bullet in bullets)
+            out.append("[/list]")
+            continue
+        if _introduces_bullets(lines, i):
+            out.append(f"[b]{line.rstrip().replace('`', '')}[/b]")
+            i += 1
+            continue
+        if not line.strip():
+            out.append("")
+            i += 1
+            continue
+        paragraph = []
+        while (i < n and lines[i].strip() and not lines[i].startswith("- ")
+               and not _introduces_bullets(lines, i)):
+            paragraph.append(lines[i].strip().replace("`", ""))
+            i += 1
+        out.append(" ".join(paragraph))
+    return out
+
+
+SENTENCE_ENDS = (".", "!", "?")
+
+
+def _first_sentence(text):
+    """Return TEXT up to and including the end of its first sentence (ended
+    by ``.``, ``!`` or ``?``); a text without one gets a final period."""
+    ends = [pos for pos in (text.find(f"{end} ") for end in SENTENCE_ENDS) if pos != -1]
+    if ends:
+        return text[:min(ends) + 1]
+    return text if text.endswith(SENTENCE_ENDS) else text + "."
+
+
+def _highlight_description(prefix, highlight):
+    """Build a <=DESCRIPTION_MAX description from PREFIX plus the first
+    sentence of HIGHLIGHT, shortened with ``_truncate`` if it doesn't fit."""
+    sentence = _first_sentence(highlight)
+    if len(prefix) + len(sentence) <= DESCRIPTION_MAX:
+        return f"{prefix}{sentence}"
+    limit = DESCRIPTION_MAX - len(prefix) - 1
+    # Too long: prefer the sentence's first clause (up to ": " or "; ") over a
+    # mid-clause word cut, e.g. "RouteConverter 3.8 gets a fresh look on Windows and Linux."
+    clauses = [pos for pos in (sentence.find(": "), sentence.find("; ")) if pos != -1]
+    if clauses and min(clauses) <= limit:
+        return f"{prefix}{sentence[:min(clauses)]}."
+    return f"{prefix}{_truncate(sentence, limit)}."
+
+
 DANGLING_WORDS = {"a", "an", "and", "as", "at", "by", "for", "from", "in", "of", "on", "or", "the",
-                  "to", "with", "without"}
+                  "to", "with", "without", "your", "its", "their", "our", "my", "this", "that",
+                  "these", "those"}
 
 
 def _truncate(text, limit=DESCRIPTION_LIMIT):
@@ -241,25 +367,30 @@ def _forum(version, sections, en):
         lines += [f"RouteConverter {version} released", "",
                   f"RouteConverter {version} is available: https://www.routeconverter.com/downloads/",
                   f"Release notes: https://www.routeconverter.com/releases/{slug}/", ""]
+        highlights = _block(sections["text"], "Highlights (EN)")
     else:
         lines += [f"RouteConverter {version} ist erschienen", "",
                   f"RouteConverter {version} steht zum Download bereit: https://www.routeconverter.de/downloads/",
                   f"Versionshinweise: https://www.routeconverter.de/releases/{slug}/", ""]
-        highlights = _paragraph(sections["text"], DE_HIGHLIGHTS)
-        if highlights:
-            lines += [highlights, ""]
+        highlights = _block(sections["text"], DE_HIGHLIGHTS)
+    if highlights:
+        lines += _bbcode(highlights)
+        lines.append("")
+    if not en:
         lines += ["TODO: Stichpunkte übersetzen", ""]
     for name_en, name_de in FORUM_SUBSECTIONS:
         bullets = sections["section"].subsections.get(name_en) or []
         if not bullets:
             continue
-        lines += [name_en if en else name_de, ""]
-        lines += ["- " + bullet.replace("`", "") for bullet in bullets]
-        lines.append("")
+        name = name_en if en else name_de
+        lines += [f"[b]{name}[/b]", "", "[list]"]
+        lines += [f"[*]{bullet.replace('`', '')}" for bullet in bullets]
+        lines += ["[/list]", ""]
     return "\n".join(lines).rstrip("\n") + "\n"
 
 
-def _rc_content(version, date, section, en):
+def _rc_content(version, date, sections, en):
+    section = sections["section"]
     year, month, day = (int(part) for part in date.split("-"))
     dotted = f"{day:02d}.{month:02d}.{year}"
     slug = version.replace(".", "-")
@@ -269,16 +400,22 @@ def _rc_content(version, date, section, en):
         long_date = f"{day} {MONTHS_EN[month - 1]} {year}"
         title = f"Release {version} from {dotted}"
         seo_title = f"RouteConverter {version} release notes ({long_date})"
-        features = subsections.get("New features") or []
         prefix = f"What is new in RouteConverter {version} ({long_date}): "
-        limit = min(DESCRIPTION_LIMIT, DESCRIPTION_MAX - len(prefix) - 1)
-        summary = _truncate(features[0], limit) if features else "TODO"
-        description = f"{prefix}{summary}."
+        highlight = _paragraph(sections["text"], "Highlights (EN)")
+        if highlight:
+            description = _highlight_description(prefix, highlight)
+        else:
+            features = subsections.get("New features") or []
+            limit = min(DESCRIPTION_LIMIT, DESCRIPTION_MAX - len(prefix) - 1)
+            summary = _truncate(features[0], limit) if features else "TODO"
+            description = f"{prefix}{summary}."
     else:
         long_date = f"{day}. {MONTHS_DE[month - 1]} {year}"
         title = f"Release {version} vom {dotted}"
         seo_title = f"RouteConverter {version} Release Notes ({long_date})"
-        description = f"Neu in RouteConverter {version} ({long_date}): TODO"
+        prefix = f"Neu in RouteConverter {version} ({long_date}): "
+        highlight = _paragraph(sections["text"], DE_HIGHLIGHTS)
+        description = _highlight_description(prefix, highlight) if highlight else f"{prefix}TODO"
     lines = [
         "---",
         f"title: {title}",
@@ -311,8 +448,8 @@ def drafts(text, version, date, path=DEFAULT_FILE):
     return {
         f"forum-{version}-en.txt": _forum(version, sections, en=True),
         f"forum-{version}-de.txt": _forum(version, sections, en=False),
-        f"rc-content-en-{slug}-index.md": _rc_content(version, date, section, en=True),
-        f"rc-content-de-{slug}-index.md": _rc_content(version, date, section, en=False),
+        f"rc-content-en-{slug}-index.md": _rc_content(version, date, sections, en=True),
+        f"rc-content-de-{slug}-index.md": _rc_content(version, date, sections, en=False),
     }
 
 
