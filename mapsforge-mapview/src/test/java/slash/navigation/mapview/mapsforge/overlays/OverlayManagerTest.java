@@ -27,7 +27,14 @@ import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.mapsforge.tiles.TileLayerFactory;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class OverlayManagerTest {
@@ -83,5 +90,108 @@ public class OverlayManagerTest {
 
         assertEquals(0, manager.getLayer().layers.size());
         verifyNoInteractions(tileLayerFactory);
+    }
+
+    @Test
+    public void insertWhileOverlaysAreDrawnDoesNotBreakTheDraw() throws Exception {
+        TileDownloadLayer first = mock(TileDownloadLayer.class);
+        TileDownloadLayer second = mock(TileDownloadLayer.class);
+        when(appliedOverlaysModel.getItem(0)).thenReturn(mock(TileServer.class));
+        when(appliedOverlaysModel.getItem(1)).thenReturn(mock(TileServer.class));
+        when(tileLayerFactory.createOverlayLayer(any())).thenReturn(first, second);
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            entered.countDown();
+            release.await();
+            return null;
+        }).when(first).draw(any(), anyByte(), any(), any(), any());
+        manager.insert(0, 0);
+
+        AtomicReference<Throwable> caught = new AtomicReference<>();
+        Thread drawThread = new Thread(() -> {
+            try {
+                manager.getLayer().draw(null, (byte) 0, null, null, null);
+            } catch (Throwable t) {
+                caught.set(t);
+            }
+        });
+        drawThread.start();
+        assertTrue(entered.await(5, TimeUnit.SECONDS));
+
+        Thread insertThread = new Thread(() -> manager.insert(1, 1));
+        insertThread.start();
+        awaitBlockedOrTerminated(insertThread);
+
+        release.countDown();
+        drawThread.join(5000);
+        insertThread.join(5000);
+
+        assertNull(caught.get());
+        assertEquals(2, manager.getLayer().layers.size());
+    }
+
+    @Test
+    public void deleteWhileOverlaysAreDrawnDoesNotBreakTheDraw() throws Exception {
+        TileDownloadLayer overlay = mock(TileDownloadLayer.class);
+        when(appliedOverlaysModel.getItem(0)).thenReturn(mock(TileServer.class));
+        when(tileLayerFactory.createOverlayLayer(any())).thenReturn(overlay);
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        doAnswer(invocation -> {
+            entered.countDown();
+            release.await();
+            return null;
+        }).when(overlay).draw(any(), anyByte(), any(), any(), any());
+        manager.insert(0, 0);
+
+        AtomicReference<Throwable> caught = new AtomicReference<>();
+        Thread drawThread = new Thread(() -> {
+            try {
+                manager.getLayer().draw(null, (byte) 0, null, null, null);
+            } catch (Throwable t) {
+                caught.set(t);
+            }
+        });
+        drawThread.start();
+        assertTrue(entered.await(5, TimeUnit.SECONDS));
+
+        Thread deleteThread = new Thread(() -> manager.delete(0, 0));
+        deleteThread.start();
+        awaitBlockedOrTerminated(deleteThread);
+
+        release.countDown();
+        drawThread.join(5000);
+        deleteThread.join(5000);
+
+        assertNull(caught.get());
+        assertEquals(0, manager.getLayer().layers.size());
+        verify(overlay, times(1)).onDestroy();
+    }
+
+    @Test
+    public void insertSetsDisplayModelBeforeAdding() {
+        TileDownloadLayer overlay = mock(TileDownloadLayer.class);
+        when(appliedOverlaysModel.getItem(0)).thenReturn(mock(TileServer.class));
+        when(tileLayerFactory.createOverlayLayer(any())).thenReturn(overlay);
+        doAnswer(invocation -> {
+            assertFalse(manager.getLayer().layers.contains(overlay));
+            return null;
+        }).when(overlay).setDisplayModel(any(DisplayModel.class));
+
+        manager.insert(0, 0);
+
+        verify(overlay).setDisplayModel(any(DisplayModel.class));
+        assertTrue(manager.getLayer().layers.contains(overlay));
+    }
+
+    private static void awaitBlockedOrTerminated(Thread thread) throws InterruptedException {
+        long deadline = System.currentTimeMillis() + 5000;
+        while (System.currentTimeMillis() < deadline) {
+            Thread.State state = thread.getState();
+            if (state == Thread.State.BLOCKED || state == Thread.State.TERMINATED)
+                return;
+            Thread.sleep(10);
+        }
     }
 }

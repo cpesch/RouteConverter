@@ -130,6 +130,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Show Maven version
+        shell: pwsh
         run: ./mvnw.cmd --version
       - name: Build with Maven
         # Quote the -D: pwsh (default windows-latest shell) tokenizes
@@ -139,6 +140,7 @@ jobs:
         # -Djacoco.skip: Codecov only uploads from Linux Java 21, so the
         # Windows coverage agent only slows the tests down.
         # SpotBugs runs in the spotbugs job; no test reads a shaded jar.
+        shell: pwsh
         run: ./mvnw.cmd --batch-mode "-Dmaven.build.number=${{ github.run_number }}" "-Djacoco.skip=true" "-Dspotbugs.skip=true" "-Dshade.skip=true" "-Dsurefire.forkCount=1" --update-snapshots verify
       - name: Upload test reports
         if: failure()
