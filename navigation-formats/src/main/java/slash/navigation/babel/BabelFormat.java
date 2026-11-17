@@ -21,6 +21,7 @@
 package slash.navigation.babel;
 
 import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.GpxBackedFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.RouteCharacteristics;
@@ -52,7 +53,7 @@ import static slash.navigation.base.RouteCharacteristics.*;
  * @author Christian Pesch, Axel Uhl
  */
 
-public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
+public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> implements GpxBackedFormat {
     private static final Logger log = Logger.getLogger(BabelFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(BabelFormat.class);
     private static final String BABEL_PATH_PREFERENCE = "babelPath";

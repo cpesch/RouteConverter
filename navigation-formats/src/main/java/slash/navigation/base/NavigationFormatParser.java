@@ -22,7 +22,6 @@ package slash.navigation.base;
 
 import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.common.type.CompactCalendar;
-import slash.navigation.babel.BabelFormat;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.gpx.Gpx11Format;
@@ -210,7 +209,7 @@ public class NavigationFormatParser {
                 continue;
 
             // result from GPSBabel-based format which allows only one route but is represented by GPX 1.0
-            if (((NavigationFormat<?>) result) instanceof BabelFormat)
+            if (((NavigationFormat<?>) result) instanceof GpxBackedFormat)
                 continue;
 
             // default for multiple routes is GPX 1.1
