@@ -8,6 +8,8 @@
 
 ### Fixes
 
+- Switching a map overlay on or off while the map is redrawing no longer stops the map from drawing
+
 ## 3.8 — 2026-11-15
 
 **GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.8
