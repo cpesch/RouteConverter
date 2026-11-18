@@ -9,6 +9,8 @@
 ### Fixes
 
 - Switching a map overlay on or off while the map is redrawing no longer stops the map from drawing
+- Online maps and overlays no longer show up twice in Karten > Online when a leftover file sits next to the downloaded map catalog (#395)
+- RouteConverter started from the Debian package now shows the startup splash screen, like the Linux jar does (#394)
 
 ## 3.8 — 2026-11-15
 
