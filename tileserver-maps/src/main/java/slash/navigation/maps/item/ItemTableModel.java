@@ -154,7 +154,7 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
     }
 
     public void remove(int firstIndex, int lastIndex) {
-        for (int i = lastIndex; i > firstIndex; i--)
+        for (int i = lastIndex; i >= firstIndex; i--)
             items.remove(i);
         fireTableRowsDeleted(firstIndex, lastIndex);
     }
