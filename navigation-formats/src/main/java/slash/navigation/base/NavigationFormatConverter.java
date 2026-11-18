@@ -19,7 +19,6 @@
 */
 package slash.navigation.base;
 
-import slash.navigation.babel.BabelFormat;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.gpx.GpxPosition;
 
@@ -55,7 +54,7 @@ public class NavigationFormatConverter {
         if (trim(formatName) == null && formatClass.getSuperclass() != null)
             formatName = formatClass.getSuperclass().getSimpleName();
         // shortcut to prevent lots of as... methods
-        if (format instanceof BabelFormat)
+        if (format instanceof GpxBackedFormat)
             formatName = "Gpx10Format";
         if (format instanceof GarbleNavigationFormat)
             formatName = formatName.substring("Garble".length());
