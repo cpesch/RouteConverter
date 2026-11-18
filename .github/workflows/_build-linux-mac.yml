@@ -173,6 +173,14 @@ jobs:
           APP_VERSION="${POM_VERSION%%-*}"
           mkdir -p deb-input deb-dist
           cp RouteConverterLinux/target/RouteConverterLinux.jar deb-input/
+          # The splash is declared only as the jar manifest SplashScreen-Image, which
+          # the JVM honours for `java -jar` alone. The jpackage launcher starts the
+          # main class on a classpath, so hand the same image over via -splash.
+          # $APPDIR stays literal here; jpackage substitutes it at launch (#394).
+          unzip -p RouteConverterLinux/target/RouteConverterLinux.jar \
+            slash/navigation/converter/gui/RouteConverter.png > deb-input/splash.png
+          test -s deb-input/splash.png || { echo "::error::splash image missing from RouteConverterLinux.jar"; exit 1; }
+          # shellcheck disable=SC2016  # literal $APPDIR is intended
           jpackage \
             --type deb \
             --name RouteConverter \
@@ -180,6 +188,7 @@ jobs:
             --main-jar RouteConverterLinux.jar \
             --main-class slash.navigation.converter.gui.RouteConverter \
             --java-options -Drouteconverter.bundledJre=true \
+            --java-options '-splash:$APPDIR/splash.png' \
             --icon RouteConverterLinux/src/main/app-resources/RouteConverter.png \
             --app-version "$APP_VERSION" \
             --vendor "Christian Pesch" \
