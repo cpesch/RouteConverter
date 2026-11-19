@@ -137,6 +137,36 @@ public class TileServerServiceTest {
     }
 
     @Test
+    public void testMapCatalogWinsOverUserFileSortingBeforeIt() throws IOException {
+        // "Kopie von mapservers.xml" sorts before "mapservers.xml" in natural String order,
+        // so only the catalog-first ordering keeps the catalog definition
+        writeFile("mapservers.xml", mapCatalogXml(mapServerEntry("A", "catalog.example")));
+        writeFile("Kopie von mapservers.xml", mapCatalogXml(
+                mapServerEntry("A", "user.example"),
+                mapServerEntry("C", "user.example")));
+
+        TileServerService service = new TileServerService(tmp.getRoot());
+        service.initialize();
+
+        assertEquals(List.of("A", "C"), ids(service.getMaps()));
+        assertEquals("catalog.example", service.getMaps().get(0).getHost().get(0));
+    }
+
+    @Test
+    public void testOverlayCatalogWinsOverUserFileSortingBeforeIt() throws IOException {
+        // "aaa.xml" sorts before "overlayservers.xml", so only the catalog-first ordering keeps the catalog definition
+        writeFile("overlayservers.xml", overlayCatalogXml(overlayServerEntry("O", "catalog.example")));
+        writeFile("aaa.xml", overlayCatalogXml(overlayServerEntry("O", "user.example")));
+
+        TileServerService service = new TileServerService(tmp.getRoot());
+        service.initialize();
+
+        List<OverlayServerType> overlays = service.getOverlays();
+        assertEquals(1, overlays.size());
+        assertEquals("catalog.example", overlays.get(0).getHost().get(0));
+    }
+
+    @Test
     public void testInitializeTwiceDoesNotGrowLists() throws IOException {
         writeFile("mapservers.xml", mapCatalogXml(mapServerEntry("A", "catalog.example")));
         writeFile("overlayservers.xml", overlayCatalogXml(overlayServerEntry("O", "catalog.example")));
