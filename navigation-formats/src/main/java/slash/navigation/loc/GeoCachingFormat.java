@@ -41,7 +41,17 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.io.Reader;
+import java.io.StringReader;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -81,7 +91,8 @@ public class GeoCachingFormat extends GpxBackedNavigationFormat {
         try {
             positions = parse(new ByteArrayInputStream(buffer.toByteArray()));
         } catch (XMLStreamException | RuntimeException e) {
-            return null;
+            // GPSBabel 1.5.4 aborts with a fatal error: the parser sees a format that declines the file
+            throw new IOException("Cannot read Geocaching.com/EasyGPS file: " + e.getMessage(), e);
         }
         if (positions == null || positions.isEmpty())
             return null;
@@ -95,8 +106,36 @@ public class GeoCachingFormat extends GpxBackedNavigationFormat {
         return factory;
     }
 
+    private static final Pattern ENCODING = Pattern.compile("^\\s*<\\?xml[^>]*encoding\\s*=\\s*[\"']([A-Za-z0-9._:-]+)[\"']");
+
+    // GPSBabel 1.5.4 rejects bytes that are not valid in the declared encoding (UTF-8 by default)
+    private static Reader createStrictReader(InputStream stream) throws XMLStreamException {
+        byte[] bytes;
+        try {
+            bytes = stream.readAllBytes();
+        } catch (IOException e) {
+            throw new XMLStreamException(e);
+        }
+        int offset = bytes.length >= 3 && bytes[0] == (byte) 0xEF && bytes[1] == (byte) 0xBB && bytes[2] == (byte) 0xBF ? 3 : 0;
+        Charset charset = UTF_8;
+        Matcher matcher = ENCODING.matcher(new String(bytes, offset, Math.min(bytes.length - offset, 200), ISO_8859_1));
+        if (matcher.find()) {
+            try {
+                charset = Charset.forName(matcher.group(1));
+            } catch (IllegalArgumentException e) {
+                throw new XMLStreamException("Unsupported encoding " + matcher.group(1));
+            }
+        }
+        CharsetDecoder decoder = charset.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT);
+        try {
+            return new StringReader(decoder.decode(ByteBuffer.wrap(bytes, offset, bytes.length - offset)).toString());
+        } catch (CharacterCodingException e) {
+            throw new XMLStreamException("Invalid " + charset + " data", e);
+        }
+    }
+
     private List<GpxPosition> parse(InputStream stream) throws XMLStreamException {
-        XMLStreamReader reader = createFactory().createXMLStreamReader(stream);
+        XMLStreamReader reader = createFactory().createXMLStreamReader(createStrictReader(stream));
         try {
             List<GpxPosition> result = new ArrayList<>();
             List<String> path = new ArrayList<>();
@@ -161,7 +200,7 @@ public class GeoCachingFormat extends GpxBackedNavigationFormat {
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         StringBuilder buffer = new StringBuilder();
-        buffer.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        buffer.append("<?xml version=\"1.0\"?>");
         buffer.append("<loc version=\"1.0\" src=\"EasyGPS\">\n");
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
@@ -172,7 +211,9 @@ public class GeoCachingFormat extends GpxBackedNavigationFormat {
             String description = position.getDescription();
             buffer.append("<waypoint>\n");
             buffer.append("<name id=\"").append(escapeAttribute(clean(asName(description)))).append("\">");
-            buffer.append("<![CDATA[").append(escapeCData(clean(asDesc(description)))).append("]]></name>\n");
+            // GPSBabel 1.5.4 uses the name as description if the description is empty
+            String name = clean(asName(description)), desc = clean(asDesc(description));
+            buffer.append("<![CDATA[").append(escapeCData(desc.isEmpty() ? name : desc)).append("]]></name>\n");
             buffer.append("<coord lat=\"").append(number(position.getLatitude()))
                     .append("\" lon=\"").append(number(position.getLongitude())).append("\"/>\n");
             // GPSBabel writes the icon description of the waypoint; none is known for a GPX waypoint without <sym>

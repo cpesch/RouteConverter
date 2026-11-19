@@ -34,6 +34,7 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -80,15 +81,14 @@ public class GeoCachingFormatTest {
         GpxRoute route = new GpxRoute(new Gpx10Format(), Waypoints, "name", null, positions);
         ByteArrayOutputStream target = new ByteArrayOutputStream();
         format.write(route, target, 0, 2);
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<loc version=\"1.0\" src=\"EasyGPS\">\n" +
+        assertEquals("<?xml version=\"1.0\"?><loc version=\"1.0\" src=\"EasyGPS\">\n" +
                 "<waypoint>\n" +
                 "<name id=\"GC1\"><![CDATA[First cache]]></name>\n" +
                 "<coord lat=\"47.250000\" lon=\"11.500000\"/>\n" +
                 "<type></type>\n" +
                 "</waypoint>\n" +
                 "<waypoint>\n" +
-                "<name id=\"Only name\"><![CDATA[]]></name>\n" +
+                "<name id=\"Only name\"><![CDATA[Only name]]></name>\n" +
                 "<coord lat=\"-1.000000\" lon=\"-2.000000\"/>\n" +
                 "<type></type>\n" +
                 "</waypoint>\n" +
@@ -107,14 +107,34 @@ public class GeoCachingFormatTest {
     }
 
     @Test
+    public void invalidUtf8IsDeclined() {
+        byte[] bytes = "<?xml version=\"1.0\"?><loc><waypoint><name id=\"a\">K\u00fcche</name><coord lat=\"1\" lon=\"2\"/></waypoint></loc>".getBytes(java.nio.charset.StandardCharsets.ISO_8859_1);
+        ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
+        assertThrows(IOException.class, () -> format.read(new ByteArrayInputStream(bytes), context));
+        assertTrue(context.getRoutes().isEmpty());
+    }
+
+    @Test
+    public void declaredLatin1IsRead() throws IOException {
+        byte[] bytes = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><loc><waypoint><name id=\"a\">K\u00fcche</name><coord lat=\"1\" lon=\"2\"/></waypoint></loc>".getBytes(java.nio.charset.StandardCharsets.ISO_8859_1);
+        ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
+        format.read(new ByteArrayInputStream(bytes), context);
+        assertEquals("a; K\u00fcche", context.getRoutes().get(0).getPosition(0).getDescription());
+    }
+
+    @Test
     public void nonLocXmlIsNoRoute() throws IOException {
         assertTrue(read("<?xml version=\"1.0\"?><gpx><wpt lat=\"1\" lon=\"2\"/></gpx>").isEmpty());
     }
 
     @Test
-    public void malformedXmlIsNoRoute() throws IOException {
-        assertTrue(read("<loc version=\"1.0\"><waypoint><name id=\"a\">x</name><coord lat=\"1\" lon=\"2\"/></waypoint").isEmpty());
-        assertTrue(read("this is no xml at all").isEmpty());
-        assertTrue(read("").isEmpty());
+    public void malformedXmlIsDeclinedWithoutRoute() {
+        // like GPSBabel's fatal error: no route, signalled as IOException which the parser treats as "format declines"
+        for (String xml : new String[]{"<loc version=\"1.0\"><waypoint><name id=\"a\">x</name><coord lat=\"1\" lon=\"2\"/></waypoint",
+                "this is no xml at all", ""}) {
+            ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
+            assertThrows(IOException.class, () -> format.read(new ByteArrayInputStream(xml.getBytes(UTF_8)), context));
+            assertTrue(context.getRoutes().isEmpty());
+        }
     }
 }
