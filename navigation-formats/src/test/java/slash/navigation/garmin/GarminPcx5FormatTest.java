@@ -102,8 +102,13 @@ public class GarminPcx5FormatTest {
         assertEquals(47 + 12.34567 / 60.0, position.getLatitude(), 1e-9);
         assertEquals(11 + 7.12345 / 60.0, position.getLongitude(), 1e-9);
         assertEquals(500.0, position.getElevation(), 0.0);
-        assertEquals(utc(1998, 11, 19, 12, 34, 56), position.getTime());
+        assertNull(position.getTime());
         assertEquals("WPT001; Brenner pass", position.getDescription());
+    }
+
+    @Test
+    public void unknownElevationIsNotRead() throws IOException {
+        assertNull(read("W  A N4700.00000 E01100.00000 19-NOV-98 12:34:56 -9999 Text\n").get(0).getPosition(0).getElevation());
     }
 
     @Test
@@ -118,10 +123,27 @@ public class GarminPcx5FormatTest {
 
     @Test
     public void timeIsOnlySetWhenDateAndTimeParse() throws IOException {
-        assertNull(read("W  A N4700.00000 E01100.00000 19-XXX-98 12:34:56\n").get(0).getPosition(0).getTime());
-        assertNull(read("W  A N4700.00000 E01100.00000 19-NOV-98 25:00:00\n").get(0).getPosition(0).getTime());
-        assertNull(read("W  A N4700.00000 E01100.00000 31-NOV-98 12:00:00\n").get(0).getPosition(0).getTime());
-        assertEquals(utc(1998, 11, 19, 0, 0, 0), read("W  A N4700.00000 E01100.00000 19-nov-98 00:00:00\n").get(0).getPosition(0).getTime());
+        assertNull(read("W  A N4700.00000 E01100.00000 19-Xxx-98 12:34:56\n").get(0).getPosition(0).getTime());
+        assertNull(read("W  A N4700.00000 E01100.00000 19-Nov-98 25:00:00\n").get(0).getPosition(0).getTime());
+        assertNull(read("W  A N4700.00000 E01100.00000 31-Nov-98 12:00:00\n").get(0).getPosition(0).getTime());
+        assertEquals(utc(1998, 11, 19, 12, 34, 56), read("W  A N4700.00000 E01100.00000 19-Nov-98 12:34:56\n").get(0).getPosition(0).getTime());
+        assertEquals(utc(1907, 6, 16, 17, 54, 56), read("W  A N4700.00000 E01100.00000 16-Jun-07 17:54:56\n").get(0).getPosition(0).getTime());
+    }
+
+    @Test
+    public void upperCaseMonthNamesAreNotReadAsTime() throws IOException {
+        assertNull(read("W  A N4700.00000 E01100.00000 19-NOV-98 12:34:56\n").get(0).getPosition(0).getTime());
+        assertNull(read("W  A N4700.00000 E01100.00000 19-nov-98 12:34:56\n").get(0).getPosition(0).getTime());
+    }
+
+    @Test
+    public void readsNamesWithWhitespaceOfTheWrittenLayout() throws IOException {
+        GpxRoute route = format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, null, "Ab1 Cd; Some pass")));
+        GpxPosition position = read(write(route)).get(0).getPosition(0);
+        assertEquals(47.5, position.getLatitude(), 1e-9);
+        assertEquals(11.25, position.getLongitude(), 1e-9);
+        assertEquals(500.0, position.getElevation(), 0.0);
+        assertTrue(position.getDescription(), position.getDescription().startsWith("Ab1 Cd; Some pass"));
     }
 
     @Test
@@ -182,17 +204,48 @@ public class GarminPcx5FormatTest {
     }
 
     @Test
-    public void ignoresTracks() throws IOException {
-        String text = "H  TN Track\n" +
+    public void readsTracksAfterTheWaypoints() throws IOException {
+        String text = "H  TN My track\n" +
                 "H  LATITUDE    LONGITUDE    DATE      TIME     ALT  ;track\n" +
                 "T  N4700.00000 E01100.00000 19-NOV-98 12:00:00 100\n" +
-                "T  N4701.00000 E01101.00000 19-NOV-98 12:00:10 101\n" +
+                "T  N4701.00000 E01101.00000 19-NOV-98 12:00:10 101.5\n" +
                 WPT;
         List<GpxRoute> routes = read(text);
-        assertEquals(1, routes.size());
+        assertEquals(2, routes.size());
         assertEquals(Waypoints, routes.get(0).getCharacteristics());
         assertEquals(1, routes.get(0).getPositionCount());
-        assertTrue(read("T  N4700.00000 E01100.00000 19-NOV-98 12:00:00 100\n").isEmpty());
+        assertEquals(Track, routes.get(1).getCharacteristics());
+        assertEquals("My track", routes.get(1).getName());
+        assertEquals(2, routes.get(1).getPositionCount());
+        assertEquals(101.5, routes.get(1).getPosition(1).getElevation(), 0.0);
+        assertNull(routes.get(1).getPosition(1).getTime());
+        assertEquals(47 + 1.0 / 60.0, routes.get(1).getPosition(1).getLatitude(), 1e-9);
+    }
+
+    @Test
+    public void readsFilesWithTracksOnly() throws IOException {
+        String text = "U  LAT LON DEG\nH  TN First\nT  N47.5 E11.25 19-NOV-98 12:00:00 100\n" +
+                "H  TN Second\nT  N47.75 E11.5 19-NOV-98 12:00:10 101\n";
+        List<GpxRoute> routes = read(text);
+        assertEquals(2, routes.size());
+        assertEquals(Track, routes.get(0).getCharacteristics());
+        assertEquals("First", routes.get(0).getName());
+        assertEquals(47.5, routes.get(0).getPosition(0).getLatitude(), 1e-9);
+        assertEquals("Second", routes.get(1).getName());
+    }
+
+    @Test
+    public void namesTracksWithoutHeader() throws IOException {
+        List<GpxRoute> routes = read("T  N4700.00000 E01100.00000 19-NOV-98 12:00:00 100\n");
+        assertEquals("Default", routes.get(0).getName());
+        assertTrue(read("T  N4700.00000 E01100.00000 19-NOV-98 12:00:00\n").isEmpty());
+    }
+
+    @Test
+    public void descriptionEndsBeforeProximityAndSymbol() throws IOException {
+        GpxRoute route = format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, null, "Position 1")));
+        GpxPosition position = read(write(route)).get(0).getPosition(0);
+        assertEquals("Position 1", position.getDescription());
     }
 
     @Test
@@ -280,14 +333,14 @@ public class GarminPcx5FormatTest {
         format.write(route, target, 1, 3);
         String written = target.toString(US_ASCII);
         assertFalse(written.contains(" B "));
-        assertEquals(HEADER + WAYPOINTS_HEADER + waypointLine("C", "N4730.00000", "E01115.00000", "01-JAN-70 00:00:00", "    3", "", 18), written);
+        assertEquals(HEADER + WAYPOINTS_HEADER + waypointLine("C", "N4730.00000", "E01115.00000", "01-JAN-70 00:00:00", "    3", "C", 18), written);
     }
 
     @Test
     public void writesRoutesWithTheirNameShortenedToTwentyCharactersWithoutWhitespace() throws IOException {
         GpxRoute route = format.createRoute(Route, "A route with a rather long name", singletonList(position(11.25, 47.5, 500.0, null, "P1")));
         String expected = HEADER + "\n\nR  Aroutewitharatherlon\n" + WAYPOINTS_HEADER +
-                waypointLine("P1", "N4730.00000", "E01115.00000", "01-JAN-70 00:00:00", "  500", "", 18);
+                waypointLine("P1", "N4730.00000", "E01115.00000", "01-JAN-70 00:00:00", "  500", "P1", 18);
         assertEquals(expected, write(route));
     }
 
@@ -324,7 +377,8 @@ public class GarminPcx5FormatTest {
             assertEquals(expected.getLongitude(), actual.getLongitude(), 1e-6);
             assertEquals(expected.getLatitude(), actual.getLatitude(), 1e-6);
             assertEquals(expected.getElevation(), actual.getElevation(), 0.0);
-            assertEquals(expected.getTime(), actual.getTime());
+            // upper-case month names are written, which are not read as a time
+            assertNull(actual.getTime());
             // the description is everything from column 60 on, including proximity and symbol of the written line
             assertTrue(actual.getDescription(), actual.getDescription().startsWith(expected.getDescription()));
         }

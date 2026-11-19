@@ -50,6 +50,7 @@ import static java.time.ZoneOffset.UTC;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.gpsbabel.GpsBabelMath.ddmm2degrees;
 import static slash.navigation.gpsbabel.GpsBabelMath.degrees2ddmm;
@@ -72,6 +73,7 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
     static final int WAYPOINT_ICON_NUMBER = 18;
     // Qt's QDate::fromString() reads the two digit year "yy" in the 1900s
     private static final int TWO_DIGIT_YEAR_BASE = 1900;
+    private static final int DESCRIPTION_WIDTH = 40;
     private static final int ROUTE_NAME_LENGTH = 20;
     private static final Pattern NUMBER = Pattern.compile("[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?");
     private static final Pattern DATE = Pattern.compile("(\\d{2})-([A-Za-z]{3})-(\\d{2})");
@@ -157,8 +159,11 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
         Matcher timeMatcher = TIME.matcher(time);
         if (!dateMatcher.matches() || !timeMatcher.matches())
             return null;
-        int month = monthLookup(dateMatcher.group(2));
-        if (month == -1)
+        // Qt matches the abbreviated month name case sensitively, so the upper-case names that are written
+        // are never read as a time
+        String name = dateMatcher.group(2);
+        int month = monthLookup(name);
+        if (month == -1 || !name.equals(name.charAt(0) + name.substring(1).toLowerCase()) || !Character.isUpperCase(name.charAt(0)))
             return null;
         try {
             LocalDateTime dateTime = LocalDateTime.of(TWO_DIGIT_YEAR_BASE + Integer.parseInt(dateMatcher.group(3)),
@@ -216,6 +221,10 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
     List<GpxRoute> parse(String text) {
         List<GpxPosition> waypoints = new ArrayList<>();
         List<GpxRoute> routes = new ArrayList<>();
+        List<GpxRoute> tracks = new ArrayList<>();
+        String trackName = null;
+        List<GpxPosition> trackPositions = null;
+        int points = 0;
         String routeName = null;
         List<GpxPosition> routePositions = null;
         boolean asDegrees = false, gpsu = false;
@@ -234,22 +243,38 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
                     String[] tokens = line.split("\\s+");
                     if (tokens.length < 6)
                         return null;
+                    String desc = commentColumn > 0 && commentColumn < line.length() ?
+                            line.substring(commentColumn, Math.min(line.length(), commentColumn + DESCRIPTION_WIDTH)) : "";
+                    String latitude = latitudeColumn > 0 ? firstTokenAt(line, latitudeColumn) : tokens[2];
+                    String longitude = longitudeColumn > 0 ? firstTokenAt(line, longitudeColumn) : tokens[3];
+                    double[] coordinates = parseCoordinates(latitude, longitude, asDegrees || gpsu);
+                    if (coordinates == null && latitudeColumn <= 0 && longitudeColumn <= 0 && line.length() > 10 && line.charAt(9) == ' ') {
+                        // the name column of the written layout is six characters wide and may contain whitespace
+                        String[] rest = line.substring(10).strip().split("\\s+");
+                        if (rest.length >= 4) {
+                            tokens = new String[rest.length + 2];
+                            tokens[0] = "W";
+                            tokens[1] = line.substring(3, 9).strip();
+                            System.arraycopy(rest, 0, tokens, 2, rest.length);
+                            coordinates = parseCoordinates(tokens[2], tokens[3], asDegrees || gpsu);
+                        }
+                    }
+                    if (coordinates == null)
+                        return null;
                     Double elevation = null;
                     if (tokens.length >= 7) {
                         double number = parseNumber(tokens[6]);
                         // Qt's toDouble() yields 0 for a token that is no number; the source stores it in a long
                         elevation = (double) (long) (Double.isNaN(number) ? 0.0 : number);
+                        // -9999 is what is written for an unknown elevation
+                        if (elevation == UNKNOWN_ELEVATION)
+                            elevation = null;
                     }
-                    String desc = commentColumn > 0 && commentColumn < line.length() ? line.substring(commentColumn) : "";
-                    String latitude = latitudeColumn > 0 ? firstTokenAt(line, latitudeColumn) : tokens[2];
-                    String longitude = longitudeColumn > 0 ? firstTokenAt(line, longitudeColumn) : tokens[3];
-                    double[] coordinates = parseCoordinates(latitude, longitude, asDegrees || gpsu);
-                    if (coordinates == null)
-                        return null;
                     CompactCalendar time = parseTime(tokens[4], tokens[5]);
                     waypoints.add(createPosition(coordinates, elevation, time, tokens[1], desc));
                     if (routePositions != null)
                         routePositions.add(createPosition(coordinates, elevation, time, tokens[1], desc));
+                    points++;
                     break;
                 }
                 case 'R':
@@ -259,9 +284,22 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
                     routePositions = new ArrayList<>();
                     break;
                 case 'T':
-                    // trackpoints are not delivered, but a malformed one is fatal
-                    if (line.split("\\s+").length < 6)
+                    // GPSBabel delivers the tracks to RouteConverter as well, whatever its -r -w options say
+                    String[] tokens = line.split("\\s+");
+                    if (tokens.length < 6)
                         return null;
+                    double[] coordinates = parseCoordinates(tokens[1], tokens[2], asDegrees);
+                    if (coordinates == null)
+                        return null;
+                    double altitude = parseNumber(tokens[5]);
+                    // a trackpoint before a track header starts the track "Default"
+                    if (trackPositions == null) {
+                        trackName = "Default";
+                        trackPositions = new ArrayList<>();
+                    }
+                    trackPositions.add(new GpxPosition(coordinates[0], coordinates[1], Double.isNaN(altitude) ? 0.0 : altitude,
+                            null, parseTime(tokens[3], tokens[4]), null));
+                    points++;
                     break;
                 case 'U':
                     asDegrees = line.startsWith("LAT LON DEG", 3);
@@ -283,16 +321,35 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
                         log.info("Ignoring datum line '" + line + "', assuming WGS 84");
                     break;
                 default:
-                    // 'H': headers of tracks are not relevant
+                    // 'H': "H  LATITUDE ..." or "H  TN name" start a track
+                    if (points > 0) {
+                        if (trackPositions != null && !trackPositions.isEmpty())
+                            tracks.add(createRoute(Track, trackName, trackPositions));
+                        trackPositions = null;
+                        points = 0;
+                    }
+                    if (trackPositions == null) {
+                        if (line.startsWith("LA", 3)) {
+                            trackName = "track";
+                            trackPositions = new ArrayList<>();
+                        } else if (line.startsWith("TN", 3)) {
+                            trackName = stripIllegalXmlCharacters(trim(line.length() > 6 ? line.substring(6) : ""));
+                            trackPositions = new ArrayList<>();
+                        }
+                    }
                     break;
             }
         }
 
-        if (waypoints.isEmpty())
+        if (trackPositions != null && !trackPositions.isEmpty())
+            tracks.add(createRoute(Track, trackName, trackPositions));
+        if (waypoints.isEmpty() && tracks.isEmpty())
             return null;
         if (routePositions != null && !routePositions.isEmpty())
             routes.add(createRoute(Route, routeName, routePositions));
-        routes.add(0, createRoute(Waypoints, null, waypoints));
+        if (!waypoints.isEmpty())
+            routes.add(0, createRoute(Waypoints, null, waypoints));
+        routes.addAll(tracks);
         return routes;
     }
 
@@ -384,6 +441,9 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
                 continue;
             String name = stripIllegalXmlCharacters(asName(position.getDescription()));
             String desc = stripIllegalXmlCharacters(asDesc(position.getDescription()));
+            // GPSBabel's GPX reader uses the name as the description if there is none
+            if (desc == null)
+                desc = name;
             buffer.append(formatWaypointLine(name, position.getLongitude(), position.getLatitude(), position.getTime(),
                     position.getElevation(), desc, WAYPOINT_ICON_NUMBER));
         }
