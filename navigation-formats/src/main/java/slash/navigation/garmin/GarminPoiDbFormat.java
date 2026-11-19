@@ -60,7 +60,7 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
     private static final char BAD_CHARACTER = ',';
     private static final int SHORT_LENGTH = 24;
     private static final int DESCRIPTION_LENGTH = 50;
-    private static final int FIELD_COUNT = 4;
+    private static final int FIELD_COUNT = 3;
     private static final String RECORD_DELIMITER = "\n";
     // xcsv without ENCODING statement: single byte characters
     private static final Charset CHARSET = forName("windows-1252");
@@ -156,7 +156,7 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
             return null;
 
         String name = stripIllegalXmlCharacters(trim(fields.get(2)));
-        String description = stripIllegalXmlCharacters(trim(fields.get(3)));
+        String description = stripIllegalXmlCharacters(trim(fields.size() > 3 ? fields.get(3) : ""));
         String text = asDescription(name.isEmpty() ? null : name, description.isEmpty() ? null : description);
         return new GpxPosition(longitude, latitude, null, null, null, text);
     }
@@ -208,6 +208,12 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
         return result.length() > maximumLength ? result.substring(0, maximumLength) : result.toString();
     }
 
+    // GPSBabel hands the shortname on as the description when a waypoint has no description
+    private static String asDescriptionColumn(String description) {
+        String desc = asDesc(description);
+        return desc == null || desc.isEmpty() ? asName(description) : desc;
+    }
+
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         StringBuilder buffer = new StringBuilder();
         List<GpxPosition> positions = route.getPositions();
@@ -218,7 +224,7 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
             buffer.append(formatCoordinate(position.getLongitude())).append(DELIMITER)
                     .append(formatCoordinate(position.getLatitude())).append(DELIMITER)
                     .append(clean(asName(position.getDescription()), SHORT_LENGTH)).append(DELIMITER)
-                    .append(clean(asDesc(position.getDescription()), DESCRIPTION_LENGTH))
+                    .append(clean(asDescriptionColumn(position.getDescription()), DESCRIPTION_LENGTH))
                     .append(RECORD_DELIMITER);
         }
         target.write(buffer.toString().getBytes(CHARSET));

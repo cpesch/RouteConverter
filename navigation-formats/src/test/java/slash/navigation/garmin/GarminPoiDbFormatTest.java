@@ -126,8 +126,17 @@ public class GarminPoiDbFormatTest {
     }
 
     @Test
-    public void rejectsThreeColumnLine() throws IOException {
-        assertTrue(read("11.12345,47.12345,Name\n").isEmpty());
+    public void acceptsThreeColumnLine() throws IOException {
+        assertEquals("Name", readSingle("11.12345,47.12345,Name\n").getPosition(0).getDescription());
+    }
+
+    @Test
+    public void usesNameAsDescriptionColumnWhenThereIsNoDescription() throws IOException {
+        // GPSBabel repeats the uncut shortname as the description, so a name longer than 24 characters survives
+        String name = "abcdefghijklmnopqrstuvwxy";
+        String written = write(position(11.1, 47.1, name));
+        assertEquals("11.10000,47.10000,abcdefghijklmnopqrstuvwx," + name + "\n", written);
+        assertEquals(name, readSingle(written).getPosition(0).getDescription());
     }
 
     @Test
@@ -163,8 +172,8 @@ public class GarminPoiDbFormatTest {
     @Test
     public void writesFixedWidthCoordinatesNameAndDescription() throws IOException {
         assertEquals("11.12345,47.12345,Name,Description\n", write(position(11.12345, 47.12345, "Name; Description")));
-        assertEquals("09.50000,05.25000,Name,\n", write(position(9.5, 5.25, "Name")));
-        assertEquals("-8.50000,-33.25000,Name,\n", write(position(-8.5, -33.25, "Name")));
+        assertEquals("09.50000,05.25000,Name,Name\n", write(position(9.5, 5.25, "Name")));
+        assertEquals("-8.50000,-33.25000,Name,Name\n", write(position(-8.5, -33.25, "Name")));
         assertEquals("-0.00000,00.00000,,\n", write(position(-0.000001, 0.0, null)));
     }
 
@@ -189,7 +198,7 @@ public class GarminPoiDbFormatTest {
     @Test
     public void commasAreRemovedBeforeCutting() throws IOException {
         String name = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z";
-        assertEquals("11.10000,47.10000,abcdefghijklmnopqrstuvwx,\n", write(position(11.1, 47.1, name)));
+        assertEquals("11.10000,47.10000,abcdefghijklmnopqrstuvwx,abcdefghijklmnopqrstuvwxyz\n", write(position(11.1, 47.1, name)));
     }
 
     @Test
@@ -198,7 +207,7 @@ public class GarminPoiDbFormatTest {
         GpxRoute route = new GpxRoute(new Gpx10Format(), Waypoints, null, null, asList(position(11.1, 47.1, "Käse")));
         format.write(route, target, 0, 1);
         byte[] bytes = target.toByteArray();
-        assertEquals((byte) 0xE4, bytes[bytes.length - 5]);
+        assertEquals((byte) 0xE4, bytes[bytes.length - 4]);
     }
 
     @Test
@@ -207,7 +216,7 @@ public class GarminPoiDbFormatTest {
                 asList(position(1.0, 2.0, "a"), position(null, 3.0, "b"), position(4.0, 5.0, "c"), position(6.0, 7.0, "d")));
         ByteArrayOutputStream target = new ByteArrayOutputStream();
         format.write(route, target, 1, 3);
-        assertEquals("04.00000,05.00000,c,\n", new String(target.toByteArray(), UTF_8));
+        assertEquals("04.00000,05.00000,c,c\n", new String(target.toByteArray(), UTF_8));
     }
 
     @Test
