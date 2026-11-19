@@ -6,6 +6,7 @@
 
 ### Changes
 
+- RouteConverter now runs on Java 25: the Windows, macOS, Debian and Flatpak downloads bundle it; the Linux jar needs Java 25 or later installed and says so on an older Java (#167)
 - TomTom POI (.ov2) files are read and written by RouteConverter itself and no longer need GPSBabel (#387)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 

@@ -41,7 +41,7 @@ import java.util.Locale;
  *
  * The same intermediates are cross-signed by Sectigo's AAA Certificate
  * Services, so that root goes too. Temurin, Mozilla and Ubuntu no longer
- * trust it for TLS, but the OpenJDK cacerts of the Flatpak's openjdk21 SDK
+ * trust it for TLS, but the OpenJDK cacerts of the Flatpak's openjdk25 SDK
  * extension does and accepted the cross-signed chains. Current Sectigo
  * chains end at USERTrust, which stays.
  *
