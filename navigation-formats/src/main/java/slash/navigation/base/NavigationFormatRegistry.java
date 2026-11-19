@@ -38,6 +38,7 @@ import slash.navigation.excel.MicrosoftExcel2008Format;
 import slash.navigation.excel.MicrosoftExcel97Format;
 import slash.navigation.fit.FitFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
+import slash.navigation.garmin.GarminPcx5Format;
 import slash.navigation.geojson.GeoJsonFormat;
 import slash.navigation.googletimeline.GoogleTimelineFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
