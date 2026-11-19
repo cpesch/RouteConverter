@@ -131,6 +131,10 @@ public class ConvertPanel implements PanelInTab {
     private static final String WRITE_PATH_PREFERENCE = "writePath";
     private static final String DUPLICATE_FIRST_POSITION_PREFERENCE = "duplicateFirstPosition";
 
+    static {
+        FormatClassNameAliases.migrateCounters(preferences, READ_COUNT_PREFERENCE, WRITE_COUNT_PREFERENCE);
+    }
+
     // how often the lock dialog of a sponsor feature was shown, its donate button was clicked
     // and its log-in prompt was used - sent along with the update-check via FeatureLocks.encode
     public static final String LOCK_SHOWN_PREFERENCE = "lockShown.";
@@ -1062,7 +1066,7 @@ public class ConvertPanel implements PanelInTab {
 
     private void setReadFormatFileFilters(JFileChooser chooser) {
         setFormatFileFilters(chooser, getNavigationFormatRegistry().getReadFormatsSortedByName(),
-                preferences.get(READ_FORMAT_PREFERENCE, ""));
+                FormatClassNameAliases.resolve(preferences.get(READ_FORMAT_PREFERENCE, "")));
     }
 
     private void setReadFormatFileFilterPreference(NavigationFormat<?> selectedFormat) {
@@ -1072,7 +1076,7 @@ public class ConvertPanel implements PanelInTab {
 
     private void setWriteFormatFileFilters(JFileChooser chooser) {
         setFormatFileFilters(chooser, getNavigationFormatRegistry().getWriteFormatsWithPreferredFormats(recentFormatsModel.getFormats()),
-                preferences.get(WRITE_FORMAT_PREFERENCE, Gpx11Format.class.getName()));
+                FormatClassNameAliases.resolve(preferences.get(WRITE_FORMAT_PREFERENCE, Gpx11Format.class.getName())));
     }
 
     private void setWriteFormatFileFilterPreference(NavigationFormat<?> selectedFormat) {
