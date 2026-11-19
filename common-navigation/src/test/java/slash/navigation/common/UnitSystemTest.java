@@ -81,6 +81,44 @@ public class UnitSystemTest {
     }
 
     @Test
+    public void metricShortDistanceAndSpeedConversionsAreIdentity() {
+        assertDoubleEquals(10.0, Metric.shortDistanceToDefault(10.0));
+        assertDoubleEquals(10.0, Metric.speedToUnit(10.0));
+        assertDoubleEquals(10.0, Metric.speedToDefault(10.0));
+    }
+
+    @Test
+    public void statuteShortDistanceAndSpeedConversions() {
+        assertDoubleEquals(0.3048, Statute.shortDistanceToDefault(1.0));
+        assertDoubleEquals(16.09344, Statute.speedToDefault(10.0));
+        assertDoubleEquals(10.0, Statute.speedToUnit(16.09344));
+    }
+
+    @Test
+    public void nauticShortDistanceAndSpeedConversions() {
+        assertDoubleEquals(0.3048, Nautic.shortDistanceToDefault(1.0));
+        assertDoubleEquals(18.520043, Nautic.speedToDefault(10.0));
+        assertEquals(10.0, Nautic.speedToUnit(18.520043), 0.0001);
+    }
+
+    @Test
+    public void shortDistanceAndSpeedConversionsRoundTrip() {
+        for (UnitSystem unitSystem : asList(Metric, Statute, Nautic)) {
+            assertEquals(12.5, unitSystem.speedToDefault(unitSystem.speedToUnit(12.5)), 0.0001);
+            assertEquals(12.5, unitSystem.shortDistanceToDefault(unitSystem.shortDistanceToUnit(12.5)), 0.0001);
+        }
+    }
+
+    @Test
+    public void shortDistanceAndSpeedConversionsReturnNullOnNullInput() {
+        for (UnitSystem unitSystem : asList(Metric, Statute, Nautic)) {
+            assertNull(unitSystem.shortDistanceToDefault(null));
+            assertNull(unitSystem.speedToUnit(null));
+            assertNull(unitSystem.speedToDefault(null));
+        }
+    }
+
+    @Test
     public void namesReflectTheUnitSystem() {
         assertEquals("km", Metric.getDistanceName());
         assertEquals("m", Metric.getShortDistanceName());

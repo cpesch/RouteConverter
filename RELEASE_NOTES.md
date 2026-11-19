@@ -6,6 +6,8 @@
 
 ### Changes
 
+- The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
+
 ### Fixes
 
 - Switching a map overlay on or off while the map is redrawing no longer stops the map from drawing

@@ -137,6 +137,18 @@ public enum UnitSystem {
         return unitTransfer.valueToDefault(value);
     }
 
+    public Double shortDistanceToDefault(Double shortDistance) {
+        return shortDistance != null ? unitTransfer.valueToDefault(shortDistance) : null;
+    }
+
+    public Double speedToUnit(Double kmh) {
+        return kmh != null ? unitTransfer.distanceToUnit(kmh) * METERS_OF_A_KILOMETER : null;
+    }
+
+    public Double speedToDefault(Double speed) {
+        return speed != null ? unitTransfer.distanceToDefault(speed) : null;
+    }
+
 
     public static List<UnitSystem> getUnitSystemsWithPreferredUnitSystem(UnitSystem preferredUnitSystem) {
         List<UnitSystem> unitSystems = new ArrayList<>(asList(UnitSystem.values()));
