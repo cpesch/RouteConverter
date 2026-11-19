@@ -18,28 +18,28 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.babel;
+package slash.navigation.compegps;
 
 import slash.navigation.base.RouteCharacteristics;
 
-import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
- * Reads and writes CompeGPS Data Track (.trk) files.
+ * Reads and writes CompeGPS Data (.wpt) files.
  *
  * @author Christian Pesch
  */
 
-public class CompeGPSDataTrackFormat extends CompeGPSDataFormat {
+public class CompeGPSDataWaypointFormat extends CompeGPSDataFormat {
     public String getExtension() {
-        return ".trk";
+        return ".wpt";
     }
 
     public String getName() {
-        return "CompeGPS Data Track (*" + getExtension() + ")";
+        return "CompeGPS Data Waypoint (*" + getExtension() + ")";
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return Track;
+        return Waypoints;
     }
 }
