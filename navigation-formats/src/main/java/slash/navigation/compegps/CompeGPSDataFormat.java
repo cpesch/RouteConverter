@@ -474,30 +474,6 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
                 dateTime.getYear() % 100, dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond());
     }
 
-    private void writeWaypoints(GpxRoute route, int startIndex, int endIndex, StringBuilder builder) {
-        List<GpxPosition> positions = route.getPositions();
-        for (int i = startIndex; i < endIndex; i++) {
-            GpxPosition position = positions.get(i);
-            BigDecimal latitude = formatPosition(position.getLatitude());
-            BigDecimal longitude = formatPosition(position.getLongitude());
-            if (latitude == null || longitude == null)
-                continue;
-            BigDecimal elevation = formatElevation(position.getElevation());
-
-            String name = stripIllegalXmlCharacters(asName(position.getDescription()));
-            String description = stripIllegalXmlCharacters(asDesc(position.getDescription()));
-            builder.append("W  ").append(name != null ? name.replace(' ', '_') : "").append(" A ")
-                    .append(latitude(latitude.doubleValue())).append(' ')
-                    .append(longitude(longitude.doubleValue())).append(' ')
-                    .append(DUMMY_WAYPOINT_DATE).append(" 00:00:00 ")
-                    .append(format(Locale.ROOT, "%.6f", elevation != null ? elevation.doubleValue() : 0.0));
-            if (description != null && !description.isEmpty())
-                builder.append(' ').append(description);
-            builder.append('\n');
-            builder.append("w  Waypoint,0,0.0,16777215,255,1,7,,0.0\n");
-        }
-    }
-
     private void writeTrackPoints(GpxRoute route, int startIndex, int endIndex, StringBuilder builder) {
         List<GpxPosition> positions = route.getPositions();
         String routeName = stripIllegalXmlCharacters(asRouteName(route.getName()));
@@ -525,21 +501,16 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
         builder.append("F  1234\n");
     }
 
-    private void writeRoute(GpxRoute route, int startIndex, int endIndex, StringBuilder builder) {
-        String name = stripIllegalXmlCharacters(asRouteName(route.getName()));
-        builder.append("R  16711680,").append(name != null ? clean(name, ',') : " ").append(",1,-1\n");
-        writeWaypoints(route, startIndex, endIndex, builder);
-    }
-
+    /**
+     * All three classes write the track form: RouteConverter hands GPSBabel a GPX with the route, track and
+     * waypoints of the same positions and "-r -w -t", and GPSBabel's compegps writer then writes the
+     * tracks only. The route characteristics are forced to the class's on reading.
+     */
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         StringBuilder builder = new StringBuilder();
         builder.append("G  WGS 84\n");
         builder.append("U  1\n");
-        switch (route.getCharacteristics()) {
-            case Waypoints -> writeWaypoints(route, startIndex, endIndex, builder);
-            case Route -> writeRoute(route, startIndex, endIndex, builder);
-            case Track -> writeTrackPoints(route, startIndex, endIndex, builder);
-        }
+        writeTrackPoints(route, startIndex, endIndex, builder);
         target.write(builder.toString().getBytes(WINDOWS_1252));
     }
 }

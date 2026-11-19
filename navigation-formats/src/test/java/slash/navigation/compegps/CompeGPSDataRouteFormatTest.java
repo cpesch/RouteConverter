@@ -4,6 +4,7 @@ import org.junit.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.ParserContextImpl;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
@@ -249,45 +250,34 @@ public class CompeGPSDataRouteFormatTest {
         return new GpxPosition(longitude, latitude, elevation, null, calendar, description);
     }
 
+    private static final String EXPECTED_TRACK = "G  WGS 84\nU  1\n" +
+            "T  A 48.1234567000\u00BAN 11.5000000000\u00BAE 03-JUN-11 11:34:37 s 520.0 0.0 0.0 0.0 0 -1000.0 -1.0 -1.0 -1.0 -1.0\n" +
+            "t 4294967295|My route x|-1|-1\n" +
+            "T  A 48.2000000000\u00BAS 11.6000000000\u00BAW 01-JAN-70 00:00:00 s -99999999.0 0.0 0.0 0.0 0 -1000.0 -1.0 -1.0 -1.0 -1.0\n" +
+            "F  1234\n";
+
     @Test
-    public void writesWaypoints() throws IOException {
+    public void allClassesWriteTheTrackFormWhateverTheCharacteristics() throws IOException {
+        for (CompeGPSDataFormat format : asList(new CompeGPSDataWaypointFormat(), new CompeGPSDataRouteFormat(), new CompeGPSDataTrackFormat())) {
+            for (RouteCharacteristics characteristics : asList(Waypoints, Route, Track)) {
+                List<GpxPosition> positions = new ArrayList<>();
+                positions.add(position(11.5, 48.1234567, 520.0, "2011-06-03T11:34:37Z", "Home; Sweet home"));
+                positions.add(position(-11.6, -48.2, null, null, "Two Words"));
+                assertEquals(EXPECTED_TRACK, write(format, format.createRoute(characteristics, "My route| x", positions)));
+            }
+        }
+    }
+
+    @Test
+    public void waypointTimesSurviveWriteAndRead() throws IOException {
         CompeGPSDataFormat format = new CompeGPSDataWaypointFormat();
         List<GpxPosition> positions = new ArrayList<>();
-        positions.add(position(11.5, 48.1234567, 520.0, null, "Home; Sweet home"));
-        positions.add(position(-11.6, -48.2, null, null, "Two Words"));
-        String expected = "G  WGS 84\nU  1\n" +
-                "W  Home A 48.1234567000ºN 11.5000000000ºE 27-MAR-62 00:00:00 520.000000 Sweet home\n" +
-                "w  Waypoint,0,0.0,16777215,255,1,7,,0.0\n" +
-                "W  Two_Words A 48.2000000000ºS 11.6000000000ºW 27-MAR-62 00:00:00 0.000000\n" +
-                "w  Waypoint,0,0.0,16777215,255,1,7,,0.0\n";
-        assertEquals(expected, write(format, format.createRoute(Waypoints, "ignored", positions)));
-    }
-
-    @Test
-    public void writesRoute() throws IOException {
-        CompeGPSDataFormat format = new CompeGPSDataRouteFormat();
-        List<GpxPosition> positions = new ArrayList<>();
-        positions.add(position(11.0, 48.0, 100.0, null, "Start"));
-        String expected = "G  WGS 84\nU  1\n" +
-                "R  16711680,My route x,1,-1\n" +
-                "W  Start A 48.0000000000ºN 11.0000000000ºE 27-MAR-62 00:00:00 100.000000\n" +
-                "w  Waypoint,0,0.0,16777215,255,1,7,,0.0\n";
-        assertEquals(expected, write(format, format.createRoute(Route, "My route, x", positions)));
-        assertTrue(write(format, format.createRoute(Route, null, positions)).contains("R  16711680, ,1,-1\n"));
-    }
-
-    @Test
-    public void writesTrack() throws IOException {
-        CompeGPSDataFormat format = new CompeGPSDataTrackFormat();
-        List<GpxPosition> positions = new ArrayList<>();
-        positions.add(position(11.0, 48.0, 400.5, "2011-06-03T07:24:40Z", null));
-        positions.add(position(11.1, 48.1, null, null, null));
-        String expected = "G  WGS 84\nU  1\n" +
-                "T  A 48.0000000000ºN 11.0000000000ºE 03-JUN-11 07:24:40 s 400.5 0.0 0.0 0.0 0 -1000.0 -1.0 -1.0 -1.0 -1.0\n" +
-                "t 4294967295|Morningride|-1|-1\n" +
-                "T  A 48.1000000000ºN 11.1000000000ºE 01-JAN-70 00:00:00 s -99999999.0 0.0 0.0 0.0 0 -1000.0 -1.0 -1.0 -1.0 -1.0\n" +
-                "F  1234\n";
-        assertEquals(expected, write(format, format.createRoute(Track, "Morning|ride", positions)));
+        positions.add(position(11.5, 48.1, 520.0, "2011-06-03T11:34:37Z", "Home"));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        format.write(format.createRoute(Waypoints, "x", positions), out, 0, 1);
+        GpxRoute route = read(format, out.toByteArray()).get(0);
+        assertEquals(Waypoints, route.getCharacteristics());
+        assertEquals(millis("2011-06-03T11:34:37Z"), route.getPosition(0).getTime().getTimeInMillis());
     }
 
     @Test
