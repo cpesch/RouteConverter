@@ -57,6 +57,7 @@ import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.*;
 import slash.navigation.tcx.TcxFormat;
+import slash.navigation.tomtom.TomTomPoiFormat;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
 
