@@ -22,6 +22,7 @@ package slash.navigation.base;
 
 import org.junit.Test;
 import slash.navigation.babel.*;
+import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;

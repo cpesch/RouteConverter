@@ -22,7 +22,7 @@ package slash.navigation.base;
 
 import org.junit.AfterClass;
 import org.junit.Test;
-import slash.navigation.babel.GarminPoiDbFormat;
+import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.File;
