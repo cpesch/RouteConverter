@@ -8,10 +8,10 @@ name: Build Mac JRE
 # _build-linux-mac.yml — curl + sha256 verify + unzip into
 # target/Runtime-<arch>, then maven-assembly-plugin produces per-arch app zips.
 #
-# Single macos-latest (arm64) runner cross-jlinks both arches: jlink is
-# cross-platform — it bundles the jmods' native binaries into the output
-# Runtime regardless of the host arch. setup-java is called twice with
-# architecture: aarch64 + x64, populating JAVA_HOME_17_ARM64 + JAVA_HOME_17_X64.
+# Single macos-latest (arm64) runner links both arches: setup-java is called
+# twice (architecture: aarch64 + x64) and each JDK's own jlink links from its
+# run-time image (Temurin 24+ ships no jmods, JEP 493); the x64 one runs under
+# Rosetta.
 # Avoids macos-13 (Intel) runner queue (10–60 min waits, deprecated).
 #
 # Triggers:
@@ -73,7 +73,7 @@ jobs:
         id: jdk-aarch64
         shell: bash
         run: |
-          [[ -d "$JAVA_HOME/jmods" ]] || { echo "::error::aarch64 jmods missing at $JAVA_HOME"; exit 1; }
+          [[ -x "$JAVA_HOME/bin/jlink" ]] || { echo "::error::aarch64 jlink missing at $JAVA_HOME"; exit 1; }
           echo "home=$JAVA_HOME" >> "$GITHUB_OUTPUT"
           echo "aarch64 JAVA_HOME: $JAVA_HOME"
 
@@ -87,7 +87,7 @@ jobs:
         id: jdk-x64
         shell: bash
         run: |
-          [[ -d "$JAVA_HOME/jmods" ]] || { echo "::error::x64 jmods missing at $JAVA_HOME"; exit 1; }
+          [[ -x "$JAVA_HOME/bin/jlink" ]] || { echo "::error::x64 jlink missing at $JAVA_HOME"; exit 1; }
           echo "home=$JAVA_HOME" >> "$GITHUB_OUTPUT"
           echo "x64 JAVA_HOME: $JAVA_HOME"
 
@@ -112,25 +112,23 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Host jlink = arm64 native (the runner's arch). Cross-target by
-          # pointing --module-path at the target arch's jmods. The output
-          # Runtime contains target-arch binaries verbatim from those jmods.
-          HOST_JLINK="$AARCH64_HOME/bin/jlink"
+          # Temurin 24+ ships no jmods (JEP 493): jlink links from the JDK's own
+          # run-time image, so each arch is linked by its own JDK's jlink. The
+          # x64 jlink runs under Rosetta on the arm64 runner.
 
           for arch in aarch64 x64; do
             case "$arch" in
-              aarch64) jmods_home="$AARCH64_HOME" ;;
-              x64)     jmods_home="$X64_HOME"    ;;
+              aarch64) jdk_home="$AARCH64_HOME" ;;
+              x64)     jdk_home="$X64_HOME"    ;;
             esac
-            echo "--- jlink $arch from $jmods_home ---"
+            echo "--- jlink $arch from $jdk_home ---"
 
             OUT="jre-${VER}-${arch}"
             rm -rf "$OUT"
-            "$HOST_JLINK" \
-              --module-path "$jmods_home/jmods" \
+            "$jdk_home/bin/jlink" \
               --add-modules "$MODULES" \
               --output "$OUT" \
-              --strip-debug --compress 2 --no-header-files --no-man-pages
+              --strip-debug --compress zip-6 --no-header-files --no-man-pages
             rm -rf "$OUT/legal"
             rm -f  "$OUT/release"
             rm -f  "$OUT/bin/keytool"
