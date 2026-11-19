@@ -127,7 +127,7 @@ public class GeoCachingFormat extends GpxBackedNavigationFormat {
                 } else if (event == XMLStreamConstants.END_ELEMENT) {
                     if (inWaypoint && path.size() == 2 && LOC.equals(path.get(0)) && WAYPOINT.equals(path.get(1))) {
                         result.add(new GpxPosition(longitude, latitude, 0.0, null, null,
-                                asDescription(emptyToNull(id), emptyToNull(text))));
+                                asWayPointDescription(emptyToNull(id), emptyToNull(text))));
                         inWaypoint = false;
                     }
                     path.remove(path.size() - 1);
@@ -137,6 +137,10 @@ public class GeoCachingFormat extends GpxBackedNavigationFormat {
         } finally {
             reader.close();
         }
+    }
+
+    private String asWayPointDescription(String name, String description) {
+        return asDescription(name, description);
     }
 
     private static Double parseDouble(String value) {
