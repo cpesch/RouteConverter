@@ -80,10 +80,9 @@ jobs:
           set OUT=jre-%VER%
           if exist %OUT% rmdir /s /q %OUT%
           "%JAVA_HOME%\bin\jlink" ^
-            --module-path "%JAVA_HOME%\jmods" ^
             --add-modules %MODULES% ^
             --output %OUT% ^
-            --strip-debug --compress 2 --no-header-files --no-man-pages
+            --strip-debug --compress zip-6 --no-header-files --no-man-pages
           if exist %OUT%\legal rmdir /s /q %OUT%\legal
           if exist %OUT%\release del /q %OUT%\release
           if exist %OUT%\bin\javaw.exe del /q %OUT%\bin\javaw.exe
