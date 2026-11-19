@@ -123,8 +123,9 @@ public class TomTomPoiFormat extends GpxBackedNavigationFormat {
         List<GpxPosition> positions = new ArrayList<>(texts.size());
         for (int i = 0; i < texts.size(); i++) {
             String text = stripIllegalXmlCharacters(texts.get(i));
-            // GPSBabel passes the text on as <name> and <desc> of the GPX waypoint, empty texts vanish
-            String description = text.isEmpty() ? null : trimLineFeeds(text);
+            // GPSBabel passes the text on as <name> and <desc> of the GPX waypoint; for an empty text
+            // GPSBabel 1.5.4 (waypt_add) synthesizes the name WPT%03d from the ordinal of the waypoint
+            String description = trimLineFeeds(text.isEmpty() ? String.format("WPT%03d", i + 1) : text);
             positions.add(new GpxPosition(coordinates.get(i)[0], coordinates.get(i)[1], null, null, null, description));
         }
         return singletonList(new GpxRoute(new Gpx10Format(), Waypoints, null, null, positions));

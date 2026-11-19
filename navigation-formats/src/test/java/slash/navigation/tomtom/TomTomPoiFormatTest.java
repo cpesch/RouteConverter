@@ -162,6 +162,16 @@ public class TomTomPoiFormatTest {
     }
 
     @Test
+    public void emptyTextGetsSynthesizedNameFromOrdinal() throws IOException {
+        List<GpxPosition> positions = read(new Bytes().poi(1000000, 5000000, "Named").poi(1100000, 5100000, "")
+                .poi(1200000, 5200000, "Other").poi(1300000, 5300000, "").get());
+        assertEquals("Named", positions.get(0).getDescription());
+        assertEquals("WPT002", positions.get(1).getDescription());
+        assertEquals("Other", positions.get(2).getDescription());
+        assertEquals("WPT004", positions.get(3).getDescription());
+    }
+
+    @Test
     public void greaterSignStaysPartOfTheDescription() throws IOException {
         List<GpxPosition> positions = read(new Bytes().poi(1000000, 5000000, "Pizza Roma>0123 456").get());
         assertEquals("Pizza Roma>0123 456", positions.get(0).getDescription());
@@ -381,7 +391,8 @@ public class TomTomPoiFormatTest {
         // -950000 + 0.5 truncates to -949999, as in GPSBabel
         assertEquals(-9.49999, read.get(0).getLongitude(), 0.0);
         assertEquals(52.5, read.get(1).getLatitude(), 0.0);
-        assertNull(read.get(2).getDescription());
+        // the written empty text reads back as the synthesized name
+        assertEquals("WPT003", read.get(2).getDescription());
     }
 
     @Test
