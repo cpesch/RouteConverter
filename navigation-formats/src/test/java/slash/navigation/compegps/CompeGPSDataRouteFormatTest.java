@@ -52,6 +52,18 @@ public class CompeGPSDataRouteFormatTest {
         return new String(out.toByteArray(), ISO_8859_1);
     }
 
+    @Test
+    public void namesAreWrittenAsUtf8AndTheDegreeSignAsSingleByte() throws IOException {
+        CompeGPSDataFormat format = new CompeGPSDataTrackFormat();
+        List<GpxPosition> positions = new ArrayList<>();
+        positions.add(position(11.0, 48.0, 1.0, "2011-06-03T11:34:37Z", null));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        format.write(format.createRoute(Track, "Gr\u00F6\u00DFe & <x>", positions), out, 0, 1);
+        String written = new String(out.toByteArray(), ISO_8859_1);
+        assertTrue(written.contains("48.0000000000\u00BAN 11.0000000000\u00BAE"));
+        assertTrue(written.contains("t 4294967295|Gr\u00C3\u00B6\u00C3\u009Fe & <x>|-1|-1\n"));
+    }
+
     private static final String HEADER = "G  WGS 84\nU  1\n";
 
     private static final String WAYPOINTS = HEADER +
