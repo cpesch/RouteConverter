@@ -50,7 +50,7 @@
 		<Program_Change_Info>Code-signed Windows installers and standalone Java artifacts via SignPath, runtime moved to Java 21 (bundled JRE and minimum requirement), stabilisation and validation fixes</Program_Change_Info>
 		<Program_Specific_Category>Business</Program_Specific_Category>
 		<Program_Category_Class>Business::Calculators &amp; Converters</Program_Category_Class>
-		<Program_System_Requirements>Java 21</Program_System_Requirements>
+		<Program_System_Requirements>Java 25</Program_System_Requirements>
 		<Expire_Info>
 			<Has_Expire_Info>N</Has_Expire_Info>
 			<Expire_Count />
