@@ -18,36 +18,36 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.babel;
+package slash.navigation.ozi;
 
 import slash.navigation.base.RouteCharacteristics;
 
-import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
- * Writes OziExplorer Route (.rte) files.
+ * Reads and writes OziExplorer Track (.plt) files.
  *
  * @author Christian Pesch
  */
 
-public class OziExplorerRouteFormat extends OziExplorerFormat {
+public class OziExplorerTrackFormat extends OziExplorerFormat {
     public String getExtension() {
-        return ".rte";
+        return ".plt";
     }
 
     public String getName() {
-        return "OziExplorer Route (*" + getExtension() + ")";
-    }
-
-    protected String[] getGlobalOptions() {
-        return new String[]{"-r"};
+        return "OziExplorer Track (*" + getExtension() + ")";
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return true;
+        return false;
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return Route;
+        return Track;
+    }
+
+    protected String getFileTypeMarker() {
+        return "Track Point";
     }
 }

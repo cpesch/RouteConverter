@@ -18,36 +18,36 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.babel;
+package slash.navigation.ozi;
 
 import slash.navigation.base.RouteCharacteristics;
 
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
- * Writes OziExplorer Waypoint (.wpt) files.
+ * Reads and writes OziExplorer Route (.rte) files.
  *
  * @author Christian Pesch
  */
 
-public class OziExplorerWaypointFormat extends OziExplorerFormat {
+public class OziExplorerRouteFormat extends OziExplorerFormat {
     public String getExtension() {
-        return ".wpt";
+        return ".rte";
     }
 
     public String getName() {
-        return "OziExplorer Waypoint (*" + getExtension() + ")";
-    }
-
-    protected String[] getGlobalOptions() {
-        return new String[]{"-w"};
+        return "OziExplorer Route (*" + getExtension() + ")";
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return false;
+        return true;
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return Waypoints;
+        return Route;
+    }
+
+    protected String getFileTypeMarker() {
+        return "Route File";
     }
 }
