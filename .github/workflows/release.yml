@@ -432,7 +432,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: '21.0.13'
+          java-version: '25.0.5'
       - uses: actions/cache@v6
         with:
           path: ~/.m2
