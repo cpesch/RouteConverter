@@ -168,6 +168,34 @@ public class TourExchangeFormatTest {
         assertEquals("L34\\Wittlicher Strasse; Wittlicher Strasse (", routes.get(1).getPosition(0).getDescription());
     }
 
+    @Test
+    public void unnamedItemsGetSynthesizedShortnames() throws IOException {
+        List<GpxRoute> routes = read(tef("TourExchangeFormat", "2.0", "4",
+                item("PointDescription=\"Start\" SegDescription=\"Named\"", "1", "2"),
+                item("Instruction=\"links abbiegen\"", "1", "2"),
+                item("ViaStation=\"true\"", "1", "2"),
+                item("SegDescription=\"Ziel\"", "1", "2")));
+        GpxRoute waypoints = routes.get(0), route = routes.get(1);
+        assertEquals(3, waypoints.getPositionCount());
+        assertEquals("Named; Start", waypoints.getPosition(0).getDescription());
+        assertEquals("WPT002", waypoints.getPosition(1).getDescription());
+        assertEquals("Ziel", waypoints.getPosition(2).getDescription());
+        assertEquals("Named; Start", route.getPosition(0).getDescription());
+        assertEquals("RPT002; links abbiegen", route.getPosition(1).getDescription());
+        assertEquals("WPT002", route.getPosition(2).getDescription());
+        assertEquals("Ziel", route.getPosition(3).getDescription());
+    }
+
+    @Test
+    public void viaItemWithDescriptionButNoShortnameStaysUnnamed() throws IOException {
+        List<GpxRoute> routes = read(tef("TourExchangeFormat", "2.0", "3",
+                item("SegDescription=\"A\"", "1", "2"),
+                item("PointDescription=\"bei Ort\" ViaStation=\"true\"", "1", "2"),
+                item("SegDescription=\"B\"", "1", "2")));
+        assertEquals("bei Ort", routes.get(0).getPosition(1).getDescription());
+        assertEquals("bei Ort", routes.get(1).getPosition(1).getDescription());
+    }
+
     // writing
 
     private static GpxPosition position(double longitude, double latitude, Double elevation, CompactCalendar time, String description) {

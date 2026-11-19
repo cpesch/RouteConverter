@@ -123,7 +123,7 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
         return string == null || string.isEmpty() ? null : string;
     }
 
-    private GpxPosition asPosition(Item item, double version) {
+    private GpxPosition asPosition(Item item, double version, String prefix, int index) {
         // waypoint_final(): before version 2 the description is kept in the notes
         String description = item.description, notes = null;
         if (version < 2) {
@@ -133,7 +133,12 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
         // the GPX writer of GPSBabel writes the notes into <desc> and uses the description if there are no notes
         String desc = emptyToNull(notes) != null ? notes : description;
         // fix_notes() is disabled in tef_xml.cc (#if OMG) of 1.8.0 and 1.5.4: notes stay as they are
-        String text = asDescription(emptyToNull(item.shortname), emptyToNull(desc));
+        // GPSBabel 1.5.4 (observed in its output, not in the source) names unnamed items: via items without any
+        // description WPT<nnn> (waypoint number, shared with their route copy), other route points RPT<nnn>
+        String shortname = emptyToNull(item.shortname);
+        if (shortname == null && (prefix.equals("WPT") ? emptyToNull(desc) == null : !item.via))
+            shortname = String.format("%s%03d", prefix, index);
+        String text = asDescription(shortname, emptyToNull(desc));
         return new GpxPosition(item.longitude, item.latitude, item.altitude, null, null, stripIllegalXmlCharacters(text));
     }
 
@@ -232,10 +237,12 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
                     if ("TEF/WaypointList/Item".equals(where) || listEnd) {
                         // waypoint_final()
                         if (item != null) {
+                            int wayIndex = wayPositions.size() + 1;
                             if (item.via)
-                                wayPositions.add(asPosition(item, version));
+                                wayPositions.add(asPosition(item, version, "WPT", wayIndex));
                             if (hasRoute)
-                                routePositions.add(asPosition(item, version));
+                                routePositions.add(item.via ? asPosition(item, version, "WPT", wayIndex) :
+                                        asPosition(item, version, "RPT", routePositions.size() + 1));
                             item = null;
                         }
                         if (listEnd && waypoints != itemCount)
