@@ -11,7 +11,7 @@ Not yet submitted to Flathub. Staged here, build- and run-verified.
   Flatpak build, and vendoring the full dependency tree via a generated
   sources list is a separate, larger effort.
 - `routeconverter.sh` — launcher wrapper, invokes the jlinked `/app/jre`
-  built at build time from the `org.freedesktop.Sdk.Extension.openjdk21`
+  built at build time from the `org.freedesktop.Sdk.Extension.openjdk25`
   SDK extension, using the same module set as
   `scripts/jre-modules.txt` (the single source of truth the Windows/Mac
   bundled JREs also use). The build then runs
@@ -49,7 +49,7 @@ On a GNOME 50 Wayland desktop (Ubuntu 26.04, aarch64, 2026-10-16):
 Rebuild/test recipe:
 ```
 flatpak install --user flathub org.freedesktop.Platform//26.08 \
-  org.freedesktop.Sdk//26.08 org.freedesktop.Sdk.Extension.openjdk21//26.08
+  org.freedesktop.Sdk//26.08 org.freedesktop.Sdk.Extension.openjdk25//26.08
 cd flatpak
 flatpak-builder --user --install --force-clean build-dir \
   com.routeconverter.RouteConverter.yml
