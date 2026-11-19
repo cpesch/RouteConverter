@@ -25,6 +25,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.bcr.MTP0607Format;
+import slash.navigation.converter.gui.helpers.RowMoves;
 import slash.navigation.converter.gui.panels.PositionsModelCallbackImpl;
 
 import java.util.ArrayList;
@@ -118,6 +119,27 @@ public class PositionsModelImplMoveTest {
     public void testDownBlockMoreThanOneStep() {
         assertDown(new int[]{1, 0}, 2, "CDABE");
         assertDown(new int[]{0, 1}, 2, "CDABE");
+    }
+
+    private void assertMarkedAt(PositionsModelImpl model, int[] rows, int[] movedRows) {
+        for (int i = 0; i < rows.length; i++)
+            assertEquals(String.valueOf("ABCDE".charAt(rows[i])), model.getPosition(movedRows[i]).getDescription());
+    }
+
+    @Test
+    public void testModelPutsTheMarkedRowsWhereRowMovesSays() {
+        int[][] rowsCases = {{2}, {0, 1}, {0, 2}, {1, 3}, {2, 4}, {0, 1, 3}, {3, 4}};
+        for (int[] rows : rowsCases) {
+            for (int delta = 1; delta <= 3; delta++) {
+                PositionsModelImpl model = model("ABCDE");
+                model.up(rows.clone(), delta);
+                assertMarkedAt(model, rows, RowMoves.up(rows, delta));
+
+                model = model("ABCDE");
+                model.down(rows.clone(), delta);
+                assertMarkedAt(model, rows, RowMoves.down(rows, delta, 5));
+            }
+        }
     }
 
     @Test
