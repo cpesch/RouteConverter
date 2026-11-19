@@ -22,6 +22,9 @@ package slash.navigation.ozi;
 
 import slash.navigation.base.RouteCharacteristics;
 
+import java.nio.charset.Charset;
+
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -45,6 +48,14 @@ public class OziExplorerWaypointFormat extends OziExplorerFormat {
 
     protected RouteCharacteristics getRouteCharacteristics() {
         return Waypoints;
+    }
+
+    protected String decodeText(String field) {
+        return new String(field.getBytes(ISO_8859_1), Charset.forName("windows-1252"));
+    }
+
+    protected String encodeText(String text) {
+        return new String(text.getBytes(ISO_8859_1), ISO_8859_1);
     }
 
     protected boolean isFileType(String firstLine) {

@@ -35,6 +35,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -71,16 +73,20 @@ public class OziExplorerRouteFormatTest {
         return lines(all.toArray(new String[0]));
     }
 
+    private static Charset charsetOf(OziExplorerFormat format) {
+        return format instanceof OziExplorerWaypointFormat ? CP1252 : UTF_8;
+    }
+
     private static List<GpxRoute> read(OziExplorerFormat format, String content) throws IOException {
         ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
-        format.read(new ByteArrayInputStream(content.getBytes(CP1252)), context);
+        format.read(new ByteArrayInputStream(content.getBytes(charsetOf(format))), context);
         return context.getRoutes();
     }
 
     private static String write(OziExplorerFormat format, GpxRoute route) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         format.write(route, out, 0, route.getPositionCount());
-        return new String(out.toByteArray(), CP1252);
+        return new String(out.toByteArray(), format instanceof OziExplorerWaypointFormat ? ISO_8859_1 : UTF_8);
     }
 
     private static GpxRoute route(NavigationFormat<GpxRoute> format, String name, GpxPosition... positions) {
@@ -273,8 +279,8 @@ public class OziExplorerRouteFormatTest {
                 position(8.25, 47.5, 30.48, null), position(8.5, 47.75, null, null))));
         String expected = lines("OziExplorer Track Point File Version 2.1", "WGS 84", "Altitude is in Feet", "Reserved 3",
                 "0,2,255,ComplimentsOfGPSBabel,0,0,2,8421376", "0",
-                "47.500000,8.250000,1,100.0,,,",
-                "47.750000,8.500000,0,-777.0,,,");
+                "47.500000,8.250000,1,100,,,",
+                "47.750000,8.500000,0,-777,,,");
         assertEquals(expected, write(new OziExplorerTrackFormat(), route));
     }
 
@@ -284,7 +290,7 @@ public class OziExplorerRouteFormatTest {
         GpxRoute route = new GpxRoute(new Gpx10Format(), Track, "Named", null, new ArrayList<>(asList(timed)));
         String written = write(new OziExplorerTrackFormat(), route);
         assertTrue(written, written.contains("0,2,255,Named,0,0,2,8421376\r\n0\r\n"));
-        assertTrue(written, written.endsWith("47.500000,8.250000,1,-777.0,25570.5000000,,\r\n"));
+        assertTrue(written, written.endsWith("47.500000,8.250000,1,-777,25570.5000000,,\r\n"));
     }
 
     @Test
@@ -321,6 +327,40 @@ public class OziExplorerRouteFormatTest {
     }
 
     @Test
+    public void routesAndTracksAreUtf8AndWaypointsLatin1() throws IOException {
+        GpxRoute route = new GpxRoute(new Gpx10Format(), Route, "Gr\u00F6\u00DFe", null, new ArrayList<>(asList(
+                position(8.25, 47.5, null, "\u20AC 1"))));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        new OziExplorerRouteFormat().write(route, out, 0, 1);
+        // the route name is converted (ISO-8859-1), the text of a route point is passed through as UTF-8
+        String bytes = new String(out.toByteArray(), ISO_8859_1);
+        assertTrue(bytes, bytes.contains("R,1,Gr\u00F6\u00DFe,,"));
+        assertTrue(bytes, bytes.contains("W,1,,1," + new String("\u20AC 1".getBytes(UTF_8), ISO_8859_1) + ","));
+
+        GpxRoute waypoints = new GpxRoute(new Gpx10Format(), Waypoints, null, null, new ArrayList<>(asList(
+                position(8.25, 47.5, null, "\u20AC \u00C4"))));
+        out.reset();
+        new OziExplorerWaypointFormat().write(waypoints, out, 0, 1);
+        assertTrue(new String(out.toByteArray(), ISO_8859_1).contains("1,? \u00C4,47.500000"));
+    }
+
+    @Test
+    public void routeTextIsReadAsUtf8() throws IOException {
+        byte[] bytes = rte("WGS 84", "R,0,One,,", "W,0,,1,A\u00FC,47.1,8.1,,0,1,3,0,65535,,0,0").getBytes(ISO_8859_1);
+        ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
+        new OziExplorerRouteFormat().read(new ByteArrayInputStream(bytes), context);
+        // a Windows-1252 byte is not valid UTF-8, GPSBabel 1.5.4 delivers it as a replacement character
+        assertEquals("A\uFFFD", context.getRoutes().get(0).getPosition(0).getDescription());
+    }
+
+    @Test
+    public void timeRoundingUpToFullSecondKeepsMillisecondsOfDayFraction() throws IOException {
+        // 25569 + 14715.0 days -> seconds are 0.9999997 below a full second after the multiplication
+        GpxPosition position = read(new OziExplorerTrackFormat(), plt("WGS 84", "Feet", "47.5,8.25,0,10,39488.5834375,,")).get(0).getPosition(0);
+        assertEquals(1202652008583L, position.getTime().getTimeInMillis());
+    }
+
+    @Test
     public void packPutsAllRoutesIntoOneRteFile() throws IOException {
         GpxRoute first = new GpxRoute(new Gpx10Format(), Route, "One", asList("About one"), new ArrayList<>(asList(
                 position(8.25, 47.5, 100.0, "A"), position(8.5, 47.75, null, "B; bee"))));
@@ -331,10 +371,10 @@ public class OziExplorerRouteFormatTest {
         String expected = lines("OziExplorer Route File Version 1.0", "WGS 84", "Reserved 1", "Reserved 2",
                 "R,1,One,About one,",
                 "W,1,,1,A,47.500000,8.250000,,0,1,3,0,65535,,0,0",
-                "W,1,,2,B,47.750000,8.500000,,0,1,3,0,65535,bee,0,0",
+                "W,1,,2,B,47.750000,8.500000,,0,1,3,0,65535,,0,0",
                 "R,2,Two,,",
                 "W,2,,1,C,48.000000,9.000000,,0,1,3,0,65535,,0,0");
-        assertEquals(expected, new String(out.toByteArray(), CP1252));
+        assertEquals(expected, new String(out.toByteArray(), UTF_8));
     }
 
     @Test
@@ -347,10 +387,10 @@ public class OziExplorerRouteFormatTest {
         new OziExplorerTrackFormat().write(asList(first, second), out);
         String expected = lines("OziExplorer Track Point File Version 2.1", "WGS 84", "Altitude is in Feet", "Reserved 3",
                 "0,2,255,One,0,0,2,8421376", "0",
-                "47.500000,8.250000,1,-777.0,,,",
-                "47.750000,8.500000,0,-777.0,,,",
-                "48.000000,9.000000,1,-777.0,,,");
-        assertEquals(expected, new String(out.toByteArray(), CP1252));
+                "47.500000,8.250000,1,-777,,,",
+                "47.750000,8.500000,0,-777,,,",
+                "48.000000,9.000000,1,-777,,,");
+        assertEquals(expected, new String(out.toByteArray(), UTF_8));
     }
 
     @Test
@@ -362,7 +402,8 @@ public class OziExplorerRouteFormatTest {
         assertEquals(1, routes.size());
         assertEquals("Roundtrip", routes.get(0).getName());
         assertEquals(2, routes.get(0).getPositionCount());
-        assertEquals("A; one", routes.get(0).getPosition(0).getDescription());
+        // GPSBabel 1.5.4 writes no description for route points
+        assertEquals("A", routes.get(0).getPosition(0).getDescription());
         assertNotNull(routes.get(0).getPosition(1));
     }
 
