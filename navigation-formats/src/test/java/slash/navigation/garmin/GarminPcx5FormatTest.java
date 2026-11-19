@@ -20,6 +20,8 @@
 
 package slash.navigation.garmin;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContextImpl;
@@ -31,9 +33,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.TimeZone;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
@@ -59,7 +61,20 @@ public class GarminPcx5FormatTest {
             "H  IDNT   LATITUDE    LONGITUDE    DATE      TIME     ALT   DESCRIPTION                              PROXIMITY     SYMBOL ;waypts\n";
     private static final String WPT = "W  WPT001 N4712.34567 E01107.12345 19-NOV-98 12:34:56   500 Brenner pass\n";
 
+    private static final CompactCalendar T0 = utc(1970, 1, 1, 0, 0, 0);
     private final GarminPcx5Format format = new GarminPcx5Format();
+    private TimeZone defaultTimeZone;
+
+    @Before
+    public void setUp() {
+        defaultTimeZone = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
+
+    @After
+    public void tearDown() {
+        TimeZone.setDefault(defaultTimeZone);
+    }
 
     private List<GpxRoute> read(byte[] bytes) throws IOException {
         ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
@@ -82,7 +97,7 @@ public class GarminPcx5FormatTest {
     private String write(GpxRoute route) throws IOException {
         ByteArrayOutputStream target = new ByteArrayOutputStream();
         format.write(route, target, 0, route.getPositionCount());
-        return target.toString(US_ASCII);
+        return target.toString(ISO_8859_1);
     }
 
     private static String padded(String string, int length) {
@@ -270,6 +285,17 @@ public class GarminPcx5FormatTest {
     }
 
     @Test
+    public void bytesThatAreNoUtf8AreReadAsReplacementCharacters() throws IOException {
+        byte[] text = padded("W  A N4700.00000 E01100.00000 19-NOV-98 12:34:56   500", 60).getBytes(ISO_8859_1);
+        byte[] all = new byte[text.length + 3];
+        System.arraycopy(text, 0, all, 0, text.length);
+        all[text.length] = 'K';
+        all[text.length + 1] = (byte) 0xFC;
+        all[text.length + 2] = 'x';
+        assertEquals("A; K\ufffdx", read(all).get(0).getPosition(0).getDescription());
+    }
+
+    @Test
     public void rejectsFilesThatAreNotPcx5() throws IOException {
         assertTrue(read("").isEmpty());
         assertTrue(read("\n\n").isEmpty());
@@ -306,61 +332,74 @@ public class GarminPcx5FormatTest {
     public void writesTheHeaderAndWaypoints() throws IOException {
         GpxRoute route = format.createRoute(Waypoints, "ignored", asList(
                 position(11.25, 47.5, 500.0, utc(2026, 11, 19, 12, 34, 56), "WPT001; Brenner pass"),
-                position(-70.5, -33.0, null, null, "A very long name; " + "d".repeat(50)),
+                position(-70.5, -33.0, null, T0, "A very long name; " + "d".repeat(50)),
                 position(0.5, -0.5, 1234.4, utc(1999, 1, 2, 3, 4, 5), null)));
         String expected = HEADER + WAYPOINTS_HEADER +
-                waypointLine("WPT001", "N4730.00000", "E01115.00000", "19-NOV-26 12:34:56", "  500", "Brenner pass", 18) +
-                waypointLine("A very", "S3300.00000", "W07030.00000", "01-JAN-70 00:00:00", "-9999", "d".repeat(40), 18) +
-                waypointLine("", "S30.00000", "E00030.00000", "02-JAN-99 03:04:05", " 1234", "", 18);
+                waypointLine("WPT001", "N4730.00000", "E01115.00000", "19-NOV-26 12:34:56", "  500", "Brenner pass", 0) +
+                waypointLine("A very", "S3300.00000", "W07030.00000", "01-JAN-70 12:00:00", "-9999", "d".repeat(40), 0) +
+                waypointLine("", "S30.00000", "E00030.00000", "02-JAN-99 03:04:05", " 1234", "", 0);
         assertEquals(expected, write(route));
     }
 
     @Test
     public void writesElevationsRoundedHalfToEven() throws IOException {
         GpxRoute route = format.createRoute(Waypoints, null, asList(
-                position(1.0, 1.0, 2.5, null, "a"), position(1.0, 1.0, 3.5, null, "b"), position(1.0, 1.0, -0.4, null, "c")));
+                position(1.0, 1.0, 2.5, T0, "a"), position(1.0, 1.0, 3.5, T0, "b"), position(1.0, 1.0, -0.4, T0, "c")));
         String written = write(route);
-        assertTrue(written, written.contains("01-JAN-70 00:00:00     2 "));
-        assertTrue(written, written.contains("01-JAN-70 00:00:00     4 "));
-        assertTrue(written, written.contains("01-JAN-70 00:00:00    -0 "));
+        assertTrue(written, written.contains("01-JAN-70 12:00:00     2 "));
+        assertTrue(written, written.contains("01-JAN-70 12:00:00     4 "));
+        assertTrue(written, written.contains("01-JAN-70 12:00:00    -0 "));
     }
 
     @Test
     public void skipsPositionsWithoutCoordinatesAndHonoursTheIndices() throws IOException {
         GpxRoute route = format.createRoute(Waypoints, null, asList(
-                position(11.25, 47.5, 1.0, null, "A"), position(null, 47.5, 2.0, null, "B"), position(11.25, 47.5, 3.0, null, "C")));
+                position(11.25, 47.5, 1.0, T0, "A"), position(null, 47.5, 2.0, T0, "B"), position(11.25, 47.5, 3.0, T0, "C")));
         ByteArrayOutputStream target = new ByteArrayOutputStream();
         format.write(route, target, 1, 3);
-        String written = target.toString(US_ASCII);
+        String written = target.toString(ISO_8859_1);
         assertFalse(written.contains(" B "));
-        assertEquals(HEADER + WAYPOINTS_HEADER + waypointLine("C", "N4730.00000", "E01115.00000", "01-JAN-70 00:00:00", "    3", "C", 18), written);
+        assertEquals(HEADER + WAYPOINTS_HEADER + waypointLine("C", "N4730.00000", "E01115.00000", "01-JAN-70 12:00:00", "    3", "C", 0), written);
     }
 
     @Test
-    public void writesRoutesWithTheirNameShortenedToTwentyCharactersWithoutWhitespace() throws IOException {
-        GpxRoute route = format.createRoute(Route, "A route with a rather long name", singletonList(position(11.25, 47.5, 500.0, null, "P1")));
-        String expected = HEADER + "\n\nR  Aroutewitharatherlon\n" + WAYPOINTS_HEADER +
-                waypointLine("P1", "N4730.00000", "E01115.00000", "01-JAN-70 00:00:00", "  500", "P1", 18);
-        assertEquals(expected, write(route));
+    public void writesRoutesAndTracksAsWaypoints() throws IOException {
+        for (GpxRoute route : asList(
+                format.createRoute(Route, "A route", singletonList(position(11.25, 47.5, 500.0, T0, "P1"))),
+                format.createRoute(Track, "Track", singletonList(position(11.25, 47.5, 500.0, T0, "P1"))))) {
+            assertEquals(HEADER + WAYPOINTS_HEADER + waypointLine("P1", "N4730.00000", "E01115.00000", "01-JAN-70 12:00:00", "  500", "P1", 0), write(route));
+        }
     }
 
     @Test
-    public void writesTheDefaultRouteName() throws IOException {
-        String written = write(format.createRoute(Route, null, singletonList(position(11.25, 47.5, 500.0, null, "P1"))));
-        assertTrue(written, written.startsWith(HEADER + "\n\nR  Rte001\n" + WAYPOINTS_HEADER));
+    public void writesTheLocalTime() throws IOException {
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
+        GpxRoute route = format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, utc(2026, 1, 1, 10, 0, 0), "P1")));
+        assertTrue(write(route).contains(" 01-JAN-26 11:00:00 "));
+        route = format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, utc(2026, 7, 1, 10, 0, 0), "P1")));
+        assertTrue(write(route).contains(" 01-JUL-26 12:00:00 "));
     }
 
     @Test
-    public void writesTracksAsWaypoints() throws IOException {
-        String written = write(format.createRoute(Track, "Track", singletonList(position(11.25, 47.5, 500.0, null, "P1"))));
-        assertTrue(written, written.startsWith(HEADER + WAYPOINTS_HEADER + "W  P1     N4730.00000"));
+    public void writesTheHourOnATwelveHourClock() throws IOException {
+        for (int[] hours : new int[][]{{0, 12}, {1, 1}, {11, 11}, {12, 12}, {13, 1}, {15, 3}, {23, 11}}) {
+            GpxRoute route = format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, utc(2026, 6, 5, hours[0], 29, 21), "P1")));
+            assertTrue(write(route), write(route).contains(String.format(" 05-JUN-26 %02d:29:21 ", hours[1])));
+        }
     }
 
     @Test
-    public void replacesCharactersThatAreNotAscii() throws IOException {
-        String written = write(format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, null, "Z\u00fcrich\u0001; K\u00e4se"))));
-        assertTrue(written, written.contains("W  Z?rich N4730.00000"));
-        assertTrue(written, written.contains(" K?se "));
+    public void writesTheCurrentTimeForPositionsWithoutTime() throws IOException {
+        String written = write(format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, null, "P1"))));
+        assertTrue(written, written.matches("(?s).* \\d{2}-[A-Z]{3}-\\d{2} \\d{2}:\\d{2}:\\d{2}   500 P1 .*"));
+        assertFalse(written, written.contains("01-JAN-70"));
+    }
+
+    @Test
+    public void writesLatin1AndReplacesOtherCharacters() throws IOException {
+        String written = write(format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, T0, "Z\u00fcrich\u0001; K\u00e4se \u20ac"))));
+        assertTrue(written, written.contains("W  Z\u00fcrich N4730.00000"));
+        assertTrue(written, written.contains(" K\u00e4se ? "));
     }
 
     @Test

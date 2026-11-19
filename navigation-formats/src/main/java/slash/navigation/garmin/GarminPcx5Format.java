@@ -33,7 +33,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +44,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_16BE;
 import static java.nio.charset.StandardCharsets.UTF_16LE;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -69,12 +70,11 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
     private static final String RECORD_TYPES = "HIMUFRWT";
     private static final int DEFAULT_COMMENT_COLUMN = 60;
     private static final int UNKNOWN_ELEVATION = -9999;
-    // the PCX icon number of the "Waypoint" icon, which is the default of the GPSBabel reader and writer
-    static final int WAYPOINT_ICON_NUMBER = 18;
+    // the symbol number GPSBabel 1.5.4 writes for a waypoint without an icon
+    static final int WAYPOINT_ICON_NUMBER = 0;
     // Qt's QDate::fromString() reads the two digit year "yy" in the 1900s
     private static final int TWO_DIGIT_YEAR_BASE = 1900;
     private static final int DESCRIPTION_WIDTH = 40;
-    private static final int ROUTE_NAME_LENGTH = 20;
     private static final Pattern NUMBER = Pattern.compile("[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?");
     private static final Pattern DATE = Pattern.compile("(\\d{2})-([A-Za-z]{3})-(\\d{2})");
     private static final Pattern TIME = Pattern.compile("(\\d{2}):(\\d{2}):(\\d{2})");
@@ -129,7 +129,8 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
             return new String(bytes, 2, bytes.length - 2, UTF_16LE);
         if (bytes.length >= 2 && (bytes[0] & 0xFF) == 0xFE && (bytes[1] & 0xFF) == 0xFF)
             return new String(bytes, 2, bytes.length - 2, UTF_16BE);
-        return new String(bytes, ISO_8859_1);
+        // GPSBabel passes bytes through and its GPX is read as UTF-8: bytes that are no UTF-8 become U+FFFD
+        return new String(bytes, UTF_8);
     }
 
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
@@ -393,12 +394,14 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
         return result.toString();
     }
 
-    static String formatTime(CompactCalendar time) {
-        // no time is written as GPSBabel does it for a waypoint without a creation time: as the epoch
-        long seconds = time == null ? 0 : Math.floorDiv(time.getTimeInMillis(), 1000L);
-        LocalDateTime dateTime = LocalDateTime.ofEpochSecond(seconds, 0, UTC);
+    static String formatTime(CompactCalendar time, ZoneId zone) {
+        // GPSBabel 1.5.4 writes the local time on a 12 hour clock and, for a waypoint without time, the current time
+        long millis = time == null ? System.currentTimeMillis() : time.getTimeInMillis();
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), zone);
+        // the hour is written on a 12 hour clock, 1 to 12, without an am/pm marker
+        int hour12 = dateTime.getHour() % 12 == 0 ? 12 : dateTime.getHour() % 12;
         return String.format("%02d-%s-%02d %02d:%02d:%02d", dateTime.getDayOfMonth(), MONTHS[dateTime.getMonthValue() - 1],
-                Math.floorMod(dateTime.getYear(), 100), dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond());
+                Math.floorMod(dateTime.getYear(), 100), hour12, dateTime.getMinute(), dateTime.getSecond());
     }
 
     /**
@@ -411,27 +414,14 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
         return "W  " + cutAndPad(shortName, 6) + " " +
                 (lat < 0.0 ? 'S' : 'N') + formatFixed(Math.abs(lat), 8, 5, true) + " " +
                 (lon < 0.0 ? 'W' : 'E') + formatFixed(Math.abs(lon), 11, 5, true) + " " +
-                formatTime(time) + " " +
+                formatTime(time, ZoneId.systemDefault()) + " " +
                 formatFixed(elevation == null ? UNKNOWN_ELEVATION : elevation, 5, 0, false) + " " +
                 cutAndPad(description, 40) + " " + formatProximity() + "  " + symbol + "\n";
     }
 
-    // mkshort() with a length of 20 and no whitespace
-    private static String shortenRouteName(String name) {
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < name.length(); i++) {
-            if (!Character.isWhitespace(name.charAt(i)))
-                result.append(name.charAt(i));
-        }
-        return result.substring(0, Math.min(result.length(), ROUTE_NAME_LENGTH));
-    }
-
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         StringBuilder buffer = new StringBuilder(WRITE_HEADER);
-        if (Route.equals(route.getCharacteristics())) {
-            String name = stripIllegalXmlCharacters(asRouteName(route.getName()));
-            buffer.append("\n\nR  ").append(shortenRouteName(name != null ? name : "Rte001")).append("\n");
-        }
+        // GPSBabel 1.5.4 writes the positions of every kind of route as waypoints
         buffer.append(WAYPOINTS_HEADER);
 
         List<GpxPosition> positions = route.getPositions();
@@ -447,6 +437,6 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
             buffer.append(formatWaypointLine(name, position.getLongitude(), position.getLatitude(), position.getTime(),
                     position.getElevation(), desc, WAYPOINT_ICON_NUMBER));
         }
-        target.write(buffer.toString().getBytes(US_ASCII));
+        target.write(buffer.toString().getBytes(ISO_8859_1));
     }
 }
