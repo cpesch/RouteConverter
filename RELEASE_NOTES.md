@@ -10,6 +10,7 @@
 
 ### Fixes
 
+- Dragging positions to another row of the positions table no longer mixes up the order of the positions in between (#401)
 - Switching a map overlay on or off while the map is redrawing no longer stops the map from drawing
 - Online maps and overlays no longer show up twice in Karten > Online when a leftover file sits next to the downloaded map catalog (#395)
 - RouteConverter started from the Debian package now shows the startup splash screen, like the Linux jar does (#394)
