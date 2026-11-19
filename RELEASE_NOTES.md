@@ -4,8 +4,10 @@
 
 ### New features
 
+- Tour Exchange Format (.tef) files can now be written. No program is known to import them; for Map&Guide use the BCR format (#386)
 ### Changes
 
+- Tour Exchange Format (.tef) files are read by RouteConverter itself and no longer need GPSBabel (#386)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 
 ### Fixes
