@@ -320,27 +320,46 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableRowsUpdated(0, rowIndices[rowIndices.length - 1]);
     }
 
+    // BaseRoute#move swaps two positions, so a move by more than one row is done one row at a
+    // time: the positions passed shift by one and keep their order (#401)
     public void up(int[] rowIndices, int delta) {
         Arrays.sort(rowIndices);
-        for (int row : rowIndices) {
-            // protect against IndexArrayOutOfBoundsException
-            if(row - delta < 0)
-                continue;
+        int[] rows = rowIndices.clone();
+        for (int step = 0; step < delta; step++) {
+            // rows stacked at the top stay where they are
+            int firstFreeRow = 0;
+            for (int i = 0; i < rows.length; i++) {
+                int row = rows[i];
+                if (row - 1 < firstFreeRow) {
+                    firstFreeRow = row + 1;
+                    continue;
+                }
 
-            getRoute().move(row, row - delta);
-            fireTableRowsUpdated(row - delta, row);
+                getRoute().move(row, row - 1);
+                fireTableRowsUpdated(row - 1, row);
+                rows[i] = row - 1;
+                firstFreeRow = row;
+            }
         }
     }
 
     public void down(int[] rowIndices, int delta) {
-        int[] reverted = Range.revert(rowIndices);
-        for (int row : reverted) {
-            // protect against IndexArrayOutOfBoundsException
-            if(row + delta >= getRowCount())
-                continue;
+        int[] rows = Range.revert(rowIndices);
+        for (int step = 0; step < delta; step++) {
+            // rows stacked at the bottom stay where they are
+            int lastFreeRow = getRowCount() - 1;
+            for (int i = 0; i < rows.length; i++) {
+                int row = rows[i];
+                if (row + 1 > lastFreeRow) {
+                    lastFreeRow = row - 1;
+                    continue;
+                }
 
-            getRoute().move(row, row + delta);
-            fireTableRowsUpdated(row, row + delta);
+                getRoute().move(row, row + 1);
+                fireTableRowsUpdated(row, row + 1);
+                rows[i] = row + 1;
+                lastFreeRow = row;
+            }
         }
     }
 
