@@ -70,11 +70,11 @@
                       <columns value="5"/>
                     </properties>
                   </component>
-                  <component id="2c8aa" class="javax.swing.JLabel">
+                  <component id="2c8aa" class="javax.swing.JLabel" binding="labelDistanceUnit">
                     <constraints/>
                     <properties>
                       <maximumSize width="-1" height="14"/>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-distance-meter"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-distance-unit"/>
                     </properties>
                   </component>
                 </children>
@@ -150,10 +150,10 @@
                       <columns value="5"/>
                     </properties>
                   </component>
-                  <component id="speed-unit-label" class="javax.swing.JLabel">
+                  <component id="speed-unit-label" class="javax.swing.JLabel" binding="labelSpeedUnit">
                     <constraints/>
                     <properties>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-speed-kmh"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-speed-unit"/>
                     </properties>
                   </component>
                 </children>
@@ -208,7 +208,7 @@
                   <component id="33bd4" class="javax.swing.JLabel" binding="labelDouglasPeucker">
                     <constraints/>
                     <properties>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-significance-meter"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-significance-unit"/>
                     </properties>
                   </component>
                 </children>
