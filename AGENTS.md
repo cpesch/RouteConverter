@@ -10,11 +10,11 @@ ship under the GPL (hence the per-file header below).
 
 ## Build & test
 
-Java 21, Maven via the bundled wrapper:
+Java 25, Maven via the bundled wrapper:
 
 ```sh
-# macOS/Linux: java is often not on PATH — activate a JDK 21 first, e.g. sdkman:
-source ~/.sdkman/bin/sdkman-init.sh && sdk use java 21   # pin may vary; `ls ~/.sdkman/candidates/java/`
+# macOS/Linux: java is often not on PATH — activate a JDK 25 first, e.g. sdkman:
+source ~/.sdkman/bin/sdkman-init.sh && sdk use java 25   # pin may vary; `ls ~/.sdkman/candidates/java/`
 
 ./mvnw --batch-mode verify                 # full build + tests + coverage
 ./mvnw --batch-mode -pl <module> -am test  # one module (-am pulls sibling deps; add -U after dep changes)
@@ -68,13 +68,13 @@ as `<compilerArgs><arg>-Xlint:all</arg></compilerArgs>`; and run with
 `MAVEN_OPTS="-Duser.language=en -Duser.country=US"` or javac emits localised messages
 that cannot be bucketed by category.
 
-CI (`build.yml`) runs two jobs on every push: `Java 21` (the minimum; tests) and
+CI (`build.yml`) runs two jobs on every push: `Java 25` (the minimum; tests) and
 `SpotBugs` (compiles, runs no tests). Both are the required checks on `master`.
 CI test builds pass `-Dspotbugs.skip=true -Dshade.skip=true`: no test reads a
 shaded jar, and `shade.skip` (root pom, default `false`) exists only because the
-shade plugin has no user property for `skip`. Java 25 and the Windows build
-(`Java 21 on Windows`) run only on `master` and `3.*` pushes, nightly, and on manual
-dispatch. They are skipped on feature and factory branches, so a Windows-only bug
+shade plugin has no user property for `skip`. The Windows build
+(`Java 25 on Windows`) runs only on `master` and `3.*` pushes, nightly, and on manual
+dispatch. It is skipped on feature and factory branches, so a Windows-only bug
 shows up after the merge. To check a branch on Windows first, run
 `gh workflow run build.yml --ref <branch>`. A newer push to a non-`master`/`3.*`
 branch cancels the older run. The Linux jobs build modules in parallel (`-T 1C`);
@@ -85,8 +85,8 @@ for local builds): with `-T 1C`, `1.5C` started 116 test JVMs on a 4-core runner
 That took the Maven step from about 4 min to 1–2 min per job (2026-10-11 benchmark).
 The bundled-JRE version is the single source of truth `<jre.version>` in the root
 `pom.xml` — keep it in sync with the CI `setup-java` version on JDK bumps.
-A push whose head commit message contains `[full-ci]` runs all four jobs (`Java 21`, `Java 25`, `SpotBugs`,
-`Java 21 on Windows`) on a feature branch — the alternative to `gh workflow run build.yml --ref <branch>`.
+A push whose head commit message contains `[full-ci]` runs all three jobs (`Java 25`, `SpotBugs`,
+`Java 25 on Windows`) on a feature branch — the alternative to `gh workflow run build.yml --ref <branch>`.
 `nightly-triage.yml` triages failed scheduled runs: it re-runs the failed jobs once — green means `flaky` (a
 ledger issue, or an issue after 2 flaky nights in 7); red with an infra signature means ntfy only. Anything else
 is `deterministic`: one issue per signature labelled `from:nightly` + `nightly:deterministic`, auto-approved only
@@ -179,7 +179,7 @@ coordination with that codebase.
   then **Sync Now**. Check the German value in the `l10n_master` PR before
   merging it. Root `crowdin.yml` sets `commit_message` +
   `append_commit_message: false` so Crowdin's commits carry no `[ci skip]`
-  and `build.yml` runs the required `Java 21` and `SpotBugs` checks on the
+  and `build.yml` runs the required `Java 25` and `SpotBugs` checks on the
   `l10n_master` PR (rc/rc-meta#773). No empty commit needed; if a PR still shows no
   checks, the marker is back.
 - **A translation fixed in the repo must also go into Crowdin, or the next
