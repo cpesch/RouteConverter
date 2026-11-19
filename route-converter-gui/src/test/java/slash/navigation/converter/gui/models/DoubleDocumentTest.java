@@ -47,6 +47,35 @@ public class DoubleDocumentTest {
     }
 
     @Test
+    public void constructorKeepsFractionBelowHalf() throws BadLocationException {
+        assertEquals("3.2", text(new DoubleDocument(3.2)));
+    }
+
+    @Test
+    public void constructorKeepsLargerFraction() throws BadLocationException {
+        assertEquals("32.8", text(new DoubleDocument(32.8)));
+    }
+
+    @Test
+    public void setDoubleReplacesWholeContent() throws BadLocationException {
+        DoubleDocument document = new DoubleDocument(42.0);
+
+        document.setDouble(9.1);
+
+        assertEquals("9.1", text(document));
+        assertEquals(9.1, document.getDouble(), 0.0);
+    }
+
+    @Test
+    public void setDoubleStripsFractionOfWholeNumbers() throws BadLocationException {
+        DoubleDocument document = new DoubleDocument(42.0);
+
+        document.setDouble(5.0);
+
+        assertEquals("5", text(document));
+    }
+
+    @Test
     public void getDoubleRoundTrips() {
         assertEquals(3.5, new DoubleDocument(3.5).getDouble(), 0.0);
     }

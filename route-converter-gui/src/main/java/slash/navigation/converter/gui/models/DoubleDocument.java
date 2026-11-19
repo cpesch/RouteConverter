@@ -36,9 +36,21 @@ import static java.lang.Double.parseDouble;
 public class DoubleDocument extends PlainDocument {
     public DoubleDocument(double aDouble) {
         try {
-            // eliminate fraction if possible
-            String string = Math.round(aDouble) == (int) aDouble ? Integer.toString((int) aDouble) : Double.toString(aDouble);
-            super.insertString(0, string, null);
+            super.insertString(0, formatDouble(aDouble), null);
+        } catch (BadLocationException e) {
+            // intentionally left empty
+        }
+    }
+
+    private static String formatDouble(double aDouble) {
+        // eliminate fraction if possible
+        return aDouble == Math.floor(aDouble) ? Long.toString((long) aDouble) : Double.toString(aDouble);
+    }
+
+    public void setDouble(double aDouble) {
+        try {
+            super.remove(0, getLength());
+            super.insertString(0, formatDouble(aDouble), null);
         } catch (BadLocationException e) {
             // intentionally left empty
         }
