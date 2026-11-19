@@ -116,6 +116,15 @@ public class OziExplorerRouteFormatTest {
     }
 
     @Test
+    public void waypointFormatReadsOtherOziExplorerFileTypesLikeGpsBabel() throws IOException {
+        String event = lines("OziExplorer Event File Version 1.0", "WGS 84", "Reserved 2", "Reserved 3",
+                "1,Event,47.500000,8.250000,,0,1,3,0,65535,Event desc,0,0,0,328,6,0,17");
+        assertEquals(1, read(new OziExplorerWaypointFormat(), event).size());
+        assertTrue(read(new OziExplorerRouteFormat(), event).isEmpty());
+        assertTrue(read(new OziExplorerTrackFormat(), event).isEmpty());
+    }
+
+    @Test
     public void unknownDatumYieldsNoRoute() throws IOException {
         assertTrue(read(new OziExplorerTrackFormat(), plt("Nowhere Datum 1999", "Feet", "47.5,8.25,0,100,,,")).isEmpty());
     }
@@ -287,8 +296,9 @@ public class OziExplorerRouteFormatTest {
         String name = "a b c d e f g h i j k l m n o p q r s t";
         assertEquals(lines("OziExplorer Waypoint File Version 1.1", "WGS 84", "Reserved 2", "Reserved 3",
                 "1," + name + ",47.500000,8.250000,,0,1,3,0,65535," + name + ",0,0,0,-777,6,0,17"), written);
-        // the input route is not touched
-        assertEquals(longDescription, route.getPosition(0).getDescription());
+        // like the old GPSBabel-backed class, the route's descriptions are reduced as well
+        assertEquals(name.replace(" ", " "), route.getPosition(0).getDescription().trim());
+        assertEquals(40, route.getPosition(0).getDescription().length());
     }
 
     @Test

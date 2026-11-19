@@ -47,7 +47,7 @@ public class OziExplorerRouteFormat extends OziExplorerFormat {
         return Route;
     }
 
-    protected String getFileTypeMarker() {
-        return "Route File";
+    protected boolean isFileType(String firstLine) {
+        return firstLine.contains("Route File");
     }
 }

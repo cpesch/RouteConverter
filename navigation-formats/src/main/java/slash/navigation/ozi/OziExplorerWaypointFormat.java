@@ -47,7 +47,8 @@ public class OziExplorerWaypointFormat extends OziExplorerFormat {
         return Waypoints;
     }
 
-    protected String getFileTypeMarker() {
-        return "Waypoint File";
+    protected boolean isFileType(String firstLine) {
+        // GPSBabel's ozi reader takes every file that is neither a track nor a route for a waypoint file
+        return !firstLine.contains("Track Point") && !firstLine.contains("Route File");
     }
 }

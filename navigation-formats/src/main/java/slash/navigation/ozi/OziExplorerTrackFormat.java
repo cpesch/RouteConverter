@@ -47,7 +47,7 @@ public class OziExplorerTrackFormat extends OziExplorerFormat {
         return Track;
     }
 
-    protected String getFileTypeMarker() {
-        return "Track Point";
+    protected boolean isFileType(String firstLine) {
+        return firstLine.contains("Track Point");
     }
 }

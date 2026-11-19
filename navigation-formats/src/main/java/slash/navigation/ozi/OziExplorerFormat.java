@@ -71,9 +71,10 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
     protected abstract RouteCharacteristics getRouteCharacteristics();
 
     /**
-     * @return the text the first line of a file of this format has to contain
+     * Decides from the first line of a file whether it is of this format. Like GPSBabel's ozi reader a line
+     * naming a track or a route file is one, everything else starting with the OziExplorer prefix is read as waypoints.
      */
-    protected abstract String getFileTypeMarker();
+    protected abstract boolean isFileType(String firstLine);
 
     // reading
 
@@ -180,7 +181,7 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
             return null;
 
         String first = lines.get(0);
-        if (!first.startsWith("OziExplorer ") || !first.contains(getFileTypeMarker()))
+        if (!first.startsWith("OziExplorer ") || !isFileType(first))
             return null;
 
         int datum = Datums.lookupIndex(lines.get(1));
@@ -360,8 +361,19 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
     }
 
     private List<WritePoint> prepareForWriting(GpxRoute route, int startIndex, int endIndex) {
+        // like GPSBabel's old OziExplorerFormat.prepareForWriting() this modifies the route
+        route.setCharacteristics(getRouteCharacteristics());
+
         List<WritePoint> result = new ArrayList<>();
         List<GpxPosition> positions = route.getPositions();
+        // all descriptions are reduced, not only the ones in the range to be written
+        for (GpxPosition position : positions) {
+            String description = position.getDescription();
+            if (description != null) {
+                description = description.substring(0, min(description.length(), MAXIMUM_DESCRIPTION_LENGTH));
+                position.setDescription(description.replace(",", " "));
+            }
+        }
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
             if (position.getLatitude() == null || position.getLongitude() == null)
