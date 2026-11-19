@@ -39,7 +39,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.nio.charset.Charset.forName;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -62,8 +62,8 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
     private static final int DESCRIPTION_LENGTH = 50;
     private static final int FIELD_COUNT = 3;
     private static final String RECORD_DELIMITER = "\n";
-    // xcsv without ENCODING statement: single byte characters
-    private static final Charset CHARSET = forName("windows-1252");
+    // GPSBabel 1.5.4 passes the characters through as UTF-8
+    private static final Charset CHARSET = UTF_8;
 
     public String getExtension() {
         return ".xcsv";
@@ -204,7 +204,7 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
             if (c != BAD_CHARACTER)
                 result.append(c);
         }
-        // "%-.Ns" cuts after N bytes, single byte characters in this charset
+        // "%-.Ns" cuts after N characters
         return result.length() > maximumLength ? result.substring(0, maximumLength) : result.toString();
     }
 

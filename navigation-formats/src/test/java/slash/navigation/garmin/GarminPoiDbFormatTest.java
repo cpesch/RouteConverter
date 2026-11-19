@@ -62,7 +62,7 @@ public class GarminPoiDbFormatTest {
         GpxRoute route = new GpxRoute(new Gpx10Format(), Waypoints, "route", null, asList(positions));
         ByteArrayOutputStream target = new ByteArrayOutputStream();
         format.write(route, target, 0, positions.length);
-        return new String(target.toByteArray(), "windows-1252");
+        return new String(target.toByteArray(), "UTF-8");
     }
 
     private static GpxPosition position(Double longitude, Double latitude, String description) {
@@ -109,9 +109,8 @@ public class GarminPoiDbFormatTest {
     }
 
     @Test
-    public void readsWindows1252Characters() throws IOException {
-        byte[] content = {'1', '1', '.', '1', ',', '4', '7', '.', '1', ',', 'K', (byte) 0xE4, 's', 'e', ',', 'x', '\n'};
-        assertEquals("Käse; x", read(content).get(0).getPosition(0).getDescription());
+    public void readsUtf8Characters() throws IOException {
+        assertEquals("K\u00E4se; \u20AC", read("11.1,47.1,K\u00E4se,\u20AC\n").get(0).getPosition(0).getDescription());
     }
 
     @Test
@@ -202,12 +201,9 @@ public class GarminPoiDbFormatTest {
     }
 
     @Test
-    public void writesNonAsciiAsWindows1252() throws IOException {
-        ByteArrayOutputStream target = new ByteArrayOutputStream();
-        GpxRoute route = new GpxRoute(new Gpx10Format(), Waypoints, null, null, asList(position(11.1, 47.1, "Käse")));
-        format.write(route, target, 0, 1);
-        byte[] bytes = target.toByteArray();
-        assertEquals((byte) 0xE4, bytes[bytes.length - 4]);
+    public void writesNonAsciiAsUtf8() throws IOException {
+        assertEquals("11.10000,47.10000,\u00C4 1,\u00C4 1\n", write(position(11.1, 47.1, "\u00C4 1")));
+        assertEquals("11.10000,47.10000,\u00DF2,\u00DF2\n", write(position(11.1, 47.1, "\u00DF,2")));
     }
 
     @Test
