@@ -22,6 +22,7 @@ package slash.navigation.base;
 
 import slash.navigation.babel.AlanTrackLogFormat;
 import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
+import slash.navigation.tef.TourExchangeFormat;
 import slash.navigation.babel.GarminPcx5Format;
 
 import java.io.File;
@@ -64,7 +65,9 @@ public abstract class ReadWriteBase {
         NavigationFormat targetFormat = targetResult.getFormat();
         assertEquals(sourceFormat.getName(), targetFormat.getName());
         // see AlanWaypointsAndRoutesFormat#isSupportsMultipleRoutes
-        if (sourceFormat.isSupportsMultipleRoutes() || sourceFormat instanceof AlanWaypointsAndRoutesFormat)
+        // TourExchangeFormat is read as a waypoints route plus a route, written from one of them
+        if (sourceFormat.isSupportsMultipleRoutes() || sourceFormat instanceof AlanWaypointsAndRoutesFormat ||
+                sourceFormat instanceof TourExchangeFormat)
             assertEquals(sourceResult.getAllRoutes().size(), targetResult.getAllRoutes().size());
         else
             assertEquals(1, targetResult.getAllRoutes().size());
@@ -73,13 +76,21 @@ public abstract class ReadWriteBase {
         List<BaseRoute<?, ?>> targetRoutes = targetResult.getAllRoutes();
         // GPSBabel creates a route and a track out of a simple GarminPcx5 track if called with -r and -t
         // and out of a simple AlanTrk track if called with -t
-        int count = targetFormat instanceof GarminPcx5Format || targetFormat instanceof AlanTrackLogFormat ?
-                targetRoutes.size() : sourceRoutes.size();
-        for (int i = 0; i < count; i++) {
-            BaseRoute sourceRoute = sourceRoutes.get(i);
-            BaseRoute targetRoute = targetRoutes.get(i);
-            compareRouteMetaData(sourceRoute, targetRoute);
-            comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, !targetRoutes.isEmpty());
+        if (targetFormat instanceof TourExchangeFormat) {
+            // a Tour Exchange Format file is read as a waypoints route plus a route but only the one route
+            // is written; it comes back as both, named after the writing software, so compare that route's positions
+            BaseRoute sourceRoute = sourceResult.getTheRoute();
+            BaseRoute targetRoute = targetResult.getTheRoute();
+            comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, true);
+        } else {
+            int count = targetFormat instanceof GarminPcx5Format || targetFormat instanceof AlanTrackLogFormat ?
+                    targetRoutes.size() : sourceRoutes.size();
+            for (int i = 0; i < count; i++) {
+                BaseRoute sourceRoute = sourceRoutes.get(i);
+                BaseRoute targetRoute = targetRoutes.get(i);
+                compareRouteMetaData(sourceRoute, targetRoute);
+                comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, !targetRoutes.isEmpty());
+            }
         }
 
         if (parserCallback != null)
