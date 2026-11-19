@@ -61,6 +61,7 @@ import slash.navigation.rtz.RtzFormat;
 import slash.navigation.simple.*;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
+import slash.navigation.tef.TourExchangeFormat;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 

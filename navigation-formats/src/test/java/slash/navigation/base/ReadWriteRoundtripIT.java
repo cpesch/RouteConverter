@@ -288,6 +288,11 @@ public class ReadWriteRoundtripIT {
     }
 
     @Test
+    public void testTourExchangeReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.tef");
+    }
+
+    @Test
     public void testTourReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.tour");
     }
