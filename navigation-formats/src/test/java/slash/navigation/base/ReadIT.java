@@ -24,6 +24,7 @@ import org.junit.AfterClass;
 import org.junit.Test;
 import slash.navigation.babel.GarminPoiDbFormat;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.igo.Igo8TrackFormat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -211,8 +212,14 @@ public class ReadIT {
     }
 
     @Test
-    public void testMicrosoftMapPointFilesAreValid() throws IOException {
-        readFiles(".ptm");
+    public void testMicrosoftMapPointFilesAreNotClaimedByIgo8Track() throws IOException {
+        // there is no MapPoint format; the files were only "read" by the old GPSBabel-backed iGO8 Track format,
+        // which accepts any binary file, while the native one rejects them (spec 00083.5 detection guard)
+        readFiles(".ptm", file -> {
+            ParserResult result = parser.read(createHermeticSampleFile(file), parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(file.getName())));
+            assertNotNull(result);
+            assertFalse("iGO8 Track must not claim " + file, ((Object) result.getFormat()) instanceof Igo8TrackFormat);
+        });
     }
 
     @Test
