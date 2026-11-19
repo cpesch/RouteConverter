@@ -6,6 +6,7 @@
 
 ### Changes
 
+- Geocaching.com/EasyGPS (.loc) files are read and written by RouteConverter itself and no longer need GPSBabel (#384)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 
 ### Fixes
