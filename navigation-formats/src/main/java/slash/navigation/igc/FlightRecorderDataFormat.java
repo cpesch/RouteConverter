@@ -382,13 +382,10 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
             BigDecimal longitude = formatPosition(position.getLongitude());
             if (latitude == null || longitude == null)
                 continue;
+            // GPSBabel 1.5.4 writes a position without time as the epoch (HFDTE010170, B000000)
             BigDecimal elevation = formatElevation(position.getElevation());
-            fixes.add(new Fix(latitude.doubleValue(), longitude.doubleValue(), position.getTime(),
+            fixes.add(new Fix(latitude.doubleValue(), longitude.doubleValue(), position.getTime() != null ? position.getTime() : fromMillis(0),
                     elevation != null ? Double.valueOf(elevation.doubleValue()) : null));
-        }
-        for (Fix fix : fixes) {
-            if (fix.time == null)
-                throw new IOException("Could not write " + getName() + ": Bad track timestamp");
         }
 
         String name = asRouteName(route.getName());

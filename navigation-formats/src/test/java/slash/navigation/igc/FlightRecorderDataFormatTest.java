@@ -36,7 +36,6 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -429,17 +428,22 @@ public class FlightRecorderDataFormatTest {
     }
 
     @Test
-    public void refusesToWriteTrackWithoutTimestamps() {
-        GpxRoute route = track("GNSSALTTRK", position(LONGITUDE, LATITUDE, 1050.0, null));
-        assertThrows(IOException.class, () -> write(route));
+    public void writesPositionsWithoutTimestampAsEpoch() throws IOException {
+        List<String> lines = write(track("GNSSALTTRK",
+                position(LONGITUDE, LATITUDE, 1050.0, null),
+                position(LONGITUDE, LATITUDE, 1051.0, null)));
+        assertEquals("HFDTE010170", lines.get(1));
+        assertEquals("B0000004807123N01116123EA0000001050", lines.get(3));
+        assertEquals("B0000004807123N01116123EA0000001051", lines.get(4));
     }
 
     @Test
-    public void refusesToWriteIfAnyPositionLacksTimestamp() {
-        GpxRoute route = track("GNSSALTTRK",
-                position(LONGITUDE, LATITUDE, 1050.0, "2019-09-28T10:00:00Z"),
-                position(LONGITUDE, LATITUDE, 1050.0, null));
-        assertThrows(IOException.class, () -> write(route));
+    public void writesPositionWithoutTimestampAmongTimedOnesAsEpoch() throws IOException {
+        List<String> lines = write(track("GNSSALTTRK",
+                position(LONGITUDE, LATITUDE, 1.0, "2019-09-28T10:00:00Z"),
+                position(LONGITUDE, LATITUDE, 2.0, null)));
+        assertEquals("HFDTE280919", lines.get(1));
+        assertEquals("B000000", lines.get(4).substring(0, 7));
     }
 
     @Test
