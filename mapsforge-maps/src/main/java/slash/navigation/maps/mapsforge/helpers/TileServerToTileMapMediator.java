@@ -27,6 +27,8 @@ import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
 
 import javax.swing.event.TableModelListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Locale.ROOT;
 import static javax.swing.event.TableModelEvent.*;
@@ -42,6 +44,9 @@ public class TileServerToTileMapMediator {
     private static final String MAPBOX_API_KEY = APIKeyRegistry.getInstance().getAPIKey("mapbox", "map");
     private final ItemTableModel<TileServer> sourceModel;
     private final ItemTableModel<TileDownloadMap> destinationModel;
+    // index-aligned with the source model, which is append-only and unsorted; the destination model may be
+    // sorted and may hold rows the source does not, so its row indices must never be derived from source rows
+    private final List<TileDownloadMap> converted = new ArrayList<>();
     private TableModelListener listener;
 
     public TileServerToTileMapMediator(ItemTableModel<TileServer> sourceModel, ItemTableModel<TileDownloadMap> destinationModel) {
@@ -57,6 +62,7 @@ public class TileServerToTileMapMediator {
             }
         };
         sourceModel.addTableModelListener(listener);
+        handleAdd(0, sourceModel.getRowCount() - 1);
     }
 
     public void dispose() {
@@ -64,7 +70,7 @@ public class TileServerToTileMapMediator {
         listener = null;
     }
 
-    private TileDownloadMap convert(TileServer tileServer) {
+    static TileDownloadMap convert(TileServer tileServer) {
         TileServerMapSource tileSource = new TileServerMapSource(tileServer);
         if (THUNDER_FOREST_API_KEY != null && tileServer.copyright().toLowerCase(ROOT).contains("thunderforest"))
             tileSource.setApiKey(THUNDER_FOREST_API_KEY);
@@ -73,26 +79,37 @@ public class TileServerToTileMapMediator {
         if (tileServer.copyright().toLowerCase(ROOT).contains("openstreetmap"))
             tileSource.setReferer("https://www.routeconverter.com");
 
-        return new TileDownloadMap(tileServer.id(), tileServer.description(), tileServer.active(), tileSource, tileServer.copyrightText());
+        // description is the human-readable name shown and sorted by, url is the stable id used as preference key
+        return new TileDownloadMap(tileServer.description(), tileServer.id(), tileServer.active(), tileSource, tileServer.copyrightText());
     }
 
     private void handleAdd(int firstRow, int lastRow) {
         for (int i = firstRow; i < lastRow + 1; i++) {
-            TileServer tileServer = sourceModel.getItem(i);
-            TileDownloadMap map = convert(tileServer);
-            destinationModel.add(i, map);
+            TileDownloadMap map = convert(sourceModel.getItem(i));
+            converted.add(i, map);
+            // the destination's comparator decides the position
+            destinationModel.addOrUpdateItem(map);
         }
     }
 
     private void handleUpdate(int firstRow, int lastRow) {
-        for (int i = firstRow; i < lastRow + 1; i++) {
-            TileServer tileServer = sourceModel.getItem(i);
-            TileDownloadMap map = convert(tileServer);
-            destinationModel.update(i, map);
+        int last = Math.min(lastRow, Math.min(sourceModel.getRowCount(), converted.size()) - 1);
+        for (int i = firstRow; i <= last; i++) {
+            TileDownloadMap old = converted.get(i);
+            TileDownloadMap map = convert(sourceModel.getItem(i));
+            converted.set(i, map);
+            // source updates re-add an equal record, so the sort key cannot change: keep the row in place
+            int index = destinationModel.getIndex(old);
+            if (index != -1)
+                destinationModel.update(index, map);
         }
     }
 
     private void handleRemove(int firstRow, int lastRow) {
-        destinationModel.remove(firstRow, lastRow);
+        for (int i = Math.min(lastRow, converted.size() - 1); i >= firstRow; i--) {
+            TileDownloadMap old = converted.remove(i);
+            if (destinationModel.contains(old))
+                destinationModel.removeItem(old);
+        }
     }
 }
