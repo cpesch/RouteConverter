@@ -501,8 +501,19 @@ public class ConvertPanel implements PanelInTab {
      * bezel onto the center line of the caption and buttons. Then the text in the combo boxes sits
      * 1 px below the caption text, so the caption gets a top inset of 2 px to share its baseline.
      * FlatLaf already lines them up. The caption is as high as the combo box.
+     * <p>
+     * The map toggle in the format row is painted as a plain icon without a bezel, so the format
+     * row is only as high as its text and the format, position list and statistics rows are evenly
+     * spaced. It is as wide as the manage button below, so both icons line up.
      */
     private void alignPositionListRows() {
+        int padding = Math.max(0, (buttonManagePositionLists.getPreferredSize().width -
+                buttonShowNonSelectedPositionLists.getIcon().getIconWidth()) / 2);
+        buttonShowNonSelectedPositionLists.setBorder(BorderFactory.createEmptyBorder(0, padding, 0, padding));
+        buttonShowNonSelectedPositionLists.setBorderPainted(false);
+        buttonShowNonSelectedPositionLists.setContentAreaFilled(false);
+        buttonShowNonSelectedPositionLists.setFocusPainted(false);
+
         if ("Aqua".equals(UIManager.getLookAndFeel().getID())) {
             comboBoxPositionLists.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
             comboBoxRouteCharacteristics.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
