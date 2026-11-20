@@ -498,13 +498,15 @@ public class ConvertPanel implements PanelInTab {
      * Lines up the position list combo box, the characteristics combo box and the buttons of
      * the position list row. Aqua paints a combo box bezel 2 px above the center of the component -
      * room for the focus ring below - so on Aqua both combo boxes get a top inset that moves the
-     * bezel onto the center line of the caption and buttons. FlatLaf already lines them up.
-     * The caption is as high as the combo box.
+     * bezel onto the center line of the caption and buttons. Then the text in the combo boxes sits
+     * 1 px below the caption text, so the caption gets a top inset of 2 px to share its baseline.
+     * FlatLaf already lines them up. The caption is as high as the combo box.
      */
     private void alignPositionListRows() {
         if ("Aqua".equals(UIManager.getLookAndFeel().getID())) {
             comboBoxPositionLists.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
             comboBoxRouteCharacteristics.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+            labelPositionListCaption.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         }
 
         labelPositionListCaption.setPreferredSize(new Dimension(labelPositionListCaption.getPreferredSize().width,
