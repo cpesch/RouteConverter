@@ -1589,7 +1589,7 @@ public class ConvertPanel implements PanelInTab {
 
             int[] sortedRows = rows.clone();
             Arrays.sort(sortedRows);
-            int delta = DropMoves.delta(sortedRows, index, rowCount);
+            int delta = RowMoves.delta(sortedRows, index, rowCount);
             if (delta == 0)
                 return;
 
