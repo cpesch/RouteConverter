@@ -18,41 +18,28 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.babel;
+package slash.navigation.compegps;
 
-import slash.navigation.gpx.GpxRoute;
+import slash.navigation.base.RouteCharacteristics;
+
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
- * Reads and writes iGO8 Track (.trk) files.
+ * Reads and writes CompeGPS Data (.wpt) files.
  *
  * @author Christian Pesch
  */
 
-public class Igo8TrackFormat extends BabelFormat {
+public class CompeGPSDataWaypointFormat extends CompeGPSDataFormat {
     public String getExtension() {
-        return ".trk";
+        return ".wpt";
     }
 
     public String getName() {
-        return "iGO8 Track (*" + getExtension() + ")";
+        return "CompeGPS Data Waypoint (*" + getExtension() + ")";
     }
 
-    protected String getFormatName() {
-        return "igo8";
-    }
-
-    public boolean isSupportsMultipleRoutes() {
-        return false;
-    }
-
-    protected boolean isStreamingCapable() {
-        return false;
-    }
-
-    protected boolean isValidRoute(GpxRoute route) {
-        // is really greedy in parsing the data of NetS files
-        double length = route.getDistance();
-        double distancePerPosition = length / route.getPositionCount();
-        return distancePerPosition < 1000000.0;
+    protected RouteCharacteristics getRouteCharacteristics() {
+        return Waypoints;
     }
 }

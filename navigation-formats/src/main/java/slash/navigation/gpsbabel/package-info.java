@@ -16,34 +16,15 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+
 */
-
-package slash.navigation.babel;
-
 /**
- * Reads and writes Geocaching.com/EasyGPS (.loc) files.
- *
- * @author Christian Pesch
+ * Helpers translated from <a href="https://github.com/GPSBabel/gpsbabel">GPSBabel</a>
+ * (GNU General Public License, version 2 or later) that are shared by the native format
+ * implementations: little-endian binary I/O, string and number helpers.
+ * <p>
+ * Translated to Java from GPSBabel util.cc, csv_util.cc (gpsbabel_1_7_0) and jeeps/gpsmath.cc
+ * (master 9c1e336) for RouteConverter; modified.
+ * Copyright (C) 2002-2014 Robert Lipe, Copyright (C) 2002 Alex Mottram, Copyright (C) 1999 Alan Bleasby.
  */
-
-public class GeoCachingFormat extends BabelFormat {
-    public String getExtension() {
-        return ".loc";
-    }
-
-    public String getName() {
-        return "Geocaching.com/EasyGPS (*" + getExtension() + ")";
-    }
-
-    protected String getFormatName() {
-        return "geo";
-    }
-
-    public boolean isSupportsMultipleRoutes() {
-        return false;
-    }
-
-    protected boolean isStreamingCapable() {
-        return true;
-    }
-}
+package slash.navigation.gpsbabel;

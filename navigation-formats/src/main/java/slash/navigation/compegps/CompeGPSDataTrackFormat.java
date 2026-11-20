@@ -18,36 +18,28 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.babel;
+package slash.navigation.compegps;
+
+import slash.navigation.base.RouteCharacteristics;
+
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
- * Reads Map &amp; Guide Tour Exchange Format (.tef) files.
+ * Reads and writes CompeGPS Data Track (.trk) files.
  *
  * @author Christian Pesch
  */
 
-public class TourExchangeFormat extends BabelFormat {
+public class CompeGPSDataTrackFormat extends CompeGPSDataFormat {
     public String getExtension() {
-        return ".tef";
+        return ".trk";
     }
 
     public String getName() {
-        return "Tour Exchange Format (*" + getExtension() + ")";
+        return "CompeGPS Data Track (*" + getExtension() + ")";
     }
 
-    protected String getFormatName() {
-        return "tef";
-    }
-
-    public boolean isSupportsWriting() {
-        return false;
-    }
-
-    public boolean isSupportsMultipleRoutes() {
-        return false; // just guesses
-    }
-
-    protected boolean isStreamingCapable() {
-        return true;
+    protected RouteCharacteristics getRouteCharacteristics() {
+        return Track;
     }
 }

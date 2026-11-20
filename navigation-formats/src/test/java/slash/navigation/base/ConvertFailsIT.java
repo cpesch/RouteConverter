@@ -24,12 +24,14 @@ import junit.framework.AssertionFailedError;
 import org.junit.Test;
 import slash.navigation.babel.*;
 import slash.navigation.ozi.*;
+import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 import slash.navigation.ovl.OvlFormat;
+import slash.navigation.tef.TourExchangeFormat;
 
 import static slash.navigation.base.ConvertBase.convertRoundtrip;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
