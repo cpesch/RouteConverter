@@ -18,29 +18,25 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.babel;
+package slash.navigation.ozi;
 
 import slash.navigation.base.RouteCharacteristics;
 
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.RouteCharacteristics.Track;
 
 /**
- * Writes OziExplorer Waypoint (.wpt) files.
+ * Reads and writes OziExplorer Track (.plt) files.
  *
  * @author Christian Pesch
  */
 
-public class OziExplorerWaypointFormat extends OziExplorerFormat {
+public class OziExplorerTrackFormat extends OziExplorerFormat {
     public String getExtension() {
-        return ".wpt";
+        return ".plt";
     }
 
     public String getName() {
-        return "OziExplorer Waypoint (*" + getExtension() + ")";
-    }
-
-    protected String[] getGlobalOptions() {
-        return new String[]{"-w"};
+        return "OziExplorer Track (*" + getExtension() + ")";
     }
 
     public boolean isSupportsMultipleRoutes() {
@@ -48,6 +44,10 @@ public class OziExplorerWaypointFormat extends OziExplorerFormat {
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return Waypoints;
+        return Track;
+    }
+
+    protected boolean isFileType(String firstLine) {
+        return firstLine.contains("Track Point");
     }
 }

@@ -18,36 +18,38 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.babel;
+package slash.navigation.ozi;
 
 import slash.navigation.base.RouteCharacteristics;
 
-import static slash.navigation.base.RouteCharacteristics.Route;
+
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
- * Writes OziExplorer Route (.rte) files.
+ * Reads and writes OziExplorer Waypoint (.wpt) files.
  *
  * @author Christian Pesch
  */
 
-public class OziExplorerRouteFormat extends OziExplorerFormat {
+public class OziExplorerWaypointFormat extends OziExplorerFormat {
     public String getExtension() {
-        return ".rte";
+        return ".wpt";
     }
 
     public String getName() {
-        return "OziExplorer Route (*" + getExtension() + ")";
-    }
-
-    protected String[] getGlobalOptions() {
-        return new String[]{"-r"};
+        return "OziExplorer Waypoint (*" + getExtension() + ")";
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return true;
+        return false;
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
-        return Route;
+        return Waypoints;
+    }
+
+    protected boolean isFileType(String firstLine) {
+        // GPSBabel's ozi reader takes every file that is neither a track nor a route for a waypoint file
+        return !firstLine.contains("Track Point") && !firstLine.contains("Route File");
     }
 }
