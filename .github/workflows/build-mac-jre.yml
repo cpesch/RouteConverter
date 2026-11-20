@@ -55,19 +55,26 @@ jobs:
         run: |
           if [[ -n "${{ inputs.jdk_version }}" ]]; then
             ver="${{ inputs.jdk_version }}"
+            build="$ver"
           else
             ver=$(sed -nE 's|.*<jre\.version>([^<]+)</jre\.version>.*|\1|p' \
                   pom.xml | head -1)
+            # exact Temurin build, so every platform links the same JDK
+            build=$(sed -nE 's|.*<jre\.build>([^<]+)</jre\.build>.*|\1|p' \
+                    pom.xml | head -1)
           fi
           [[ -n "$ver" ]] || { echo "::error::failed to resolve JDK version"; exit 1; }
+          [[ -n "$build" ]] || { echo "::error::failed to resolve jre.build"; exit 1; }
+          [[ "$build" == "$ver"* ]] || { echo "::error::jre.build $build is not a build of jre.version $ver"; exit 1; }
           echo "version=$ver" >> "$GITHUB_OUTPUT"
-          echo "JDK version: $ver"
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+          echo "JDK version: $ver, build $build"
 
       - name: Install Temurin JDK (aarch64)
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: ${{ steps.jdk.outputs.version }}
+          java-version: ${{ steps.jdk.outputs.build }}
           architecture: aarch64
       - name: Capture aarch64 JAVA_HOME
         id: jdk-aarch64
@@ -81,7 +88,7 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: ${{ steps.jdk.outputs.version }}
+          java-version: ${{ steps.jdk.outputs.build }}
           architecture: x64
       - name: Capture x64 JAVA_HOME
         id: jdk-x64
@@ -90,6 +97,17 @@ jobs:
           [[ -x "$JAVA_HOME/bin/jlink" ]] || { echo "::error::x64 jlink missing at $JAVA_HOME"; exit 1; }
           echo "home=$JAVA_HOME" >> "$GITHUB_OUTPUT"
           echo "x64 JAVA_HOME: $JAVA_HOME"
+
+      - name: Both arches must be the same JDK build
+        shell: bash
+        env:
+          AARCH64_HOME: ${{ steps.jdk-aarch64.outputs.home }}
+          X64_HOME:     ${{ steps.jdk-x64.outputs.home }}
+        run: |
+          rt() { sed -nE 's/^JAVA_RUNTIME_VERSION="(.*)"$/\1/p' "$1/release"; }
+          a=$(rt "$AARCH64_HOME"); x=$(rt "$X64_HOME")
+          echo "aarch64: $a, x64: $x"
+          [[ -n "$a" && "$a" == "$x" ]] || { echo "::error::aarch64 JDK $a and x64 JDK $x differ -- pin <jre.build> in pom.xml to a build both have"; exit 1; }
 
       - name: Resolve module list
         id: modules
