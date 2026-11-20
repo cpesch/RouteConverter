@@ -69,8 +69,8 @@ public class ReadIT {
     // files no real format reads: only the greedy GPSBabel-based Garmin POI Database format accepted them, as
     // junk positions; the native one rejects free text (#385, maintainer 2026-11-19), so they have no positions
     private static final List<String> ONLY_READ_BY_GPSBABEL_XCSV = asList("Ingolstadt-München.kmz",
-            "Maps_save_Outlook_Text.txt.url", "Maps_save_Thunderbird.txt.url", "PN01V005.RTE", "PN01V005.WPT",
-            "ak-gartrip.txt");
+            "Maps_save_Outlook_Nachrichtenformat.msg.url", "Maps_save_Outlook_Text.txt.url",
+            "Maps_save_Thunderbird.txt.url", "PN01V005.RTE", "PN01V005.WPT", "ak-gartrip.txt");
 
     private void readFiles(String extension) throws IOException {
         readFiles(extension, new TestFileCallback() {
