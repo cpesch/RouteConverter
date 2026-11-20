@@ -31,6 +31,8 @@ import java.util.ListResourceBundle;
 import java.util.ResourceBundle;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class JMenuHelperTest {
     private Application previousApplication;
@@ -57,6 +59,18 @@ public class JMenuHelperTest {
         assertEquals("File", menu.getText());
         assertEquals('F', menu.getMnemonic());
         assertEquals(0, menu.getDisplayedMnemonicIndex());
+    }
+
+    @Test
+    public void createsMenusWithIconFromOptionalIconKey() throws Exception {
+        installApplication(new TestBundle(new Object[][]{
+                {"sort-menu", "Sort"},
+                {"sort-menu-icon", "/slash/navigation/gui/helpers/icon-helper-test-a.png"},
+                {"plain-menu", "Plain"}
+        }));
+
+        assertNotNull(JMenuHelper.createMenu("sort").getIcon());
+        assertNull(JMenuHelper.createMenu("plain").getIcon());
     }
 
     @Test
