@@ -94,9 +94,14 @@ public class ManagePositionListsDialog extends SimpleDialog {
         // the type of the current position list, which is the marked one when exactly one is marked
         comboBoxCharacteristics.setModel(characteristicsModel);
         comboBoxCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
-        // Aqua paints a push button bezel 6 px inside the component, so the caption starts there, too
-        if ("Aqua".equals(UIManager.getLookAndFeel().getID()))
-            labelCharacteristics.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 0));
+        // Aqua paints the buttons with a 24 px icon as bevel buttons, 2 px inside the component, and the
+        // text buttons as push buttons, 8 px inside; as bevel buttons, too, all buttons are equally wide,
+        // and the caption starts at their left edge
+        if ("Aqua".equals(UIManager.getLookAndFeel().getID())) {
+            for (JButton button : new JButton[]{buttonNew, buttonRename, buttonDelete})
+                button.putClientProperty("JButton.buttonType", "bevel");
+            labelCharacteristics.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
+        }
         listPositionLists.addListSelectionListener(e -> {
             if (e.getValueIsAdjusting() || updating || modelChanging)
                 return;
