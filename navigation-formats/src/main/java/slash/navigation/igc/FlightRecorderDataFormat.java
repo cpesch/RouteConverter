@@ -382,10 +382,15 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
             BigDecimal longitude = formatPosition(position.getLongitude());
             if (latitude == null || longitude == null)
                 continue;
-            // GPSBabel 1.5.4 writes a position without time as the epoch (HFDTE010170, B000000)
             BigDecimal elevation = formatElevation(position.getElevation());
-            fixes.add(new Fix(latitude.doubleValue(), longitude.doubleValue(), position.getTime() != null ? position.getTime() : fromMillis(0),
+            fixes.add(new Fix(latitude.doubleValue(), longitude.doubleValue(), position.getTime(),
                     elevation != null ? Double.valueOf(elevation.doubleValue()) : null));
+        }
+        // igc.cc wr_header/wr_fix_record: "Bad track timestamp". GPSBabel 1.5.4 instead stamps the epoch (HFDTE010170,
+        // B000000), which invents 1970 fixes in a flight log - maintainer 2026-11-19: prefer correct behaviour
+        for (Fix fix : fixes) {
+            if (fix.time == null)
+                throw new IOException("Could not write " + getName() + ": Bad track timestamp");
         }
 
         String name = asRouteName(route.getName());
