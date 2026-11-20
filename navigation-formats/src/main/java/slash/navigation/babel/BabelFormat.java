@@ -315,17 +315,21 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> impleme
 
     // both
 
-    private File checkIfBabelExists(String path) {
+    /**
+     * Returns the file for the given path if it is a regular file, null otherwise.
+     * An empty path has to be rejected explicitly: since Java 24 {@code new File("")}
+     * denotes the current directory and exists.
+     */
+    static File checkIfBabelExists(String path) {
+        if (path == null || path.trim().isEmpty())
+            return null;
         File file = new File(path);
-        return file.exists() ? file : null;
+        return file.isFile() ? file : null;
     }
 
     private String findBabel() throws IOException {
         // 1. check if there is a preference and try to find its file
-        File babelFile = getBabelPathPreference() != null ? new File(getBabelPathPreference()) : null;
-        if (babelFile == null || !babelFile.exists()) {
-            babelFile = null;
-        }
+        File babelFile = checkIfBabelExists(getBabelPathPreference());
 
         // 2. look for "c:\Program Files\GPSBabel\gpsbabel.exe"
         if (babelFile == null && isWindows()) {
