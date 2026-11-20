@@ -361,11 +361,20 @@ public class TomTomPoiFormatTest {
     }
 
     @Test
-    public void cutsDescriptionAt255BytesButCountsAllCharactersInTheBlockSize() throws IOException {
+    public void cutsDescriptionAt255BytesAndCountsTheWrittenBytesInTheBlockSize() throws IOException {
         String description = "a".repeat(300);
         byte[] written = write(List.of(position(10.0, 50.0, description)));
-        byte[] expected = new Bytes().header(21 + 13 + 301, 1000000, 5000000, 1000000, 5000000)
+        byte[] expected = new Bytes().header(21 + 13 + 255 + 1, 1000000, 5000000, 1000000, 5000000)
                 .poi(1000000, 5000000, "a".repeat(255)).get();
+        assertArrayEquals(expected, written);
+    }
+
+    @Test
+    public void countsTheWrittenBytesOfCharactersOutsideTheBasicPlane() throws IOException {
+        // the emoji is two UTF-16 units but one '?' byte in Windows-1252
+        byte[] written = write(List.of(position(10.0, 50.0, "a\uD83D\uDE00b")));
+        byte[] expected = new Bytes().header(21 + 13 + 3 + 1, 1000000, 5000000, 1000000, 5000000)
+                .poi(1000000, 5000000, "a?b").get();
         assertArrayEquals(expected, written);
     }
 

@@ -147,6 +147,8 @@ public class TomTomPoiFormat extends GpxBackedNavigationFormat {
                 switch (type) {
                     case DELETED_RECORD:
                     case DELETED_RECORD_100:
+                        // tomtom.cc: recsize = read_long(file_in) - 5; check_recsize(recsize) - the check applies
+                        // to the payload size, not to the size field
                         int deletedSize = input.readInt32() - DELETED_HEADER_SIZE;
                         if (!isValidRecordSize(deletedSize))
                             return false;
@@ -271,9 +273,13 @@ public class TomTomPoiFormat extends GpxBackedNavigationFormat {
         Block block = new Block(start, count, minLongitude, maxLongitude, minLatitude, maxLatitude);
         if (count < POI_LEAF_LIMIT) {
             for (int i = 0; i < count; i++) {
-                // constant part of a POI is 3 longs and 1 char; the length is the one of the uncut text in characters
+                // constant part of a POI is 3 longs and 1 char, plus the text bytes actually written and the NUL.
+                // tomtom.cc counts description.length() (UTF-16 units of the uncut text) here while it writes at
+                // most 255 bytes, so its block sizes are wrong for longer or non-BMP texts; this port counts what
+                // it writes (maintainer preference 2026-11-19: correct behaviour over GPSBabel bugs; no golden
+                // input has such a text, the byte-stable goldens are unchanged)
                 block.size += 4 * 3 + 1;
-                block.size += pois[start + i].description.length() + 1;
+                block.size += pois[start + i].text.length + 1;
             }
         } else {
             int half = count / 2;
