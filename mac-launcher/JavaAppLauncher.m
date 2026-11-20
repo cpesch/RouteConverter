@@ -189,7 +189,7 @@
     if (icnsPath.length > 0) {
         [javaArguments addObject:[NSString stringWithFormat:@"-Xdock:icon=%@", icnsPath]];
     }
-    [javaArguments addObject:@"-Xmx1024m"];
+    [javaArguments addObject:@"-XX:MaxRAMPercentage=25"];
     [javaArguments addObject:@"-Drouteconverter.bundledJre=true"];
     [javaArguments addObject:@"-jar"];
     [javaArguments addObject:jarPath];

@@ -67,7 +67,8 @@ public class SnapToRoadAction extends FrameAction {
         if (selectedRows.length > 0) {
             for (final int selectedRow : selectedRows) {
                 NavigationPosition position = positionsModel.getPosition(selectedRow);
-                NavigationPosition roadPosition = routingServiceFacade.getRoutingService().getSnapToRoadPosition(position);
+                NavigationPosition roadPosition = routingServiceFacade.getRoutingService().getSnapToRoadPosition(position,
+                        routingServiceFacade.getRoutingPreferencesModel().getTravelMode());
                 if (roadPosition != null) {
                     updatePosition(position, roadPosition);
                 }

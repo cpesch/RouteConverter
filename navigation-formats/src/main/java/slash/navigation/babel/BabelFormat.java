@@ -21,6 +21,7 @@
 package slash.navigation.babel;
 
 import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.GpxBackedFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.RouteCharacteristics;
@@ -52,7 +53,7 @@ import static slash.navigation.base.RouteCharacteristics.*;
  * @author Christian Pesch, Axel Uhl
  */
 
-public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
+public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> implements GpxBackedFormat {
     private static final Logger log = Logger.getLogger(BabelFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(BabelFormat.class);
     private static final String BABEL_PATH_PREFERENCE = "babelPath";
@@ -314,17 +315,21 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
     // both
 
-    private File checkIfBabelExists(String path) {
+    /**
+     * Returns the file for the given path if it is a regular file, null otherwise.
+     * An empty path has to be rejected explicitly: since Java 24 {@code new File("")}
+     * denotes the current directory and exists.
+     */
+    static File checkIfBabelExists(String path) {
+        if (path == null || path.trim().isEmpty())
+            return null;
         File file = new File(path);
-        return file.exists() ? file : null;
+        return file.isFile() ? file : null;
     }
 
     private String findBabel() throws IOException {
         // 1. check if there is a preference and try to find its file
-        File babelFile = getBabelPathPreference() != null ? new File(getBabelPathPreference()) : null;
-        if (babelFile == null || !babelFile.exists()) {
-            babelFile = null;
-        }
+        File babelFile = checkIfBabelExists(getBabelPathPreference());
 
         // 2. look for "c:\Program Files\GPSBabel\gpsbabel.exe"
         if (babelFile == null && isWindows()) {
@@ -354,6 +359,9 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         // 7. look for ApplicationDirectory/thirdparty/gpsbabel
         if (babelFile == null && !isWindows()) {
             babelFile = checkIfBabelExists(getApplicationDirectory("thirdparty/gpsbabel") + "/gpsbabel");
+            // the download extracts the zip without file permissions
+            if (babelFile != null && !babelFile.canExecute() && !babelFile.setExecutable(true))
+                log.warning("Cannot make " + babelFile + " executable");
         }
 
         // 8. look for unqualified "gpsbabel"

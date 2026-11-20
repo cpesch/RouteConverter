@@ -47,6 +47,12 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    # Windows defaults to pwsh; almost every step here is bash. A step added
+    # without its own shell: silently runs under pwsh instead (#489, fixed by
+    # hand in #365 on just the one step that broke release.yml for 3.8).
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v7
 
@@ -353,16 +359,21 @@ jobs:
           retention-days: ${{ inputs.retention-days }}
 
       - name: Ask for SignPath approval (windows-installers)
-        if: ${{ inputs.sign && inputs.signing-policy-slug == 'release-signing' }}
+        shell: bash
         env:
+          NOTIFY: ${{ inputs.sign && inputs.signing-policy-slug == 'release-signing' }}
           NTFY_PUBLISHER_TOKEN: ${{ secrets.NTFY_PUBLISHER_TOKEN }}
         run: |
           msg="${GITHUB_REF_NAME}: approve the SignPath 'windows-installers' signing request now (release-signing, times out after 30 min) — https://app.signpath.io — run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          echo "::notice title=SignPath approval needed::$msg"
-          { echo "### SignPath approval needed"; echo "$msg"; } >> "$GITHUB_STEP_SUMMARY"
-          curl -fsS -X POST -H "Authorization: Bearer $NTFY_PUBLISHER_TOKEN" \
-            -H "Title: SignPath approval needed" -H "Priority: high" -d "$msg" \
-            https://ntfy.routeconverter.com/factory-rc || echo "::warning::ntfy post failed"
+          if [[ "$NOTIFY" == "true" ]]; then
+            echo "::notice title=SignPath approval needed::$msg"
+            { echo "### SignPath approval needed"; echo "$msg"; } >> "$GITHUB_STEP_SUMMARY"
+            curl -fsS -X POST -H "Authorization: Bearer $NTFY_PUBLISHER_TOKEN" \
+              -H "Title: SignPath approval needed" -H "Priority: high" -d "$msg" \
+              https://ntfy.routeconverter.com/factory-rc || echo "::warning::ntfy post failed"
+          else
+            echo "no release signing in this build; would notify: $msg"
+          fi
 
       - name: Submit signing request to SignPath
         if: ${{ inputs.sign }}

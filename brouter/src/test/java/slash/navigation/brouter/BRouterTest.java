@@ -27,6 +27,9 @@ import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
+import slash.navigation.routing.RoutingResult;
+import slash.navigation.routing.TravelMode;
+import slash.navigation.common.DistanceAndTime;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -38,7 +41,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static slash.navigation.routing.RoutingResult.Validity.Invalid;
 import static slash.navigation.routing.RoutingResult.Validity.Timeout;
@@ -197,5 +205,28 @@ public class BRouterTest {
         Map<BoundingBox, Boolean> coverageTiles = router.getCoverageTiles(bbox);
 
         assertEquals(1, coverageTiles.size());
+    }
+
+    @Test
+    public void testSnapToRoadUsesGivenTravelMode() {
+        // a bicycle position must snap with the bicycle profile: with the preferred car profile,
+        // BRouter matches the nearest way a car may use and pulls a position off a cycleway onto
+        // the adjacent road (Technologieparkstrasse, Villach)
+        BRouter sut = spy(router);
+        NavigationPosition clicked = new SimpleNavigationPosition(13.8755678, 46.6057091);
+        NavigationPosition onCycleway = new SimpleNavigationPosition(13.875568, 46.605709);
+        doReturn(new RoutingResult(asList(onCycleway, clicked), new DistanceAndTime(1.0, 1L), Valid))
+                .when(sut).getRouteBetween(any(), any(), any(), any());
+
+        NavigationPosition snapped = sut.getSnapToRoadPosition(clicked, new TravelMode("trekking"));
+
+        assertEquals(onCycleway, snapped);
+        verify(sut).getRouteBetween(any(), any(), argThat(travelMode -> "trekking".equals(travelMode.name())), any());
+    }
+
+    @Test
+    public void testSnapToRoadWithoutTravelModeUsesPreferredTravelMode() {
+        assertEquals("trekking", router.getSnapTravelMode(new TravelMode("trekking")).name());
+        assertEquals(router.getPreferredTravelMode().name(), router.getSnapTravelMode(null).name());
     }
 }

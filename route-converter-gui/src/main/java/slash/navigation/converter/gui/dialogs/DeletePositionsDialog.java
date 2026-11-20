@@ -26,6 +26,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.models.DoubleDocument;
 import slash.navigation.converter.gui.models.IntegerDocument;
@@ -35,6 +36,8 @@ import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -55,6 +58,7 @@ import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.io.Transfer.roundFraction;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForDouglasPeucker;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
@@ -81,6 +85,8 @@ public class DeletePositionsDialog extends SimpleDialog {
     private JButton buttonHelp;
     private JCheckBox checkBoxShiftTimes;
     private JLabel labelDouglasPeucker;
+    private JLabel labelDistanceUnit;
+    private JLabel labelSpeedUnit;
     private final DoubleDocument distance;
     private final IntegerDocument order;
     private final DoubleDocument threshold;
@@ -88,6 +94,8 @@ public class DeletePositionsDialog extends SimpleDialog {
     // EDT-confined: every read/write of this field happens on the EDT (button click,
     // close(), and the worker's invokeLater), so no volatile/synchronization is needed
     private SwingWorker<int[], Void> selectBySignificanceWorker;
+    private UnitSystem displayedUnitSystem;
+    private final ChangeListener unitSystemChangeListener;
 
     public DeletePositionsDialog() {
         super(BaseRouteConverter.getInstance().getFrame(), "delete-positions");
@@ -157,14 +165,31 @@ public class DeletePositionsDialog extends SimpleDialog {
             }
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        distance = new DoubleDocument(r.getSelectByDistancePreference());
+        displayedUnitSystem = r.getUnitSystemModel().getUnitSystem();
+
+        distance = new DoubleDocument(roundFraction(displayedUnitSystem.shortDistanceToUnit(r.getSelectByDistancePreference()), 1));
         textFieldDistance.setDocument(distance);
         order = new IntegerDocument(r.getSelectByOrderPreference());
         textFieldOrder.setDocument(order);
-        threshold = new DoubleDocument(r.getSelectBySignificancePreference());
+        threshold = new DoubleDocument(roundFraction(displayedUnitSystem.shortDistanceToUnit(r.getSelectBySignificancePreference()), 1));
         textFieldSignificance.setDocument(threshold);
-        speed = new DoubleDocument(r.getSelectBySpeedPreference());
+        speed = new DoubleDocument(roundFraction(displayedUnitSystem.speedToUnit(r.getSelectBySpeedPreference()), 1));
         textFieldSpeed.setDocument(speed);
+
+        updateUnitLabels(displayedUnitSystem);
+        r.getUnitSystemModel().addChangeListener(unitSystemChangeListener = new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                UnitSystem newUnitSystem = r.getUnitSystemModel().getUnitSystem();
+                distance.setDouble(roundFraction(newUnitSystem.shortDistanceToUnit(
+                        displayedUnitSystem.shortDistanceToDefault(distance.getDouble())), 1));
+                threshold.setDouble(roundFraction(newUnitSystem.shortDistanceToUnit(
+                        displayedUnitSystem.shortDistanceToDefault(threshold.getDouble())), 1));
+                speed.setDouble(roundFraction(newUnitSystem.speedToUnit(
+                        displayedUnitSystem.speedToDefault(speed.getDouble())), 1));
+                updateUnitLabels(newUnitSystem);
+                displayedUnitSystem = newUnitSystem;
+            }
+        });
 
         checkBoxShiftTimes.setSelected(r.getDeletePositionsShiftTimesPreference());
 
@@ -201,13 +226,21 @@ public class DeletePositionsDialog extends SimpleDialog {
         buttonClearSelection.setEnabled(existsSelectedPosition);
     }
 
+    private void updateUnitLabels(UnitSystem unitSystem) {
+        ResourceBundle bundle = BaseRouteConverter.getBundle();
+        labelDistanceUnit.setText(MessageFormat.format(bundle.getString("delete-select-by-distance-unit"), unitSystem.getShortDistanceName()));
+        labelSpeedUnit.setText(MessageFormat.format(bundle.getString("delete-select-by-speed-unit"), unitSystem.getSpeedName()));
+        labelDouglasPeucker.setText(MessageFormat.format(bundle.getString("delete-select-by-significance-unit"), unitSystem.getShortDistanceName()));
+    }
+
     private void selectByDistance() {
         double distance = this.distance.getDouble();
         if (distance >= 0) {
-            int selectedRowCount = BaseRouteConverter.getInstance().selectPositionsWithinDistanceToPredecessor(distance);
+            double distanceInMeters = displayedUnitSystem.shortDistanceToDefault(distance);
+            int selectedRowCount = BaseRouteConverter.getInstance().selectPositionsWithinDistanceToPredecessor(distanceInMeters);
             labelSelection.setText(
-                    MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-distance-result"), selectedRowCount,
-                            distance));
+                    MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-distance-unit-result"), selectedRowCount,
+                            distance, displayedUnitSystem.getShortDistanceName()));
             savePreferences();
         }
     }
@@ -226,10 +259,11 @@ public class DeletePositionsDialog extends SimpleDialog {
     private void selectBySpeed() {
         double speed = this.speed.getDouble();
         if (speed >= 0) {
-            int selectedRowCount = BaseRouteConverter.getInstance().selectPositionsWithSpeedBelowOrEqualTo(speed);
+            double speedInKmh = displayedUnitSystem.speedToDefault(speed);
+            int selectedRowCount = BaseRouteConverter.getInstance().selectPositionsWithSpeedBelowOrEqualTo(speedInKmh);
             labelSelection.setText(
-                    MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-speed-result"), selectedRowCount,
-                            speed));
+                    MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-speed-unit-result"), selectedRowCount,
+                            speed, displayedUnitSystem.getSpeedName()));
             savePreferences();
         }
     }
@@ -240,11 +274,13 @@ public class DeletePositionsDialog extends SimpleDialog {
             return;
         }
 
-        double threshold = this.threshold.getDouble();
+        final double threshold = this.threshold.getDouble();
         if (threshold < 0) {
             return;
         }
         savePreferences();
+        final double thresholdInMeters = displayedUnitSystem.shortDistanceToDefault(threshold);
+        final String thresholdUnitName = displayedUnitSystem.getShortDistanceName();
 
         final BaseRouteConverter r = BaseRouteConverter.getInstance();
         labelSelection.setText(BaseRouteConverter.getBundle().getString("delete-select-by-significance-running"));
@@ -259,7 +295,7 @@ public class DeletePositionsDialog extends SimpleDialog {
 
         selectBySignificanceWorker = new SwingWorker<int[], Void>() {
             protected int[] doInBackground() throws InterruptedException {
-                return r.getConvertPanel().computeInsignificantPositions(threshold, positions);
+                return r.getConvertPanel().computeInsignificantPositions(thresholdInMeters, positions);
             }
 
             protected void done() {
@@ -267,8 +303,8 @@ public class DeletePositionsDialog extends SimpleDialog {
                     int[] indices = get();
                     r.getConvertPanel().selectPositions(indices);
                     labelSelection.setText(
-                            MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-significance-result"),
-                                    indices.length, threshold));
+                            MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-significance-unit-result"),
+                                    indices.length, threshold, thresholdUnitName));
                 } catch (CancellationException e) {
                     labelSelection.setText("");
                     // InterruptedException from get() would mean the EDT thread itself was
@@ -305,10 +341,10 @@ public class DeletePositionsDialog extends SimpleDialog {
 
     private void savePreferences() {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
-        r.setSelectByDistancePreference(distance.getDouble());
+        r.setSelectByDistancePreference(displayedUnitSystem.shortDistanceToDefault(distance.getDouble()));
         r.setSelectByOrderPreference(order.getInt());
-        r.setSelectBySignificancePreference(threshold.getDouble());
-        r.setSelectBySpeedPreference(speed.getDouble());
+        r.setSelectBySignificancePreference(displayedUnitSystem.shortDistanceToDefault(threshold.getDouble()));
+        r.setSelectBySpeedPreference(displayedUnitSystem.speedToDefault(speed.getDouble()));
         r.setDeletePositionsShiftTimesPreference(checkBoxShiftTimes.isSelected());
     }
 
@@ -317,6 +353,7 @@ public class DeletePositionsDialog extends SimpleDialog {
             selectBySignificanceWorker.cancel(true);
         }
         savePreferences();
+        BaseRouteConverter.getInstance().getUnitSystemModel().removeChangeListener(unitSystemChangeListener);
         dispose();
     }
 
@@ -375,11 +412,11 @@ public class DeletePositionsDialog extends SimpleDialog {
         textFieldDistance = new JTextField();
         textFieldDistance.setColumns(5);
         panel4.add(textFieldDistance);
-        final JLabel label4 = new JLabel();
-        label4.setMaximumSize(new Dimension(-1, 14));
-        this.$$$loadLabelText$$$(label4,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-distance-meter"));
-        panel4.add(label4);
+        labelDistanceUnit = new JLabel();
+        labelDistanceUnit.setMaximumSize(new Dimension(-1, 14));
+        this.$$$loadLabelText$$$(labelDistanceUnit,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-distance-unit"));
+        panel4.add(labelDistanceUnit);
         buttonSelectByDistance = new JButton();
         this.$$$loadButtonText$$$(buttonSelectByDistance,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select"));
@@ -420,10 +457,10 @@ public class DeletePositionsDialog extends SimpleDialog {
         textFieldSpeed = new JTextField();
         textFieldSpeed.setColumns(5);
         panel7.add(textFieldSpeed);
-        final JLabel label13 = new JLabel();
-        this.$$$loadLabelText$$$(label13,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-speed-kmh"));
-        panel7.add(label13);
+        labelSpeedUnit = new JLabel();
+        this.$$$loadLabelText$$$(labelSpeedUnit,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-speed-unit"));
+        panel7.add(labelSpeedUnit);
         buttonSelectBySpeed = new JButton();
         this.$$$loadButtonText$$$(buttonSelectBySpeed,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select"));
@@ -452,7 +489,7 @@ public class DeletePositionsDialog extends SimpleDialog {
         panel9.add(textFieldSignificance);
         labelDouglasPeucker = new JLabel();
         this.$$$loadLabelText$$$(labelDouglasPeucker,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-significance-meter"));
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-significance-unit"));
         panel9.add(labelDouglasPeucker);
         buttonSelectBySignificance = new JButton();
         this.$$$loadButtonText$$$(buttonSelectBySignificance,

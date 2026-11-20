@@ -27,6 +27,8 @@ import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.mapsforge.tiles.TileLayerFactory;
 
+import static slash.navigation.mapview.mapsforge.helpers.GroupLayerHelper.addToGroupLayer;
+
 /**
  * Manages the tile-server overlay download layers for the {@link MapsforgeMapView}: keeps them on
  * their own {@link GroupLayer} and adds/removes them as the applied-overlays model changes. The tile
@@ -70,8 +72,7 @@ public class OverlayManager {
         for (int i = firstRow; i < lastRow + 1; i++) {
             TileServer tileServer = appliedOverlaysModel.getItem(i);
             TileDownloadLayer overlay = tileLayerFactory.createOverlayLayer(tileServer);
-            overlaysLayer.layers.add(overlay);
-            overlay.setDisplayModel(context.getDisplayModel());
+            addToGroupLayer(overlaysLayer, context.getDisplayModel(), overlay);
             overlay.start();
             context.redrawLayers();
         }
@@ -81,12 +82,15 @@ public class OverlayManager {
 
     public void delete(int firstRow, int lastRow) {
         for (int i = lastRow; i >= firstRow; i--) {
-            if (i >= overlaysLayer.layers.size())
-                continue;
+            TileDownloadLayer overlay;
+            synchronized (overlaysLayer) {
+                if (i >= overlaysLayer.layers.size())
+                    continue;
 
-            Layer layer = overlaysLayer.layers.get(i);
-            TileDownloadLayer overlay = (TileDownloadLayer) layer;
-            overlaysLayer.layers.remove(overlay);
+                Layer layer = overlaysLayer.layers.get(i);
+                overlay = (TileDownloadLayer) layer;
+                overlaysLayer.layers.remove(overlay);
+            }
             overlaysLayer.requestRedraw();
             overlay.onDestroy();
         }

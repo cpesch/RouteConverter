@@ -51,7 +51,6 @@ import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.gui.helpers.AbstractListDataListener;
 import slash.navigation.gui.helpers.IconHelper;
-import slash.navigation.gui.helpers.JTableHelper;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.gui.undo.UndoManager;
 import slash.navigation.msfs.MSFSFlightPlanFormat;
@@ -72,6 +71,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -107,7 +107,7 @@ import static slash.navigation.converter.gui.models.LocalActionConstants.POSITIO
 import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.gopal.GoPal3RouteFormat.createGoPalFileName;
 import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
-import static slash.navigation.gui.events.Range.revert;
+import static slash.navigation.gui.events.Range.increment;
 import static slash.navigation.gui.helpers.JMenuHelper.*;
 import static slash.navigation.gui.helpers.JTableHelper.*;
 import static slash.navigation.gui.helpers.UIHelper.*;
@@ -130,6 +130,10 @@ public class ConvertPanel implements PanelInTab {
     private static final String WRITE_FORMAT_PREFERENCE = "writeFormat";
     private static final String WRITE_PATH_PREFERENCE = "writePath";
     private static final String DUPLICATE_FIRST_POSITION_PREFERENCE = "duplicateFirstPosition";
+
+    static {
+        FormatClassNameAliases.migrateCounters(preferences, READ_COUNT_PREFERENCE, WRITE_COUNT_PREFERENCE);
+    }
 
     // how often the lock dialog of a sponsor feature was shown, its donate button was clicked
     // and its log-in prompt was used - sent along with the update-check via FeatureLocks.encode
@@ -1062,7 +1066,7 @@ public class ConvertPanel implements PanelInTab {
 
     private void setReadFormatFileFilters(JFileChooser chooser) {
         setFormatFileFilters(chooser, getNavigationFormatRegistry().getReadFormatsSortedByName(),
-                preferences.get(READ_FORMAT_PREFERENCE, ""));
+                FormatClassNameAliases.resolve(preferences.get(READ_FORMAT_PREFERENCE, "")));
     }
 
     private void setReadFormatFileFilterPreference(NavigationFormat<?> selectedFormat) {
@@ -1072,7 +1076,7 @@ public class ConvertPanel implements PanelInTab {
 
     private void setWriteFormatFileFilters(JFileChooser chooser) {
         setFormatFileFilters(chooser, getNavigationFormatRegistry().getWriteFormatsWithPreferredFormats(recentFormatsModel.getFormats()),
-                preferences.get(WRITE_FORMAT_PREFERENCE, Gpx11Format.class.getName()));
+                FormatClassNameAliases.resolve(preferences.get(WRITE_FORMAT_PREFERENCE, Gpx11Format.class.getName())));
     }
 
     private void setWriteFormatFileFilterPreference(NavigationFormat<?> selectedFormat) {
@@ -1582,17 +1586,18 @@ public class ConvertPanel implements PanelInTab {
             int index = support.getDropLocation() instanceof JTable.DropLocation ?
                     ((JTable.DropLocation) support.getDropLocation()).getRow() : MAX_VALUE;
             int rowCount = table.getModel().getRowCount();
-            if (index < 0 || index > rowCount) {
-                index = rowCount;
-            }
 
-            if (rows[0] > index) {
-                positionsModel.up(rows, rows[0] - index);
-                JTableHelper.selectPositions(table, index, index + rows.length - 1);
-            } else {
-                positionsModel.down(revert(rows), index - rows[0] - rows.length + 1);
-                JTableHelper.selectPositions(table, index - rows.length + 1, index);
-            }
+            int[] sortedRows = rows.clone();
+            Arrays.sort(sortedRows);
+            int delta = RowMoves.delta(sortedRows, index, rowCount);
+            if (delta == 0)
+                return;
+
+            if (delta < 0)
+                positionsModel.up(sortedRows.clone(), -delta);
+            else
+                positionsModel.down(sortedRows.clone(), delta);
+            selectPositions(increment(sortedRows, delta));
         }
 
         public boolean importData(TransferSupport support) {

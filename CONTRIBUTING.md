@@ -16,7 +16,7 @@ opening an issue.
 2. Keep your diff small and focused, and match the surrounding code style.
 3. Add tests for your change.
 4. A human maintainer reviews and merges every PR — no auto-merge.
-5. Keep the CI matrix green (Java 21 + 25, plus the Windows smoke build).
+5. Keep the CI matrix green (Java 25, plus the Windows smoke build).
 6. Never commit secrets.
 
 ## Project conventions
@@ -40,5 +40,5 @@ touch the `_en`/`_de` bundles (see `AGENTS.md`).
 ## License
 
 By contributing, you agree your code ships under the **GNU GPL v2** (see
-[`LICENSE-GPL.txt`](LICENSE-GPL.txt)). Contributors are listed in
+[`LICENSE`](LICENSE)). Contributors are listed in
 [`CONTRIBUTORS.txt`](CONTRIBUTORS.txt).

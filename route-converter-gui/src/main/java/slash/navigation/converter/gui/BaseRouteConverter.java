@@ -1413,8 +1413,15 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
 
     protected abstract void updateRoutingServices();
 
+    private static final String THIRDPARTY_URL = "https://static.routeconverter.com/thirdparty/";
+
     protected void downloadDependencies() {
         if (isMac() || isWindows()) {
+            // GPSBabel 1.10.0 no longer reads TomTom POI, MapSource 5, PCX5, CompeGPS and other formats
+            // that RouteConverter passes to GPSBabel, so stay with 1.5.4; drop the entry of a prerelease
+            // that downloaded 1.10.0
+            getDownloadManager().removeDownload(THIRDPARTY_URL + "gpsbabel-1.10.0-" + getOperationSystem() + ".zip");
+
             File directory = getApplicationDirectory("thirdparty/gpsbabel");
             File executable = new File(directory, isWindows() ? "gpsbabel.exe" : "gpsbabel");
             // content length + SHA-1 of the extracted gpsbabel binary; last modified omitted (timezone-dependent)
@@ -1422,7 +1429,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
                     ? new Checksum(null, 1903616L, "5EA41DED616F17DCC2B52C5C86C82B9211592A61")
                     : new Checksum(null, 2634236L, "A985795384A707228697FB29F23FF6F74F4EE40D");
             getDownloadManager().executeDownload("GPSBabel for " + getOperationSystem(),
-                    "https://static.routeconverter.com/thirdparty/" + "gpsbabel-" + getOperationSystem() + ".zip",
+                    THIRDPARTY_URL + "gpsbabel-" + getOperationSystem() + ".zip",
                     Extract, directory, singletonList(new FileAndChecksum(executable, checksum)), null);
         }
     }

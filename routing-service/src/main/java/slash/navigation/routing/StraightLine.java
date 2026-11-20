@@ -89,7 +89,7 @@ public class StraightLine extends BaseRoutingService {
         return getRouteBetween(from, to);
     }
 
-    public NavigationPosition getSnapToRoadPosition(NavigationPosition position) {
+    public NavigationPosition getSnapToRoadPosition(NavigationPosition position, TravelMode travelMode) {
         return null;
     }
 

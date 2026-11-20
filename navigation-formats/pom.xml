@@ -6,7 +6,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>3.8-SNAPSHOT</version>
+        <version>3.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.garmin</groupId>
             <artifactId>fit</artifactId>
-            <version>21.218.0</version>
+            <version>21.221.0</version>
         </dependency>
         <dependency>
             <groupId>de.grundid.opendatalab</groupId>

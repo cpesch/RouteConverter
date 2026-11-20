@@ -23,6 +23,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.mapsforge.map.model.MapViewPosition;
 import slash.navigation.gui.Application;
+import slash.navigation.maps.item.Item;
 import slash.navigation.maps.item.ItemComboBox;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.LocalTheme;
@@ -109,6 +110,7 @@ public class MapSelector {
                 new TableModelToComboBoxModelAdapter<>(mapManager.getAvailableMapsModel(), mapManager.getDisplayedMapModel()),
                 asList(SEPARATOR_TO_DOWNLOAD_MAP, DOWNLOAD_MAP))
         );
+        comboBoxMap.setKeySelectionManager(new DescriptionKeySelectionManager(SEPARATOR_TO_DOWNLOAD_MAP, DOWNLOAD_MAP));
         comboBoxMap.setPrototypeDisplayValue(new MapsforgeFileMap("Map", "http://mal.url", null, null, null));
         comboBoxMap.setRenderer(new LocalMapListCellRenderer());
         comboBoxMap.addItemListener(e -> {
@@ -125,6 +127,7 @@ public class MapSelector {
                 new TableModelToComboBoxModelAdapter<>(mapManager.getAvailableThemesModel(), mapManager.getAppliedThemeModel()),
                 asList(SEPARATOR_TO_DOWNLOAD_THEME, DOWNLOAD_THEME))
         );
+        comboBoxTheme.setKeySelectionManager(new DescriptionKeySelectionManager(SEPARATOR_TO_DOWNLOAD_THEME, DOWNLOAD_THEME));
         comboBoxTheme.setPrototypeDisplayValue(mapManager.getAvailableThemesModel().getItem(0));
         comboBoxTheme.setRenderer(new LocalThemeListCellRenderer());
         LocalMap selectedItem = (LocalMap) comboBoxMap.getSelectedItem();
@@ -207,6 +210,9 @@ public class MapSelector {
         comboBoxZoom = new JComboBox<>();
         comboBoxMap = new ItemComboBox<>() {
             public void setSelectedItem(Object anObject) {
+                if (isSeparator(anObject)) {
+                    return;
+                }
                 if (DOWNLOAD_MAP.equals(anObject)) {
                     Application.getInstance().getContext().getActionManager().run("show-maps");
                     return;
@@ -216,6 +222,9 @@ public class MapSelector {
         };
         comboBoxTheme = new ItemComboBox<>() {
             public void setSelectedItem(Object anObject) {
+                if (isSeparator(anObject)) {
+                    return;
+                }
                 if (DOWNLOAD_THEME.equals(anObject)) {
                     Application.getInstance().getContext().getActionManager().run("show-themes");
                     return;
@@ -223,6 +232,56 @@ public class MapSelector {
                 super.setSelectedItem(anObject);
             }
         };
+    }
+
+    static boolean isSeparator(Object item) {
+        return item == SEPARATOR_TO_DOWNLOAD_MAP || item == SEPARATOR_TO_DOWNLOAD_THEME;
+    }
+
+    static class DescriptionKeySelectionManager implements JComboBox.KeySelectionManager {
+        private final Object[] itemsToSkip;
+
+        DescriptionKeySelectionManager(Object... itemsToSkip) {
+            this.itemsToSkip = itemsToSkip;
+        }
+
+        private boolean isSkipped(Object item) {
+            for (Object itemToSkip : itemsToSkip) {
+                if (item == itemToSkip) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public int selectionForKey(char aKey, ComboBoxModel<?> model) {
+            char lowerKey = Character.toLowerCase(aKey);
+            int size = model.getSize();
+            Object selectedItem = model.getSelectedItem();
+            int startIndex = 0;
+            for (int i = 0; i < size; i++) {
+                if (model.getElementAt(i) == selectedItem) {
+                    startIndex = i + 1;
+                    break;
+                }
+            }
+
+            for (int offset = 0; offset < size; offset++) {
+                int index = (startIndex + offset) % size;
+                Object item = model.getElementAt(index);
+                if (!(item instanceof Item) || isSkipped(item)) {
+                    continue;
+                }
+                String description = ((Item) item).description();
+                if (description == null || description.isEmpty()) {
+                    continue;
+                }
+                if (Character.toLowerCase(description.charAt(0)) == lowerKey) {
+                    return index;
+                }
+            }
+            return -1;
+        }
     }
 
     /**

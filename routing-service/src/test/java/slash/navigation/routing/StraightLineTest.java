@@ -99,7 +99,7 @@ public class StraightLineTest {
     @Test
     public void testGetSnapToRoadPositionReturnsNull() {
         SimpleNavigationPosition pos = new SimpleNavigationPosition(10.0, 50.0);
-        assertNull(straightLine.getSnapToRoadPosition(pos));
+        assertNull(straightLine.getSnapToRoadPosition(pos, null));
     }
 
     @Test

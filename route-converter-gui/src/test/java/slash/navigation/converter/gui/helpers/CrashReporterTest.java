@@ -132,6 +132,10 @@ public class CrashReporterTest {
         return spool;
     }
 
+    private CrashReporter optedOutReporter(CrashReportSpool spool) {
+        return new CrashReporter(spool, new RecordingSender(true), () -> false, () -> "http://localhost/");
+    }
+
     @Test
     public void testOptOutDoesNotSend() throws IOException {
         CrashReportSpool spool = spoolWithReports(2);
@@ -246,5 +250,58 @@ public class CrashReporterTest {
         executor.awaitIdle();
 
         assertTrue("spool.list() must be called at most twice by the flushes", spool.listCalls.get() <= 2);
+    }
+
+    @Test
+    public void testOnlyOneOutOfMemoryReportPerSession() throws IOException {
+        File directory = createTempDirectory("crash-reporter-test").toFile();
+        CrashReportSpool spool = new CrashReportSpool(directory);
+        CrashReporter reporter = optedOutReporter(spool);
+        Thread thread = Thread.currentThread();
+
+        reporter.handleCrash(thread, new OutOfMemoryError("Java heap space"));
+        reporter.handleCrash(thread, new OutOfMemoryError("Java heap space"));
+
+        assertEquals(1, spool.list().size());
+    }
+
+    @Test
+    public void testOutOfMemoryAsCauseIsAlsoSuppressed() throws IOException {
+        File directory = createTempDirectory("crash-reporter-test").toFile();
+        CrashReportSpool spool = new CrashReportSpool(directory);
+        CrashReporter reporter = optedOutReporter(spool);
+        Thread thread = Thread.currentThread();
+
+        reporter.handleCrash(thread, new RuntimeException("wrapper", new OutOfMemoryError("Java heap space")));
+        reporter.handleCrash(thread, new OutOfMemoryError("Java heap space"));
+
+        assertEquals(1, spool.list().size());
+    }
+
+    @Test
+    public void testNonOutOfMemoryCrashesAfterOutOfMemoryAreStillReported() throws IOException {
+        File directory = createTempDirectory("crash-reporter-test").toFile();
+        CrashReportSpool spool = new CrashReportSpool(directory);
+        CrashReporter reporter = optedOutReporter(spool);
+        Thread thread = Thread.currentThread();
+
+        reporter.handleCrash(thread, new OutOfMemoryError("Java heap space"));
+        reporter.handleCrash(thread, new NullPointerException());
+        reporter.handleCrash(thread, new NullPointerException());
+
+        assertEquals(3, spool.list().size());
+    }
+
+    @Test
+    public void testNonOutOfMemoryCrashesAreNeverSuppressed() throws IOException {
+        File directory = createTempDirectory("crash-reporter-test").toFile();
+        CrashReportSpool spool = new CrashReportSpool(directory);
+        CrashReporter reporter = optedOutReporter(spool);
+        Thread thread = Thread.currentThread();
+
+        reporter.handleCrash(thread, new NullPointerException());
+        reporter.handleCrash(thread, new NullPointerException());
+
+        assertEquals(2, spool.list().size());
     }
 }

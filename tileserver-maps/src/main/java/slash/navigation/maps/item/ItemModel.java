@@ -21,6 +21,8 @@ package slash.navigation.maps.item;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 /**
@@ -30,6 +32,7 @@ import java.util.prefs.Preferences;
  */
 
 public abstract class ItemModel<T extends Item> {
+    private static final Logger log = Logger.getLogger(ItemModel.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(ItemModel.class);
     private String preferenceName;
     private String defaultValue;
@@ -65,7 +68,16 @@ public abstract class ItemModel<T extends Item> {
     protected abstract T stringToItem(String value);
 
     public void setItem(T item) {
-        preferences.put(preferenceName, itemToString(item));
+        if (item == null) {
+            log.fine("Cannot set null item for preference " + preferenceName);
+            return;
+        }
+        String value = itemToString(item);
+        if (value == null) {
+            log.fine("Cannot set item with null string for preference " + preferenceName);
+            return;
+        }
+        preferences.put(preferenceName, value);
         fireChanged();
     }
 

@@ -52,6 +52,19 @@ public class DiagnosticReportTest {
         assertTrue(json.contains("\"java\":"));
         // no allowlisted numeric/boolean is emitted as a quoted string
         assertTrue(json.contains("\"priority_signature\": false"));
+        // heap figures are new members after bundled_jre, unquoted, schema_version unchanged
+        assertTrue(json.indexOf("\"bundled_jre\"") < json.indexOf("\"heap_max_mb\": "));
+        assertTrue(json.indexOf("\"heap_max_mb\"") < json.indexOf("\"heap_used_mb\": "));
+        assertTrue(json.contains("\"schema_version\": 1"));
+    }
+
+    @Test
+    public void testHeapFiguresFromExplicitValueConstructor() {
+        DiagnosticReport report = new DiagnosticReport("main", new IllegalStateException("plain"), "3.5",
+                "2026-01-02 03:04:05", 1024, 1000);
+        String json = report.toJson();
+        assertTrue(json.contains("\"heap_max_mb\": 1024"));
+        assertTrue(json.contains("\"heap_used_mb\": 1000"));
     }
 
     @Test

@@ -23,8 +23,10 @@ import slash.navigation.gui.Application;
 
 import java.awt.*;
 import java.awt.datatransfer.*;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+import static java.awt.KeyboardFocusManager.getCurrentKeyboardFocusManager;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.converter.gui.dnd.PositionSelection.POSITION_FLAVOR;
 import static slash.navigation.converter.gui.dnd.PositionSelection.STRING_FLAVOR;
@@ -38,28 +40,46 @@ import static slash.navigation.converter.gui.dnd.PositionSelection.STRING_FLAVOR
 public class ClipboardInteractor {
     private static final Logger log = Logger.getLogger(ClipboardInteractor.class.getName());
 
+    private final Clipboard clipboard;
+    private final Consumer<Boolean> pasteEnabler;
+
+    public ClipboardInteractor() {
+        this(Toolkit.getDefaultToolkit().getSystemClipboard(),
+                enable -> Application.getInstance().getContext().getActionManager().enable("paste", enable));
+    }
+
+    ClipboardInteractor(Clipboard clipboard, Consumer<Boolean> pasteEnabler) {
+        this.clipboard = clipboard;
+        this.pasteEnabler = pasteEnabler;
+    }
+
     private void enable(boolean enable) {
-        Application.getInstance().getContext().getActionManager().enable("paste", enable);
+        pasteEnabler.accept(enable);
     }
 
     public void watchClipboard() {
-        getClipboard().addFlavorListener(new FlavorListener() {
+        clipboard.addFlavorListener(new FlavorListener() {
             public void flavorsChanged(FlavorEvent e) {
                 enable(isSupportedFlavor());
             }
         });
+
+        // another RouteConverter instance that copied positions while this instance held clipboard
+        // ownership may have published the same flavors it lost, which fires no FlavorEvent; re-check
+        // when this instance becomes active again, since the other instance has finished writing by then
+        getCurrentKeyboardFocusManager().addPropertyChangeListener("activeWindow", e -> {
+            if (e.getNewValue() != null)
+                refresh();
+        });
     }
 
-    private Clipboard getClipboard() {
-        return Toolkit.getDefaultToolkit().getSystemClipboard();
+    void refresh() {
+        enable(isSupportedFlavor());
     }
 
     private boolean isSupportedFlavor() {
         try {
-            for (DataFlavor f : getClipboard().getAvailableDataFlavors()) {
-                if (f.equals(POSITION_FLAVOR) || f.equals(STRING_FLAVOR))
-                    return true;
-            }
+            return isSupportedFlavor(clipboard.getAvailableDataFlavors());
         }
         catch (IllegalStateException e) {
             log.warning("Cannot get available data flavors: " + e);
@@ -67,10 +87,22 @@ public class ClipboardInteractor {
         return false;
     }
 
+    static boolean isSupportedFlavor(DataFlavor[] flavors) {
+        for (DataFlavor f : flavors) {
+            if (f.equals(POSITION_FLAVOR) || f.equals(STRING_FLAVOR))
+                return true;
+        }
+        return false;
+    }
+
     public void putIntoClipboard(final Transferable transferable) {
-        getClipboard().setContents(transferable, new ClipboardOwner() {
+        clipboard.setContents(transferable, new ClipboardOwner() {
             public void lostOwnership(Clipboard clipboard, Transferable contents) {
-                enable(isSupportedFlavor());
+                // intentionally left empty: reading the clipboard here races with the new owner
+                // still writing its formats on Windows (issue #360) and can observe an empty or
+                // partial format list and disable paste; the FlavorListener already reacts to any
+                // real change of the format set once the new owner has closed the clipboard, and
+                // if the format set is unchanged, the new content is just as pasteable as the old
             }
         });
 
@@ -85,7 +117,7 @@ public class ClipboardInteractor {
 
     public Transferable getFromClipboard() {
         try {
-            return getClipboard().getContents(null);
+            return clipboard.getContents(null);
         }
         catch (IllegalArgumentException e) {
             // intentionally left empty

@@ -398,9 +398,16 @@ public class BRouter extends BaseRoutingService {
 
     private static final double DUPLICATE_OFFSET = 0.0001;
 
-    public NavigationPosition getSnapToRoadPosition(NavigationPosition position) {
+    TravelMode getSnapTravelMode(TravelMode travelMode) {
+        return travelMode != null ? travelMode : getPreferredTravelMode();
+    }
+
+    public NavigationPosition getSnapToRoadPosition(NavigationPosition position, TravelMode travelMode) {
         NavigationPosition duplicate = new SimpleNavigationPosition(position.getLongitude() + DUPLICATE_OFFSET, position.getLatitude() + DUPLICATE_OFFSET);
-        RoutingResult result = getRouteBetween(position, duplicate, getPreferredTravelMode(), NO_RESTRICTIONS);
+        // snap with the travel mode the user routes with: BRouter matches a waypoint to the nearest
+        // way the profile allows, so snapping with the preferred car profile pulls a position off a
+        // cycleway onto the adjacent road even though the route itself is calculated for bicycles
+        RoutingResult result = getRouteBetween(position, duplicate, getSnapTravelMode(travelMode), NO_RESTRICTIONS);
         NavigationPosition snapPosition = result.validity().equals(Valid) && !result.positions().isEmpty() ? result.positions().get(0) : null;
         if (snapPosition != null) {
             double bearing = Bearing.calculateBearing(position.getLongitude(), position.getLatitude(),

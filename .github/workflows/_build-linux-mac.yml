@@ -47,7 +47,7 @@ jobs:
       - uses: actions/setup-java@v6
         with:
           distribution: zulu
-          java-version: '21'
+          java-version: '25'
       - uses: actions/cache@v6
         with:
           path: ~/.m2
@@ -173,6 +173,14 @@ jobs:
           APP_VERSION="${POM_VERSION%%-*}"
           mkdir -p deb-input deb-dist
           cp RouteConverterLinux/target/RouteConverterLinux.jar deb-input/
+          # The splash is declared only as the jar manifest SplashScreen-Image, which
+          # the JVM honours for `java -jar` alone. The jpackage launcher starts the
+          # main class on a classpath, so hand the same image over via -splash.
+          # $APPDIR stays literal here; jpackage substitutes it at launch (#394).
+          unzip -p RouteConverterLinux/target/RouteConverterLinux.jar \
+            slash/navigation/converter/gui/RouteConverter.png > deb-input/splash.png
+          test -s deb-input/splash.png || { echo "::error::splash image missing from RouteConverterLinux.jar"; exit 1; }
+          # shellcheck disable=SC2016  # literal $APPDIR is intended
           jpackage \
             --type deb \
             --name RouteConverter \
@@ -180,6 +188,7 @@ jobs:
             --main-jar RouteConverterLinux.jar \
             --main-class slash.navigation.converter.gui.RouteConverter \
             --java-options -Drouteconverter.bundledJre=true \
+            --java-options '-splash:$APPDIR/splash.png' \
             --icon RouteConverterLinux/src/main/app-resources/RouteConverter.png \
             --app-version "$APP_VERSION" \
             --vendor "Christian Pesch" \
@@ -226,16 +235,20 @@ jobs:
           retention-days: ${{ inputs.retention-days }}
 
       - name: Ask for SignPath approval (jars)
-        if: ${{ inputs.sign && inputs.signing-policy-slug == 'release-signing' }}
         env:
+          NOTIFY: ${{ inputs.sign && inputs.signing-policy-slug == 'release-signing' }}
           NTFY_PUBLISHER_TOKEN: ${{ secrets.NTFY_PUBLISHER_TOKEN }}
         run: |
           msg="${GITHUB_REF_NAME}: approve the SignPath 'jars' signing request now (release-signing, times out after 30 min) — https://app.signpath.io — run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          echo "::notice title=SignPath approval needed::$msg"
-          { echo "### SignPath approval needed"; echo "$msg"; } >> "$GITHUB_STEP_SUMMARY"
-          curl -fsS -X POST -H "Authorization: Bearer $NTFY_PUBLISHER_TOKEN" \
-            -H "Title: SignPath approval needed" -H "Priority: high" -d "$msg" \
-            https://ntfy.routeconverter.com/factory-rc || echo "::warning::ntfy post failed"
+          if [[ "$NOTIFY" == "true" ]]; then
+            echo "::notice title=SignPath approval needed::$msg"
+            { echo "### SignPath approval needed"; echo "$msg"; } >> "$GITHUB_STEP_SUMMARY"
+            curl -fsS -X POST -H "Authorization: Bearer $NTFY_PUBLISHER_TOKEN" \
+              -H "Title: SignPath approval needed" -H "Priority: high" -d "$msg" \
+              https://ntfy.routeconverter.com/factory-rc || echo "::warning::ntfy post failed"
+          else
+            echo "no release signing in this build; would notify: $msg"
+          fi
 
       - name: Submit signing request to SignPath
         if: ${{ inputs.sign }}

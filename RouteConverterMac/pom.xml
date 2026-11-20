@@ -6,7 +6,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>3.8-SNAPSHOT</version>
+        <version>3.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -106,7 +106,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>3.6.4</version>
+                        <version>3.7.0</version>
                         <executions>
                             <execution>
                                 <id>compile-native-launcher</id>
