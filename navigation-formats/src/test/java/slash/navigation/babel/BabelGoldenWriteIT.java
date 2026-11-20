@@ -67,6 +67,10 @@ public class BabelGoldenWriteIT {
             "AlanWaypointsAndRoutesFormat", "GarminMapSource5Format"
     );
 
+    // inputs a native format refuses on purpose where GPSBabel 1.5.4 writes nonsense, as "class/input"
+    // (maintainer 2026-11-19: prefer correct behaviour over GPSBabel 1.5.4 bugs): FlightRecorderDataFormat refuses a
+    // track without timestamps (issue #392, igc.cc "Bad track timestamp"), 1.5.4 writes the epoch instead
+    private static final Set<String> REFUSED_BY_DESIGN = Set.of("FlightRecorderDataFormat/from11.gpx");
     // byte-stable classes ("class": every input, "class/input": that input only) that differ from GPSBabel 1.5.4 on
     // purpose (maintainer 2026-11-19: prefer correct behaviour over GPSBabel 1.5.4 bugs); they are compared
     // semantically against the class's allowlist:
@@ -184,7 +188,14 @@ public class BabelGoldenWriteIT {
         }
 
         byte[] expectedBytes = Files.readAllBytes(bytesGolden.toPath());
-        byte[] actualBytes = BabelGoldenGenerator.writeBytes(format, BabelGoldenGenerator.createWriteInputRoute(inputName));
+        byte[] actualBytes;
+        try {
+            actualBytes = BabelGoldenGenerator.writeBytes(format, BabelGoldenGenerator.createWriteInputRoute(inputName));
+        } catch (IOException refused) {
+            if (!REFUSED_BY_DESIGN.contains(className + "/" + inputName))
+                throw refused;
+            return;
+        }
 
         boolean corrected = CORRECTED_BY_DESIGN.contains(className) || CORRECTED_BY_DESIGN.contains(className + "/" + inputName);
         if (BYTE_STABLE.contains(className) && !corrected) {
