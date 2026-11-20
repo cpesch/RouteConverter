@@ -157,8 +157,13 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
 
         String name = stripIllegalXmlCharacters(trim(fields.get(2)));
         String description = stripIllegalXmlCharacters(trim(fields.size() > 3 ? fields.get(3) : ""));
-        String text = asDescription(name.isEmpty() ? null : name, description.isEmpty() ? null : description);
+        String text = asWayPointDescription(name.isEmpty() ? null : name, description.isEmpty() ? null : description);
         return new GpxPosition(longitude, latitude, null, null, null, text);
+    }
+
+    // GPSBabel delivered these points as GPX <wpt>, which Gpx10Format reads with asWayPointDescription()
+    private String asWayPointDescription(String name, String description) {
+        return asDescription(name, description);
     }
 
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
@@ -182,6 +187,9 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
 
     /**
      * Formats like the C format "%08.5f" does for a double value.
+     * C printf rounds the exact binary value of the double, which is what new BigDecimal(double)
+     * represents; BigDecimal.valueOf(double) would round the shortest decimal string instead and
+     * differ from GPSBabel's output for values whose binary expansion lies just below a half.
      */
     static String formatCoordinate(Double value) {
         BigDecimal rounded = new BigDecimal(formatPosition(value).doubleValue()).setScale(5, RoundingMode.HALF_EVEN);

@@ -233,4 +233,14 @@ public class GarminPoiDbFormatTest {
         assertTrue(format.isSupportsWriting());
         assertFalse(format.isSupportsMultipleRoutes());
     }
+
+    @Test
+    public void formatsCoordinatesLikeCPrintfOnTheBinaryValue() {
+        // 11.123455 is stored as 11.123454999...; C printf("%08.5f") rounds that down,
+        // rounding the decimal string 11.123455 half-even would give 11.12346
+        assertEquals("11.12345", GarminPoiDbFormat.formatCoordinate(11.123455));
+        assertEquals("01.00002", GarminPoiDbFormat.formatCoordinate(1.000015));
+        assertEquals("-2.00002", GarminPoiDbFormat.formatCoordinate(-2.000025));
+        assertEquals("00.00002", GarminPoiDbFormat.formatCoordinate(0.000015));
+    }
 }
