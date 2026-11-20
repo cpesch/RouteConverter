@@ -35,6 +35,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
+import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationFormatRegistry;
 
 import static java.nio.charset.StandardCharsets.UTF_16LE;
 import static java.util.Arrays.asList;
@@ -44,6 +46,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static org.junit.Assert.assertFalse;
 
 public class Igo8TrackFormatTest {
     private final Igo8TrackFormat format = new Igo8TrackFormat();
@@ -295,5 +298,19 @@ public class Igo8TrackFormatTest {
         assertEquals(11.5, route.getPosition(1).getLongitude(), 0.0);
         assertEquals(48.5, route.getPosition(1).getLatitude(), 0.0);
         assertEquals(1200000060L * 1000, route.getPosition(1).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void isRegisteredInPlaceOfTheGpsBabelFormat() {
+        // the registry imports slash.navigation.babel.* and slash.navigation.igo.Igo8TrackFormat explicitly: the single-type import
+        // wins (JLS 6.4.1), so addFormat(Igo8TrackFormat.class) keeps its position but now means the native class
+        List<String> names = new ArrayList<>();
+        for (NavigationFormat<?> format : new NavigationFormatRegistry().getReadFormats())
+            names.add(format.getClass().getName());
+        int index = names.indexOf("slash.navigation.igo.Igo8TrackFormat");
+        assertTrue(names.toString(), index > 0);
+        assertFalse(names.contains("slash.navigation.babel.Igo8TrackFormat"));
+        assertEquals("GarminPoiFormat", names.get(index - 1).substring(names.get(index - 1).lastIndexOf('.') + 1));
+        assertEquals("GarminPoiDbFormat", names.get(index + 1).substring(names.get(index + 1).lastIndexOf('.') + 1));
     }
 }
