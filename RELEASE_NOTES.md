@@ -11,6 +11,7 @@
 
 ### Fixes
 
+- Formats read and written with GPSBabel work again when no GPSBabel path is set under Extras > Options: on Java 25 RouteConverter took its working directory for the GPSBabel program. (#419)
 - Top and Bottom in the positions table keep the moved positions selected (#403)
 - Dragging positions to another row of the positions table no longer mixes up the order of the positions in between (#401)
 - Switching a map overlay on or off while the map is redrawing no longer stops the map from drawing
