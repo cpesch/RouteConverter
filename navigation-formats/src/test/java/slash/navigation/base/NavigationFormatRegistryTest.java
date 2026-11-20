@@ -20,7 +20,7 @@
 package slash.navigation.base;
 
 import org.junit.Test;
-import slash.navigation.babel.TomTomPoiFormat;
+import slash.navigation.tomtom.TomTomPoiFormat;
 import slash.navigation.columbus.ColumbusFusionFormat;
 import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.columbus.ColumbusGpsType2Format;

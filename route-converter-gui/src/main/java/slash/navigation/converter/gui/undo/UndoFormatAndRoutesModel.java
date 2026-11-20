@@ -150,6 +150,16 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
             undoManager.addEdit(new AddPositionList(this, index, route));
     }
 
+    public void movePositionLists(int[] order) {
+        movePositionLists(order, true);
+    }
+
+    public void movePositionLists(int[] order, boolean trackUndo) {
+        delegate.movePositionLists(order);
+        if (trackUndo)
+            undoManager.addEdit(new MovePositionLists(this, order));
+    }
+
     public void removePositionList(BaseRoute<?, ?> route) {
         removePositionList(route, true);
     }
