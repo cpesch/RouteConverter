@@ -4,6 +4,8 @@
 
 ### New features
 
+- Position list > Manage… reorders, renames and deletes the position lists of a file, for example the routes and tracks of a GPX file (#400)
+
 ### Changes
 
 - RouteConverter now runs on Java 25: the Windows, macOS, Debian and Flatpak downloads bundle it; the Linux jar needs Java 25 or later installed and says so on an older Java (#167)

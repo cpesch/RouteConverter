@@ -50,4 +50,9 @@ public interface FormatAndRoutesModel extends ComboBoxModel<BaseRoute<?, ?>>, Po
     void addPositionList(int index, BaseRoute<?, ?> route);
     void renamePositionList(String name);
     void removePositionList(BaseRoute<?, ?> route);
+
+    /**
+     * Reorders the position lists: {@code order[newIndex] = oldIndex}, a permutation of {@code 0..getSize()-1}.
+     */
+    void movePositionLists(int[] order);
 }

@@ -415,6 +415,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("new-positionlist", new AddPositionListAction(getFormatAndRoutesModel(), r.getCharacteristicsModel()));
         actionManager.register("rename-positionlist", new RenamePositionListAction(getFormatAndRoutesModel()));
         actionManager.register("delete-positionlist", new DeletePositionListAction(getFormatAndRoutesModel()));
+        actionManager.register("manage-positionlist", new ManagePositionListsAction((UndoFormatAndRoutesModel) formatAndRoutesModel));
         actionManager.register("add-coordinates", new AddCoordinatesToPositionsAction());
         actionManager.register("add-elevation", new AddElevationToPositionsAction());
         actionManager.register("add-address", new AddAddressToPositionsAction());
@@ -929,6 +930,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("new-positionlist", supportsMultipleRoutes);
         actionManager.enable("rename-positionlist", existsARoute);
         actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
+        actionManager.enable("manage-positionlist", existsARoute);
 
         // depending on the existence of positions
         tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
