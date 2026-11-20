@@ -66,6 +66,10 @@ public class BabelGoldenWriteIT {
             "AlanWaypointsAndRoutesFormat", "GarminMapSource5Format"
     );
 
+    // native writers of formats GPSBabel 1.5.4 never wrote: there is no write golden and none can exist
+    // (spec 00083.3 decision D3.1, issue #386: "there is no oracle for the writer"); see TourExchangeFormatTest
+    private static final Set<String> WITHOUT_GPSBABEL_WRITER = Set.of("TourExchangeFormat");
+
     private final NavigationFormatRegistry registry = new AllNavigationFormatRegistry();
 
     private static List<String> readAllowlist(String className, String sample) throws IOException {
@@ -145,7 +149,7 @@ public class BabelGoldenWriteIT {
         Map<String, NavigationFormat<?>> formatsByName = BabelGoldenGenerator.indexFormatsBySimpleName(registry.getWriteFormats());
         Set<String> writableClassNames = new LinkedHashSet<>();
         for (BabelGoldenGenerator.Sample sample : BabelGoldenGenerator.readSamples())
-            if (formatsByName.get(sample.className()) != null)
+            if (formatsByName.get(sample.className()) != null && !WITHOUT_GPSBABEL_WRITER.contains(sample.className()))
                 writableClassNames.add(sample.className());
 
         List<String> allDifferences = new ArrayList<>();
