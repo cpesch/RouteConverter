@@ -47,18 +47,25 @@ jobs:
           # property from pom.xml.
           if [[ -n "${{ inputs.jdk_version }}" ]]; then
             ver="${{ inputs.jdk_version }}"
+            build="$ver"
           else
             ver=$(sed -nE 's|.*<jre\.version>([^<]+)</jre\.version>.*|\1|p' \
                   pom.xml | head -1)
+            # exact Temurin build, so every platform links the same JDK
+            build=$(sed -nE 's|.*<jre\.build>([^<]+)</jre\.build>.*|\1|p' \
+                    pom.xml | head -1)
           fi
           [[ -n "$ver" ]] || { echo "::error::failed to resolve JDK version"; exit 1; }
+          [[ -n "$build" ]] || { echo "::error::failed to resolve jre.build"; exit 1; }
+          [[ "$build" == "$ver"* ]] || { echo "::error::jre.build $build is not a build of jre.version $ver"; exit 1; }
           echo "version=$ver" >> "$GITHUB_OUTPUT"
-          echo "JDK version: $ver"
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+          echo "JDK version: $ver, build $build"
 
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: ${{ steps.jdk.outputs.version }}
+          java-version: ${{ steps.jdk.outputs.build }}
 
       - name: Resolve module list
         id: modules
