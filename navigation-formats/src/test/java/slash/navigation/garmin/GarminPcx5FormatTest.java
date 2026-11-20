@@ -117,7 +117,7 @@ public class GarminPcx5FormatTest {
         assertEquals(47 + 12.34567 / 60.0, position.getLatitude(), 1e-9);
         assertEquals(11 + 7.12345 / 60.0, position.getLongitude(), 1e-9);
         assertEquals(500.0, position.getElevation(), 0.0);
-        assertNull(position.getTime());
+        assertEquals(utc(1998, 11, 19, 12, 34, 56), position.getTime());
         assertEquals("WPT001; Brenner pass", position.getDescription());
     }
 
@@ -142,13 +142,26 @@ public class GarminPcx5FormatTest {
         assertNull(read("W  A N4700.00000 E01100.00000 19-Nov-98 25:00:00\n").get(0).getPosition(0).getTime());
         assertNull(read("W  A N4700.00000 E01100.00000 31-Nov-98 12:00:00\n").get(0).getPosition(0).getTime());
         assertEquals(utc(1998, 11, 19, 12, 34, 56), read("W  A N4700.00000 E01100.00000 19-Nov-98 12:34:56\n").get(0).getPosition(0).getTime());
-        assertEquals(utc(1907, 6, 16, 17, 54, 56), read("W  A N4700.00000 E01100.00000 16-Jun-07 17:54:56\n").get(0).getPosition(0).getTime());
     }
 
     @Test
-    public void upperCaseMonthNamesAreNotReadAsTime() throws IOException {
-        assertNull(read("W  A N4700.00000 E01100.00000 19-NOV-98 12:34:56\n").get(0).getPosition(0).getTime());
-        assertNull(read("W  A N4700.00000 E01100.00000 19-nov-98 12:34:56\n").get(0).getPosition(0).getTime());
+    public void twoDigitYearsBelow70AreInThisCentury() throws IOException {
+        // GPSBabel 1.5.4 reads every year as 19yy
+        assertEquals(utc(2007, 6, 16, 17, 54, 56), read("W  A N4700.00000 E01100.00000 16-Jun-07 17:54:56\n").get(0).getPosition(0).getTime());
+        assertEquals(utc(2069, 6, 16, 17, 54, 56), read("W  A N4700.00000 E01100.00000 16-Jun-69 17:54:56\n").get(0).getPosition(0).getTime());
+        assertEquals(utc(1970, 6, 16, 17, 54, 56), read("W  A N4700.00000 E01100.00000 16-Jun-70 17:54:56\n").get(0).getPosition(0).getTime());
+    }
+
+    @Test
+    public void monthNamesAreReadInAnyCase() throws IOException {
+        // GPSBabel 1.5.4 does not read the upper-case month names it writes
+        assertEquals(utc(1998, 11, 19, 12, 34, 56), read("W  A N4700.00000 E01100.00000 19-NOV-98 12:34:56\n").get(0).getPosition(0).getTime());
+        assertEquals(utc(1998, 11, 19, 12, 34, 56), read("W  A N4700.00000 E01100.00000 19-nov-98 12:34:56\n").get(0).getPosition(0).getTime());
+    }
+
+    @Test
+    public void placeholderForPositionsWithoutTimeIsNotReadAsTime() throws IOException {
+        assertNull(read("W  A N4700.00000 E01100.00000 01-JAN-70 00:00:00\n").get(0).getPosition(0).getTime());
     }
 
     @Test
@@ -233,7 +246,7 @@ public class GarminPcx5FormatTest {
         assertEquals("My track", routes.get(1).getName());
         assertEquals(2, routes.get(1).getPositionCount());
         assertEquals(101.5, routes.get(1).getPosition(1).getElevation(), 0.0);
-        assertNull(routes.get(1).getPosition(1).getTime());
+        assertEquals(utc(1998, 11, 19, 12, 0, 10), routes.get(1).getPosition(1).getTime());
         assertEquals(47 + 1.0 / 60.0, routes.get(1).getPosition(1).getLatitude(), 1e-9);
     }
 
@@ -285,14 +298,15 @@ public class GarminPcx5FormatTest {
     }
 
     @Test
-    public void bytesThatAreNoUtf8AreReadAsReplacementCharacters() throws IOException {
+    public void bytesThatAreNoUtf8AreReadAsLatin1() throws IOException {
+        // GPSBabel 1.5.4 delivers a replacement character
         byte[] text = padded("W  A N4700.00000 E01100.00000 19-NOV-98 12:34:56   500", 60).getBytes(ISO_8859_1);
         byte[] all = new byte[text.length + 3];
         System.arraycopy(text, 0, all, 0, text.length);
         all[text.length] = 'K';
         all[text.length + 1] = (byte) 0xFC;
         all[text.length + 2] = 'x';
-        assertEquals("A; K\ufffdx", read(all).get(0).getPosition(0).getDescription());
+        assertEquals("A; K\u00fcx", read(all).get(0).getPosition(0).getDescription());
     }
 
     @Test
@@ -336,7 +350,7 @@ public class GarminPcx5FormatTest {
                 position(0.5, -0.5, 1234.4, utc(1999, 1, 2, 3, 4, 5), null)));
         String expected = HEADER + WAYPOINTS_HEADER +
                 waypointLine("WPT001", "N4730.00000", "E01115.00000", "19-NOV-26 12:34:56", "  500", "Brenner pass", 0) +
-                waypointLine("A very", "S3300.00000", "W07030.00000", "01-JAN-70 12:00:00", "-9999", "d".repeat(40), 0) +
+                waypointLine("A very", "S3300.00000", "W07030.00000", "01-JAN-70 00:00:00", "-9999", "d".repeat(40), 0) +
                 waypointLine("", "S30.00000", "E00030.00000", "02-JAN-99 03:04:05", " 1234", "", 0);
         assertEquals(expected, write(route));
     }
@@ -346,9 +360,9 @@ public class GarminPcx5FormatTest {
         GpxRoute route = format.createRoute(Waypoints, null, asList(
                 position(1.0, 1.0, 2.5, T0, "a"), position(1.0, 1.0, 3.5, T0, "b"), position(1.0, 1.0, -0.4, T0, "c")));
         String written = write(route);
-        assertTrue(written, written.contains("01-JAN-70 12:00:00     2 "));
-        assertTrue(written, written.contains("01-JAN-70 12:00:00     4 "));
-        assertTrue(written, written.contains("01-JAN-70 12:00:00    -0 "));
+        assertTrue(written, written.contains("01-JAN-70 00:00:00     2 "));
+        assertTrue(written, written.contains("01-JAN-70 00:00:00     4 "));
+        assertTrue(written, written.contains("01-JAN-70 00:00:00    -0 "));
     }
 
     @Test
@@ -359,7 +373,7 @@ public class GarminPcx5FormatTest {
         format.write(route, target, 1, 3);
         String written = target.toString(ISO_8859_1);
         assertFalse(written.contains(" B "));
-        assertEquals(HEADER + WAYPOINTS_HEADER + waypointLine("C", "N4730.00000", "E01115.00000", "01-JAN-70 12:00:00", "    3", "C", 0), written);
+        assertEquals(HEADER + WAYPOINTS_HEADER + waypointLine("C", "N4730.00000", "E01115.00000", "01-JAN-70 00:00:00", "    3", "C", 0), written);
     }
 
     @Test
@@ -367,32 +381,35 @@ public class GarminPcx5FormatTest {
         for (GpxRoute route : asList(
                 format.createRoute(Route, "A route", singletonList(position(11.25, 47.5, 500.0, T0, "P1"))),
                 format.createRoute(Track, "Track", singletonList(position(11.25, 47.5, 500.0, T0, "P1"))))) {
-            assertEquals(HEADER + WAYPOINTS_HEADER + waypointLine("P1", "N4730.00000", "E01115.00000", "01-JAN-70 12:00:00", "  500", "P1", 0), write(route));
+            assertEquals(HEADER + WAYPOINTS_HEADER + waypointLine("P1", "N4730.00000", "E01115.00000", "01-JAN-70 00:00:00", "  500", "P1", 0), write(route));
         }
     }
 
     @Test
-    public void writesTheLocalTime() throws IOException {
+    public void writesTheTimeAsUtc() throws IOException {
+        // GPSBabel 1.5.4 writes the local time
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
         GpxRoute route = format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, utc(2026, 1, 1, 10, 0, 0), "P1")));
-        assertTrue(write(route).contains(" 01-JAN-26 11:00:00 "));
+        assertTrue(write(route).contains(" 01-JAN-26 10:00:00 "));
         route = format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, utc(2026, 7, 1, 10, 0, 0), "P1")));
-        assertTrue(write(route).contains(" 01-JUL-26 12:00:00 "));
+        assertTrue(write(route).contains(" 01-JUL-26 10:00:00 "));
     }
 
     @Test
-    public void writesTheHourOnATwelveHourClock() throws IOException {
-        for (int[] hours : new int[][]{{0, 12}, {1, 1}, {11, 11}, {12, 12}, {13, 1}, {15, 3}, {23, 11}}) {
-            GpxRoute route = format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, utc(2026, 6, 5, hours[0], 29, 21), "P1")));
-            assertTrue(write(route), write(route).contains(String.format(" 05-JUN-26 %02d:29:21 ", hours[1])));
+    public void writesTheHourOnATwentyFourHourClock() throws IOException {
+        // GPSBabel 1.5.4 writes a 12 hour clock without am/pm
+        for (int hour : new int[]{0, 1, 11, 12, 13, 15, 23}) {
+            GpxRoute route = format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, utc(2026, 6, 5, hour, 29, 21), "P1")));
+            assertTrue(write(route), write(route).contains(String.format(" 05-JUN-26 %02d:29:21 ", hour)));
         }
     }
 
     @Test
-    public void writesTheCurrentTimeForPositionsWithoutTime() throws IOException {
+    public void positionsWithoutTimeAreWrittenWithAPlaceholderAndReadWithoutTime() throws IOException {
+        // GPSBabel 1.5.4 writes the current time
         String written = write(format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, null, "P1"))));
-        assertTrue(written, written.matches("(?s).* \\d{2}-[A-Z]{3}-\\d{2} \\d{2}:\\d{2}:\\d{2}   500 P1 .*"));
-        assertFalse(written, written.contains("01-JAN-70"));
+        assertTrue(written, written.contains(" 01-JAN-70 00:00:00   500 P1 "));
+        assertNull(read(written).get(0).getPosition(0).getTime());
     }
 
     @Test
@@ -416,8 +433,7 @@ public class GarminPcx5FormatTest {
             assertEquals(expected.getLongitude(), actual.getLongitude(), 1e-6);
             assertEquals(expected.getLatitude(), actual.getLatitude(), 1e-6);
             assertEquals(expected.getElevation(), actual.getElevation(), 0.0);
-            // upper-case month names are written, which are not read as a time
-            assertNull(actual.getTime());
+            assertEquals(expected.getTime(), actual.getTime());
             // the description is everything from column 60 on, including proximity and symbol of the written line
             assertTrue(actual.getDescription(), actual.getDescription().startsWith(expected.getDescription()));
         }

@@ -870,7 +870,9 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNotNull(targetPosition.getTime());
             } else if (sourceFormat instanceof GeoJsonFormat || sourceFormat instanceof GoPalTrackFormat ||
                     sourceFormat instanceof GroundTrackFormat || targetFormat instanceof GeoJsonFormat ||
-                    targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GroundTrackFormat) {
+                    targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GroundTrackFormat ||
+                    // Garmin PCX5 has times in seconds; they survive since the native format reads what it writes (#389)
+                    targetFormat instanceof GarminPcx5Format) {
                 DateFormat format = DateFormat.getTimeInstance();
                 format.setTimeZone(UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
@@ -908,6 +910,8 @@ public abstract class NavigationTestCase extends TestCase {
                 sourceFormat instanceof HaicomLoggerFormat && targetFormat instanceof KmlFormat ||
                 sourceFormat instanceof NavilinkFormat && targetFormat instanceof NavigatingPoiWarnerFormat ||
                 sourceFormat instanceof OziExplorerFormat ||
+                // Garmin PCX5 times are read since #389, Magellan MapSend waypoints have none
+                sourceFormat instanceof GarminPcx5Format && targetFormat instanceof MagellanMapSendFormat ||
                 sourceFormat instanceof GpxFormat && targetFormat instanceof GoRiderGpsFormat ||
                 sourceFormat instanceof ColumbusGpsFormat && targetFormat instanceof CoPilotFormat ||
                 sourceFormat instanceof ColumbusGpsBinaryFormat && targetFormat instanceof CoPilotFormat ||

@@ -28,6 +28,8 @@ import slash.navigation.base.GpxBackedNavigationFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,7 +37,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.nio.charset.CodingErrorAction.REPORT;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_16BE;
 import static java.nio.charset.StandardCharsets.UTF_16LE;
@@ -73,7 +75,10 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
     // the symbol number GPSBabel 1.5.4 writes for a waypoint without an icon
     static final int WAYPOINT_ICON_NUMBER = 0;
     // Qt's QDate::fromString() reads the two digit year "yy" in the 1900s
-    private static final int TWO_DIGIT_YEAR_BASE = 1900;
+    // years below are 20yy, the others 19yy
+    private static final int TWO_DIGIT_YEAR_PIVOT = 70;
+    // a position without time is written as 01-JAN-70 00:00:00
+    private static final long NO_TIME_SECONDS = 0;
     private static final int DESCRIPTION_WIDTH = 40;
     private static final Pattern NUMBER = Pattern.compile("[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?");
     private static final Pattern DATE = Pattern.compile("(\\d{2})-([A-Za-z]{3})-(\\d{2})");
@@ -129,8 +134,13 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
             return new String(bytes, 2, bytes.length - 2, UTF_16LE);
         if (bytes.length >= 2 && (bytes[0] & 0xFF) == 0xFE && (bytes[1] & 0xFF) == 0xFF)
             return new String(bytes, 2, bytes.length - 2, UTF_16BE);
-        // GPSBabel passes bytes through and its GPX is read as UTF-8: bytes that are no UTF-8 become U+FFFD
-        return new String(bytes, UTF_8);
+        // GPSBabel 1.5.4 passes bytes through and its GPX is read as UTF-8, so the letters of a Latin-1 file become
+        // U+FFFD - maintainer 2026-11-19: prefer correct behaviour over GPSBabel 1.5.4 bugs
+        try {
+            return UTF_8.newDecoder().onMalformedInput(REPORT).onUnmappableCharacter(REPORT).decode(ByteBuffer.wrap(bytes)).toString();
+        } catch (CharacterCodingException e) {
+            return new String(bytes, ISO_8859_1);
+        }
     }
 
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
@@ -152,25 +162,27 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
     }
 
     /**
-     * Qt's QDate::fromString(date, "dd-MMM-yy") and QTime::fromString(time, "hh:mm:ss"): UTC time or null
-     * if one of them is invalid.
+     * The UTC time of a "dd-MMM-yy" date and a "hh:mm:ss" time or null if one of them is invalid or if it is
+     * the placeholder that is written for a position without time.
+     *
+     * GPSBabel 1.5.4 (Qt) matches the month name case sensitively, so it never reads the upper-case names it
+     * writes, and takes every year for 19yy - maintainer 2026-11-19: prefer correct behaviour over GPSBabel 1.5.4 bugs
      */
     static CompactCalendar parseTime(String date, String time) {
         Matcher dateMatcher = DATE.matcher(date);
         Matcher timeMatcher = TIME.matcher(time);
         if (!dateMatcher.matches() || !timeMatcher.matches())
             return null;
-        // Qt matches the abbreviated month name case sensitively, so the upper-case names that are written
-        // are never read as a time
-        String name = dateMatcher.group(2);
-        int month = monthLookup(name);
-        if (month == -1 || !name.equals(name.charAt(0) + name.substring(1).toLowerCase()) || !Character.isUpperCase(name.charAt(0)))
+        int month = monthLookup(dateMatcher.group(2));
+        if (month == -1)
             return null;
         try {
-            LocalDateTime dateTime = LocalDateTime.of(TWO_DIGIT_YEAR_BASE + Integer.parseInt(dateMatcher.group(3)),
+            int year = Integer.parseInt(dateMatcher.group(3));
+            LocalDateTime dateTime = LocalDateTime.of((year < TWO_DIGIT_YEAR_PIVOT ? 2000 : 1900) + year,
                     month + 1, Integer.parseInt(dateMatcher.group(1)),
                     Integer.parseInt(timeMatcher.group(1)), Integer.parseInt(timeMatcher.group(2)), Integer.parseInt(timeMatcher.group(3)));
-            return CompactCalendar.fromMillis(dateTime.toEpochSecond(UTC) * 1000);
+            long seconds = dateTime.toEpochSecond(UTC);
+            return seconds == NO_TIME_SECONDS ? null : CompactCalendar.fromMillis(seconds * 1000);
         } catch (DateTimeException e) {
             return null;
         }
@@ -394,14 +406,14 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
         return result.toString();
     }
 
-    static String formatTime(CompactCalendar time, ZoneId zone) {
-        // GPSBabel 1.5.4 writes the local time on a 12 hour clock and, for a waypoint without time, the current time
-        long millis = time == null ? System.currentTimeMillis() : time.getTimeInMillis();
-        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), zone);
-        // the hour is written on a 12 hour clock, 1 to 12, without an am/pm marker
-        int hour12 = dateTime.getHour() % 12 == 0 ? 12 : dateTime.getHour() % 12;
+    static String formatTime(CompactCalendar time) {
+        // UTC on a 24 hour clock, 01-JAN-70 00:00:00 for a position without time. GPSBabel 1.5.4 writes the local
+        // time on a 12 hour clock without am/pm and the current time for a position without time -
+        // maintainer 2026-11-19: prefer correct behaviour over GPSBabel 1.5.4 bugs
+        long millis = time == null ? NO_TIME_SECONDS * 1000 : time.getTimeInMillis();
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), UTC);
         return String.format("%02d-%s-%02d %02d:%02d:%02d", dateTime.getDayOfMonth(), MONTHS[dateTime.getMonthValue() - 1],
-                Math.floorMod(dateTime.getYear(), 100), hour12, dateTime.getMinute(), dateTime.getSecond());
+                Math.floorMod(dateTime.getYear(), 100), dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond());
     }
 
     /**
@@ -414,7 +426,7 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
         return "W  " + cutAndPad(shortName, 6) + " " +
                 (lat < 0.0 ? 'S' : 'N') + formatFixed(Math.abs(lat), 8, 5, true) + " " +
                 (lon < 0.0 ? 'W' : 'E') + formatFixed(Math.abs(lon), 11, 5, true) + " " +
-                formatTime(time, ZoneId.systemDefault()) + " " +
+                formatTime(time) + " " +
                 formatFixed(elevation == null ? UNKNOWN_ELEVATION : elevation, 5, 0, false) + " " +
                 cutAndPad(description, 40) + " " + formatProximity() + "  " + symbol + "\n";
     }
