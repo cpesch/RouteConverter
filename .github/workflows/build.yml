@@ -1,7 +1,7 @@
 name: RouteConverter CI
 
-# Feature/factory branches run only Java 21 on Linux (the required check).
-# Java 25 and Windows run on master and 3.* pushes, nightly, on manual
+# Feature/factory branches run only Java 25 on Linux (the required check).
+# Windows runs on master and 3.* pushes, nightly, on manual
 # dispatch (to check a branch on Windows before merging it), and on any push
 # whose head commit message contains `[full-ci]` (fix PRs for nightly
 # failures, spec 00078). The `scope` job decides this once.
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: ${{ fromJSON(needs.scope.outputs.full == 'true' && '[21, 25]' || '[21]') }}
+        java: [25]
     name: Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@v7
@@ -79,9 +79,9 @@ jobs:
           name: surefire-Java-${{ matrix.java }}
           path: '**/target/surefire-reports/TEST-*.xml'
           retention-days: 7
-      # Upload coverage once per build (Java 21 only — avoid duplicate uploads from the matrix)
+      # Upload coverage once per build (Java 25 only — avoid duplicate uploads from the matrix)
       - name: Upload coverage to Codecov
-        if: matrix.java == 21
+        if: matrix.java == 25
         uses: codecov/codecov-action@v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -95,11 +95,11 @@ jobs:
     name: SpotBugs
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version: 25
       - name: Cache Maven packages
         uses: actions/cache@v6
         with:
@@ -115,14 +115,14 @@ jobs:
     runs-on: windows-latest
     # Fixed name, no matrix: a skipped matrix job reports its check under the
     # unexpanded name, which never matches the required check.
-    name: Java 21 on Windows
+    name: Java 25 on Windows
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version: 25
       - name: Cache Maven packages
         uses: actions/cache@v6
         with:
@@ -137,7 +137,7 @@ jobs:
         # `.build.number` as member-access, splitting the arg into
         # `-Dmaven` + `.build.number=NNN` → mvn sees the latter as a
         # lifecycle phase and dies.
-        # -Djacoco.skip: Codecov only uploads from Linux Java 21, so the
+        # -Djacoco.skip: Codecov only uploads from Linux Java 25, so the
         # Windows coverage agent only slows the tests down.
         # SpotBugs runs in the spotbugs job; no test reads a shaded jar.
         shell: pwsh
@@ -146,7 +146,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: surefire-Java-21-on-Windows
+          name: surefire-Java-25-on-Windows
           path: '**/target/surefire-reports/TEST-*.xml'
           retention-days: 7
 
@@ -169,11 +169,11 @@ jobs:
     name: Hermetic ITs
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version: 25
       - name: Cache Maven packages
         uses: actions/cache@v6
         with:
@@ -203,11 +203,11 @@ jobs:
       JAVA_TOOL_OPTIONS: ''
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version: 25
       - name: Cache Maven packages
         uses: actions/cache@v6
         with:
@@ -234,11 +234,11 @@ jobs:
     name: Random test order
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version: 25
       - name: Cache Maven packages
         uses: actions/cache@v6
         with:
@@ -265,11 +265,11 @@ jobs:
     name: Package
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
-          java-version: 21
+          java-version: 25
       - name: Cache Maven packages
         uses: actions/cache@v6
         with:
@@ -290,13 +290,11 @@ jobs:
     name: Drift snapshot
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK 21 and 25
+      - name: Set up JDK 25
         uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
-          java-version: |
-            25
-            21
+          java-version: 25
       - name: Cache Maven packages
         uses: actions/cache@v6
         with:
@@ -311,7 +309,7 @@ jobs:
         run: |
           set -euo pipefail
           jv() { "$1/bin/java" -XshowSettings:properties -version 2>&1 | sed -n 's/^ *java.runtime.version = //p'; }
-          JAVA_21="$(jv "$JAVA_HOME_21_X64")" JAVA_25="$(jv "$JAVA_HOME_25_X64")" python3 - <<'EOF'
+          JAVA_25="$(jv "$JAVA_HOME_25_X64")" python3 - <<'EOF'
           import glob, json, os, re
           snap = {}
           for path in glob.glob("**/target/deps.txt", recursive=True):
@@ -320,7 +318,6 @@ jobs:
                   if m:
                       snap[f"snapshot.{m.group(1)}:{m.group(2)}"] = m.group(3)
           data = {
-              "java.Java 21": os.environ["JAVA_21"],
               "java.Java 25": os.environ["JAVA_25"],
               "image.os": os.environ.get("ImageOS", ""),
               "image.version": os.environ.get("ImageVersion", ""),

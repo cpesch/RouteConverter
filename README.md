@@ -5,7 +5,7 @@
 [![Test Coverage](https://codecov.io/gh/cpesch/RouteConverter/branch/master/graph/badge.svg)](https://codecov.io/gh/cpesch/RouteConverter)
 [![Translation status](https://badges.crowdin.net/routeconverter/localized.svg)](https://crowdin.com/project/routeconverter)
 [![License: GPL v2](https://img.shields.io/badge/license-GPL--2.0-blue.svg)](LICENSE)
-[![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://adoptium.net/)
+[![Java 25](https://img.shields.io/badge/Java-25-orange.svg)](https://adoptium.net/)
 
 **RouteConverter** is a popular, free open-source tool to **display, edit, enrich and
 convert** GPS routes, tracks and waypoints across **80+ formats** (GPX, KML, NMEA,
@@ -22,11 +22,11 @@ supported formats, FAQ, and downloads.
 
 The **Windows** (`.exe`) and **macOS** (`.app`) downloads bundle a Java runtime —
 nothing else to install. The **Linux** build ships as a runnable `.jar` that needs
-**Java 21 or later** installed on your system.
+**Java 25 or later** installed on your system.
 
 ## Build & run from source
 
-You need **JDK 21** (e.g. from [Adoptium](https://adoptium.net/)). Maven comes
+You need **JDK 25** (e.g. from [Adoptium](https://adoptium.net/)). Maven comes
 bundled via the wrapper — no separate install. **Always build with `./mvnw`**,
 not a system-installed `mvn`: the wrapper pins the exact Maven version the
 build (and CI) is tested against, so a stale system Maven is never the thing
@@ -46,11 +46,11 @@ java -jar RouteConverterLinux/target/RouteConverterLinux.jar
 java -jar RouteConverterCmdLine/target/RouteConverterCmdLine.jar
 ```
 
-> On macOS/Linux, if `java` isn't on your `PATH`, activate a JDK 21 first
-> (e.g. via [sdkman](https://sdkman.io/): `sdk use java 21`).
+> On macOS/Linux, if `java` isn't on your `PATH`, activate a JDK 25 first
+> (e.g. via [sdkman](https://sdkman.io/): `sdk use java 25`).
 
-CI builds and tests on **Java 21**, plus a SpotBugs check, for every push, and on
-**Java 25** and Windows for `master`, nightly and manual runs.
+CI builds and tests on **Java 25**, plus a SpotBugs check, for every push, and on
+Windows for `master`, nightly and manual runs.
 
 ## Contributing
 
