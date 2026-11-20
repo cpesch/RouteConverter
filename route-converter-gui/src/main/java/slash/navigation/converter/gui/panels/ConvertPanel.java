@@ -1238,7 +1238,7 @@ public class ConvertPanel implements PanelInTab {
         tablePositions.setShowVerticalLines(false);
         scrollPane1.setViewportView(tablePositions);
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
@@ -1247,7 +1247,16 @@ public class ConvertPanel implements PanelInTab {
         labelFormat.setHorizontalTextPosition(2);
         labelFormat.setText("-");
         panel1.add(labelFormat,
-                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonShowNonSelectedPositionLists = new JButton();
+        buttonShowNonSelectedPositionLists.setHideActionText(true);
+        buttonShowNonSelectedPositionLists.setIcon(
+                new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/show-non-selected-positionlists.png")));
+        buttonShowNonSelectedPositionLists.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "show-non-selected-positionlists-action-tooltip"));
+        panel1.add(buttonShowNonSelectedPositionLists,
+                new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setHorizontalAlignment(10);
@@ -1345,7 +1354,7 @@ public class ConvertPanel implements PanelInTab {
                 new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
-        panel6.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, 0));
+        panel6.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, 0));
         convertPanel.add(panel6,
                 new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
@@ -1358,22 +1367,13 @@ public class ConvertPanel implements PanelInTab {
         panel6.add(comboBoxRouteCharacteristics,
                 new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonShowNonSelectedPositionLists = new JButton();
-        buttonShowNonSelectedPositionLists.setHideActionText(true);
-        buttonShowNonSelectedPositionLists.setIcon(
-                new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/show-non-selected-positionlists.png")));
-        buttonShowNonSelectedPositionLists.setToolTipText(
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "show-non-selected-positionlists-action-tooltip"));
-        panel6.add(buttonShowNonSelectedPositionLists,
-                new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonManagePositionLists = new JButton();
         buttonManagePositionLists.setHideActionText(true);
         buttonManagePositionLists.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/manage-positionlist.png")));
         buttonManagePositionLists.setToolTipText(
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "manage-positionlist-action-tooltip"));
         panel6.add(buttonManagePositionLists,
-                new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
