@@ -43,8 +43,10 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assume.assumeTrue;
@@ -121,6 +123,14 @@ public class BabelGoldenGenerator {
         return result;
     }
 
+    /**
+     * Only GPSBabel-backed formats are recorded: a format that has been ported natively keeps the
+     * golden GPSBabel once produced for it, which is the oracle the port is checked against.
+     */
+    static boolean isGpsBabelBacked(NavigationFormat<?> format) {
+        return format instanceof BabelFormat;
+    }
+
     private void generateReadGoldens(NavigationFormatRegistry registry) throws IOException {
         Map<String, NavigationFormat<?>> formatsByName = indexFormatsBySimpleName(registry.getReadFormats());
         NavigationFormatParser parser = new NavigationFormatParser(registry);
@@ -129,6 +139,8 @@ public class BabelGoldenGenerator {
             NavigationFormat<?> format = formatsByName.get(sample.className());
             if (format == null)
                 throw new IllegalStateException("Cannot find read format " + sample.className());
+            if (!isGpsBabelBacked(format))
+                continue;
 
             File source = new File(ROUTE_PATH + sample.path());
             ParserResult result = parser.read(source, singletonList(format));
@@ -206,17 +218,19 @@ public class BabelGoldenGenerator {
 
     private void generateWriteGoldens(NavigationFormatRegistry registry) throws IOException {
         Map<String, NavigationFormat<?>> formatsByName = indexFormatsBySimpleName(registry.getWriteFormats());
-        List<GpxRoute> inputRoutes = createWriteInputRoutes();
-        GpxRoute syntheticRoute = createSyntheticRoute();
+        Set<String> classNames = new LinkedHashSet<>();
+        for (Sample sample : readSamples())
+            classNames.add(sample.className());
 
-        for (Sample sample : readSamples()) {
-            NavigationFormat<?> format = formatsByName.get(sample.className());
-            if (format == null || !format.isSupportsWriting())
+        for (String className : classNames) {
+            NavigationFormat<?> format = formatsByName.get(className);
+            if (format == null || !format.isSupportsWriting() || !isGpsBabelBacked(format))
                 continue;
 
-            for (int i = 0; i < WRITE_INPUTS.size(); i++)
-                writeWriteGolden(sample.className(), format, WRITE_INPUTS.get(i), inputRoutes.get(i));
-            writeWriteGolden(sample.className(), format, "synthetic", syntheticRoute);
+            // a fresh route per write: formats like OziExplorerFormat#prepareForWriting modify the route they
+            // are given, and BabelGoldenWriteIT hands every write a fresh route, too
+            for (String inputName : WRITE_INPUT_NAMES)
+                writeWriteGolden(className, format, inputName, createWriteInputRoute(inputName));
         }
     }
 
