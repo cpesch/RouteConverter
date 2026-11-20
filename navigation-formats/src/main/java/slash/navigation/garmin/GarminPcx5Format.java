@@ -194,8 +194,10 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
     private static double[] parseCoordinates(String latitude, String longitude, boolean asDegrees) {
         double lat, lon;
         if (asDegrees) {
-            lat = 0.0;
-            lon = 0.0;
+            // pcx.cc starts from 0 and turns unparseable text into a position at 0/0; starting from NaN rejects
+            // it instead (maintainer preference 2026-11-19: correct behaviour over GPSBabel 1.5.4 bugs)
+            lat = Double.NaN;
+            lon = Double.NaN;
             for (int which = 1; which <= 2; which++) {
                 double[] result = humanToDec(which == 1 ? latitude : longitude, which);
                 if (!Double.isNaN(result[0]))

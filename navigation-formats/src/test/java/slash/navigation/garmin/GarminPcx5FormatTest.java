@@ -34,6 +34,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.TimeZone;
+import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationFormatRegistry;
+import java.util.ArrayList;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -180,6 +183,12 @@ public class GarminPcx5FormatTest {
         GpxPosition position = routes.get(0).getPosition(0);
         assertEquals(47.5, position.getLatitude(), 1e-9);
         assertEquals(-11.25, position.getLongitude(), 1e-9);
+    }
+
+    @Test
+    public void rejectsUnparseableDecimalDegrees() throws IOException {
+        // pcx.cc would read this as a waypoint at 0/0
+        assertTrue(read("U  LAT LON DEG\nW  A Nabc Wdef 19-NOV-98 12:34:56\n").isEmpty());
     }
 
     @Test
@@ -461,5 +470,19 @@ public class GarminPcx5FormatTest {
         assertEquals("-9999", GarminPcx5Format.formatFixed(-9999.0, 5, 0, false));
         assertEquals("   -0", GarminPcx5Format.formatFixed(-0.4, 5, 0, false));
         assertEquals("123456", GarminPcx5Format.formatFixed(123456.0, 5, 0, false));
+    }
+
+    @Test
+    public void isRegisteredInPlaceOfTheGpsBabelFormat() {
+        // the registry imports slash.navigation.babel.* and slash.navigation.garmin.GarminPcx5Format explicitly: the single-type import
+        // wins (JLS 6.4.1), so addFormat(GarminPcx5Format.class) keeps its position but now means the native class
+        List<String> names = new ArrayList<>();
+        for (NavigationFormat<?> format : new NavigationFormatRegistry().getReadFormats())
+            names.add(format.getClass().getName());
+        int index = names.indexOf("slash.navigation.garmin.GarminPcx5Format");
+        assertTrue(names.toString(), index > 0);
+        assertFalse(names.contains("slash.navigation.babel.GarminPcx5Format"));
+        assertEquals("CompeGPSDataWaypointFormat", names.get(index - 1).substring(names.get(index - 1).lastIndexOf('.') + 1));
+        assertEquals("GeoCachingFormat", names.get(index + 1).substring(names.get(index + 1).lastIndexOf('.') + 1));
     }
 }
