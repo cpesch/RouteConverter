@@ -22,6 +22,7 @@ package slash.navigation.base;
 
 import org.junit.Test;
 import slash.navigation.babel.*;
+import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
@@ -62,6 +63,7 @@ import slash.navigation.simple.*;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tomtom.TomTomPoiFormat;
+import slash.navigation.tef.TourExchangeFormat;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 

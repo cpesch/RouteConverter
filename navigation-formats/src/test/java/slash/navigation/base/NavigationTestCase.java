@@ -24,6 +24,8 @@ import slash.common.TestCase;
 import slash.common.helpers.JAXBHelper;
 import slash.common.type.CompactCalendar;
 import slash.navigation.babel.*;
+import slash.navigation.garmin.GarminPoiDbFormat;
+import slash.navigation.loc.GeoCachingFormat;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.columbus.ColumbusFusionFormat;
@@ -58,6 +60,7 @@ import slash.navigation.ovl.OvlFormat;
 import slash.navigation.simple.*;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.tomtom.TomTomPoiFormat;
+import slash.navigation.tef.TourExchangeFormat;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
 
