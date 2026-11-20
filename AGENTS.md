@@ -85,6 +85,8 @@ for local builds): with `-T 1C`, `1.5C` started 116 test JVMs on a 4-core runner
 That took the Maven step from about 4 min to 1–2 min per job (2026-10-11 benchmark).
 The bundled-JRE version is the single source of truth `<jre.version>` in the root
 `pom.xml` — keep it in sync with the CI `setup-java` version on JDK bumps.
+`<jre.build>` next to it is the exact Temurin build the hosted JREs are linked from, so Mac aarch64,
+Mac x64 and Windows bundle the same build; on a bump pick one that Adoptium has published for all three.
 A push whose head commit message contains `[full-ci]` runs all three jobs (`Java 25`, `SpotBugs`,
 `Java 25 on Windows`) on a feature branch — the alternative to `gh workflow run build.yml --ref <branch>`.
 `nightly-triage.yml` triages failed scheduled runs: it re-runs the failed jobs once — green means `flaky` (a
