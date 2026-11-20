@@ -6,15 +6,18 @@
 
 ### Changes
 
+- RouteConverter now runs on Java 25: the Windows, macOS, Debian and Flatpak downloads bundle it; the Linux jar needs Java 25 or later installed and says so on an older Java (#167)
 - CompeGPS Data route, track and waypoint files (.rte, .trk, .wpt) are read and written by RouteConverter itself and no longer need GPSBabel (#390)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 
 ### Fixes
 
+- Top and Bottom in the positions table keep the moved positions selected (#403)
 - Dragging positions to another row of the positions table no longer mixes up the order of the positions in between (#401)
 - Switching a map overlay on or off while the map is redrawing no longer stops the map from drawing
 - Online maps and overlays no longer show up twice in Karten > Online when a leftover file sits next to the downloaded map catalog (#395)
 - RouteConverter started from the Debian package now shows the startup splash screen, like the Linux jar does (#394)
+- The map selector and Karten > Online now show the name of each online map instead of its id and list the online maps alphabetically, also those from your own userservers.xml. Once after the update, the displayed online map falls back to OpenStreetMap and the Active ticks in Karten > Online return to their defaults (#417)
 
 ## 3.8 — 2026-11-15
 

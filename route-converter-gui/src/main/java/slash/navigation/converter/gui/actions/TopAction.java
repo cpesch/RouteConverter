@@ -25,6 +25,8 @@ import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 
+import static slash.navigation.converter.gui.helpers.RowMoves.top;
+
 /**
  * {@link Action} that moves the selected rows of a {@link JTable} to the top of the {@link PositionsModel}.
  *
@@ -41,8 +43,9 @@ public class TopAction extends FrameAction {
     public void run() {
         int[] selectedRows = convertPanel.getPositionsView().getSelectedRows();
         if (selectedRows.length > 0) {
+            int[] movedRows = top(selectedRows);
             convertPanel.getPositionsModel().top(selectedRows);
-            convertPanel.selectPositions(selectedRows);
+            convertPanel.selectPositions(movedRows);
         }
     }
 }

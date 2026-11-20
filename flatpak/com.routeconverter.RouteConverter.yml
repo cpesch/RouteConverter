@@ -3,7 +3,7 @@ runtime: org.freedesktop.Platform
 runtime-version: '26.08'
 sdk: org.freedesktop.Sdk
 sdk-extensions:
-  - org.freedesktop.Sdk.Extension.openjdk21
+  - org.freedesktop.Sdk.Extension.openjdk25
 command: routeconverter
 
 finish-args:
@@ -17,9 +17,9 @@ finish-args:
   - --filesystem=xdg-download
 
 build-options:
-  append-path: /usr/lib/sdk/openjdk21/bin
+  append-path: /usr/lib/sdk/openjdk25/bin
   env:
-    JAVA_HOME: /usr/lib/sdk/openjdk21/jvm/openjdk-21
+    JAVA_HOME: /usr/lib/sdk/openjdk25/jvm/openjdk-25
 
 modules:
   - name: routeconverter
@@ -30,7 +30,6 @@ modules:
       # Windows/Mac bundled JREs use, gated by scripts/verify-runtime.sh.
       - >-
         jlink
-        --module-path $JAVA_HOME/jmods
         --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.scripting,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.charsets,jdk.crypto.ec,jdk.localedata,jdk.management,jdk.net,jdk.unsupported
         --no-header-files --no-man-pages --strip-debug
         --output /app/jre

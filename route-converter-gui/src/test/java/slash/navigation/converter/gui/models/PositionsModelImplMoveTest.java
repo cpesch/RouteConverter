@@ -25,6 +25,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.bcr.MTP0607Format;
+import slash.navigation.converter.gui.helpers.RowMoves;
 import slash.navigation.converter.gui.panels.PositionsModelCallbackImpl;
 
 import java.util.ArrayList;
@@ -120,8 +121,52 @@ public class PositionsModelImplMoveTest {
         assertDown(new int[]{0, 1}, 2, "CDABE");
     }
 
+    private void assertMarkedAt(PositionsModelImpl model, int[] rows, int[] movedRows) {
+        for (int i = 0; i < rows.length; i++)
+            assertEquals(String.valueOf("ABCDE".charAt(rows[i])), model.getPosition(movedRows[i]).getDescription());
+    }
+
+    @Test
+    public void testModelPutsTheMarkedRowsWhereRowMovesSays() {
+        int[][] rowsCases = {{2}, {0, 1}, {0, 2}, {1, 3}, {2, 4}, {0, 1, 3}, {3, 4}};
+        for (int[] rows : rowsCases) {
+            for (int delta = 1; delta <= 3; delta++) {
+                PositionsModelImpl model = model("ABCDE");
+                model.up(rows.clone(), delta);
+                assertMarkedAt(model, rows, RowMoves.up(rows, delta));
+
+                model = model("ABCDE");
+                model.down(rows.clone(), delta);
+                assertMarkedAt(model, rows, RowMoves.down(rows, delta, 5));
+            }
+        }
+    }
+
     @Test
     public void testDownOneStepAsTheButtonsDo() {
         assertDown(new int[]{2}, 1, "ABDCE");
+    }
+
+    // marking positions in the middle and moving them to the top or bottom keeps them
+    // selected at the rows RowMoves says, e.g. marking B,C in ABCDE and going Top puts
+    // them at rows 0,1 still selected, Bottom puts them at rows 3,4 still selected (#403)
+    @Test
+    public void testModelPutsTheMarkedRowsWhereRowMovesTopSays() {
+        int[][] rowsCases = {{2}, {0, 1}, {0, 2}, {1, 3}, {2, 4}, {0, 1, 3}, {3, 4}};
+        for (int[] rows : rowsCases) {
+            PositionsModelImpl model = model("ABCDE");
+            model.top(rows.clone());
+            assertMarkedAt(model, rows, RowMoves.top(rows));
+        }
+    }
+
+    @Test
+    public void testModelPutsTheMarkedRowsWhereRowMovesBottomSays() {
+        int[][] rowsCases = {{2}, {0, 1}, {0, 2}, {1, 3}, {2, 4}, {0, 1, 3}, {3, 4}};
+        for (int[] rows : rowsCases) {
+            PositionsModelImpl model = model("ABCDE");
+            model.bottom(rows.clone());
+            assertMarkedAt(model, rows, RowMoves.bottom(rows, 5));
+        }
     }
 }

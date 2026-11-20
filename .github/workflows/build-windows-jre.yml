@@ -47,18 +47,25 @@ jobs:
           # property from pom.xml.
           if [[ -n "${{ inputs.jdk_version }}" ]]; then
             ver="${{ inputs.jdk_version }}"
+            build="$ver"
           else
             ver=$(sed -nE 's|.*<jre\.version>([^<]+)</jre\.version>.*|\1|p' \
                   pom.xml | head -1)
+            # exact Temurin build, so every platform links the same JDK
+            build=$(sed -nE 's|.*<jre\.build>([^<]+)</jre\.build>.*|\1|p' \
+                    pom.xml | head -1)
           fi
           [[ -n "$ver" ]] || { echo "::error::failed to resolve JDK version"; exit 1; }
+          [[ -n "$build" ]] || { echo "::error::failed to resolve jre.build"; exit 1; }
+          [[ "$build" == "$ver"* ]] || { echo "::error::jre.build $build is not a build of jre.version $ver"; exit 1; }
           echo "version=$ver" >> "$GITHUB_OUTPUT"
-          echo "JDK version: $ver"
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+          echo "JDK version: $ver, build $build"
 
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: ${{ steps.jdk.outputs.version }}
+          java-version: ${{ steps.jdk.outputs.build }}
 
       - name: Resolve module list
         id: modules
@@ -80,10 +87,9 @@ jobs:
           set OUT=jre-%VER%
           if exist %OUT% rmdir /s /q %OUT%
           "%JAVA_HOME%\bin\jlink" ^
-            --module-path "%JAVA_HOME%\jmods" ^
             --add-modules %MODULES% ^
             --output %OUT% ^
-            --strip-debug --compress 2 --no-header-files --no-man-pages
+            --strip-debug --compress zip-6 --no-header-files --no-man-pages
           if exist %OUT%\legal rmdir /s /q %OUT%\legal
           if exist %OUT%\release del /q %OUT%\release
           if exist %OUT%\bin\javaw.exe del /q %OUT%\bin\javaw.exe
