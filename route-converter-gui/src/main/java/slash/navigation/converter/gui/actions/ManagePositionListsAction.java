@@ -21,24 +21,27 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.dialogs.ManagePositionListsDialog;
+import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.undo.UndoFormatAndRoutesModel;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
- * Shows the dialog to reorder, rename and delete the position lists of the current file.
+ * Shows the dialog to reorder, rename, retype and delete the position lists of the current file.
  *
  * @author Christian Pesch
  */
 
 public class ManagePositionListsAction extends SingletonDialogAction {
     private final UndoFormatAndRoutesModel formatAndRoutesModel;
+    private final CharacteristicsModel characteristicsModel;
 
-    public ManagePositionListsAction(UndoFormatAndRoutesModel formatAndRoutesModel) {
+    public ManagePositionListsAction(UndoFormatAndRoutesModel formatAndRoutesModel, CharacteristicsModel characteristicsModel) {
         this.formatAndRoutesModel = formatAndRoutesModel;
+        this.characteristicsModel = characteristicsModel;
     }
 
     protected SimpleDialog createDialog() {
-        return new ManagePositionListsDialog(formatAndRoutesModel);
+        return new ManagePositionListsDialog(formatAndRoutesModel, characteristicsModel);
     }
 }

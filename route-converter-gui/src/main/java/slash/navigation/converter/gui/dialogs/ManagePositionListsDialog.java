@@ -24,7 +24,10 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.BaseRouteConverter;
+import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
 import slash.navigation.converter.gui.undo.UndoFormatAndRoutesModel;
 import slash.navigation.gui.SimpleDialog;
@@ -52,7 +55,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
- * Dialog to reorder, rename and delete the position lists of the current file.
+ * Dialog to reorder, rename, retype and delete the position lists of the current file.
  *
  * @author Christian Pesch
  */
@@ -68,6 +71,7 @@ public class ManagePositionListsDialog extends SimpleDialog {
     private JButton buttonRename;
     private JButton buttonDelete;
     private JButton buttonClose;
+    private JComboBox<RouteCharacteristics> comboBoxCharacteristics;
 
     private final UndoFormatAndRoutesModel formatAndRoutesModel;
     private final ListDataListener modelListener;
@@ -76,7 +80,7 @@ public class ManagePositionListsDialog extends SimpleDialog {
     // true from a model change until the marking is reset to the current position list
     private boolean modelChanging;
 
-    public ManagePositionListsDialog(UndoFormatAndRoutesModel formatAndRoutesModel) {
+    public ManagePositionListsDialog(UndoFormatAndRoutesModel formatAndRoutesModel, CharacteristicsModel characteristicsModel) {
         super(BaseRouteConverter.getInstance().getFrame(), "manage-position-lists");
         this.formatAndRoutesModel = formatAndRoutesModel;
         setTitle(BaseRouteConverter.getBundle().getString("manage-positionlist-title"));
@@ -86,6 +90,9 @@ public class ManagePositionListsDialog extends SimpleDialog {
         listPositionLists.setModel(formatAndRoutesModel);
         listPositionLists.setCellRenderer(new RouteListCellRenderer());
         listPositionLists.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
+        // the type of the current position list, which is the marked one when exactly one is marked
+        comboBoxCharacteristics.setModel(characteristicsModel);
+        comboBoxCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
         listPositionLists.addListSelectionListener(e -> {
             if (e.getValueIsAdjusting() || updating || modelChanging)
                 return;
@@ -229,6 +236,7 @@ public class ManagePositionListsDialog extends SimpleDialog {
         buttonBottom.setEnabled(valid && canMoveDown(marked, size));
         buttonRename.setEnabled(valid && marked.length == 1);
         buttonDelete.setEnabled(valid && marked.length > 0);
+        comboBoxCharacteristics.setEnabled(valid && marked.length == 1);
     }
 
     private void move(int[] movedRows) {
@@ -271,6 +279,10 @@ public class ManagePositionListsDialog extends SimpleDialog {
 
     private void close() {
         formatAndRoutesModel.removeListDataListener(modelListener);
+        // detach the list and the combo box from the models they share with the main window
+        updating = true;
+        listPositionLists.setModel(new DefaultListModel<>());
+        comboBoxCharacteristics.setModel(new DefaultComboBoxModel<>());
         dispose();
     }
 
@@ -290,7 +302,7 @@ public class ManagePositionListsDialog extends SimpleDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(2, 2, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(3, 2, new Insets(10, 10, 10, 10), -1, -1));
         final JScrollPane scrollPane1 = new JScrollPane();
         contentPane.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW | GridConstraints.SIZEPOLICY_WANT_GROW,
@@ -345,9 +357,24 @@ public class ManagePositionListsDialog extends SimpleDialog {
         panel1.add(buttonDelete, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        contentPane.add(panel3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
+        final JLabel label1 = new JLabel();
+        this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "characteristics"));
+        panel3.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxCharacteristics = new JComboBox<>();
+        panel3.add(comboBoxCharacteristics, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer3 = new Spacer();
+        panel3.add(spacer3, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(2, 0, 1, 0), -1, -1));
-        contentPane.add(panel2, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        contentPane.add(panel2, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
@@ -378,6 +405,35 @@ public class ManagePositionListsDialog extends SimpleDialog {
             bundle = ResourceBundle.getBundle(path);
         }
         return bundle.getString(key);
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    private void $$$loadLabelText$$$(JLabel component, String text) {
+        StringBuffer result = new StringBuffer();
+        boolean haveMnemonic = false;
+        char mnemonic = '\0';
+        int mnemonicIndex = -1;
+        for (int i = 0; i < text.length(); i++) {
+            if (text.charAt(i) == '&') {
+                i++;
+                if (i == text.length()) {
+                    break;
+                }
+                if (!haveMnemonic && text.charAt(i) != '&') {
+                    haveMnemonic = true;
+                    mnemonic = text.charAt(i);
+                    mnemonicIndex = result.length();
+                }
+            }
+            result.append(text.charAt(i));
+        }
+        component.setText(result.toString());
+        if (haveMnemonic) {
+            component.setDisplayedMnemonic(mnemonic);
+            component.setDisplayedMnemonicIndex(mnemonicIndex);
+        }
     }
 
     /**

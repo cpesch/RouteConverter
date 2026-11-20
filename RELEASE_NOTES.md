@@ -4,7 +4,7 @@
 
 ### New features
 
-- Position list > Manage… reorders, renames and deletes the position lists of a file, for example the routes and tracks of a GPX file (#400)
+- Position list > Manage… reorders, creates, renames, deletes and changes the type of the position lists of a file, for example the routes and tracks of a GPX file; it replaces the New, Rename and Delete buttons below the position list (#400)
 
 ### Changes
 
