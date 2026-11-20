@@ -66,6 +66,14 @@ public class BabelGoldenWriteIT {
             "AlanWaypointsAndRoutesFormat", "GarminMapSource5Format"
     );
 
+    // "class/input" of byte-stable classes that differ from GPSBabel 1.5.4 on purpose (maintainer 2026-11-19: prefer
+    // correct behaviour over GPSBabel 1.5.4 bugs); they are compared semantically against the class's allowlist:
+    // the OziExplorer formats write all text as Windows-1252 (#391), 1.5.4 writes route point text as UTF-8
+    // bytes and replaces the euro sign in waypoint files
+    private static final Set<String> CORRECTED_BY_DESIGN = Set.of(
+            "OziExplorerRouteFormat/from11.gpx", "OziExplorerRouteFormat/synthetic", "OziExplorerWaypointFormat/synthetic"
+    );
+
     private final NavigationFormatRegistry registry = new AllNavigationFormatRegistry();
 
     private static List<String> readAllowlist(String className, String sample) throws IOException {
@@ -127,7 +135,7 @@ public class BabelGoldenWriteIT {
         byte[] expectedBytes = Files.readAllBytes(bytesGolden.toPath());
         byte[] actualBytes = BabelGoldenGenerator.writeBytes(format, BabelGoldenGenerator.createWriteInputRoute(inputName));
 
-        if (BYTE_STABLE.contains(className)) {
+        if (BYTE_STABLE.contains(className) && !CORRECTED_BY_DESIGN.contains(className + "/" + inputName)) {
             if (!bytesEqual(className, expectedBytes, actualBytes))
                 differences.add(className + " " + inputName + ": byte-stable write golden differs");
             return;
