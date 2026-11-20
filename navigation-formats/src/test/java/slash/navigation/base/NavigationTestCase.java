@@ -25,6 +25,7 @@ import slash.common.helpers.JAXBHelper;
 import slash.common.type.CompactCalendar;
 import slash.navigation.babel.*;
 import slash.navigation.garmin.GarminPoiDbFormat;
+import slash.navigation.loc.GeoCachingFormat;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.columbus.ColumbusFusionFormat;

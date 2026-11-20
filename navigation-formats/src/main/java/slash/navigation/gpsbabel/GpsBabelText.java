@@ -174,7 +174,6 @@ public class GpsBabelText {
                 case 'S':
                     if (unk[0] != UNSET) {
                         numind = 0;
-                        numres = unk;
                         System.arraycopy(unk, 0, lat, 0, 3);
                         unk = new double[]{UNSET, UNSET, UNSET};
                         numres = unk;
