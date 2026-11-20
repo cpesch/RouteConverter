@@ -21,9 +21,9 @@
 package slash.navigation.base;
 
 import org.junit.Test;
-import slash.navigation.babel.OziExplorerRouteFormat;
-import slash.navigation.babel.OziExplorerTrackFormat;
-import slash.navigation.babel.OziExplorerWaypointFormat;
+import slash.navigation.ozi.OziExplorerRouteFormat;
+import slash.navigation.ozi.OziExplorerTrackFormat;
+import slash.navigation.ozi.OziExplorerWaypointFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 import slash.navigation.ovl.OvlFormat;

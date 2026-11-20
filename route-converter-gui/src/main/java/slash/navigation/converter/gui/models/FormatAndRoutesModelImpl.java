@@ -25,6 +25,8 @@ import slash.navigation.gui.helpers.AbstractListDataListener;
 
 import javax.swing.*;
 import javax.swing.event.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static slash.navigation.converter.gui.models.PositionColumns.*;
@@ -150,6 +152,25 @@ public class FormatAndRoutesModelImpl extends AbstractListModel<BaseRoute<?, ?>>
             getRoutes().remove(index);
             fireIntervalRemoved(this, index, index);
         }
+    }
+
+    public void movePositionLists(int[] order) {
+        List<BaseRoute<?, ?>> routes = getRoutes();
+        int size = getSize();
+        if (order.length != size)
+            throw new IllegalArgumentException("Order has " + order.length + " entries but there are " + size + " position lists");
+        boolean[] seen = new boolean[size];
+        for (int oldIndex : order) {
+            if (oldIndex < 0 || oldIndex >= size || seen[oldIndex])
+                throw new IllegalArgumentException("Not a permutation of 0.." + (size - 1) + ": " + Arrays.toString(order));
+            seen[oldIndex] = true;
+        }
+
+        List<BaseRoute<?, ?>> copy = new ArrayList<>(routes);
+        for (int i = 0; i < size; i++)
+            routes.set(i, copy.get(order[i]));
+        if (size > 0)
+            fireContentsChanged(this, 0, size - 1);
     }
 
     public int getSize() {

@@ -21,7 +21,6 @@ package slash.navigation.converter.gui.panels;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -187,7 +186,6 @@ public class ConvertPanel implements PanelInTab {
 
     private JPanel convertPanel;
     private JLabel labelFormat;
-    private JLabel labelPositionLists;
     private JLabel labelPositions;
     private JLabel labelLength;
     private JLabel labelDuration;
@@ -200,9 +198,7 @@ public class ConvertPanel implements PanelInTab {
     private JTable tablePositions;
     private JComboBox<BaseRoute<?, ?>> comboBoxPositionLists;
     private JComboBox<RouteCharacteristics> comboBoxRouteCharacteristics;
-    private JButton buttonNewPositionList;
-    private JButton buttonRenamePositionList;
-    private JButton buttonDeletePositionList;
+    private JButton buttonManagePositionLists;
     private JButton buttonShowNonSelectedPositionLists;
     private JLabel labelPositionListCaption;
     private JButton buttonMovePositionToTop;
@@ -257,7 +253,7 @@ public class ConvertPanel implements PanelInTab {
         };
 
         new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
-        new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
+        new PositionListsToToolTipAdapter(formatAndRoutesModel, comboBoxPositionLists);
         new PositionsCountToJLabelAdapter(positionsModel, labelPositions);
         new LengthToJLabelAdapter(positionsModel, r.getDistanceAndTimeAggregator(), labelLength, labelDuration);
         new ElevationToJLabelAdapter(positionsModel, labelOverallAscend, labelOverallDescend);
@@ -415,6 +411,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("new-positionlist", new AddPositionListAction(getFormatAndRoutesModel(), r.getCharacteristicsModel()));
         actionManager.register("rename-positionlist", new RenamePositionListAction(getFormatAndRoutesModel()));
         actionManager.register("delete-positionlist", new DeletePositionListAction(getFormatAndRoutesModel()));
+        actionManager.register("manage-positionlist", new ManagePositionListsAction((UndoFormatAndRoutesModel) formatAndRoutesModel, r.getCharacteristicsModel()));
         actionManager.register("add-coordinates", new AddCoordinatesToPositionsAction());
         actionManager.register("add-elevation", new AddElevationToPositionsAction());
         actionManager.register("add-address", new AddAddressToPositionsAction());
@@ -431,9 +428,7 @@ public class ConvertPanel implements PanelInTab {
         registerKeyStroke(tablePositions, "cut");
         registerKeyStroke(tablePositions, "paste");
 
-        registerAction(buttonNewPositionList, "new-positionlist");
-        registerAction(buttonRenamePositionList, "rename-positionlist");
-        registerAction(buttonDeletePositionList, "delete-positionlist");
+        registerAction(buttonManagePositionLists, "manage-positionlist");
         registerAction(buttonNewPosition, "new-position");
         registerAction(buttonDeletePosition, "delete-position");
         registerAction(buttonMovePositionToTop, "top");
@@ -447,9 +442,7 @@ public class ConvertPanel implements PanelInTab {
         buttonMovePositionUp.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/24/up.png"));
         buttonMovePositionDown.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/24/down.png"));
         buttonMovePositionToBottom.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/24/bottom.png"));
-        buttonNewPositionList.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/16/new-route.png"));
-        buttonRenamePositionList.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/16/rename-route.png"));
-        buttonDeletePositionList.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/16/delete-action.png"));
+        buttonManagePositionLists.setIcon(IconHelper.loadIcon("/slash/navigation/converter/gui/16/manage-positionlist.png"));
 
         // a push button whose icon shows the state: a toggle button gets a gray bezel when selected
         // on Aqua; shares its model with the View menu check box
@@ -502,16 +495,29 @@ public class ConvertPanel implements PanelInTab {
     }
 
     /**
-     * Lines up the position list combo box, its buttons, the characteristics label and its
-     * combo box. Aqua paints a combo box bezel 2 px above the center of the component - room
-     * for the focus ring below - so on Aqua both combo boxes get a top inset that moves the
-     * bezel onto the center line of the labels and buttons. FlatLaf already lines them up.
-     * The combo box and the buttons share a cell, so the caption is as high as the combo box.
+     * Lines up the position list combo box, the characteristics combo box and the buttons of
+     * the position list row. Aqua paints a combo box bezel 2 px above the center of the component -
+     * room for the focus ring below - so on Aqua both combo boxes get a top inset that moves the
+     * bezel onto the center line of the caption and buttons. Then the text in the combo boxes sits
+     * 1 px below the caption text, so the caption gets a top inset of 2 px to share its baseline.
+     * FlatLaf already lines them up. The caption is as high as the combo box.
+     * <p>
+     * The map toggle in the format row is painted as a plain icon without a bezel, so the format
+     * row is only as high as its text and the format, position list and statistics rows are evenly
+     * spaced. It is as wide as the manage button below, so both icons line up.
      */
     private void alignPositionListRows() {
+        int padding = Math.max(0, (buttonManagePositionLists.getPreferredSize().width -
+                buttonShowNonSelectedPositionLists.getIcon().getIconWidth()) / 2);
+        buttonShowNonSelectedPositionLists.setBorder(BorderFactory.createEmptyBorder(0, padding, 0, padding));
+        buttonShowNonSelectedPositionLists.setBorderPainted(false);
+        buttonShowNonSelectedPositionLists.setContentAreaFilled(false);
+        buttonShowNonSelectedPositionLists.setFocusPainted(false);
+
         if ("Aqua".equals(UIManager.getLookAndFeel().getID())) {
             comboBoxPositionLists.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
             comboBoxRouteCharacteristics.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
+            labelPositionListCaption.setBorder(BorderFactory.createEmptyBorder(2, 0, 0, 0));
         }
 
         labelPositionListCaption.setPreferredSize(new Dimension(labelPositionListCaption.getPreferredSize().width,
@@ -531,7 +537,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     public JButton getDefaultButton() {
-        return buttonNewPositionList;
+        return buttonManagePositionLists;
     }
 
     public void initializeSelection() {
@@ -929,6 +935,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("new-positionlist", supportsMultipleRoutes);
         actionManager.enable("rename-positionlist", existsARoute);
         actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
+        actionManager.enable("manage-positionlist", existsARoute);
 
         // depending on the existence of positions
         tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
@@ -1214,7 +1221,7 @@ public class ConvertPanel implements PanelInTab {
         comboBoxPositionLists = new JComboBox<BaseRoute<?, ?>>() {
             public Dimension getPreferredSize() {
                 Dimension preferredSize = super.getPreferredSize();
-                preferredSize.width = convertPanel.getPreferredSize().width - 300;
+                preferredSize.width = convertPanel.getPreferredSize().width - 400;
                 return preferredSize;
             }
         };
@@ -1231,11 +1238,11 @@ public class ConvertPanel implements PanelInTab {
     private void $$$setupUI$$$() {
         createUIComponents();
         convertPanel = new JPanel();
-        convertPanel.setLayout(new GridLayoutManager(6, 2, new Insets(3, 3, 3, 3), -1, -1));
+        convertPanel.setLayout(new GridLayoutManager(5, 2, new Insets(3, 3, 3, 3), -1, -1));
         convertPanel.setMinimumSize(new Dimension(-1, -1));
         convertPanel.setPreferredSize(new Dimension(560, 560));
         final JScrollPane scrollPane1 = new JScrollPane();
-        convertPanel.add(scrollPane1, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        convertPanel.add(scrollPane1, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tablePositions = new JTable();
@@ -1244,7 +1251,7 @@ public class ConvertPanel implements PanelInTab {
         tablePositions.setShowVerticalLines(false);
         scrollPane1.setViewportView(tablePositions);
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
@@ -1253,12 +1260,16 @@ public class ConvertPanel implements PanelInTab {
         labelFormat.setHorizontalTextPosition(2);
         labelFormat.setText("-");
         panel1.add(labelFormat,
-                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "content"));
-        convertPanel.add(label1,
-                new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+        buttonShowNonSelectedPositionLists = new JButton();
+        buttonShowNonSelectedPositionLists.setHideActionText(true);
+        buttonShowNonSelectedPositionLists.setIcon(
+                new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/show-non-selected-positionlists.png")));
+        buttonShowNonSelectedPositionLists.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "show-non-selected-positionlists-action-tooltip"));
+        panel1.add(buttonShowNonSelectedPositionLists,
+                new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         label2.setHorizontalAlignment(10);
@@ -1269,7 +1280,7 @@ public class ConvertPanel implements PanelInTab {
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(3, 5, new Insets(0, 0, 0, 0), -1, -1));
-        convertPanel.add(panel2, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        convertPanel.add(panel2, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         labelPositions = new JLabel();
@@ -1346,13 +1357,6 @@ public class ConvertPanel implements PanelInTab {
         labelPoiCount.setText("-");
         panel2.add(labelPoiCount, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelPositionLists = new JLabel();
-        labelPositionLists.setHorizontalAlignment(2);
-        labelPositionLists.setHorizontalTextPosition(2);
-        labelPositionLists.setText("-");
-        convertPanel.add(labelPositionLists,
-                new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelPositionListCaption = new JLabel();
         this.$$$loadLabelText$$$(labelPositionListCaption,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "position-list"));
@@ -1360,73 +1364,34 @@ public class ConvertPanel implements PanelInTab {
         labelPositionListCaption.setVerticalTextPosition(0);
         labelPositionListCaption.setVisible(true);
         convertPanel.add(labelPositionListCaption,
-                new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
-        panel6.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, 0));
+        panel6.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, 0));
         convertPanel.add(panel6,
-                new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                         null, 0, false));
-        final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(1, 7, new Insets(0, 0, 0, 0), -1, -1));
-        panel6.add(panel3,
-                new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonNewPositionList = new JButton();
-        buttonNewPositionList.setHideActionText(true);
-        buttonNewPositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/new-route.png")));
-        buttonNewPositionList.setToolTipText(
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "new-positionlist-action-tooltip"));
-        panel3.add(buttonNewPositionList,
-                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonRenamePositionList = new JButton();
-        buttonRenamePositionList.setHideActionText(true);
-        buttonRenamePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/rename-route.png")));
-        buttonRenamePositionList.setToolTipText(
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "rename-positionlist-action-tooltip"));
-        panel3.add(buttonRenamePositionList,
-                new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonDeletePositionList = new JButton();
-        buttonDeletePositionList.setHideActionText(true);
-        buttonDeletePositionList.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/delete-action.png")));
-        buttonDeletePositionList.setToolTipText(
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-positionlist-action-tooltip"));
-        panel3.add(buttonDeletePositionList,
-                new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonShowNonSelectedPositionLists = new JButton();
-        buttonShowNonSelectedPositionLists.setHideActionText(true);
-        buttonShowNonSelectedPositionLists.setIcon(
-                new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/show-non-selected-positionlists.png")));
-        buttonShowNonSelectedPositionLists.setToolTipText(
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "show-non-selected-positionlists-action-tooltip"));
-        panel3.add(buttonShowNonSelectedPositionLists,
-                new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        panel3.add(spacer1, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-                GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final JLabel label8 = new JLabel();
-        label8.setHorizontalAlignment(4);
-        label8.setHorizontalTextPosition(4);
-        this.$$$loadLabelText$$$(label8,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "characteristics"));
-        panel3.add(label8,
-                new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        panel3.add(comboBoxRouteCharacteristics,
-                new GridConstraints(0, 6, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-                        GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         panel6.add(comboBoxPositionLists,
                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
                         GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxRouteCharacteristics.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "characteristics-tooltip"));
+        panel6.add(comboBoxRouteCharacteristics,
+                new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonManagePositionLists = new JButton();
+        buttonManagePositionLists.setHideActionText(true);
+        buttonManagePositionLists.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/manage-positionlist.png")));
+        buttonManagePositionLists.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "manage-positionlist-action-tooltip"));
+        panel6.add(buttonManagePositionLists,
+                new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel4,
-                new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
+                new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonMovePositionToTop = new JButton();
         buttonMovePositionToTop.setFocusable(true);
@@ -1485,7 +1450,7 @@ public class ConvertPanel implements PanelInTab {
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
-        convertPanel.add(panel5, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE,
+        convertPanel.add(panel5, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label9 = new JLabel();
         this.$$$loadLabelText$$$(label9, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "positions"));
