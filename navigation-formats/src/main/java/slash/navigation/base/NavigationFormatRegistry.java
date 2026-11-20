@@ -54,6 +54,7 @@ import slash.navigation.itn.TomTom95RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.*;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
+import slash.navigation.loc.GeoCachingFormat;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
