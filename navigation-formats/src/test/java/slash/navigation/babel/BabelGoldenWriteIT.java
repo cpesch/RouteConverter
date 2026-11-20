@@ -66,11 +66,17 @@ public class BabelGoldenWriteIT {
             "AlanWaypointsAndRoutesFormat", "GarminMapSource5Format"
     );
 
-    // byte-stable classes that differ from GPSBabel 1.5.4 on purpose for every input (maintainer 2026-11-19: prefer
-    // correct behaviour over GPSBabel 1.5.4 bugs); they are compared semantically against the class's allowlist:
+    // byte-stable classes ("class": every input, "class/input": that input only) that differ from GPSBabel 1.5.4 on
+    // purpose (maintainer 2026-11-19: prefer correct behaviour over GPSBabel 1.5.4 bugs); they are compared
+    // semantically against the class's allowlist:
     // Garmin PCX5 writes the time as UTC on a 24 hour clock and a placeholder for a position without time (#389),
-    // 1.5.4 writes the local time on a 12 hour clock and the current time
-    private static final Set<String> CORRECTED_BY_DESIGN = Set.of("GarminPcx5Format");
+    // 1.5.4 writes the local time on a 12 hour clock and the current time;
+    // the CompeGPS Data formats write all text as Windows-1252 (#390), 1.5.4 writes names as UTF-8 bytes next to a
+    // single byte degree sign
+    private static final Set<String> CORRECTED_BY_DESIGN = Set.of(
+            "GarminPcx5Format",
+            "CompeGPSDataRouteFormat/synthetic", "CompeGPSDataTrackFormat/synthetic", "CompeGPSDataWaypointFormat/synthetic"
+    );
     // native writers of formats GPSBabel 1.5.4 never wrote: there is no write golden and none can exist
     // (spec 00083.3 decision D3.1, issue #386: "there is no oracle for the writer"); see TourExchangeFormatTest
     private static final Set<String> WITHOUT_GPSBABEL_WRITER = Set.of("TourExchangeFormat");
@@ -136,7 +142,8 @@ public class BabelGoldenWriteIT {
         byte[] expectedBytes = Files.readAllBytes(bytesGolden.toPath());
         byte[] actualBytes = BabelGoldenGenerator.writeBytes(format, BabelGoldenGenerator.createWriteInputRoute(inputName));
 
-        if (BYTE_STABLE.contains(className) && !CORRECTED_BY_DESIGN.contains(className)) {
+        boolean corrected = CORRECTED_BY_DESIGN.contains(className) || CORRECTED_BY_DESIGN.contains(className + "/" + inputName);
+        if (BYTE_STABLE.contains(className) && !corrected) {
             if (!bytesEqual(className, expectedBytes, actualBytes))
                 differences.add(className + " " + inputName + ": byte-stable write golden differs");
             return;

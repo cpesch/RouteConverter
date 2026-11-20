@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.babel;
+package slash.navigation.compegps;
 
 import org.junit.Test;
 import slash.navigation.base.*;

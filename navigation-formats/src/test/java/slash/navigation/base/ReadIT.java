@@ -444,7 +444,11 @@ public class ReadIT {
                 ParserResult result = parser.read(file);
                 assertNotNull(result);
                 assertTrue("Cannot read route from " + file, result.isSuccessful());
-                assertNotEquals("Can only read as .xcsv " + file, GarminPoiDbFormat.class, result.getFormat().getClass());
+                // binary .BTK files used to be claimed (falsely) by the lenient GPSBabel-based CompeGPS Data
+                // formats, which hid that .xcsv also accepts them; the native CompeGPS Data formats require
+                // "G" and "U" lines first (#390)
+                if (!file.getName().endsWith(".BTK"))
+                    assertNotEquals("Can only read as .xcsv " + file, GarminPoiDbFormat.class, result.getFormat().getClass());
             }
         });
     }
