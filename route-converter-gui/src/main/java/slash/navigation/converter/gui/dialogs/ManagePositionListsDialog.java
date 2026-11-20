@@ -72,6 +72,7 @@ public class ManagePositionListsDialog extends SimpleDialog {
     private JButton buttonDelete;
     private JButton buttonClose;
     private JComboBox<RouteCharacteristics> comboBoxCharacteristics;
+    private JLabel labelCharacteristics;
 
     private final UndoFormatAndRoutesModel formatAndRoutesModel;
     private final ListDataListener modelListener;
@@ -93,6 +94,9 @@ public class ManagePositionListsDialog extends SimpleDialog {
         // the type of the current position list, which is the marked one when exactly one is marked
         comboBoxCharacteristics.setModel(characteristicsModel);
         comboBoxCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
+        // Aqua paints a push button bezel 6 px inside the component, so the caption starts there, too
+        if ("Aqua".equals(UIManager.getLookAndFeel().getID()))
+            labelCharacteristics.setBorder(BorderFactory.createEmptyBorder(0, 6, 0, 0));
         listPositionLists.addListSelectionListener(e -> {
             if (e.getValueIsAdjusting() || updating || modelChanging)
                 return;
@@ -362,9 +366,10 @@ public class ManagePositionListsDialog extends SimpleDialog {
         panel1.add(panel3, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
-        final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "characteristics"));
-        panel3.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+        labelCharacteristics = new JLabel();
+        this.$$$loadLabelText$$$(labelCharacteristics,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "characteristics"));
+        panel3.add(labelCharacteristics, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboBoxCharacteristics = new JComboBox<>();
         panel3.add(comboBoxCharacteristics, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
