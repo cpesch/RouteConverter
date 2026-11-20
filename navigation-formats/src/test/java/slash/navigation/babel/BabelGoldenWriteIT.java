@@ -38,6 +38,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertTrue;
@@ -104,12 +105,52 @@ public class BabelGoldenWriteIT {
         return xml.replaceAll(">\\s+<", "><");
     }
 
+    // GPSBabel stamps the moment of writing into these two formats, so their goldens can only
+    // be compared with the stamp masked out:
+    // PCX5 writes the current local time for every waypoint without a time
+    private static final Pattern PCX5_TIME = Pattern.compile("\\d{2}-[A-Z]{3}-\\d{2} \\d{2}:\\d{2}:\\d{2}");
+    // Alan .wpr is a fixed-size file; the date and time of the first route are two little-endian
+    // 32-bit values behind its waypoint indices
+    private static final int ALAN_WPR_ROUTE_DATE_OFFSET = 43492;
+    private static final int ALAN_WPR_ROUTE_DATE_LENGTH = 8;
+
+    private static boolean pcx5Equal(byte[] expected, byte[] actual) {
+        String[] expectedLines = new String(expected, StandardCharsets.ISO_8859_1).split("\n", -1);
+        String[] actualLines = new String(actual, StandardCharsets.ISO_8859_1).split("\n", -1);
+        if (expectedLines.length != actualLines.length)
+            return false;
+        for (int i = 0; i < expectedLines.length; i++) {
+            if (expectedLines[i].equals(actualLines[i]))
+                continue;
+            String expectedMasked = PCX5_TIME.matcher(expectedLines[i]).replaceAll("<time>");
+            String actualMasked = PCX5_TIME.matcher(actualLines[i]).replaceAll("<time>");
+            if (!expectedMasked.equals(actualMasked))
+                return false;
+        }
+        return true;
+    }
+
+    private static boolean alanWprEqual(byte[] expected, byte[] actual) {
+        int end = ALAN_WPR_ROUTE_DATE_OFFSET + ALAN_WPR_ROUTE_DATE_LENGTH;
+        if (expected.length != actual.length || expected.length < end)
+            return Arrays.equals(expected, actual);
+        byte[] expectedMasked = expected.clone();
+        byte[] actualMasked = actual.clone();
+        Arrays.fill(expectedMasked, ALAN_WPR_ROUTE_DATE_OFFSET, end, (byte) 0);
+        Arrays.fill(actualMasked, ALAN_WPR_ROUTE_DATE_OFFSET, end, (byte) 0);
+        return Arrays.equals(expectedMasked, actualMasked);
+    }
+
     private static boolean bytesEqual(String className, byte[] expected, byte[] actual) {
         if ("GeoCachingFormat".equals(className)) {
             String expectedText = normalizeXmlWhitespace(new String(expected, StandardCharsets.UTF_8));
             String actualText = normalizeXmlWhitespace(new String(actual, StandardCharsets.UTF_8));
             return expectedText.equals(actualText);
         }
+        if ("GarminPcx5Format".equals(className))
+            return pcx5Equal(expected, actual);
+        if ("AlanWaypointsAndRoutesFormat".equals(className))
+            return alanWprEqual(expected, actual);
         return Arrays.equals(expected, actual);
     }
 
