@@ -53,15 +53,35 @@ public class CompeGPSDataRouteFormatTest {
     }
 
     @Test
-    public void namesAreWrittenAsUtf8AndTheDegreeSignAsSingleByte() throws IOException {
+    public void allTextIsWrittenAsWindows1252AndReadBack() throws IOException {
+        // GPSBabel 1.5.4 writes names as UTF-8 next to a single byte degree sign, which reads back as mojibake
         CompeGPSDataFormat format = new CompeGPSDataTrackFormat();
         List<GpxPosition> positions = new ArrayList<>();
         positions.add(position(11.0, 48.0, 1.0, "2011-06-03T11:34:37Z", null));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        format.write(format.createRoute(Track, "Gr\u00F6\u00DFe & <x>", positions), out, 0, 1);
-        String written = new String(out.toByteArray(), ISO_8859_1);
+        format.write(format.createRoute(Track, "Gr\u00F6\u00DFe \u20AC & <x>", positions), out, 0, 1);
+        String written = new String(out.toByteArray(), Charset.forName("windows-1252"));
         assertTrue(written.contains("48.0000000000\u00BAN 11.0000000000\u00BAE"));
-        assertTrue(written.contains("t 4294967295|Gr\u00C3\u00B6\u00C3\u009Fe & <x>|-1|-1\n"));
+        assertTrue(written.contains("t 4294967295|Gr\u00F6\u00DFe \u20AC & <x>|-1|-1\n"));
+
+        ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
+        format.read(new ByteArrayInputStream(out.toByteArray()), context);
+        assertEquals("Gr\u00F6\u00DFe \u20AC & <x>", context.getRoutes().get(0).getName());
+    }
+
+    @Test
+    public void unknownElevationAndMissingTimeAreNotReadBackAsValues() throws IOException {
+        // GPSBabel 1.5.4 reads -99999999 m and 1970-01-01 back
+        CompeGPSDataFormat format = new CompeGPSDataTrackFormat();
+        List<GpxPosition> positions = new ArrayList<>();
+        positions.add(position(11.0, 48.0, null, null, null));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        format.write(format.createRoute(Track, "Track", positions), out, 0, 1);
+        ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
+        format.read(new ByteArrayInputStream(out.toByteArray()), context);
+        GpxPosition position = context.getRoutes().get(0).getPosition(0);
+        assertNull(position.getElevation());
+        assertNull(position.getTime());
     }
 
     private static final String HEADER = "G  WGS 84\nU  1\n";

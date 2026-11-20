@@ -73,8 +73,8 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
     private static final Pattern ATOI = Pattern.compile("^\\s*[+-]?\\d+");
     private static final double UNKNOWN_ALTITUDE_WRITTEN = -99999999.0;
     private static final double UNKNOWN_ALTITUDE_TWONAV = -9999.0;
-    // stands for the single byte 0xBA that GPSBabel writes for the degree sign, see write()
-    private static final char DEGREE = '\uE000';
+    // the masculine ordinal indicator that CompeGPS uses as degree sign, byte 0xBA in Windows-1252
+    private static final char DEGREE = '\u00BA';
 
     public boolean isSupportsMultipleRoutes() {
         return false;
@@ -223,8 +223,12 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
     private GpxPosition createPosition(double latitude, double longitude, Double elevation, CompactCalendar time,
                                        String name, String description, int datum) {
         double[] wgs84 = Datums.toWgs84(latitude, longitude, 0.0, datum);
-        if (elevation != null && elevation == UNKNOWN_ALTITUDE_TWONAV)
+        // GPSBabel 1.5.4 reads back the unknown altitude and the missing time it writes as -99999999 m and as
+        // 1970-01-01 - maintainer 2026-11-19: prefer correct behaviour over GPSBabel 1.5.4 bugs
+        if (elevation != null && (elevation == UNKNOWN_ALTITUDE_TWONAV || elevation == UNKNOWN_ALTITUDE_WRITTEN))
             elevation = null;
+        if (time != null && time.getTimeInMillis() == 0)
+            time = null;
         return new GpxPosition(wgs84[1], wgs84[0], elevation, null, time,
                 stripIllegalXmlCharacters(asDescription(stripIllegalXmlCharacters(name), stripIllegalXmlCharacters(description))));
     }
@@ -512,12 +516,9 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
         builder.append("G  WGS 84\n");
         builder.append("U  1\n");
         writeTrackPoints(route, startIndex, endIndex, builder);
-        // GPSBabel 1.5.4 passes names through as UTF-8 and writes the degree sign as the single byte 0xBA
-        String[] parts = builder.toString().split(String.valueOf(DEGREE), -1);
-        for (int i = 0; i < parts.length; i++) {
-            if (i > 0)
-                target.write(0xBA);
-            target.write(parts[i].getBytes(UTF_8));
-        }
+        // all text is Windows-1252, the charset the reader assumes without BOM or "B  UTF-8" line. GPSBabel 1.5.4
+        // passes names through as UTF-8 next to a single byte degree sign, which reads back as mojibake -
+        // maintainer 2026-11-19: prefer correct behaviour over GPSBabel 1.5.4 bugs
+        target.write(builder.toString().getBytes(WINDOWS_1252));
     }
 }
