@@ -48,7 +48,8 @@ public class RouteListCellRenderer extends DefaultListCellRenderer {
                 characteristics = route.getCharacteristics().name();
             }
             String name = route.getName() != null ? route.getName() : "?";
-            text = name + " (" + characteristics + ")";
+            // the closed combo box shows the name only, the characteristics combo box next to it shows the type
+            text = index < 0 ? name : name + " (" + characteristics + ")";
         }
         label.setText(text);
         return label;

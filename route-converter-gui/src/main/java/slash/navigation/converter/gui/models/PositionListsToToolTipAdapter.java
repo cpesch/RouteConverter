@@ -1,18 +1,18 @@
 /*
-    This file is part of BaseRouteConverter.
+    This file is part of RouteConverter.
 
-    BaseRouteConverter is free software; you can redistribute it and/or modify
+    RouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    BaseRouteConverter is distributed in the hope that it will be useful,
+    RouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with BaseRouteConverter; if not, write to the Free Software
+    along with RouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -30,18 +30,18 @@ import java.text.MessageFormat;
 import static slash.navigation.base.RouteCharacteristics.*;
 
 /**
- * A bidirectional adapter that extracts the number of position lists
- * per route characteristics of a {@link FormatAndRoutesModel} for display.
+ * An adapter that shows the number of position lists per route characteristics
+ * of a {@link FormatAndRoutesModel} as the tool tip of a component.
  *
  * @author Christian Pesch
  */
 
-public class PositionListsToJLabelAdapter extends FormatAndRoutesListModelToDocumentAdapter {
-    private final JLabel label;
+public class PositionListsToToolTipAdapter extends FormatAndRoutesListModelToDocumentAdapter {
+    private final JComponent component;
 
-    public PositionListsToJLabelAdapter(FormatAndRoutesModel formatAndRoutesModel, JLabel label) {
+    public PositionListsToToolTipAdapter(FormatAndRoutesModel formatAndRoutesModel, JComponent component) {
         super(formatAndRoutesModel);
-        this.label = label;
+        this.component = component;
     }
 
     protected String getDelegateValue() {
@@ -59,14 +59,10 @@ public class PositionListsToJLabelAdapter extends FormatAndRoutesListModelToDocu
 
     protected void updateAdapterFromDelegate() {
         BaseRoute<?, ?> route = getDelegate().getSelectedRoute();
-        if (route != null) {
-            label.setText(MessageFormat.format(BaseRouteConverter.getBundle().getString("position-lists"),
-                    count(Route),
-                    count(Track),
-                    count(Waypoints)
-            ));
-        } else {
-            label.setText("-");
-        }
+        component.setToolTipText(route != null ? MessageFormat.format(BaseRouteConverter.getBundle().getString("position-lists"),
+                count(Route),
+                count(Track),
+                count(Waypoints)
+        ) : null);
     }
 }

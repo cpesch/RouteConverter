@@ -4,6 +4,7 @@
 
 ### New features
 
+- Position list > Manage… reorders, creates, renames, deletes and changes the type of the position lists of a file, for example the routes and tracks of a GPX file; it replaces the New, Rename and Delete buttons below the position list; the position list, its type and the Manage button now share one row, the map toggle moved to the Format row, and the Content line moved into the tool tip of the position list (#400)
 - Tour Exchange Format (.tef) files can now be written. No program is known to import them; for Map&Guide use the BCR format (#386)
 
 ### Changes
@@ -17,6 +18,7 @@
 - Garmin PCX5 (.wpt) files are read and written by RouteConverter itself and no longer need GPSBabel (#389)
 - CompeGPS Data route, track and waypoint files (.rte, .trk, .wpt) are read and written by RouteConverter itself and no longer need GPSBabel (#390)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
+- Every menu entry and submenu now has an icon (#400)
 
 ### Fixes
 

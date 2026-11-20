@@ -54,6 +54,9 @@ public class JMenuHelper {
         menu.setName(name);
         menu.setText(getString(name + "-menu"));
         setMnemonic(menu, name + "-menu-mnemonic");
+        String iconUrl = getOptionalString(name + "-menu-icon");
+        if (iconUrl != null)
+            menu.setIcon(IconHelper.loadIcon(iconUrl));
         return menu;
     }
 
