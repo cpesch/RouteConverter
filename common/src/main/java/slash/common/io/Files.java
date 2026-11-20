@@ -478,6 +478,9 @@ public class Files {
     }
 
     public static File findExistingPath(File path) {
+        // since Java 24 new File("") denotes the current directory and exists
+        if (path != null && path.getPath().isEmpty())
+            return null;
         while (path != null && !path.exists()) {
             path = path.getParentFile();
         }

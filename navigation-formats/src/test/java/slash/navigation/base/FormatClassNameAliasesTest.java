@@ -74,8 +74,13 @@ public class FormatClassNameAliasesTest {
     }
 
     @Test
-    public void resolveReturnsRealTableEntryUnchangedSinceNoTargetExistsYet() {
-        assertEquals(OLD_NAME, resolve(OLD_NAME));
+    public void resolveMapsRealTableEntryToLoadableTarget() {
+        assertEquals("slash.navigation.loc.GeoCachingFormat", resolve(OLD_NAME));
+    }
+
+    @Test
+    public void resolveReturnsOldNameUnchangedWhenTargetDoesNotExist() {
+        assertEquals(LOADABLE_OLD_NAME, resolve(LOADABLE_OLD_NAME, Map.of(LOADABLE_OLD_NAME, "test.missing.Format")));
     }
 
     @Test
