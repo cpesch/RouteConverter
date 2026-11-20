@@ -300,25 +300,21 @@ public class ManagePositionListsDialog extends SimpleDialog {
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonTop = new JButton();
-        buttonTop.setHorizontalAlignment(2);
         this.$$$loadButtonText$$$(buttonTop, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "top-action"));
         panel1.add(buttonTop, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         buttonUp = new JButton();
-        buttonUp.setHorizontalAlignment(2);
         this.$$$loadButtonText$$$(buttonUp, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "up-action"));
         panel1.add(buttonUp, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         buttonDown = new JButton();
-        buttonDown.setHorizontalAlignment(2);
         this.$$$loadButtonText$$$(buttonDown, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "down-action"));
         panel1.add(buttonDown, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         buttonBottom = new JButton();
-        buttonBottom.setHorizontalAlignment(2);
         this.$$$loadButtonText$$$(buttonBottom,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "bottom-action"));
         panel1.add(buttonBottom, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
