@@ -22,8 +22,8 @@ package slash.navigation.base;
 
 import slash.navigation.babel.AlanTrackLogFormat;
 import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
+import slash.navigation.garmin.GarminPcx5Format;
 import slash.navigation.tef.TourExchangeFormat;
-import slash.navigation.babel.GarminPcx5Format;
 
 import java.io.File;
 import java.io.IOException;

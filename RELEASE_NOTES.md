@@ -13,6 +13,8 @@
 - Garmin POI Database (.xcsv) files are read and written by RouteConverter itself and no longer need GPSBabel (#385)
 - Tour Exchange Format (.tef) files are read by RouteConverter itself and no longer need GPSBabel (#386)
 - TomTom POI (.ov2) files are read and written by RouteConverter itself and no longer need GPSBabel (#387)
+- iGO8 Track (.trk) files are read and written by RouteConverter itself and no longer need GPSBabel (#388)
+- Garmin PCX5 (.wpt) files are read and written by RouteConverter itself and no longer need GPSBabel (#389)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 
 ### Fixes
