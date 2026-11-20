@@ -225,6 +225,12 @@ public class FilesFilesystemTest {
     }
 
     @Test
+    public void findExistingPathIgnoresTheEmptyPath() {
+        assertNull(findExistingPath(new File("")));
+        assertNull(findExistingPath(null));
+    }
+
+    @Test
     public void absolutizeMakesRelativeFilesAbsolute() {
         assertTrue(absolutize(new File("relative.txt")).isAbsolute());
     }
