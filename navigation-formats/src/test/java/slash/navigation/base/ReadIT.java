@@ -22,7 +22,7 @@ package slash.navigation.base;
 
 import org.junit.AfterClass;
 import org.junit.Test;
-import slash.navigation.babel.GarminPoiDbFormat;
+import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.igo.Igo8TrackFormat;
 
@@ -66,6 +66,11 @@ public class ReadIT {
             "bcr_with_nhtoptrans.gpx", "expertgps.gpx", "Erzgebirge.gpx", "fells_loop.gpx",
             "garmin_symbols.gpx", "holux.gpx", "large10.gpx", "tm20070607.gpx");
 
+    // files no real format reads: only the greedy GPSBabel-based Garmin POI Database format accepted them, as
+    // junk positions; the native one rejects free text (#385, maintainer 2026-11-19), so they have no positions
+    private static final List<String> ONLY_READ_BY_GPSBABEL_XCSV = asList("Ingolstadt-München.kmz",
+            "Maps_save_Outlook_Text.txt.url", "PN01V005.WPT", "ak-gartrip.txt");
+
     private void readFiles(String extension) throws IOException {
         readFiles(extension, new TestFileCallback() {
             @SuppressWarnings({"unchecked"})
@@ -91,7 +96,9 @@ public class ReadIT {
                     assertNotNull("Route has no name", result.getTheRoute().getName());
                 // a GoPal 3 track without positions which is not rejected because the following Nmn4Format would try to readGpxFile if forever
                 // a OziExplorer Route has a first route without a single position
-                if (!file.getName().equals("dieter3-GoPal3Track.trk") && !file.getName().equals("ozi-condecourt.rte"))
+                if (ONLY_READ_BY_GPSBABEL_XCSV.contains(file.getName()))
+                    assertNotEquals("Garmin POI Database must not claim " + file, GarminPoiDbFormat.class, result.getFormat().getClass());
+                else if (!file.getName().equals("dieter3-GoPal3Track.trk") && !file.getName().equals("ozi-condecourt.rte"))
                     assertTrue("Route " + file + " has no positions", result.getTheRoute().getPositionCount() > 0);
             }
         });
