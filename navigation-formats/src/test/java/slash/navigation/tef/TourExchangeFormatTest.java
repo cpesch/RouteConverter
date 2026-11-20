@@ -253,6 +253,14 @@ public class TourExchangeFormatTest {
     }
 
     @Test
+    public void coordinatesRoundTheDecimalValueHalfUp() throws IOException {
+        // 11.123455 and 2.000025 are stored just below the half; rounding the binary expansion would
+        // give 11.12345 and 2.00002, rounding the decimal value gives what the user sees
+        String xml = write(route("x", position(11.123455, 2.000025, null, null, "a"), position(1.0, 1.0, null, null, "b")));
+        assertTrue(xml, xml.contains("<Point x=\"11.12346\" y=\"2.00003\"/>"));
+    }
+
+    @Test
     public void timeStampOnlyWhenKnownAndDurationZeroWithoutTimes() throws IOException {
         String xml = write(route("x", position(1, 2, null, null, "a"), position(3, 4, null, null, "b")));
         assertFalse(xml.contains("TimeStamp"));

@@ -123,7 +123,7 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
         return string == null || string.isEmpty() ? null : string;
     }
 
-    private GpxPosition asPosition(Item item, double version, String prefix, int index) {
+    private GpxPosition asPosition(Item item, double version, String prefix, int index, boolean wayPoint) {
         // waypoint_final(): before version 2 the description is kept in the notes
         String description = item.description, notes = null;
         if (version < 2) {
@@ -138,8 +138,14 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
         String shortname = emptyToNull(item.shortname);
         if (shortname == null && (prefix.equals("WPT") ? emptyToNull(desc) == null : !item.via))
             shortname = String.format("%s%03d", prefix, index);
-        String text = asDescription(shortname, emptyToNull(desc));
+        // GPSBabel handed via items over as GPX <wpt> and route points as <rtept>; Gpx10Format reads the former
+        // with asWayPointDescription() and the latter with asDescription()
+        String text = wayPoint ? asWayPointDescription(shortname, emptyToNull(desc)) : asDescription(shortname, emptyToNull(desc));
         return new GpxPosition(item.longitude, item.latitude, item.altitude, null, null, stripIllegalXmlCharacters(text));
+    }
+
+    private String asWayPointDescription(String name, String description) {
+        return asDescription(name, description);
     }
 
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
@@ -239,10 +245,10 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
                         if (item != null) {
                             int wayIndex = wayPositions.size() + 1;
                             if (item.via)
-                                wayPositions.add(asPosition(item, version, "WPT", wayIndex));
+                                wayPositions.add(asPosition(item, version, "WPT", wayIndex, true));
                             if (hasRoute)
-                                routePositions.add(item.via ? asPosition(item, version, "WPT", wayIndex) :
-                                        asPosition(item, version, "RPT", routePositions.size() + 1));
+                                routePositions.add(item.via ? asPosition(item, version, "WPT", wayIndex, false) :
+                                        asPosition(item, version, "RPT", routePositions.size() + 1, false));
                             item = null;
                         }
                         if (listEnd && waypoints != itemCount)
@@ -305,7 +311,8 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
     }
 
     private static String formatCoordinate(double value) {
-        return new BigDecimal(value).setScale(5, HALF_UP).stripTrailingZeros().toPlainString();
+        // no C oracle for this writer (D3.1): round the decimal value the user sees, not the binary expansion
+        return BigDecimal.valueOf(value).setScale(5, HALF_UP).stripTrailingZeros().toPlainString();
     }
 
     private static boolean hasTime(NavigationPosition position) {
