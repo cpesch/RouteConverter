@@ -25,7 +25,7 @@
 #   scripts/verify-runtime.sh <fat-jar> [cmdline-jar] [sample-gpx]
 #
 # Env:
-#   MR_VERSION       multi-release version for jdeps (default 17)
+#   MR_VERSION       multi-release version for jdeps (default 25)
 #   INIT_PREFIXES    comma-separated binary-name prefixes for the #4 sweep
 #                    (default: third-party library roots; app GUI classes are
 #                    covered by the #3 smoke instead, to avoid opening windows)
@@ -43,7 +43,7 @@ modules_file="$here/jre-modules.txt"
 fat_jar="${1:?usage: verify-runtime.sh <fat-jar> [cmdline-jar] [sample-gpx]}"
 cmdline_jar="${2:-}"
 sample_gpx="${3:-}"
-mr_version="${MR_VERSION:-17}"
+mr_version="${MR_VERSION:-25}"
 init_prefixes="${INIT_PREFIXES:-org.apache.,org.sqlite.,com.sun.,jakarta.,net.java.dev.jna.,org.mozilla.,com.fasterxml.,com.google.}"
 strict_missing="${STRICT_MISSING:-0}"
 strict_modules="${STRICT_MODULES:-0}"
