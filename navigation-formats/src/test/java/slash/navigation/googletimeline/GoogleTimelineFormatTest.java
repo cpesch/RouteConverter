@@ -203,6 +203,96 @@ public class GoogleTimelineFormatTest {
             "  }" +
             "]";
 
+    private static final String ANDROID_WITH_TIMELINE_MEMORY_JSON =
+            "{" +
+            "  \"semanticSegments\": [" +
+            "    {" +
+            "      \"startTime\": \"2024-12-23T08:00:00Z\"," +
+            "      \"endTime\": \"2024-12-23T08:05:00Z\"," +
+            "      \"timelineMemory\": {\"trip\": {}}" +
+            "    }," +
+            "    {" +
+            "      \"startTime\": \"2024-12-23T09:00:00Z\"," +
+            "      \"endTime\": \"2024-12-23T09:30:00Z\"," +
+            "      \"visit\": {" +
+            "        \"topCandidate\": {" +
+            "          \"placeLocation\": {\"latLng\": \"53.569885°, 10.029150°\"}," +
+            "          \"semanticType\": \"Home\"" +
+            "        }" +
+            "      }" +
+            "    }," +
+            "    {" +
+            "      \"startTime\": \"2024-12-23T10:00:00Z\"," +
+            "      \"endTime\": \"2024-12-23T12:00:00Z\"," +
+            "      \"activity\": {" +
+            "        \"topCandidate\": {\"type\": \"walking\", \"probability\": 0.85}" +
+            "      }" +
+            "    }," +
+            "    {" +
+            "      \"startTime\": \"2024-12-23T12:00:00Z\"," +
+            "      \"endTime\": \"2024-12-23T14:00:00Z\"," +
+            "      \"timelinePath\": {" +
+            "        \"points\": [" +
+            "          {\"location\": {\"latLng\": \"52.5200°, 13.4050°\"}, \"time\": \"2024-12-23T12:00:00Z\"}," +
+            "          {\"location\": {\"latLng\": \"52.5210°, 13.4060°\"}, \"time\": \"2024-12-23T12:30:00Z\"}," +
+            "          {\"location\": {\"latLng\": \"52.5220°, 13.4070°\"}, \"time\": \"2024-12-23T13:00:00Z\"}" +
+            "        ]" +
+            "      }" +
+            "    }" +
+            "  ]" +
+            "}";
+
+    private static final String RECORDS_JSON =
+            "{" +
+            "  \"locations\": [" +
+            "    {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000, \"timestamp\": \"2024-12-23T10:00:00Z\"}," +
+            "    {\"latitudeE7\": 525300000, \"longitudeE7\": 134150000, \"timestampMs\": \"1734951600000\"}," +
+            "    {\"latitudeE7\": 488566000, \"longitudeE7\": 23522000, \"altitude\": 35.5, \"timestamp\": \"2025-03-15T09:00:00Z\"}," +
+            "    {\"latitudeE7\": 488576000, \"longitudeE7\": 23532000, \"timestamp\": \"2025-03-15T10:00:00Z\"}," +
+            "    {\"latitudeE7\": 950000000, \"longitudeE7\": 23522000, \"timestamp\": \"2025-03-15T11:00:00Z\"}" +
+            "  ]" +
+            "}";
+
+    private static final String SEMANTIC_LOCATION_HISTORY_RAW_PATH_JSON =
+            "{" +
+            "  \"timelineObjects\": [" +
+            "    {\"placeVisit\": {" +
+            "      \"location\": {\"latitudeE7\": 535698850, \"longitudeE7\": 100291500, \"name\": \"Home\"}," +
+            "      \"duration\": {\"startTimestamp\": \"2024-12-23T09:00:00Z\", \"endTimestamp\": \"2024-12-23T09:30:00Z\"}" +
+            "    }}," +
+            "    {\"activitySegment\": {" +
+            "      \"activityType\": \"WALKING\"," +
+            "      \"startLocation\": {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000}," +
+            "      \"endLocation\": {\"latitudeE7\": 525300000, \"longitudeE7\": 134150000}," +
+            "      \"duration\": {\"startTimestamp\": \"2024-12-23T10:00:00Z\", \"endTimestamp\": \"2024-12-23T11:00:00Z\"}," +
+            "      \"simplifiedRawPath\": {\"points\": [" +
+            "        {\"latE7\": 525220000, \"lngE7\": 134070000, \"timestamp\": \"2024-12-23T10:20:00Z\"}," +
+            "        {\"latE7\": 525240000, \"lngE7\": 134090000, \"timestamp\": \"2024-12-23T10:40:00Z\"}" +
+            "      ]}" +
+            "    }}" +
+            "  ]" +
+            "}";
+
+    private static final String SEMANTIC_LOCATION_HISTORY_WAYPOINT_PATH_JSON =
+            "{" +
+            "  \"timelineObjects\": [" +
+            "    {\"activitySegment\": {" +
+            "      \"activityType\": \"WALKING\"," +
+            "      \"startLocation\": {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000}," +
+            "      \"endLocation\": {\"latitudeE7\": 525300000, \"longitudeE7\": 134150000}," +
+            "      \"duration\": {\"startTimestamp\": \"2024-12-23T10:00:00Z\", \"endTimestamp\": \"2024-12-23T11:00:00Z\"}," +
+            "      \"waypointPath\": {\"waypoints\": [" +
+            "        {\"latE7\": 525220000, \"lngE7\": 134070000}," +
+            "        {\"latE7\": 525240000, \"lngE7\": 134090000}" +
+            "      ]}" +
+            "    }}" +
+            "  ]" +
+            "}";
+
+    private static final String UNKNOWN_OBJECT_JSON = "{\"foo\": []}";
+
+    private static final String EMPTY_SEMANTIC_SEGMENTS_JSON = "{\"semanticSegments\": []}";
+
     private static final String GEOJSON_FEATURE_COLLECTION =
             "{" +
             "  \"type\": \"FeatureCollection\"," +
@@ -495,6 +585,133 @@ public class GoogleTimelineFormatTest {
         Wgs84Route track = routes.get(0);
         assertEquals(RouteCharacteristics.Track, track.getCharacteristics());
         assertEquals(1, track.getPositions().size()); // only the path point
+    }
+
+    @Test
+    public void testReadAndroidSkipsUnknownFirstSegment() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(ANDROID_WITH_TIMELINE_MEMORY_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(2, routes.size()); // 1 track + 1 visits route
+
+        Wgs84Route track = routes.get(0);
+        assertEquals(RouteCharacteristics.Track, track.getCharacteristics());
+        assertEquals(3, track.getPositions().size());
+        for (Wgs84Position pos : track.getPositions()) {
+            assertEquals("walking", pos.getDescription());
+        }
+
+        Wgs84Route visits = routes.get(1);
+        assertEquals(RouteCharacteristics.Waypoints, visits.getCharacteristics());
+        assertEquals(1, visits.getPositions().size());
+        assertEquals("Home", visits.getPositions().get(0).getDescription());
+    }
+
+    @Test
+    public void testReadIOSWithByteOrderMark() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        String prefixed = "﻿" + IOS_SAME_DAY_JSON;
+        InputStream input = new ByteArrayInputStream(prefixed.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(1, routes.size());
+
+        Wgs84Route route = routes.get(0);
+        assertEquals(RouteCharacteristics.Track, route.getCharacteristics());
+        assertEquals("2024-12-23", route.getName());
+        assertEquals(5, route.getPositions().size());
+    }
+
+    @Test
+    public void testReadTakeoutRecords() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(RECORDS_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(2, routes.size()); // out-of-range entry skipped, two far-apart days
+
+        Wgs84Route firstDay = routes.get(0);
+        assertEquals(RouteCharacteristics.Track, firstDay.getCharacteristics());
+        assertEquals("2024-12-23", firstDay.getName());
+        assertEquals(2, firstDay.getPositions().size());
+
+        Wgs84Route secondDay = routes.get(1);
+        assertEquals(RouteCharacteristics.Track, secondDay.getCharacteristics());
+        assertEquals("2025-03-15", secondDay.getName());
+        assertEquals(2, secondDay.getPositions().size());
+        assertEquals(35.5, secondDay.getPositions().get(0).getElevation(), 0.001);
+    }
+
+    @Test
+    public void testReadSemanticLocationHistoryWithSimplifiedRawPath() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(SEMANTIC_LOCATION_HISTORY_RAW_PATH_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(2, routes.size()); // 1 track + 1 visits route
+
+        Wgs84Route track = routes.get(0);
+        assertEquals(RouteCharacteristics.Track, track.getCharacteristics());
+        assertEquals(4, track.getPositions().size()); // start, 2 raw points, end
+        for (Wgs84Position pos : track.getPositions()) {
+            assertEquals("WALKING", pos.getDescription());
+        }
+
+        Wgs84Route visits = routes.get(1);
+        assertEquals(RouteCharacteristics.Waypoints, visits.getCharacteristics());
+        assertEquals(1, visits.getPositions().size());
+        assertEquals("Home", visits.getPositions().get(0).getDescription());
+    }
+
+    @Test
+    public void testReadSemanticLocationHistoryWithWaypointPath() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(SEMANTIC_LOCATION_HISTORY_WAYPOINT_PATH_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(1, routes.size()); // no placeVisit, just the track
+
+        Wgs84Route track = routes.get(0);
+        assertEquals(RouteCharacteristics.Track, track.getCharacteristics());
+        assertEquals(4, track.getPositions().size()); // start, 2 waypoints, end
+    }
+
+    @Test
+    public void testReadUnknownObjectShape() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(UNKNOWN_OBJECT_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        assertEquals(0, context.getRoutes().size());
+    }
+
+    @Test
+    public void testReadEmptySemanticSegments() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(EMPTY_SEMANTIC_SEGMENTS_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        assertEquals(0, context.getRoutes().size());
     }
 
     @Test
