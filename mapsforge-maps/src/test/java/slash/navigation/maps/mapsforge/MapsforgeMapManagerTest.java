@@ -21,16 +21,27 @@
 package slash.navigation.maps.mapsforge;
 
 import org.junit.Test;
+import org.mapsforge.map.rendertheme.internal.MapsforgeThemes;
+import slash.navigation.maps.mapsforge.impl.VectorTheme;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mapsforge.map.rendertheme.internal.MapsforgeThemes.HILLSHADING;
+import static slash.navigation.maps.mapsforge.MapsforgeMapManager.createBuiltinThemes;
 import static slash.navigation.maps.mapsforge.MapsforgeMapManager.isMapsforgeMapFile;
 import static slash.navigation.maps.mapsforge.MapsforgeMapManager.isMissingOnlineMap;
 
@@ -93,5 +104,38 @@ public class MapsforgeMapManagerTest {
     @Test
     public void testStoredNotAvailableIsMissing() {
         assertTrue(isMissingOnlineMap("https://gone/tiles", asList("https://a/tiles"), DEFAULT_URL));
+    }
+
+    @Test
+    public void testAllMapsforgeThemesAreBuiltin() {
+        Set<MapsforgeThemes> expected = EnumSet.allOf(MapsforgeThemes.class);
+        expected.remove(HILLSHADING);
+
+        Set<Object> actual = new HashSet<>();
+        for (VectorTheme theme : createBuiltinThemes())
+            actual.add(theme.getXmlRenderTheme());
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testBuiltinThemesHaveUniqueDescriptionsAndUrls() {
+        List<VectorTheme> themes = createBuiltinThemes();
+        Set<String> descriptions = new HashSet<>();
+        Set<String> urls = new HashSet<>();
+        for (VectorTheme theme : themes) {
+            descriptions.add(theme.description());
+            urls.add(theme.getUrl());
+        }
+        assertEquals(themes.size(), descriptions.size());
+        assertEquals(themes.size(), urls.size());
+    }
+
+    @Test
+    public void testBuiltinThemesAreReadable() throws IOException {
+        for (VectorTheme theme : createBuiltinThemes()) {
+            try (InputStream stream = theme.getXmlRenderTheme().getRenderThemeAsStream()) {
+                assertNotNull(theme.description(), stream);
+            }
+        }
     }
 }

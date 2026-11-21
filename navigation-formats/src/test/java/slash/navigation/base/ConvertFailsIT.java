@@ -22,6 +22,7 @@ package slash.navigation.base;
 
 import junit.framework.AssertionFailedError;
 import org.junit.Test;
+import slash.navigation.alan.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.*;
 import slash.navigation.ozi.*;
 import slash.navigation.garmin.GarminPoiDbFormat;

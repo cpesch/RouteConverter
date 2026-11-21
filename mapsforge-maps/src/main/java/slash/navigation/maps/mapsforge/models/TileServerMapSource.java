@@ -49,7 +49,6 @@ public class TileServerMapSource extends AbstractTileSource {
     private static final Logger log = Logger.getLogger(TileServerMapSource.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(TileServerMapSource.class);
     private static final String PARALLEL_REQUEST_LIMIT_PREFERENCE = "parallelRequestLimit";
-    private static final String[] OUTDOOR_ACTIVE_TILE_DOMAINS = {"oastatic.com", "outdooractive.com"};
     private final TileServer tileServer;
     // set when the tile layer is created, read by the TileDownloadThreads
     private volatile boolean alpha = false;
@@ -72,33 +71,36 @@ public class TileServerMapSource extends AbstractTileSource {
     private TileServerMapSource(TileServer tileServer, String[] hostNames) {
         super(hostNames, 80);
         this.tileServer = tileServer;
-        setUserAgent(userAgent(hostNames));
         setTimeoutConnect(30 * 1000);
         setTimeoutRead(120 * 1000);
     }
 
     /**
      * Identify compliantly to tile providers (esp. OpenStreetMap's usage policy); never masquerade as a browser.
-     * <p>
-     * Exception for OutdoorActive: their tile servers answer 404 to every request whose User-Agent contains
-     * "routeconverter" (in the name or in the +URL) or "osmand", while serving any other client - browsers,
-     * competing apps and plain wget alike (measured 2026-09-14). That left the "OAC Summer", "OSM Summer",
-     * "Outdoor Topo", "CH Swissmap" and "UK Ordnance Survey" maps blank, so for those hosts we send the JDK's
-     * own default identification instead of ours.
      */
-    static String userAgent(String[] hostNames) {
-        for (String hostName : hostNames)
-            if (isOutdoorActiveHost(hostName))
-                return "Java/" + System.getProperty("java.version", "21");
+    public static String userAgent() {
         return "RouteConverter/" + System.getProperty("rest", "3.0") + " (+https://www.routeconverter.com/)";
     }
 
-    private static boolean isOutdoorActiveHost(String hostName) {
-        String lowerCase = hostName.toLowerCase(Locale.ROOT);
-        for (String domain : OUTDOOR_ACTIVE_TILE_DOMAINS)
-            if (lowerCase.equals(domain) || lowerCase.endsWith("." + domain))
-                return true;
-        return false;
+    /**
+     * Resolved on every request instead of once in the constructor: the version comes from the
+     * "rest" system property, which is set during startup and must not be frozen as the fallback.
+     */
+    public String getUserAgent() {
+        return userAgent();
+    }
+
+    /**
+     * Whether the tile server is run by the OpenStreetMap community (openstreetmap.org, .de, .fr, CyclOSM,
+     * HOT and the overlays with OpenStreetMap copyright). Their tile usage policies ask clients to keep
+     * tiles in a local cache across sessions instead of downloading them again.
+     */
+    public static boolean isOpenStreetMapTileServer(TileServer tileServer) {
+        return tileServer.copyright() != null && tileServer.copyright().toLowerCase(Locale.ROOT).contains("openstreetmap");
+    }
+
+    public boolean isOpenStreetMapTileServer() {
+        return isOpenStreetMapTileServer(tileServer);
     }
 
     public int getParallelRequestsLimit() {

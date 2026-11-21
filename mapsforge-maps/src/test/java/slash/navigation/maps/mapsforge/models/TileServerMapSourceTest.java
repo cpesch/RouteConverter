@@ -169,36 +169,36 @@ public class TileServerMapSourceTest {
             "RouteConverter/" + System.getProperty("rest", "3.0") + " (+https://www.routeconverter.com/)";
 
     @Test
-    public void testIdentifiesAsRouteConverterToOrdinaryTileServers() {
-        assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent(new String[]{"tile.openstreetmap.org"}));
+    public void testIdentifiesAsRouteConverter() {
+        assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent());
     }
 
     @Test
-    public void testIdentifiesAsJavaToOutdoorActiveHosts() {
-        // OutdoorActive 404s any User-Agent containing "routeconverter", so those hosts get the JDK default
-        assertTrue(userAgent(new String[]{"w0.oastatic.com"}).startsWith("Java/"));
+    public void testUserAgentIsResolvedPerRequest() {
+        // the version is set during startup, possibly after the tile source was created
+        TileServerMapSource tileSource = new TileServerMapSource(tileServer("https://#{host}/#{zoom}/#{tilex}/#{tiley}.png"));
+        String previous = System.getProperty("rest");
+        try {
+            System.setProperty("rest", "9.8.7");
+            assertEquals("RouteConverter/9.8.7 (+https://www.routeconverter.com/)", tileSource.getUserAgent());
+        } finally {
+            if (previous != null)
+                System.setProperty("rest", previous);
+            else
+                System.clearProperty("rest");
+        }
+    }
+
+    private static TileServer tileServerWithCopyright(String copyright) {
+        return new TileServer("test", "Test Tile Server", "https://#{host}/#{zoom}/#{tilex}/#{tiley}.png",
+                List.of("tile.example.org"), true, 0, 18, copyright, "Copyright");
     }
 
     @Test
-    public void testIdentifiesAsJavaToOutdoorActiveComHosts() {
-        // the CH Swissmap and Outdoor Topo entries use outdooractive.com, which blocks identically
-        assertTrue(userAgent(new String[]{"w0.outdooractive.com"}).startsWith("Java/"));
-    }
-
-    @Test
-    public void testIdentifiesAsJavaWhenAnyHostIsOutdoorActive() {
-        assertTrue(userAgent(new String[]{"w0.example.org", "w1.oastatic.com"}).startsWith("Java/"));
-    }
-
-    @Test
-    public void testOutdoorActiveMatchIsCaseInsensitive() {
-        assertTrue(userAgent(new String[]{"W2.OaStatic.Com"}).startsWith("Java/"));
-    }
-
-    @Test
-    public void testLookalikeHostsStillGetTheRouteConverterUserAgent() {
-        assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent(new String[]{"notoastatic.com"}));
-        assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent(new String[]{"oastatic.com.example.org"}));
-        assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent(new String[]{"myoutdooractive.com"}));
+    public void testIsOpenStreetMapTileServer() {
+        assertTrue(new TileServerMapSource(tileServerWithCopyright("OpenStreetMap")).isOpenStreetMapTileServer());
+        assertTrue(TileServerMapSource.isOpenStreetMapTileServer(tileServerWithCopyright("openstreetmap")));
+        assertFalse(new TileServerMapSource(tileServerWithCopyright("Google")).isOpenStreetMapTileServer());
+        assertFalse(new TileServerMapSource(tileServerWithCopyright("Thunderforest")).isOpenStreetMapTileServer());
     }
 }

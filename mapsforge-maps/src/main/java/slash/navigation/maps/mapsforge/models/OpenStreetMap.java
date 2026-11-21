@@ -19,10 +19,10 @@
 */
 package slash.navigation.maps.mapsforge.models;
 
+import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 
-import static org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik.INSTANCE;
 import static slash.navigation.maps.tileserver.TileServerMapManager.retrieveCopyrightText;
 
 /**
@@ -35,7 +35,20 @@ public class OpenStreetMap extends TileDownloadMap {
     public static final String OPENSTREETMAP_URL = "http://www.openstreetmap.org/";
 
     public OpenStreetMap() {
-        super("OpenStreetMap Default Map", OPENSTREETMAP_URL, true, INSTANCE, retrieveCopyrightText("OpenStreetMap"));
-        getTileSource().setUserAgent("RouteConverter/" + System.getProperty("rest", "3.0") + " (+https://www.routeconverter.com/)");
+        super("OpenStreetMap Default Map", OPENSTREETMAP_URL, true, new RouteConverterOpenStreetMapMapnik(), retrieveCopyrightText("OpenStreetMap"));
+    }
+
+    /**
+     * mapsforge's tile source for tile.openstreetmap.org that identifies as RouteConverter, resolved on every
+     * request so that it carries the version even when created before the "rest" system property is set.
+     */
+    private static class RouteConverterOpenStreetMapMapnik extends OpenStreetMapMapnik {
+        RouteConverterOpenStreetMapMapnik() {
+            super(new String[]{"tile.openstreetmap.org"}, 443);
+        }
+
+        public String getUserAgent() {
+            return TileServerMapSource.userAgent();
+        }
     }
 }

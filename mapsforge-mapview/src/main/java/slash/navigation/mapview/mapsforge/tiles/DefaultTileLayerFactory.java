@@ -26,6 +26,8 @@ import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
+import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.mapsforge.map.layer.hills.HillsRenderConfig;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.MapViewPosition;
@@ -46,7 +48,10 @@ import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import java.io.File;
 import java.util.prefs.Preferences;
 
+import static java.io.File.separator;
+import static java.util.concurrent.TimeUnit.DAYS;
 import static org.mapsforge.map.rendertheme.internal.MapsforgeThemes.OSMARENDER;
+import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Transfer.encodeUri;
 
@@ -60,6 +65,12 @@ public class DefaultTileLayerFactory implements TileLayerFactory {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapsforgeMapView.class);
     private static final String FIRST_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "firstLevelTileCacheSize";
     private static final String SECOND_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "secondLevelTileCacheSize";
+    private static final String PERSISTENT_TILE_CACHE_SIZE_PREFERENCE = "persistentTileCacheSize";
+    /**
+     * OpenStreetMap's tile usage policy: honour the HTTP caching headers or, if a client can't, keep
+     * every tile for at least 7 days. mapsforge doesn't keep the headers with a cached tile.
+     */
+    static final long PERSISTENT_TILE_MAXIMUM_AGE = DAYS.toMillis(7);
 
     private final MapsforgeMapManager mapManager;
     private final MapViewPosition mapViewPosition;
@@ -82,6 +93,28 @@ public class DefaultTileLayerFactory implements TileLayerFactory {
         File cacheDirectory = new File(getTemporaryDirectory(), encodeUri(cacheId));
         TileCache secondLevelTileCache = new FileSystemTileCache(preferences.getInt(SECOND_LEVEL_TILE_CACHE_SIZE_PREFERENCE, 2048), cacheDirectory, graphicFactory);
         return new TwoLevelTileCache(firstLevelTileCache, secondLevelTileCache);
+    }
+
+    /**
+     * A tile cache that survives restarts, for tile servers whose usage policy asks clients not to download
+     * tiles again they've already got: the tiles are kept on disk below the application directory and
+     * downloaded again only once they are older than {@link #PERSISTENT_TILE_MAXIMUM_AGE}.
+     */
+    private TileCache createPersistentTileCache(String cacheId) {
+        TileCache firstLevelTileCache = new InMemoryTileCache(preferences.getInt(FIRST_LEVEL_TILE_CACHE_SIZE_PREFERENCE, 256));
+        File cacheDirectory = new File(getPersistentTileCacheDirectory(), encodeUri(cacheId));
+        TileCache secondLevelTileCache = new FileSystemTileCache(preferences.getInt(PERSISTENT_TILE_CACHE_SIZE_PREFERENCE, 4096), cacheDirectory, graphicFactory, true);
+        return new RefreshingTileCache(new TwoLevelTileCache(firstLevelTileCache, secondLevelTileCache), PERSISTENT_TILE_MAXIMUM_AGE);
+    }
+
+    // visible for testing
+    File getPersistentTileCacheDirectory() {
+        return getApplicationDirectory("cache" + separator + "tiles");
+    }
+
+    static boolean isPersistentlyCached(TileSource tileSource) {
+        return tileSource instanceof OpenStreetMapMapnik ||
+                tileSource instanceof TileServerMapSource mapSource && mapSource.isOpenStreetMapTileServer();
     }
 
     private TileRendererLayer createTileRendererLayer(MapFile mapFile, String cacheId) {
@@ -107,14 +140,19 @@ public class DefaultTileLayerFactory implements TileLayerFactory {
         return switch (map.getType()) {
             case Mapsforge -> createMapLayer(((MapsforgeFileMap) map).getMapFile(), map.getUrl());
             case MBTiles -> new TileMBTilesLayer(createTileCache(map.getUrl()), mapViewPosition, true, ((MBTilesFileMap) map).getMBTilesFile(), graphicFactory);
-            case Download -> new TileDownloadLayer(createTileCache(map.getUrl()), mapViewPosition, ((TileDownloadMap) map).getTileSource(), graphicFactory);
+            case Download -> createDownloadLayer(((TileDownloadMap) map).getTileSource(), map.getUrl());
         };
+    }
+
+    private TileDownloadLayer createDownloadLayer(TileSource tileSource, String cacheId) {
+        TileCache tileCache = isPersistentlyCached(tileSource) ? createPersistentTileCache(cacheId) : createTileCache(cacheId);
+        return new TileDownloadLayer(tileCache, mapViewPosition, tileSource, graphicFactory);
     }
 
     public TileDownloadLayer createOverlayLayer(TileServer tileServer) {
         TileServerMapSource mapSource = new TileServerMapSource(tileServer);
         mapSource.setAlpha(true);
-        return new TileDownloadLayer(createTileCache(tileServer.id()), mapViewPosition, mapSource, graphicFactory);
+        return createDownloadLayer(mapSource, tileServer.id());
     }
 
     public Layer createBackgroundLayer(File backgroundMap) {
