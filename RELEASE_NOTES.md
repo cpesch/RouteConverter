@@ -33,6 +33,7 @@
 - RouteConverter started from the Debian package now shows the startup splash screen, like the Linux jar does (#394)
 - The map selector and Karten > Online now show the name of each online map instead of its id and list the online maps alphabetically, also those from your own userservers.xml. Once after the update, the displayed online map falls back to OpenStreetMap and the Active ticks in Karten > Online return to their defaults (#417)
 - Show Map Overlays no longer offers overlays that the map catalog marks as inactive, such as the discontinued OpenStreetMap Hillshading (#426)
+- Google Timeline (.json) files are read again when the Android export's first segment is a trip memory, when the file starts with a byte-order mark, and Google Takeout "Location History" exports (Records.json and Semantic Location History) are now read as well (#429)
 
 ## 3.8 — 2026-11-15
 
