@@ -19,6 +19,7 @@
 - CompeGPS Data route, track and waypoint files (.rte, .trk, .wpt) are read and written by RouteConverter itself and no longer need GPSBabel (#390)
 - OziExplorer route, track and waypoint files (.rte, .plt, .wpt) are read and written by RouteConverter itself and no longer need GPSBabel (#391)
 - FAI/IGC Flight Recorder (.igc) files are read and written by RouteConverter itself and no longer need GPSBabel (#392)
+- Magellan MapSend (.wpt) files are read and written by RouteConverter itself and no longer need GPSBabel (#431)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 - Every menu entry and submenu now has an icon (#400)
 
