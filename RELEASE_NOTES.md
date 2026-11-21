@@ -25,12 +25,14 @@
 ### Fixes
 
 - Formats read and written with GPSBabel work again when no GPSBabel path is set under Extras > Options: on Java 25 RouteConverter took its working directory for the GPSBabel program. (#419)
+- OziExplorer route and waypoint files whose lines are padded with commas, as spreadsheet exports write them, and OziExplorer CE Route2 (.rt2) files are read again
 - Top and Bottom in the positions table keep the moved positions selected (#403)
 - Dragging positions to another row of the positions table no longer mixes up the order of the positions in between (#401)
 - Switching a map overlay on or off while the map is redrawing no longer stops the map from drawing
 - Online maps and overlays no longer show up twice in Karten > Online when a leftover file sits next to the downloaded map catalog (#395)
 - RouteConverter started from the Debian package now shows the startup splash screen, like the Linux jar does (#394)
 - The map selector and Karten > Online now show the name of each online map instead of its id and list the online maps alphabetically, also those from your own userservers.xml. Once after the update, the displayed online map falls back to OpenStreetMap and the Active ticks in Karten > Online return to their defaults (#417)
+- Show Map Overlays no longer offers overlays that the map catalog marks as inactive, such as the discontinued OpenStreetMap Hillshading (#426)
 
 ## 3.8 — 2026-11-15
 

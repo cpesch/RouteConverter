@@ -32,6 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,6 +128,61 @@ public class OziExplorerRouteFormatTest {
     @Test
     public void unknownDatumYieldsNoRoute() throws IOException {
         assertTrue(read(new OziExplorerTrackFormat(), plt("Nowhere Datum 1999", "Feet", "47.5,8.25,0,100,,,")).isEmpty());
+    }
+
+    @Test
+    public void headerLinesPaddedWithCommasAreRead() throws IOException {
+        // spreadsheet exports pad every line with commas up to the widest one
+        String route = lines("OziExplorer Route File Version 1.0,,,,,,,,,,,,,,,", "WGS 84,,,,,,,,,,,,,,,",
+                "Reserved 1,,,,,,,,,,,,,,,", "Reserved 2,,,,,,,,,,,,,,,", "R,1,Padded,,,,,,,,,,,,,",
+                "W,1,1,6,Start,47.500000,8.250000,,32,1,6,,,First,,2",
+                "W,1,2,6,End,47.600000,8.350000,,32,1,6,,,Second,,2");
+        List<GpxRoute> routes = read(new OziExplorerRouteFormat(), route);
+        assertEquals(1, routes.size());
+        assertEquals(2, routes.get(0).getPositionCount());
+        assertEquals(47.6, routes.get(0).getPosition(1).getLatitude(), 0.0000001);
+
+        String waypoints = lines("OziExplorer Waypoint File Version 1.1,,,,,,,,,,,,,,", "WGS 84 ,,,,,,,,,,,,,,",
+                "Reserved 2,,,,,,,,,,,,,,", "garmin,,,,,,,,,,,,,,",
+                "1,Alpha,47.500000,8.250000,,30,1,6,,,Alpha desc,,2,,-777");
+        routes = read(new OziExplorerWaypointFormat(), waypoints);
+        assertEquals(1, routes.size());
+        assertEquals(1, routes.get(0).getPositionCount());
+        assertNull(routes.get(0).getPosition(0).getElevation());
+    }
+
+    private static final String RT2 = "H1,OziExplorer CE Route2 File Version 1.0\nH2,WGS 84\nH3,Lake Tour,,0\n" +
+            "W,Start,  47.500000,   8.250000,0\nW,Z\u00fcrich,47.6,8.35,1\n";
+
+    @Test
+    public void route2FileIsReadByRouteFormatOnly() throws IOException {
+        List<GpxRoute> routes = read(new OziExplorerRouteFormat(), RT2);
+        assertEquals(1, routes.size());
+        GpxRoute route = routes.get(0);
+        assertEquals(Route, route.getCharacteristics());
+        assertEquals("Lake Tour", route.getName());
+        assertEquals(2, route.getPositionCount());
+        assertEquals(47.5, route.getPosition(0).getLatitude(), 0.0000001);
+        assertEquals(8.25, route.getPosition(0).getLongitude(), 0.0000001);
+        assertEquals("Start", route.getPosition(0).getDescription());
+        assertEquals("Z\u00fcrich", route.getPosition(1).getDescription());
+
+        assertTrue(read(new OziExplorerTrackFormat(), RT2).isEmpty());
+        assertTrue(read(new OziExplorerWaypointFormat(), RT2).isEmpty());
+    }
+
+    @Test
+    public void route2TextWrittenAsUtf8IsRead() throws IOException {
+        ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
+        new OziExplorerRouteFormat().read(new ByteArrayInputStream(RT2.getBytes(StandardCharsets.UTF_8)), context);
+        assertEquals("Z\u00fcrich", context.getRoutes().get(0).getPosition(1).getDescription());
+    }
+
+    @Test
+    public void route2FileWithUnknownDatumOrWithoutPositionsYieldsNoRoute() throws IOException {
+        assertTrue(read(new OziExplorerRouteFormat(), RT2.replace("WGS 84", "Nowhere Datum 1999")).isEmpty());
+        assertTrue(read(new OziExplorerRouteFormat(), "H1,OziExplorer CE Route2 File Version 1.0\nH2,WGS 84\nH3,Empty,,0\n").isEmpty());
+        assertTrue(read(new OziExplorerRouteFormat(), "H1,OziExplorer CE Route2 File Version 1.0\nWGS 84\n").isEmpty());
     }
 
     @Test
