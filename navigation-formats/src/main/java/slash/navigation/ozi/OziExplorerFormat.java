@@ -37,12 +37,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.min;
+import static java.nio.charset.CodingErrorAction.REPORT;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.math.RoundingMode.HALF_EVEN;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.isEmpty;
@@ -68,6 +72,9 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
     private static final double UNKNOWN_ALTITUDE = -777;
     private static final int MAXIMUM_DESCRIPTION_LENGTH = 40;
     private static final String DEFAULT_TRACK_NAME = "ComplimentsOfGPSBabel";
+    private static final String ROUTE2_HEADER = "H1,OziExplorer CE Route2 File";
+    private static final String ROUTE2_DATUM = "H2,";
+    private static final String ROUTE2_NAME = "H3,";
 
     protected abstract RouteCharacteristics getRouteCharacteristics();
 
@@ -198,16 +205,70 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
         return new GpxPosition(converted[1], converted[0], point.elevation, null, point.time, description);
     }
 
+    /**
+     * Looks up the datum of a header line. Files exported from spreadsheets pad every line with commas
+     * up to the widest one, which GPSBabel's ozi reader tolerates.
+     */
+    private static int lookupDatum(String line) {
+        int end = line.length();
+        while (end > 0 && (line.charAt(end - 1) == ',' || Character.isWhitespace(line.charAt(end - 1))))
+            end--;
+        return Datums.lookupIndex(line.substring(0, end).trim());
+    }
+
+    /** Decodes the text of a Route2 file, which other programs write as UTF-8 instead of Windows-1252. */
+    private static String decodeRoute2Text(String field) {
+        try {
+            return UTF_8.newDecoder().onMalformedInput(REPORT).onUnmappableCharacter(REPORT)
+                    .decode(ByteBuffer.wrap(field.getBytes(ISO_8859_1))).toString();
+        } catch (CharacterCodingException e) {
+            return decodeText(field);
+        }
+    }
+
+    /**
+     * Reads an OziExplorer CE Route2 (.rt2) file, which GPSBabel does not know: three header lines
+     * H1 (file type), H2 (datum) and H3 (route name) followed by one "W,name,latitude,longitude,flag"
+     * line per position.
+     */
+    private List<GpxRoute> readRoute2(List<String> lines) {
+        if (!lines.get(1).startsWith(ROUTE2_DATUM))
+            return null;
+        int datum = lookupDatum(lines.get(1).substring(ROUTE2_DATUM.length()));
+        if (datum < 0)
+            return null;
+
+        String routeName = null;
+        List<GpxPosition> positions = new ArrayList<>();
+        for (int i = 2; i < lines.size(); i++) {
+            String line = lines.get(i);
+            String[] parts = line.split(",", -1);
+            if (line.startsWith(ROUTE2_NAME))
+                routeName = nullIfEmpty(clean(decodeRoute2Text(parts[1]).trim()));
+            else if (line.startsWith("W,") && parts.length >= 4) {
+                double[] converted = Datums.toWgs84(toDouble(parts[2]), toDouble(parts[3]), 0.0, datum);
+                String name = nullIfEmpty(clean(decodeRoute2Text(parts[1]).trim()));
+                positions.add(new GpxPosition(converted[1], converted[0], null, null, null, name));
+            }
+        }
+
+        List<GpxRoute> result = new ArrayList<>();
+        result.add(createRoute(Route, routeName, null, positions));
+        return result;
+    }
+
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
         List<String> lines = splitLines(new String(readBytes(source), ISO_8859_1));
         if (lines.size() < 2)
             return null;
 
         String first = lines.get(0);
+        if (first.startsWith(ROUTE2_HEADER))
+            return getRouteCharacteristics() == Route ? readRoute2(lines) : null;
         if (!first.startsWith("OziExplorer ") || !isFileType(first))
             return null;
 
-        int datum = Datums.lookupIndex(lines.get(1));
+        int datum = lookupDatum(lines.get(1));
         if (datum < 0)
             return null;
 
