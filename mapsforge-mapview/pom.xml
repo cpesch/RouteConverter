@@ -64,8 +64,8 @@
             </exclusions>
         </dependency>
         <!-- ImageIO plugin registered via META-INF/services; needed because some tile servers
-             (e.g. OutdoorActive "OAC Summer"/"OSM Summer") serve WebP bytes under .png-named URLs
-             and ImageIO.read() picks its decoder by magic bytes, not by file extension. -->
+             serve WebP tiles, sometimes under .png-named URLs, and ImageIO.read() picks its
+             decoder by magic bytes, not by file extension. -->
         <dependency>
             <groupId>com.twelvemonkeys.imageio</groupId>
             <artifactId>imageio-webp</artifactId>
