@@ -110,11 +110,17 @@ public class TileServerMapManager {
                         formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
                         type.getCopyright(), retrieveCopyrightText(type.getCopyright())));
 
-            for (OverlayServerType type : tileServerService.getOverlays())
+            for (OverlayServerType type : tileServerService.getOverlays()) {
+                // inactive overlays are dead tile servers: neither offer them nor restore them as applied
+                boolean active = formatBoolean(type.isActive());
+                if (!active)
+                    continue;
+
                 availableOverlaysModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
-                        type.getUrlPattern(), type.getHost(), formatBoolean(type.isActive()),
+                        type.getUrlPattern(), type.getHost(), active,
                         formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
                         type.getCopyright(), retrieveCopyrightText(type.getCopyright())));
+            }
         });
     }
 }
