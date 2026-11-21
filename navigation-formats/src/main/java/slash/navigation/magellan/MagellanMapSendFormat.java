@@ -18,6 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 
     Copyright (C) 2002-2006 Robert Lipe, robertlipe+source@gpsbabel.org
+    Copyright (C) 2002 Robert Lipe, robertlipe@usa.net
     Translated to Java from GPSBabel mapsend.cc, mapsend.h (gpsbabel_1_7_0) for RouteConverter, 2026; modified.
     Copyright (C) 2003-2006 Robert Lipe, robertlipe+source@gpsbabel.org
     Translated to Java from GPSBabel mkshort.cc (gpsbabel_1_5_4) for RouteConverter, 2026; modified.
@@ -154,9 +155,22 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
             if (!Double.isFinite(longitude) || !Double.isFinite(latitude))
                 return emptyList();
 
-            // GPSBabel's waypt_add(): a waypoint without description takes its name, one without both is numbered
+            // GPSBabel's waypt_add() wraps coordinates once and fails the whole file if they are still out of range
+            if (latitude < -90.0)
+                latitude += 180.0;
+            else if (latitude > 90.0)
+                latitude -= 180.0;
+            if (longitude < -180.0)
+                longitude += 360.0;
+            else if (longitude > 180.0)
+                longitude -= 360.0;
+            if (latitude < -90.0 || latitude > 90.0 || longitude < -180.0 || longitude > 180.0)
+                return emptyList();
+
+            // GPSBabel's waypt_add(): a waypoint without description takes its name; gbfgetpstr() never returns
+            // a null name, so nothing is numbered and both empty leave the description empty
             if (description == null)
-                description = shortName != null ? shortName : String.format("WPT%03d", i + 1);
+                description = shortName;
             // the GPX that RouteConverter reads delivers <desc> only, see asWayPointDescription()
             waypoints.add(createPosition(longitude, latitude, asGpxElevation(altitude), null, description));
         }
@@ -167,6 +181,8 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
         if (!fits(input, routeCount, MINIMUM_ROUTE_SIZE))
             return emptyList();
 
+        // GPSBabel's route_add_wpt() numbers with rte_waypts, which counts the points of all routes
+        int routePointCount = 0;
         for (int i = 0; i < routeCount; i++) {
             String routeName = stripIllegalXmlCharacters(trim(input.readPascalString(CHARSET)));
             input.readInt32(); // route number
@@ -184,9 +200,10 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
                 if (!Double.isFinite(longitude) || !Double.isFinite(latitude))
                     return emptyList();
 
-                // GPSBabel's route_add_wpt(): a route point without name is numbered
+                routePointCount++;
+                // GPSBabel's route_add_wpt(): a route point without name is numbered across all routes
                 if (shortName == null)
-                    shortName = String.format("RPT%03d", j + 1);
+                    shortName = String.format("RPT%03d", routePointCount);
                 // route points carry no altitude: the GPX gets no <ele>
                 positions.add(createPosition(longitude, latitude, null, shortName, null));
             }

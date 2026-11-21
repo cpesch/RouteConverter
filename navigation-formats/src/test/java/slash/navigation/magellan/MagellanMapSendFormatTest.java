@@ -186,6 +186,74 @@ public class MagellanMapSendFormatTest {
     }
 
     @Test
+    public void waypointWithoutNameAndDescriptionHasNoDescription() throws IOException {
+        LittleEndianOutput output = header(1);
+        output.writeInt32(1);
+        waypoint(output, "", "", 1, 1.0, 2.0, 3.0);
+        output.writeInt32(0);
+        // gbfgetpstr() delivers an empty, not a null name: waypt_add() numbers nothing
+        assertNull(read(output.toByteArray()).get(0).getPosition(0).getDescription());
+    }
+
+    @Test
+    public void numbersRoutePointsWithoutNameAcrossAllRoutes() throws IOException {
+        LittleEndianOutput output = header(1);
+        output.writeInt32(0);
+        output.writeInt32(2);
+        for (int route = 0; route < 2; route++) {
+            pstr(output, "Route " + route);
+            output.writeInt32(route);
+            output.writeInt32(2);
+            routePoint(output, "", 1, 1.0 + route, 2.0);
+            routePoint(output, "", 2, 1.5 + route, 2.5);
+        }
+        List<GpxRoute> routes = read(output.toByteArray());
+        assertEquals(2, routes.size());
+        assertEquals("RPT001", routes.get(0).getPosition(0).getDescription());
+        assertEquals("RPT002", routes.get(0).getPosition(1).getDescription());
+        assertEquals("RPT003", routes.get(1).getPosition(0).getDescription());
+        assertEquals("RPT004", routes.get(1).getPosition(1).getDescription());
+    }
+
+    @Test
+    public void wrapsWaypointCoordinatesOnce() throws IOException {
+        LittleEndianOutput output = header(1);
+        output.writeInt32(2);
+        waypoint(output, "A", "A", 1, 0.0, 190.0, 95.0);
+        waypoint(output, "B", "B", 2, 0.0, -190.0, -95.0);
+        output.writeInt32(1);
+        pstr(output, "R");
+        output.writeInt32(0);
+        output.writeInt32(1);
+        routePoint(output, "P", 1, 190.0, 95.0);
+        List<GpxRoute> routes = read(output.toByteArray());
+
+        GpxPosition a = routes.get(0).getPosition(0);
+        assertEquals(-170.0, a.getLongitude(), 0.0);
+        assertEquals(-85.0, a.getLatitude(), 0.0);
+        GpxPosition b = routes.get(0).getPosition(1);
+        assertEquals(170.0, b.getLongitude(), 0.0);
+        assertEquals(85.0, b.getLatitude(), 0.0);
+        // route_add_wpt() does not wrap
+        assertEquals(190.0, routes.get(1).getPosition(0).getLongitude(), 0.0);
+        assertEquals(95.0, routes.get(1).getPosition(0).getLatitude(), 0.0);
+    }
+
+    @Test
+    public void rejectsWaypointCoordinatesStillOutOfRange() throws IOException {
+        // longitude and latitude, each out of range after one wrap by 360 or 180
+        double[][] coordinates = {{2.0, 300.0}, {2.0, -300.0}, {550.0, 3.0}, {-550.0, 3.0}};
+        for (double[] coordinate : coordinates) {
+            LittleEndianOutput output = header(1);
+            output.writeInt32(1);
+            waypoint(output, "A", "A", 1, 0.0, coordinate[0], coordinate[1]);
+            output.writeInt32(0);
+            // fatal in GPSBabel's waypt_add()
+            assertTrue(read(output.toByteArray()).isEmpty());
+        }
+    }
+
+    @Test
     public void readsWaypointFileOfOtherVersions() throws IOException {
         for (String version : new String[]{"34", "36"}) {
             LittleEndianOutput output = header(13, "4D533336 MS", version, 1);
@@ -340,6 +408,16 @@ public class MagellanMapSendFormatTest {
         assertEquals("Grüne Wiese", routes.get(0).getPosition(1).getDescription());
         assertEquals("Grüße", routes.get(1).getName());
         assertEquals("Lake", routes.get(1).getPosition(1).getDescription());
+    }
+
+    @Test
+    public void cutsRoutePointNamesTo255Bytes() throws IOException {
+        StringBuilder name = new StringBuilder();
+        for (int i = 0; i < 300; i++)
+            name.append((char) ('a' + i % 26));
+        List<GpxRoute> routes = read(write("R", position(11.5, 48.1, null, name.toString())));
+        // GPSBabel 1.5.4 writes a length byte of 255 followed by all 300 bytes, which corrupts the file
+        assertEquals(name.substring(0, 255), routes.get(1).getPosition(0).getDescription());
     }
 
     @Test
