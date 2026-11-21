@@ -13,9 +13,9 @@ Delete this directory together with the last `slash.navigation.babel.*Format` cl
 
 | Directory | GPSBabel ref | Files | Used by |
 |-----------|--------------|-------|---------|
-| `master-9c1e336/` | master 9c1e336 (2026-11-12) | `geo.cc/.h`, `style/garmin_poi.style`, `ozi.cc/.h`, `igc.cc/.h`, `jeeps/gpsdatum.h`, `jeeps/gpsmath.cc` | LOC, Garmin POI DB, OziExplorer, IGC, datum conversion |
+| `master-9c1e336/` | master 9c1e336 (2026-11-12) | `geo.cc/.h`, `style/garmin_poi.style`, `ozi.cc/.h`, `igc.cc/.h`, `jeeps/gpsdatum.h`, `jeeps/gpsmath.cc`, `mtk_logger.cc/.h` | LOC, Garmin POI DB, OziExplorer, IGC, datum conversion, Holux M-241 (file-reading path only) |
 | `1.8.0/` | tag `gpsbabel_1_8_0` | `tef_xml.cc`, `tomtom.cc`, `igo8.cc` | TEF, TomTom OV2, iGO8 (removed upstream in 1.9.0) |
-| `1.7.0/` | tag `gpsbabel_1_7_0` | `pcx.cc`, `compegps.cc`, `csv_util.cc` (`csv_lineparse`, `human_to_dec`), `util.cc` (`si_round`, `month_lookup`, `ddmm2degrees`, `degrees2ddmm`) | Garmin PCX5, CompeGPS (removed upstream in 1.8.0) |
+| `1.7.0/` | tag `gpsbabel_1_7_0` | `pcx.cc`, `compegps.cc`, `csv_util.cc` (`csv_lineparse`, `human_to_dec`), `util.cc` (`si_round`, `month_lookup`, `ddmm2degrees`, `degrees2ddmm`), `mapsend.cc/.h`, `alan.cc` | Garmin PCX5, CompeGPS, Magellan MapSend, Alan Map 500 (removed upstream in 1.8.0) |
 | `1.5.4/` | tag `gpsbabel_1_5_4` | `tef_xml.cc` | TEF `fix_notes()` as run by GPSBabel 1.5.4, the behaviour oracle |
 
 Translated Java classes carry the copyright lines of the file they come from plus
