@@ -45,6 +45,7 @@ import java.util.zip.ZipInputStream;
 import static java.lang.String.format;
 import static java.lang.System.exit;
 import static java.util.Collections.singletonList;
+import static java.util.Locale.ROOT;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.extractFileName;
 import static slash.navigation.datasources.DataSourceManager.*;
@@ -184,12 +185,12 @@ public class UpdateCatalog extends BaseDownloadTool {
 
         Checksum checksum = download.getFile().getActualChecksum();
         // only .zip/.pbf get a header-parsing GET below; every other file (e.g. .rd5) is HEAD-only
-        boolean headOnly = !file.getUri().endsWith(DOT_ZIP) && !file.getUri().endsWith(DOT_PBF);
+        boolean headOnly = !hasExtension(file.getUri(), DOT_ZIP) && !hasExtension(file.getUri(), DOT_PBF);
         List<Checksum> existingChecksums = headOnly ? dropSha1(file.getChecksums()) : file.getChecksums();
         FileType fileType = createFileType(file.getUri(), mergeChecksums(existingChecksums, checksum), null);
         datasourceType.getFile().add(fileType);
 
-        if (file.getUri().endsWith(DOT_ZIP)) {
+        if (hasExtension(file.getUri(), DOT_ZIP)) {
             // GET with range for the .zip header; always refetched, since a mirror file left by an
             // earlier run holds the header of the previous build (HEAD never updates it)
             download = downloadPartial(url, checksum.getContentLength());
@@ -198,7 +199,7 @@ public class UpdateCatalog extends BaseDownloadTool {
             else
                 fileType.getFragment().addAll(extractHgtFragments(download.getFile().getFile()));
 
-        } else if (file.getUri().endsWith(DOT_PBF)) {
+        } else if (hasExtension(file.getUri(), DOT_PBF)) {
             // GET with range for .pbf header
             if (!download.getFile().getFile().exists())
                 download = downloadPartial(url, checksum.getContentLength());
@@ -243,7 +244,7 @@ public class UpdateCatalog extends BaseDownloadTool {
             return;
         }
 
-        if (map.getUri().endsWith(DOT_ZIP)) {
+        if (hasExtension(map.getUri(), DOT_ZIP)) {
             try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(download.getFile().getFile()))) {
                 ZipEntry entry = zipInputStream.getNextEntry();
                 while (entry != null) {
@@ -274,12 +275,12 @@ public class UpdateCatalog extends BaseDownloadTool {
                 log.warning(format("Error reading ZIP file %s: %s", download.getFile().getFile(), e));
             }
 
-        } else if (map.getUri().endsWith(DOT_MAP)) {
+        } else if (hasExtension(map.getUri(), DOT_MAP)) {
             log.info(format("Found Mapsforge map %s", map.getUri()));
             BoundingBox boundingBox = extractMapBoundingBox(download.getFile().getFile());
             if (boundingBox != null)
                 mapType.setBoundingBox(asBoundingBoxType(boundingBox));
-        } else if (map.getUri().endsWith(DOT_MBTILES)) {
+        } else if (hasExtension(map.getUri(), DOT_MBTILES)) {
             log.info(format("Found MBTiles map %s", map.getUri()));
             BoundingBox boundingBox = extractMBTilesBoundingBox(download.getFile().getFile());
             if (boundingBox != null)
@@ -307,13 +308,22 @@ public class UpdateCatalog extends BaseDownloadTool {
         ThemeType themeType = createThemeType(theme.getUri(), mergeChecksums(theme.getChecksums(), checksum), null);
         datasourceType.getTheme().add(themeType);
 
-        if (theme.getUri().endsWith(DOT_ZIP)) {
+        describeTheme(themeType, theme.getUri(), download.getFile().getFile());
+    }
+
+    /**
+     * Adds a fragment for every file in the theme archive, so that the client can validate the
+     * extracted files and detect updates. Upstream release assets may be named with an upper-case
+     * extension, such as {@code TOTM-2022-03-18.ZIP}, hence the extension check ignores case.
+     */
+    static void describeTheme(ThemeType themeType, String uri, java.io.File file) {
+        if (hasExtension(uri, DOT_ZIP)) {
             List<FragmentType> fragmentTypes = new ArrayList<>();
-            try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(download.getFile().getFile()))) {
+            try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(file))) {
                 ZipEntry entry = zipInputStream.getNextEntry();
                 while (entry != null) {
                     if (!entry.isDirectory()) {
-                        log.info(format("Found theme file %s in URI %s", entry.getName(), theme.getUri()));
+                        log.info(format("Found theme file %s in URI %s", entry.getName(), uri));
                         fragmentTypes.add(createFragmentType(entry.getName(), entry, zipInputStream));
 
                         // do not close zip input stream
@@ -324,11 +334,18 @@ public class UpdateCatalog extends BaseDownloadTool {
                 }
             }
             catch(Exception e) {
-                log.warning(format("Error reading ZIP file %s: %s", download.getFile().getFile(), e));
+                log.warning(format("Error reading ZIP file %s: %s", file, e));
             }
             themeType.getFragment().addAll(fragmentTypes);
         } else
-            log.warning(format("Ignoring %s as a theme", theme.getUri()));
+            log.warning(format("Ignoring %s as a theme", uri));
+    }
+
+    /**
+     * @return whether the uri ends with the given lower-case extension, ignoring case
+     */
+    static boolean hasExtension(String uri, String extension) {
+        return uri != null && uri.toLowerCase(ROOT).endsWith(extension);
     }
 
     private Download head(String url) {
