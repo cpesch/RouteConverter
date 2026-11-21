@@ -53,8 +53,7 @@ import java.util.prefs.Preferences;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.sort;
-import static org.mapsforge.map.rendertheme.internal.MapsforgeThemes.DEFAULT;
-import static org.mapsforge.map.rendertheme.internal.MapsforgeThemes.OSMARENDER;
+import static org.mapsforge.map.rendertheme.internal.MapsforgeThemes.*;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -82,6 +81,7 @@ public class MapsforgeMapManager {
     private static final String MAPSFORGE_MAGIC_BYTE = "mapsforge binary OSM";
     private static final String DEFAULT_URL = "http://wiki.openstreetmap.org/wiki/Default";
     private static final String OSMARENDER_URL = "http://wiki.openstreetmap.org/wiki/Osmarender";
+    private static final String MAPSFORGE_THEMES_URL = "https://github.com/mapsforge/mapsforge/blob/master/mapsforge-themes/src/main/resources/assets/mapsforge/";
     private static final OpenStreetMap OPEN_STREET_MAP = new OpenStreetMap();
 
     private final DataSourceManager dataSourceManager;
@@ -262,9 +262,21 @@ public class MapsforgeMapManager {
         availableOnlineMapsModel.addOrUpdateItem(OPEN_STREET_MAP);
     }
 
+    static List<VectorTheme> createBuiltinThemes() {
+        // HILLSHADING is no theme of its own, it only renders hill shading
+        return List.of(
+                new VectorTheme("OpenStreetMap Default", DEFAULT_URL, DEFAULT),
+                new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER),
+                new VectorTheme("OpenStreetMap Biker", MAPSFORGE_THEMES_URL + "biker.xml", BIKER),
+                new VectorTheme("OpenStreetMap Dark", MAPSFORGE_THEMES_URL + "dark.xml", DARK),
+                new VectorTheme("OpenStreetMap Indigo", MAPSFORGE_THEMES_URL + "indigo.xml", INDIGO),
+                new VectorTheme("OpenStreetMap Motorider", MAPSFORGE_THEMES_URL + "motorider.xml", MOTORIDER)
+        );
+    }
+
     private void initializeBuiltinThemes() {
-        availableThemesModel.addOrUpdateItem(new VectorTheme("OpenStreetMap Default", DEFAULT_URL, DEFAULT));
-        availableThemesModel.addOrUpdateItem(new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER));
+        for (VectorTheme theme : createBuiltinThemes())
+            availableThemesModel.addOrUpdateItem(theme);
     }
 
     private String extractMapProvider(File mapFile) {
