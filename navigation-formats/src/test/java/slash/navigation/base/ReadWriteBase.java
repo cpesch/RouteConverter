@@ -20,8 +20,8 @@
 
 package slash.navigation.base;
 
-import slash.navigation.babel.AlanTrackLogFormat;
-import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
+import slash.navigation.alan.AlanTrackLogFormat;
+import slash.navigation.alan.AlanWaypointsAndRoutesFormat;
 import slash.navigation.garmin.GarminPcx5Format;
 import slash.navigation.tef.TourExchangeFormat;
 
