@@ -383,6 +383,38 @@ public class MapsforgeMapManager {
         dataSourceManager.getDownloadManager().waitForCompletion(downloads);
     }
 
+    /**
+     * Returns the theme the catalog recommends for the maps of the given provider, i.e. the
+     * {@code defaultTheme} of the map datasource which downloads to {@code maps/<provider>}
+     *
+     * @param mapProvider the top-level folder of a map below the maps directory
+     * @return the description of the recommended theme or {@code null}
+     */
+    public String getDefaultTheme(String mapProvider) {
+        if (dataSourceManager == null || mapProvider == null)
+            return null;
+
+        for (DataSource dataSource : dataSourceManager.getDataSourceService().getDataSources()) {
+            String defaultTheme = dataSource.getDefaultTheme();
+            if (defaultTheme != null && !defaultTheme.isEmpty() &&
+                    mapProvider.equals(extractMapProvider(dataSource.getDirectory())))
+                return defaultTheme;
+        }
+        return null;
+    }
+
+    static String extractMapProvider(String dataSourceDirectory) {
+        if (dataSourceDirectory == null)
+            return null;
+        String directory = dataSourceDirectory.replace('\\', '/');
+        String prefix = "maps/";
+        if (!directory.startsWith(prefix))
+            return null;
+        String provider = directory.substring(prefix.length());
+        int index = provider.indexOf('/');
+        return index != -1 ? provider.substring(0, index) : provider;
+    }
+
     static boolean isMissingOnlineMap(String storedUrl, Collection<String> availableUrls, String defaultUrl) {
         return storedUrl != null && !storedUrl.equals(defaultUrl) && !storedUrl.startsWith("file:") &&
                 !availableUrls.contains(storedUrl);

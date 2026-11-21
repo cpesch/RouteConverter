@@ -90,6 +90,10 @@ public class DataSourceImpl implements DataSource {
         return datasourceType.getAction().value();
     }
 
+    public String getDefaultTheme() {
+        return datasourceType.getDefaultTheme();
+    }
+
     public Source getSource() {
         SourceType sourceType = datasourceType.getSource();
         return sourceType != null ? new SourceImpl(sourceType) : null;
