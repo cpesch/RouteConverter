@@ -48,6 +48,7 @@ import slash.navigation.gopal.GoPal7RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.holux.HoluxM241BinaryFormat;
 import slash.navigation.igc.FlightRecorderDataFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom95RouteFormat;
