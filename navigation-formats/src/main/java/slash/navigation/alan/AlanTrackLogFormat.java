@@ -175,14 +175,14 @@ public class AlanTrackLogFormat extends GpxBackedNavigationFormat {
         // alan.cc copies the ISO-8859-1 bytes of the name and the description
         String name = stripIllegalXmlCharacters(asRouteName(route.getName()));
         if (name != null)
-            strncpy(trkhdr.name, name.getBytes(ISO_8859_1), TRK_NAME_LEN - 1);
+            strncpy(trkhdr.name, toLatin1(name), TRK_NAME_LEN - 1);
         if (trkhdr.name[0] == 0)
             copy(trkhdr.name, String.format(java.util.Locale.ROOT, "T%03d", idx).getBytes(ISO_8859_1));
         trkhdr.name[TRK_NAME_LEN - 1] = 0;
 
         String description = stripIllegalXmlCharacters(trim(asDescription(route.getDescription())));
         if (description != null) {
-            byte[] bytes = description.getBytes(ISO_8859_1);
+            byte[] bytes = toLatin1(description);
             strncpy(trkhdr.comment, bytes, TRK_COMMENT_LEN - 1);
             int length = strlen(bytes);
             if (length < TRK_COMMENT_LEN - 1)
@@ -227,6 +227,16 @@ public class AlanTrackLogFormat extends GpxBackedNavigationFormat {
         if (strings == null)
             return null;
         return String.join(",\n", strings);
+    }
+
+    // Qt's QString::toLatin1() behind CSTRc(): one byte per UTF-16 unit, '?' for each one beyond ISO-8859-1
+    static byte[] toLatin1(String string) {
+        byte[] result = new byte[string.length()];
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            result[i] = c <= 0xff ? (byte) c : (byte) '?';
+        }
+        return result;
     }
 
     private static int strlen(byte[] bytes) {

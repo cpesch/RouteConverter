@@ -148,17 +148,22 @@ final class Map500 {
 
     /**
      * alan.cc pack_time(): the day of month, month and year in the date, the seconds of the day
-     * in the time.
+     * in the time. Times before 1970 are packed as they are: GPSBabel 1.5.4 packs them as
+     * 2106-02-07T06:28:15Z, since Qt's toTime_t() returns 0xFFFFFFFF for them, and its C
+     * remainder would make the seconds of the day negative.
      */
     static int[] packTime(long seconds) {
         ZonedDateTime dateTime = Instant.ofEpochSecond(seconds).atZone(UTC);
         int date = dateTime.getDayOfMonth() | (dateTime.getMonthValue() << 8) | (dateTime.getYear() << 16);
-        int time = (int) (seconds % SECONDS_PER_DAY);
+        int time = (int) Math.floorMod(seconds, SECONDS_PER_DAY);
         return new int[]{date, time};
     }
 
     /**
-     * alan.cc unpack_time() with its leap year arithmetic on C shorts.
+     * alan.cc unpack_time() with its leap year arithmetic on C shorts. The result is not cut to
+     * 32 bits: GPSBabel 1.5.4 passes it through QDateTime::fromTime_t(uint), which turns a time
+     * before 1970 or after 2106-02-07 into one in between.
+     * Like alan.cc, the division that truncates towards zero misses leap days before 1968.
      *
      * @return the seconds since the epoch or null if the month is out of range
      */

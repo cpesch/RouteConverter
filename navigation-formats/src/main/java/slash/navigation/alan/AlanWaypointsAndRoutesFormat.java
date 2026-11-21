@@ -43,7 +43,9 @@ import java.util.prefs.Preferences;
 
 import static java.lang.Math.floorDiv;
 import static java.lang.Math.min;
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static java.util.Locale.ROOT;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.alan.Map500.asGpxCoordinate;
@@ -222,16 +224,27 @@ public class AlanWaypointsAndRoutesFormat extends GpxBackedNavigationFormat impl
         return formatPosition(position.getLongitude()) != null && formatPosition(position.getLatitude()) != null;
     }
 
-    // the waypoint as GPSBabel reads it from the GPX that Gpx10Format(false, true) writes
-    private Wpt asPattern(GpxPosition position) {
+    /**
+     * The waypoint as GPSBabel 1.5.4 hands it to alan.cc after reading the GPX that
+     * Gpx10Format(false, true) writes: name as shortname, desc as notes and no cmt, so
+     * the description is empty. waypt_add() then names a waypoint without name after its
+     * notes or "WPT%03d" of the number of waypoints and fills its description from the
+     * notes or the shortname; route_add_wpt() names a route point without name
+     * "RPT%03d" of the number of route points and leaves its description empty.
+     */
+    private Wpt asPattern(WprData wpr, GpxPosition position, boolean isRoute) {
         Wpt wpt = new Wpt();
-        String shortName = stripIllegalXmlCharacters(asName(position.getDescription()));
-        String description = stripIllegalXmlCharacters(asDesc(position.getDescription()));
-        // GPSBabel's GPX reader uses the name as the description if there is none
-        if (description == null)
-            description = shortName;
-        wpt.shortName = shortName;
-        wpt.description = description;
+        String name = stripIllegalXmlCharacters(asName(position.getDescription()));
+        String notes = stripIllegalXmlCharacters(asDesc(position.getDescription()));
+        if (isRoute) {
+            wpr.routePointCount++;
+            wpt.shortName = name != null ? name : format(ROOT, "RPT%03d", wpr.routePointCount);
+            wpt.description = null;
+        } else {
+            wpr.waypointCount++;
+            wpt.shortName = name != null ? name : notes != null ? notes : format(ROOT, "WPT%03d", wpr.waypointCount);
+            wpt.description = notes != null ? notes : wpt.shortName;
+        }
         wpt.x = deg2pt(formatPosition(position.getLongitude()).doubleValue());
         wpt.y = deg2pt(-formatPosition(position.getLatitude()).doubleValue());
         wpt.seconds = position.getTime() != null ? floorDiv(position.getTime().getTimeInMillis(), 1000L) : 0;
@@ -270,7 +283,7 @@ public class AlanWaypointsAndRoutesFormat extends GpxBackedNavigationFormat impl
     private int addWaypoint(WprData wpr, GpxPosition position, boolean isRoute) throws IOException {
         if (!hasCoordinates(position))
             return -1;
-        Wpt pattern = asPattern(position);
+        Wpt pattern = asPattern(wpr, position, isRoute);
 
         int hdrIdx = findWaypoint(wpr, pattern);
         if (hdrIdx >= 0) {
@@ -368,6 +381,8 @@ public class AlanWaypointsAndRoutesFormat extends GpxBackedNavigationFormat impl
 
     // alan.cc struct wprdata, initialized like wpr_write() does
     private static class WprData {
+        // the waypoints and route points GPSBabel has read so far
+        int waypointCount, routePointCount;
         short wptNum, wptNext;
         final short[] wptIdx = new short[MAXWPT];
         final byte[] wptUsed = new byte[MAXWPT];

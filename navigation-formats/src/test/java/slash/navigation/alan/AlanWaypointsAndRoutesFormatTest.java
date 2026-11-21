@@ -382,15 +382,67 @@ public class AlanWaypointsAndRoutesFormatTest {
     public void writesFallbackNames() throws IOException {
         byte[] data = write(new GpxRoute(new Gpx10Format(), Route, null, null,
                 new ArrayList<>(List.of(position(1.0, 2.0, null, null)))));
-        // a waypoint without name never matches in find_wpt(), so the route adds a second one
-        assertEquals("W00000  ", label(data, WPT, 8));
-        assertEquals("W00001  ", label(data, WPT + 40, 8));
-        assertEquals(0, buffer(data).getShort(WPT + 36));
-        assertEquals(1, buffer(data).get(WPT + 38));
-        assertEquals(1, buffer(data).getShort(WPT + 40 + 36));
-        assertEquals(0, buffer(data).get(WPT + 40 + 38));
+        ByteBuffer buffer = buffer(data);
+        // GPSBabel's waypt_add() names the waypoint after the number of waypoints and uses the name as description
+        assertEquals("WPT001  ", label(data, WPT, 8));
+        assertEquals("WPT001      ", label(data, WPT + 8, 12));
+        assertEquals(0, buffer.getShort(WPT + 36));
+        assertEquals(1, buffer.get(WPT + 38));
+        // route_add_wpt() names the route point after the number of route points and gives it no description,
+        // so find_wpt() finds no duplicate and the route adds a second waypoint
+        assertEquals("RPT001  ", label(data, WPT + 40, 8));
+        assertEquals("            ", label(data, WPT + 40 + 8, 12));
+        assertEquals(1, buffer.getShort(WPT + 40 + 36));
+        assertEquals(0, buffer.get(WPT + 40 + 38));
         assertEquals("R000    ", label(data, RTE, 8));
-        assertEquals(1, buffer(data).getShort(RTE + 22));
+        assertEquals(1, buffer.getShort(RTE + 22));
+    }
+
+    @Test
+    public void countsWaypointsAndRoutePointsForFallbackNames() throws IOException {
+        GpxRoute waypoints = new GpxRoute(new Gpx10Format(), Waypoints, null, null, new ArrayList<>(List.of(
+                position(1.0, 1.0, null, "Named"),
+                new GpxPosition((Double) null, null, null, null, null, null),
+                position(1.0, 1.0, null, "Named"),
+                position(2.0, 2.0, null, null),
+                position(3.0, 3.0, null, "; notes only"))));
+        GpxRoute first = route("First", position(4.0, 4.0, null, null));
+        GpxRoute second = route("Second", position(5.0, 5.0, null, null), position(6.0, 6.0, null, "Name; notes"));
+        byte[] data = write(asList(waypoints, first, second));
+
+        // the duplicate counts, the position without coordinates does not
+        assertEquals("Named   ", label(data, WPT, 8));
+        assertEquals("WPT003  ", label(data, WPT + 40, 8));
+        assertEquals("WPT003      ", label(data, WPT + 40 + 8, 12));
+        // the notes name a waypoint without name
+        assertEquals("notes on", label(data, WPT + 2 * 40, 8));
+        assertEquals("notes only  ", label(data, WPT + 2 * 40 + 8, 12));
+        // route points are counted across routes and have no description
+        assertEquals("RPT001  ", label(data, WPT + 3 * 40, 8));
+        assertEquals("RPT002  ", label(data, WPT + 4 * 40, 8));
+        assertEquals("Name    ", label(data, WPT + 5 * 40, 8));
+        assertEquals("            ", label(data, WPT + 5 * 40 + 8, 12));
+    }
+
+    @Test
+    public void writesStr2labFallbackForRoutePointWithoutPrintableName() throws IOException {
+        byte[] data = write(route("R", position(1.0, 2.0, null, "äö; notes")));
+        // the waypoint keeps its notes as description, the route point matches nothing and has none
+        assertEquals("W00000  ", label(data, WPT, 8));
+        assertEquals("notes       ", label(data, WPT + 8, 12));
+        assertEquals("W00001  ", label(data, WPT + 40, 8));
+        assertEquals("            ", label(data, WPT + 40 + 8, 12));
+    }
+
+    @Test
+    public void keepsTimesBefore1970() throws IOException {
+        // GPSBabel 1.5.4 writes 2106-02-07T06:28:15Z for these and reads times before 1970 as ones after it
+        long time = LocalDateTime.of(1969, 7, 8, 9, 10, 11).toEpochSecond(UTC);
+        byte[] data = write(route("Old", position(1.0, 2.0, time, "Old")));
+        assertEquals(date(1969, 7, 8), buffer(data).getInt(WPT + 28));
+        assertEquals(9 * 3600 + 10 * 60 + 11, buffer(data).getInt(WPT + 32));
+        assertEquals(time * 1000, read(data).get(0).getPosition(0).getTime().getTimeInMillis());
+        assertEquals(Long.valueOf(time), Map500.unpackTime(date(1969, 7, 8), 9 * 3600 + 10 * 60 + 11));
     }
 
     @Test

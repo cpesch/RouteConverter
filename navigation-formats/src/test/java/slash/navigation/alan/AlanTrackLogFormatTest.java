@@ -271,6 +271,15 @@ public class AlanTrackLogFormatTest {
     }
 
     @Test
+    public void writesOneQuestionMarkPerUtf16Unit() throws IOException {
+        // like Qt's QString::toLatin1(): a character beyond the BMP is two UTF-16 units
+        byte[] data = write(track("\uD83D\uDE00Tour", List.of("\u20ac \uD83D\uDE00"), position(1.0, 1.0, null, null)));
+        assertEquals("??Tour", new String(data, trackHeader(0) + 4, 6, ISO_8859_1));
+        assertEquals(0, data[trackHeader(0) + 4 + 6]);
+        assertEquals("? ??        \0", new String(data, trackHeader(0) + 16, 13, ISO_8859_1));
+    }
+
+    @Test
     public void writesTrackWithoutPositionsAsUnoccupied() throws IOException {
         byte[] data = write(track("Empty", null));
         ByteBuffer buffer = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
