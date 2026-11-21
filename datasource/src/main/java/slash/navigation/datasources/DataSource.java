@@ -35,6 +35,7 @@ public interface DataSource {
     String getBaseUrl();
     String getDirectory();
     String getAction();
+    String getDefaultTheme();
 
     Source getSource();
 

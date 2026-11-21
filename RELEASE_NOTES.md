@@ -4,6 +4,8 @@
 
 ### New features
 
+- The offline map themes Biker, Dark, Indigo and Motorider that come with the map renderer can now be chosen next to Default and Osmarender
+- Offline MBTiles maps whose tiles are stored as WebP images can now be displayed; before, only PNG and JPEG MBTiles opened
 - Position list > Manage… reorders, creates, renames, deletes and changes the type of the position lists of a file, for example the routes and tracks of a GPX file; it replaces the New, Rename and Delete buttons below the position list; the position list, its type and the Manage button now share one row, the map toggle moved to the Format row, and the Content line moved into the tool tip of the position list (#400)
 - Tour Exchange Format (.tef) files can now be written. No program is known to import them; for Map&Guide use the BCR format (#386)
 
@@ -20,8 +22,11 @@
 - OziExplorer route, track and waypoint files (.rte, .plt, .wpt) are read and written by RouteConverter itself and no longer need GPSBabel (#391)
 - FAI/IGC Flight Recorder (.igc) files are read and written by RouteConverter itself and no longer need GPSBabel (#392)
 - Alan Map 500 Tracklog (.trl) and Waypoints and Routes (.wpr) files are read and written by RouteConverter itself and no longer need GPSBabel (#432)
+- Holux M-241 Binary (.bin) files are read by RouteConverter itself and no longer need GPSBabel (#433)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 - Every menu entry and submenu now has an icon (#400)
+- Maps and overlays from the OpenStreetMap tile servers keep their tiles on disk across restarts, in the cache folder of the application directory, and download a tile again only once it is older than 7 days, as the OpenStreetMap tile usage policy asks; before, every start downloaded all tiles again
+- Opening an offline map for the first time selects a theme made for that map's provider, for example Elevate for OpenAndroMaps and the Freizeitkarte theme for Freizeitkarte maps, if it is downloaded; a theme you chose for a map or provider is kept
 
 ### Fixes
 

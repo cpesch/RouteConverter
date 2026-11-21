@@ -35,6 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.UUID;
+import java.util.prefs.Preferences;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -93,6 +94,89 @@ public class ThemeForMapMediatorTest {
             }
         } finally {
             deleteRecursively(themesDirectory);
+        }
+    }
+
+    @Test
+    public void testUsesCatalogDefaultThemeForProvider() throws Exception {
+        Path themesDirectory = Files.createTempDirectory("theme-mediator-default");
+        try {
+            String provider = "provider-" + UUID.randomUUID();
+            LocalTheme elevate = createTheme("openandromaps/Elevate.xml", "file:/Elevate.xml");
+            LocalMap map = createMap("map-" + UUID.randomUUID(), provider);
+            MapsforgeMapManager manager = createMapManager(themesDirectory, map, createTheme("Current Theme", "theme-url"));
+            manager.getAvailableThemesModel().addOrUpdateItem(elevate);
+            when(manager.getDefaultTheme(provider)).thenReturn("openandromaps/Elevate.xml");
+
+            assertEquals("openandromaps/Elevate.xml", invokeGetMapTheme(manager, map));
+        } finally {
+            deleteRecursively(themesDirectory);
+        }
+    }
+
+    @Test
+    public void testUsesThemeOfSameFamilyWhenCatalogDefaultThemeIsMissing() throws Exception {
+        Path themesDirectory = Files.createTempDirectory("theme-mediator-family");
+        try {
+            String provider = "provider-" + UUID.randomUUID();
+            Path family = Files.createDirectory(themesDirectory.resolve("openandromaps"));
+            Files.createFile(family.resolve("Lightning.xml"));
+
+            LocalMap map = createMap("map-" + UUID.randomUUID(), provider);
+            MapsforgeMapManager manager = createMapManager(themesDirectory, map, createTheme("Current Theme", "theme-url"));
+            when(manager.getDefaultTheme(provider)).thenReturn("openandromaps/Elevate.xml");
+
+            assertEquals("openandromaps/Lightning.xml", invokeGetMapTheme(manager, map));
+        } finally {
+            deleteRecursively(themesDirectory);
+        }
+    }
+
+    @Test
+    public void testFallsBackToCurrentThemeWhenCatalogDefaultThemeAndFamilyAreMissing() throws Exception {
+        Path themesDirectory = Files.createTempDirectory("theme-mediator-nofamily");
+        try {
+            String provider = "provider-" + UUID.randomUUID();
+            LocalTheme currentTheme = createTheme("Current Theme", "theme-url");
+            LocalMap map = createMap("map-" + UUID.randomUUID(), provider);
+            MapsforgeMapManager manager = createMapManager(themesDirectory, map, currentTheme);
+            when(manager.getDefaultTheme(provider)).thenReturn("OpenStreetMap Default");
+
+            assertEquals(currentTheme.description(), invokeGetMapTheme(manager, map));
+        } finally {
+            deleteRecursively(themesDirectory);
+        }
+    }
+
+    @Test
+    public void testChosenThemeForProviderWinsOverCatalogDefaultTheme() throws Exception {
+        Path themesDirectory = Files.createTempDirectory("theme-mediator-chosen");
+        String provider = "provider-" + UUID.randomUUID();
+        String providerKey = "mapProvider" + provider;
+        Preferences preferences = Preferences.userNodeForPackage(ThemeForMapMediator.class);
+        try {
+            preferences.put(providerKey, "OpenStreetMap Osmarender");
+
+            LocalMap map = createMap("map-" + UUID.randomUUID(), provider);
+            MapsforgeMapManager manager = createMapManager(themesDirectory, map, createTheme("Current Theme", "theme-url"));
+            manager.getAvailableThemesModel().addOrUpdateItem(createTheme("openandromaps/Elevate.xml", "file:/Elevate.xml"));
+            when(manager.getDefaultTheme(provider)).thenReturn("openandromaps/Elevate.xml");
+
+            assertEquals("OpenStreetMap Osmarender", invokeGetMapTheme(manager, map));
+        } finally {
+            preferences.remove(providerKey);
+            deleteRecursively(themesDirectory);
+        }
+    }
+
+    private static String invokeGetMapTheme(MapsforgeMapManager manager, LocalMap map) throws Exception {
+        ThemeForMapMediator mediator = new ThemeForMapMediator(manager);
+        try {
+            Method getMapTheme = ThemeForMapMediator.class.getDeclaredMethod("getMapTheme", LocalMap.class);
+            getMapTheme.setAccessible(true);
+            return (String) getMapTheme.invoke(mediator, map);
+        } finally {
+            mediator.dispose();
         }
     }
 

@@ -89,6 +89,14 @@
         <xsd:attribute name="baseUrl" type="xsd:string"/>
         <xsd:attribute name="directory" type="xsd:string"/>
         <xsd:attribute name="action" type="actionType"/>
+        <xsd:attribute name="defaultTheme" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    for map datasources: the theme that matches the tagging scheme of the maps, either a path
+                    relative to the themes directory (e.g. openandromaps/Elevate.xml) or the name of a built-in theme
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
     </xsd:complexType>
 
     <xsd:complexType name="sourceType">

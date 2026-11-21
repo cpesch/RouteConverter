@@ -160,6 +160,7 @@ public class DataSourcesUtilTest {
         when(dataSource.getBaseUrl()).thenReturn("http://base/");
         when(dataSource.getDirectory()).thenReturn("dir");
         when(dataSource.getAction()).thenReturn("Copy");
+        when(dataSource.getDefaultTheme()).thenReturn("themes/Theme.xml");
 
         DatasourceType datasourceType = asDatasourceType(dataSource);
 
@@ -168,6 +169,32 @@ public class DataSourcesUtilTest {
         assertEquals("http://base/", datasourceType.getBaseUrl());
         assertEquals("dir", datasourceType.getDirectory());
         assertEquals(COPY, datasourceType.getAction());
+        assertEquals("themes/Theme.xml", datasourceType.getDefaultTheme());
+    }
+
+    private static CatalogType unmarshalString(String xml) throws Exception {
+        try (InputStream in = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8))) {
+            return unmarshal(in);
+        }
+    }
+
+    @Test
+    public void defaultThemeIsReadAndUnknownAttributesAndElementsAreIgnored() throws Exception {
+        CatalogType catalogType = unmarshalString("""
+                <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+                <catalog xmlns="http://api.routeconverter.com/v1/schemas/datasource-catalog">
+                <datasource id="maps" name="Maps" baseUrl="http://base/" directory="maps/provider" action="Extract"
+                            defaultTheme="provider/Theme.xml" futureAttribute="ignored">
+                <futureElement>ignored</futureElement>
+                <map uri="a.zip"/>
+                </datasource>
+                <datasource id="themes" name="Themes" baseUrl="http://base/" directory="themes/provider" action="Extract"/>
+                </catalog>
+                """.strip());
+
+        assertEquals("provider/Theme.xml", getDataSource(catalogType, "maps").getDefaultTheme());
+        assertEquals(1, getDataSource(catalogType, "maps").getMap().size());
+        assertNull(getDataSource(catalogType, "themes").getDefaultTheme());
     }
 
     @Test

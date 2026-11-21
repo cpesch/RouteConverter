@@ -96,16 +96,41 @@ public class ThemeForMapMediator {
     }
 
     private String getMapTheme(LocalMap map) {
-        return preferences.get(getMapProviderKey(map), getFirstTheme(map));
+        String themeId = preferences.get(getMapProviderKey(map), null);
+        if (themeId != null)
+            return themeId;
+
+        String defaultTheme = getDefaultTheme(map);
+        return defaultTheme != null ? defaultTheme : getFirstTheme(map);
+    }
+
+    private String getDefaultTheme(LocalMap map) {
+        String defaultTheme = mapManager.getDefaultTheme(map.getProvider());
+        if (defaultTheme == null)
+            return null;
+
+        if (getAvailableThemesModel().getItemByDescription(defaultTheme) != null)
+            return defaultTheme;
+
+        // the recommended theme is not installed: use another theme of its family, i.e. its folder
+        int index = defaultTheme.indexOf('/');
+        return index != -1 ? getFirstTheme(defaultTheme.substring(0, index)) : null;
+    }
+
+    private String getFirstTheme(String themeFolder) {
+        File themesDirectory = new File(mapManager.getThemesDirectory(), themeFolder);
+        if (themesDirectory.exists()) {
+            List<File> themes = collectFiles(themesDirectory, DOT_XML);
+            if (!themes.isEmpty())
+                return removePrefix(mapManager.getThemesDirectory(), themes.get(0));
+        }
+        return null;
     }
 
     private String getFirstTheme(LocalMap map) {
-        File themesDirectory = new File(mapManager.getThemesDirectory(), map.getProvider());
-        if (themesDirectory.exists()) {
-            List<File> themes = collectFiles(themesDirectory, DOT_XML);
-            if(!themes.isEmpty())
-                return removePrefix(mapManager.getThemesDirectory(), themes.get(0));
-        }
+        String firstTheme = getFirstTheme(map.getProvider());
+        if (firstTheme != null)
+            return firstTheme;
 
         LocalTheme theme = getAppliedThemeModel().getItem();
         return theme != null ? theme.description() : null;
