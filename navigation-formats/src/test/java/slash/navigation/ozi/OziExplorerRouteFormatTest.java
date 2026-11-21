@@ -32,6 +32,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -173,7 +174,7 @@ public class OziExplorerRouteFormatTest {
     @Test
     public void route2TextWrittenAsUtf8IsRead() throws IOException {
         ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
-        new OziExplorerRouteFormat().read(new ByteArrayInputStream(RT2.getBytes(java.nio.charset.StandardCharsets.UTF_8)), context);
+        new OziExplorerRouteFormat().read(new ByteArrayInputStream(RT2.getBytes(StandardCharsets.UTF_8)), context);
         assertEquals("Z\u00fcrich", context.getRoutes().get(0).getPosition(1).getDescription());
     }
 

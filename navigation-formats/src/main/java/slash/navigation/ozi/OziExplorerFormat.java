@@ -252,6 +252,9 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
             }
         }
 
+        if (positions.isEmpty())
+            return null;
+
         List<GpxRoute> result = new ArrayList<>();
         result.add(createRoute(Route, routeName, null, positions));
         return result;
