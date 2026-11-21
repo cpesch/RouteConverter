@@ -4,20 +4,35 @@
 
 ### New features
 
+- Position list > Manage… reorders, creates, renames, deletes and changes the type of the position lists of a file, for example the routes and tracks of a GPX file; it replaces the New, Rename and Delete buttons below the position list; the position list, its type and the Manage button now share one row, the map toggle moved to the Format row, and the Content line moved into the tool tip of the position list (#400)
+- Tour Exchange Format (.tef) files can now be written. No program is known to import them; for Map&Guide use the BCR format (#386)
+
 ### Changes
 
 - RouteConverter now runs on Java 25: the Windows, macOS, Debian and Flatpak downloads bundle it; the Linux jar needs Java 25 or later installed and says so on an older Java (#167)
+- Geocaching.com/EasyGPS (.loc) files are read and written by RouteConverter itself and no longer need GPSBabel (#384)
+- Garmin POI Database (.xcsv) files are read and written by RouteConverter itself and no longer need GPSBabel (#385)
+- Tour Exchange Format (.tef) files are read by RouteConverter itself and no longer need GPSBabel (#386)
+- TomTom POI (.ov2) files are read and written by RouteConverter itself and no longer need GPSBabel (#387)
+- iGO8 Track (.trk) files are read and written by RouteConverter itself and no longer need GPSBabel (#388)
+- Garmin PCX5 (.wpt) files are read and written by RouteConverter itself and no longer need GPSBabel (#389)
+- CompeGPS Data route, track and waypoint files (.rte, .trk, .wpt) are read and written by RouteConverter itself and no longer need GPSBabel (#390)
+- OziExplorer route, track and waypoint files (.rte, .plt, .wpt) are read and written by RouteConverter itself and no longer need GPSBabel (#391)
+- FAI/IGC Flight Recorder (.igc) files are read and written by RouteConverter itself and no longer need GPSBabel (#392)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
+- Every menu entry and submenu now has an icon (#400)
 
 ### Fixes
 
 - Formats read and written with GPSBabel work again when no GPSBabel path is set under Extras > Options: on Java 25 RouteConverter took its working directory for the GPSBabel program. (#419)
+- OziExplorer route and waypoint files whose lines are padded with commas, as spreadsheet exports write them, and OziExplorer CE Route2 (.rt2) files are read again
 - Top and Bottom in the positions table keep the moved positions selected (#403)
 - Dragging positions to another row of the positions table no longer mixes up the order of the positions in between (#401)
 - Switching a map overlay on or off while the map is redrawing no longer stops the map from drawing
 - Online maps and overlays no longer show up twice in Karten > Online when a leftover file sits next to the downloaded map catalog (#395)
 - RouteConverter started from the Debian package now shows the startup splash screen, like the Linux jar does (#394)
 - The map selector and Karten > Online now show the name of each online map instead of its id and list the online maps alphabetically, also those from your own userservers.xml. Once after the update, the displayed online map falls back to OpenStreetMap and the Active ticks in Karten > Online return to their defaults (#417)
+- Show Map Overlays no longer offers overlays that the map catalog marks as inactive, such as the discontinued OpenStreetMap Hillshading (#426)
 
 ## 3.8 — 2026-11-15
 

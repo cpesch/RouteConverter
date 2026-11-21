@@ -90,6 +90,7 @@ public class FrameMenu {
         positionlistMenu.add(createItem("new-positionlist"));
         positionlistMenu.add(createItem("rename-positionlist"));
         positionlistMenu.add(createItem("delete-positionlist"));
+        positionlistMenu.add(createItem("manage-positionlist"));
         positionlistMenu.addSeparator();
         positionlistMenu.add(createItem("convert-route-to-track"));
         positionlistMenu.add(createItem("convert-track-to-route"));
