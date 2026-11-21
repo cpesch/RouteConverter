@@ -70,7 +70,7 @@ public class ReadIT {
     // junk positions; the native one rejects free text (#385, maintainer 2026-11-19), so they have no positions
     private static final List<String> ONLY_READ_BY_GPSBABEL_XCSV = asList("Ingolstadt-München.kmz",
             "Maps_save_Outlook_Nachrichtenformat.msg.url", "Maps_save_Outlook_Text.txt.url",
-            "Maps_save_Thunderbird.txt.url", "PN01V005.RTE", "PN01V005.WPT", "ak-gartrip.txt");
+            "Maps_save_Thunderbird.txt.url", "ak-gartrip.txt");
 
     private void readFiles(String extension) throws IOException {
         readFiles(extension, new TestFileCallback() {
@@ -388,6 +388,11 @@ public class ReadIT {
     @Test
     public void testWprFilesAreValid() throws IOException {
         readFiles(".wpr");
+    }
+
+    @Test
+    public void testOziExplorerRoute2FilesAreValid() throws IOException {
+        readFiles(".rt2");
     }
 
     @Test
