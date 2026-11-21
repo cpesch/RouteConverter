@@ -20,10 +20,16 @@
 package slash.navigation.mapview.mapsforge.tiles;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mapsforge.core.graphics.TileBitmap;
+import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.layer.Layer;
+import org.mapsforge.map.layer.cache.TileCache;
+import org.mapsforge.map.layer.download.DownloadJob;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import org.mapsforge.map.layer.hills.HillsRenderConfig;
 import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.model.MapViewPosition;
@@ -34,10 +40,12 @@ import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -46,18 +54,71 @@ import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.INSTANCE;
 import static slash.navigation.maps.mapsforge.MapType.Download;
 
 public class DefaultTileLayerFactoryTest {
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    private File persistentTileCacheDirectory;
     private DefaultTileLayerFactory factory;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
+        persistentTileCacheDirectory = temporaryFolder.newFolder("tiles");
+        factory = createFactory();
+    }
+
+    private DefaultTileLayerFactory createFactory() {
         MapViewPosition mapViewPosition = new MapViewPosition(new DisplayModel());
-        factory = new DefaultTileLayerFactory(mock(MapsforgeMapManager.class), mapViewPosition,
-                mock(HillsRenderConfig.class), mock(XmlRenderThemeMenuCallback.class), INSTANCE);
+        return new DefaultTileLayerFactory(mock(MapsforgeMapManager.class), mapViewPosition,
+                mock(HillsRenderConfig.class), mock(XmlRenderThemeMenuCallback.class), INSTANCE) {
+            File getPersistentTileCacheDirectory() {
+                return persistentTileCacheDirectory;
+            }
+        };
     }
 
     private static TileServer tileServer() {
-        return new TileServer("test", "Test", "https://{$serverpart}/{$z}/{$x}/{$y}.png",
-                List.of("tiles.example.org"), true, 0, 18, "cc", "Copyright");
+        return tileServer("test", "cc");
+    }
+
+    private static TileServer tileServer(String id, String copyright) {
+        return new TileServer(id, "Test", "https://{$serverpart}/{$z}/{$x}/{$y}.png",
+                List.of("tiles.example.org"), true, 0, 18, copyright, "Copyright");
+    }
+
+    @Test
+    public void openStreetMapTileServersAreCachedPersistently() {
+        assertTrue(DefaultTileLayerFactory.isPersistentlyCached(OpenStreetMapMapnik.INSTANCE));
+        assertTrue(DefaultTileLayerFactory.isPersistentlyCached(new TileServerMapSource(tileServer("osm", "OpenStreetMap"))));
+        assertFalse(DefaultTileLayerFactory.isPersistentlyCached(new TileServerMapSource(tileServer("google", "Google"))));
+        assertFalse(DefaultTileLayerFactory.isPersistentlyCached(new TileServerMapSource(tileServer())));
+    }
+
+    @Test
+    public void otherTileServersKeepTheSessionCache() {
+        TileDownloadLayer layer = factory.createOverlayLayer(tileServer("google", "Google"));
+
+        assertFalse(layer.getTileCache() instanceof RefreshingTileCache);
+        assertFalse(new File(persistentTileCacheDirectory, "google").exists());
+    }
+
+    @Test
+    public void openStreetMapTilesSurviveARestart() throws InterruptedException {
+        TileServer tileServer = tileServer("OpenStreetMap", "OpenStreetMap");
+        TileServerMapSource tileSource = new TileServerMapSource(tileServer);
+        DownloadJob job = new DownloadJob(new Tile(1, 2, (byte) 3, 256), tileSource);
+
+        TileDownloadLayer before = factory.createOverlayLayer(tileServer);
+        assertTrue(before.getTileCache() instanceof RefreshingTileCache);
+        before.getTileCache().put(job, INSTANCE.createTileBitmap(256, true));
+        before.getTileCache().destroy();
+        assertTrue(new File(persistentTileCacheDirectory, "OpenStreetMap").isDirectory());
+
+        TileCache after = createFactory().createOverlayLayer(tileServer).getTileCache();
+        // the persistent FileSystemTileCache reads its directory in a background thread
+        for (int i = 0; i < 100 && !after.containsKey(job); i++)
+            Thread.sleep(50);
+
+        assertTrue("tile downloaded before the restart must be served from disk", after.containsKey(job));
+        assertNotNull(after.get(job));
     }
 
     @Test

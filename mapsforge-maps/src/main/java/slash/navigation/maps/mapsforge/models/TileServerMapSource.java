@@ -71,7 +71,6 @@ public class TileServerMapSource extends AbstractTileSource {
     private TileServerMapSource(TileServer tileServer, String[] hostNames) {
         super(hostNames, 80);
         this.tileServer = tileServer;
-        setUserAgent(userAgent());
         setTimeoutConnect(30 * 1000);
         setTimeoutRead(120 * 1000);
     }
@@ -79,8 +78,29 @@ public class TileServerMapSource extends AbstractTileSource {
     /**
      * Identify compliantly to tile providers (esp. OpenStreetMap's usage policy); never masquerade as a browser.
      */
-    static String userAgent() {
+    public static String userAgent() {
         return "RouteConverter/" + System.getProperty("rest", "3.0") + " (+https://www.routeconverter.com/)";
+    }
+
+    /**
+     * Resolved on every request instead of once in the constructor: the version comes from the
+     * "rest" system property, which is set during startup and must not be frozen as the fallback.
+     */
+    public String getUserAgent() {
+        return userAgent();
+    }
+
+    /**
+     * Whether the tile server is run by the OpenStreetMap community (openstreetmap.org, .de, .fr, CyclOSM,
+     * HOT and the overlays with OpenStreetMap copyright). Their tile usage policies ask clients to keep
+     * tiles in a local cache across sessions instead of downloading them again.
+     */
+    public static boolean isOpenStreetMapTileServer(TileServer tileServer) {
+        return tileServer.copyright() != null && tileServer.copyright().toLowerCase(Locale.ROOT).contains("openstreetmap");
+    }
+
+    public boolean isOpenStreetMapTileServer() {
+        return isOpenStreetMapTileServer(tileServer);
     }
 
     public int getParallelRequestsLimit() {

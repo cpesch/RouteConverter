@@ -23,6 +23,7 @@
 - FAI/IGC Flight Recorder (.igc) files are read and written by RouteConverter itself and no longer need GPSBabel (#392)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 - Every menu entry and submenu now has an icon (#400)
+- Maps and overlays from the OpenStreetMap tile servers keep their tiles on disk across restarts, in the cache folder of the application directory, and download a tile again only once it is older than 7 days, as the OpenStreetMap tile usage policy asks; before, every start downloaded all tiles again
 
 ### Fixes
 

@@ -172,4 +172,33 @@ public class TileServerMapSourceTest {
     public void testIdentifiesAsRouteConverter() {
         assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent());
     }
+
+    @Test
+    public void testUserAgentIsResolvedPerRequest() {
+        // the version is set during startup, possibly after the tile source was created
+        TileServerMapSource tileSource = new TileServerMapSource(tileServer("https://#{host}/#{zoom}/#{tilex}/#{tiley}.png"));
+        String previous = System.getProperty("rest");
+        try {
+            System.setProperty("rest", "9.8.7");
+            assertEquals("RouteConverter/9.8.7 (+https://www.routeconverter.com/)", tileSource.getUserAgent());
+        } finally {
+            if (previous != null)
+                System.setProperty("rest", previous);
+            else
+                System.clearProperty("rest");
+        }
+    }
+
+    private static TileServer tileServerWithCopyright(String copyright) {
+        return new TileServer("test", "Test Tile Server", "https://#{host}/#{zoom}/#{tilex}/#{tiley}.png",
+                List.of("tile.example.org"), true, 0, 18, copyright, "Copyright");
+    }
+
+    @Test
+    public void testIsOpenStreetMapTileServer() {
+        assertTrue(new TileServerMapSource(tileServerWithCopyright("OpenStreetMap")).isOpenStreetMapTileServer());
+        assertTrue(TileServerMapSource.isOpenStreetMapTileServer(tileServerWithCopyright("openstreetmap")));
+        assertFalse(new TileServerMapSource(tileServerWithCopyright("Google")).isOpenStreetMapTileServer());
+        assertFalse(new TileServerMapSource(tileServerWithCopyright("Thunderforest")).isOpenStreetMapTileServer());
+    }
 }
