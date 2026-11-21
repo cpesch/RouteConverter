@@ -544,6 +544,91 @@ public class HoluxM241BinaryFormatTest {
     }
 
     @Test
+    public void nonFiniteHeightSpeedAndHeadingBecomeNull() throws IOException {
+        // a partially written record: 3 byte height FF FF FF is a NaN
+        GpxRoute route = readTrack(sector(header(BASIC),
+                record(BASIC, rec()),
+                record(BASIC, rec().utc(TIME + 1).height(Float.intBitsToFloat(0xffffff00))),
+                record(BASIC, rec().utc(TIME + 2))));
+        assertEquals(asList("TP000001", "TP000002", "TP000003"), descriptions(route));
+        assertEquals(512.5, route.getPosition(0).getElevation(), 0.0);
+        assertNull(route.getPosition(1).getElevation());
+        assertEquals(48.25, route.getPosition(1).getLatitude(), 0.0);
+
+        int bitmask = BASIC | bits(SPEED, HEADING);
+        Rec infinite = rec().height(Float.NEGATIVE_INFINITY);
+        infinite.speed = Float.POSITIVE_INFINITY;
+        infinite.heading = Float.NaN;
+        GpxPosition position = readTrack(sector(header(bitmask), record(bitmask, infinite))).getPosition(0);
+        assertNull(position.getElevation());
+        assertNull(position.getSpeed());
+        assertNull(position.getHeading());
+        assertEquals(11.5, position.getLongitude(), 0.0);
+    }
+
+    @Test
+    public void positionWithNonFiniteCoordinatesIsDropped() throws IOException {
+        GpxRoute route = readTrack(sector(header(BASIC),
+                record(BASIC, rec()),
+                record(BASIC, rec().utc(TIME + 1).at(Float.NaN, 11.5f)),
+                record(BASIC, rec().utc(TIME + 2).at(48.25f, Float.POSITIVE_INFINITY)),
+                record(BASIC, rec().utc(TIME + 3))));
+        assertEquals(asList("TP000001", "TP000004"), descriptions(route));
+    }
+
+    @Test
+    public void badChecksumKeepsPendingLogRestart() throws IOException {
+        List<GpxRoute> routes = read(sector(header(BASIC),
+                record(BASIC, rec()),
+                info(0x03, 10),
+                record(BASIC, rec().utc(TIME + 1).badChecksum()),
+                record(BASIC, rec().utc(TIME + 2))));
+        assertEquals(2, routes.size());
+        assertEquals(asList("TP000001"), descriptions(routes.get(0)));
+        assertEquals("track-2", routes.get(1).getName());
+        assertEquals(asList("Log every 1 sec", "0 m"), routes.get(1).getDescription());
+        assertEquals(asList("TP000003"), descriptions(routes.get(1)));
+    }
+
+    @Test
+    public void badChecksumKeepsPendingWaypoint() throws IOException {
+        List<GpxRoute> routes = read(sector(header(BASIC),
+                record(BASIC, rec()),
+                ascii("HOLUXGR241WAYPNT"),
+                record(BASIC, rec().utc(TIME + 1).badChecksum()),
+                record(BASIC, rec().utc(TIME + 2).at(48.5f, 11.75f)),
+                record(BASIC, rec().utc(TIME + 3))));
+        assertEquals(2, routes.size());
+        GpxRoute waypoints = routes.get(0);
+        assertEquals(Waypoints, waypoints.getCharacteristics());
+        assertEquals(asList("WP000001"), descriptions(waypoints));
+        assertEquals((TIME + 2) * 1000, waypoints.getPosition(0).getTime().getTimeInMillis());
+        assertEquals(asList("TP000001", "TP000003", "TP000004"), descriptions(routes.get(1)));
+    }
+
+    @Test
+    public void fixQualityFromValid() throws IOException {
+        int bitmask = BASIC | bits(VALID);
+        GpxRoute route = readTrack(sector(header(bitmask),
+                record(bitmask, rec().valid(0x0002)),
+                record(bitmask, rec().utc(TIME + 1).valid(0x0004)),
+                record(bitmask, rec().utc(TIME + 2).valid(0x0008)),
+                record(bitmask, rec().utc(TIME + 3).valid(0x0001)),
+                record(bitmask, rec().utc(TIME + 4).valid(0x0040)),
+                record(bitmask, rec().utc(TIME + 5).valid(0x0010))));
+        assertEquals(6, route.getPositionCount());
+        assertEquals(Integer.valueOf(1), route.getPosition(0).getFixQuality());
+        assertEquals(Integer.valueOf(2), route.getPosition(1).getFixQuality());
+        assertEquals(Integer.valueOf(3), route.getPosition(2).getFixQuality());
+        assertEquals(Integer.valueOf(0), route.getPosition(3).getFixQuality());
+        assertNull(route.getPosition(4).getFixQuality());
+        assertNull(route.getPosition(5).getFixQuality());
+
+        // without VALID GPSBabel knows no fix
+        assertNull(readTrack(sector(header(BASIC), record(BASIC, rec()))).getPosition(0).getFixQuality());
+    }
+
+    @Test
     public void randomBytesAreNotRecognized() throws IOException {
         Random random = new Random(241);
         for (int length : new int[]{0, 1, 20, 0x1ff, 0x200, 0x210, 4096, SECTOR, SECTOR + 0x300}) {

@@ -154,8 +154,10 @@ public class HoluxM241BinaryFormat extends GpxBackedNavigationFormat {
         return new BigDecimal(value).setScale(GPX_COORDINATE_DIGITS, HALF_EVEN).doubleValue();
     }
 
-    // GPSBabel writes elevation, speed, course and dops to GPX with %f
-    private static double asGpxDecimal(double value) {
+    // GPSBabel writes elevation, speed, course and dops to GPX with %f; the GPX reader turns its nan and inf into null
+    private static Double asGpxDecimal(double value) {
+        if (!Double.isFinite(value))
+            return null;
         return new BigDecimal(value).setScale(GPX_DECIMAL_DIGITS, HALF_EVEN).doubleValue();
     }
 
@@ -498,13 +500,13 @@ public class HoluxM241BinaryFormat extends GpxBackedNavigationFormat {
             i++; // checksum
             count++;
 
-            // GPSBabel only reports a bad checksum and keeps the record; spec 00083.12 skips it
+            // GPSBabel only reports a bad checksum and keeps the record; spec 00083.12 skips it and
+            // keeps a pending log restart or waypoint event for the next record
             if (validChecksum) {
                 validChecksumCount++;
                 addTrackPoint(count, bitmask, item);
+                trackEvent = 0;
             }
-
-            trackEvent = 0;
             return i;
         }
 
@@ -526,6 +528,10 @@ public class HoluxM241BinaryFormat extends GpxBackedNavigationFormat {
 
             if (!(has(bitmask, LATITUDE) && has(bitmask, LONGITUDE)))
                 return; // GPX requires lat/lon
+
+            // GPSBabel writes nan or inf coordinates, which the GPX reader cannot read at all: drop the position
+            if (!Double.isFinite(item.latitude) || !Double.isFinite(item.longitude))
+                return;
 
             if (has(bitmask, VALID)) {
                 // estimated mode (0x0040), "No Fix" (0x0001) and the unknown modes; SPS, DGPS and PPS are a fix
@@ -565,7 +571,20 @@ public class HoluxM241BinaryFormat extends GpxBackedNavigationFormat {
                 position.setVdop(asGpxDecimal(item.vdop));
             if (has(bitmask, NSAT) && item.satellitesUsed > 0)
                 position.setSatellites(item.satellitesUsed);
+            if (has(bitmask, VALID))
+                position.setFixQuality(asFixQuality(item.valid));
             return position;
+        }
+
+        // the fix GPSBabel derives from VALID as the GPX reader parses GPSBabel 1.5.4's <fix>
+        private static Integer asFixQuality(int valid) {
+            return switch (valid) {
+                case 0x0001 -> 0; // "No Fix": none
+                case 0x0002 -> 1; // "SPS": 3d
+                case 0x0004 -> 2; // DGPS: dgps
+                case 0x0008 -> 3; // Military GPS: pps
+                default -> null; // estimated, RTK, FRTK, manual input, simulator: unknown, no <fix>
+            };
         }
     }
 }
