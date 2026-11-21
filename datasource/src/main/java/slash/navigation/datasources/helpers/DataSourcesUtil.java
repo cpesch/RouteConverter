@@ -117,6 +117,7 @@ public class DataSourcesUtil {
         datasourceType.setBaseUrl(dataSource.getBaseUrl());
         datasourceType.setDirectory(dataSource.getDirectory());
         datasourceType.setAction(ActionType.fromValue(dataSource.getAction()));
+        datasourceType.setDefaultTheme(dataSource.getDefaultTheme());
         return datasourceType;
     }
 

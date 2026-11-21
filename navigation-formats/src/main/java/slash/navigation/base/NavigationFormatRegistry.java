@@ -19,6 +19,8 @@
 */
 package slash.navigation.base;
 
+import slash.navigation.alan.AlanTrackLogFormat;
+import slash.navigation.alan.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.*;
 import slash.navigation.ozi.*;
 import slash.navigation.bcr.MTP0607Format;
@@ -52,6 +54,7 @@ import slash.navigation.gpx.GarbleGpx10Format;
 import slash.navigation.gpx.GarbleGpx11Format;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.holux.HoluxM241BinaryFormat;
 import slash.navigation.igc.FlightRecorderDataFormat;
 import slash.navigation.igo.Igo8TrackFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
@@ -60,6 +63,7 @@ import slash.navigation.itn.TomTom95RouteFormat;
 import slash.navigation.klicktel.KlickTelRouteFormat;
 import slash.navigation.kml.*;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
+import slash.navigation.magellan.MagellanMapSendFormat;
 import slash.navigation.loc.GeoCachingFormat;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktFormat;

@@ -76,7 +76,7 @@ public class TileServerToTileMapMediator {
             tileSource.setApiKey(THUNDER_FOREST_API_KEY);
         if (MAPBOX_API_KEY != null && tileServer.copyright().toLowerCase(ROOT).contains("mapbox"))
             tileSource.setApiKey(MAPBOX_API_KEY);
-        if (tileServer.copyright().toLowerCase(ROOT).contains("openstreetmap"))
+        if (tileSource.isOpenStreetMapTileServer())
             tileSource.setReferer("https://www.routeconverter.com");
 
         // description is the human-readable name shown and sorted by, url is the stable id used as preference key

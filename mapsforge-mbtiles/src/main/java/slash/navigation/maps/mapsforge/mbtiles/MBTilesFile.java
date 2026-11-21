@@ -24,7 +24,9 @@ public class MBTilesFile {
                     "WHERE zoom_level=%s AND tile_column=%s AND tile_row=%s " +
                     "ORDER BY zoom_level DESC " +
                     "LIMIT 1";
-    private static final List<String> SUPPORTED_FORMATS = Arrays.asList("png", "jpg", "jpeg");
+    // raster formats decoded by ImageIO; webp via the TwelveMonkeys imageio-webp plugin the
+    // application ships. Vector tiles (pbf) would need a style renderer and stay unsupported.
+    private static final List<String> SUPPORTED_FORMATS = Arrays.asList("png", "jpg", "jpeg", "webp");
 
     public MBTilesFile(File file) {
         try {
