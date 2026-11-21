@@ -19,6 +19,8 @@
 */
 package slash.navigation.base;
 
+import slash.navigation.alan.AlanTrackLogFormat;
+import slash.navigation.alan.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.*;
 import slash.navigation.ozi.*;
 import slash.navigation.bcr.MTP0607Format;

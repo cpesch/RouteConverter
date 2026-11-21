@@ -21,6 +21,8 @@
 package slash.navigation.base;
 
 import org.junit.Test;
+import slash.navigation.alan.AlanTrackLogFormat;
+import slash.navigation.alan.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.*;
 import slash.navigation.ozi.*;
 import slash.navigation.compegps.*;
