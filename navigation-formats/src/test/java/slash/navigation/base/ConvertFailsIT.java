@@ -28,6 +28,7 @@ import slash.navigation.ozi.*;
 import slash.navigation.garmin.GarminMapSource5Format;
 import slash.navigation.garmin.GarminMapSource6Format;
 import slash.navigation.garmin.GarminPoiDbFormat;
+import slash.navigation.garmin.GarminPoiFormat;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;

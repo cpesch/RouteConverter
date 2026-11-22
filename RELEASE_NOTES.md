@@ -10,6 +10,8 @@
 - Tour Exchange Format (.tef) files can now be written. No program is known to import them; for Map&Guide use the BCR format (#386)
 - MTK logger binary files (.bin) from iBlue 747, Qstarz BT-Q1000, Transystem and other MediaTek-based GPS loggers can be read
 - Online maps and overlays show the attribution supplied by the map catalog, so new map providers can name their exact terms without a RouteConverter update; applied overlays now show their attribution next to the map's (#438)
+- Obfuscated Garmin POI (.gpi) files, as commercial POI packages often come, can now be read; GPSBabel could not read them (#453)
+- Garmin POI (.gpi) files in other code pages than Western European, for example Central European, Cyrillic, Greek or UTF-8, can now be read; GPSBabel refused them (#453)
 
 ### Changes
 
@@ -29,6 +31,7 @@
 - National Geographic TOPO! 3 and 4 (.tpo) files are read by RouteConverter itself and no longer need GPSBabel; the format is now listed as National Geographic Topo 3/4 (#450)
 - Garmin MapSource 6.x (.gdb) files are read and written by RouteConverter itself and no longer need GPSBabel (#451)
 - Garmin MapSource 5.x (.mps) files are read and written by RouteConverter itself and no longer need GPSBabel (#452)
+- Garmin POI (.gpi) files are read and written by RouteConverter itself and no longer need GPSBabel (#453)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 - Every menu entry and submenu now has an icon (#400)
 - Maps and overlays from the OpenStreetMap tile servers keep their tiles on disk across restarts, in the cache folder of the application directory, and download a tile again only once it is older than 7 days, as the OpenStreetMap tile usage policy asks; before, every start downloaded all tiles again

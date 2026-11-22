@@ -29,6 +29,7 @@ import slash.navigation.compegps.*;
 import slash.navigation.garmin.GarminMapSource5Format;
 import slash.navigation.garmin.GarminMapSource6Format;
 import slash.navigation.garmin.GarminPoiDbFormat;
+import slash.navigation.garmin.GarminPoiFormat;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
