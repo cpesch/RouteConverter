@@ -32,6 +32,7 @@
 
 ### Fixes
 
+- An offline MBTiles map that RouteConverter cannot display, such as one with vector tiles, no longer stays locked on Windows until RouteConverter exits
 - Formats read and written with GPSBabel work again when no GPSBabel path is set under Extras > Options: on Java 25 RouteConverter took its working directory for the GPSBabel program. (#419)
 - OziExplorer route and waypoint files whose lines are padded with commas, as spreadsheet exports write them, and OziExplorer CE Route2 (.rt2) files are read again
 - Top and Bottom in the positions table keep the moved positions selected (#403)
