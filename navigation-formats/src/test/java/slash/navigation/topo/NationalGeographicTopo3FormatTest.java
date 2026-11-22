@@ -525,6 +525,21 @@ public class NationalGeographicTopo3FormatTest {
         for (int missing = 0; missing <= 2; missing++)
             assertEquals(Track, readSingle(copyOf(stylesLast, stylesLast.length - missing)).getCharacteristics());
         assertNoRoutes(copyOf(stylesLast, stylesLast.length - 3));
+
+        // the smallest records: a single unnamed waypoint without comment, a single unnamed style
+        byte[] singleWaypointLast = waypointFile(waypoint("", 11.5, 48.25, 0, ""));
+        for (int missing = 0; missing <= 4; missing++)
+            assertEquals("WPT 1", readSingle(copyOf(singleWaypointLast, singleWaypointLast.length - missing)).getPositions().get(0).getDescription());
+        assertNoRoutes(copyOf(singleWaypointLast, singleWaypointLast.length - 5));
+
+        byte[] unnamedStyleLast = new TopoFileBuilder()
+                .block(TRACKS_BLOCK, tracks(track(1, "T", new Bytes().point(10.5, 47.25))))
+                .block(TRACK_STYLES_BLOCK, styles(style(0, 0, 0, "", 2, 0)))
+                .build();
+        for (int missing = 0; missing <= 2; missing++)
+            assertEquals(asList("Style=STYLE 0", "Width=2", "Dashed=0", "Color=#000000"),
+                    readSingle(copyOf(unnamedStyleLast, unnamedStyleLast.length - missing)).getDescription());
+        assertNoRoutes(copyOf(unnamedStyleLast, unnamedStyleLast.length - 3));
     }
 
     @Test(timeout = 10000)

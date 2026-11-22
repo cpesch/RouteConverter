@@ -299,8 +299,9 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
             if (!findBlock(TRACK_STYLES_BLOCK))
                 return;
 
-            // per style: 2 unknown, 3 color, 1 unknown, 1 name length, 2 width/dashed, 2 unknown bytes
-            int styleCount = readLength(11);
+            // per style: 2 unknown, 3 color, 1 unknown, 1 name length, 2 width/dashed bytes; the 2 unknown
+            // bytes at the end may be missing at the end of the file
+            int styleCount = readLength(9);
             Style[] styles = new Style[styleCount];
             for (int i = 0; i < styleCount; i++) {
                 Style style = new Style();
@@ -359,8 +360,9 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
             if (!findBlock(WAYPOINTS_BLOCK))
                 return index;
 
-            // per waypoint: 3 lengths, 1 unknown, longitude, latitude, altitude, comment length, 4 unknown bytes
-            int waypointCount = readLength(20);
+            // per waypoint: 2 unknown, name length, 1 unknown, longitude, latitude, altitude, comment length;
+            // the 4 unknown bytes at the end may be missing at the end of the file
+            int waypointCount = readLength(17);
             for (int i = 0; i < waypointCount; i++) {
                 readInt();
                 readInt();
