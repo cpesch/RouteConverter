@@ -42,6 +42,7 @@ import slash.navigation.excel.MicrosoftExcel2008Format;
 import slash.navigation.excel.MicrosoftExcel97Format;
 import slash.navigation.fit.FitFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
+import slash.navigation.garmin.GarminMapSource5Format;
 import slash.navigation.garmin.GarminPcx5Format;
 import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.geojson.GeoJsonFormat;
