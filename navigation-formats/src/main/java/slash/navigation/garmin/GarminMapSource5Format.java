@@ -62,6 +62,9 @@ import static slash.navigation.garmin.GarminDefaults.MAPSOURCE_WAYPOINT_COLOR;
 import static slash.navigation.garmin.GarminDefaults.MAPSOURCE_WAYPOINT_DISPLAY;
 import static slash.navigation.garmin.GarminDefaults.mapSourceWaypointClass;
 import static slash.navigation.garmin.GarminDefaults.mapSourceWaypointIconNumber;
+import static slash.navigation.garmin.GarminMapSource6Format.asGpxText;
+import static slash.navigation.garmin.GarminMapSource6Format.degreesToSemicircles;
+import static slash.navigation.garmin.GarminMapSource6Format.qtTrimmed;
 import static slash.navigation.gpsbabel.GpsBabelMath.semicirclesToDegrees;
 
 /**
@@ -92,7 +95,6 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
     private static final int BUFFER_LENGTH = 100;
     private static final int GPX_COORDINATE_DIGITS = 9;
     private static final int GPX_ELEVATION_DIGITS = 6;
-    private static final double SEMICIRCLES_PER_DEGREE = (double) (1L << 31) / 180.0;
     // the value DateTime::toTime_t() returns for a time it cannot represent
     private static final long INVALID_TIME_T = 0xFFFFFFFFL;
 
@@ -618,17 +620,6 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
         return new BigDecimal(value).setScale(digits, RoundingMode.HALF_EVEN).doubleValue();
     }
 
-    /**
-     * A text element of the GPX exchange file: omitted when empty, line breaks normalized by
-     * the XML parser, characters XML forbids removed.
-     */
-    static String asGpxText(String string) {
-        if (string == null || string.isEmpty())
-            return null;
-        String result = stripIllegalXmlCharacters(string.replace("\r\n", "\n").replace('\r', '\n'));
-        return result.isEmpty() ? null : result;
-    }
-
     // QString's operator==: a null and an empty string are equal
     private static boolean qEquals(String a, String b) {
         return (a == null ? "" : a).equals(b == null ? "" : b);
@@ -655,23 +646,6 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
             wpt.longitude -= 360;
     }
 
-    private static boolean isQtSpace(char c) {
-        if ((c >= '\t' && c <= '\r') || c == ' ' || c == 0x85 || c == 0xA0)
-            return true;
-        int type = Character.getType(c);
-        return type == Character.SPACE_SEPARATOR || type == Character.LINE_SEPARATOR || type == Character.PARAGRAPH_SEPARATOR;
-    }
-
-    // QString::trimmed()
-    static String qtTrimmed(String string) {
-        int start = 0, end = string.length();
-        while (start < end && isQtSpace(string.charAt(start)))
-            start++;
-        while (end > start && isQtSpace(string.charAt(end - 1)))
-            end--;
-        return string.substring(start, end);
-    }
-
     /**
      * A text element of the GPX exchange file as GPSBabel's GPX reader keeps it: absent elements
      * are null strings, the character data is trimmed. Line breaks stay as they are, since the
@@ -681,18 +655,6 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
         if (string == null)
             return null;
         return qtTrimmed(stripIllegalXmlCharacters(string));
-    }
-
-    /**
-     * {@code GPS_Math_Deg_To_Semi()} of GPSBabel 1.5.4: the product is truncated towards zero (master
-     * rounds). A product outside the int range or NaN is undefined behaviour in C; the shipped x86
-     * builds of 1.5.4 return INT_MIN for it.
-     */
-    static int degreesToSemicircles(double degrees) {
-        double product = SEMICIRCLES_PER_DEGREE * degrees;
-        if (Double.isNaN(product) || product >= 2147483648.0 || product <= -2147483649.0)
-            return Integer.MIN_VALUE;
-        return (int) product;
     }
 
     /**

@@ -492,16 +492,6 @@ public class GarminMapSource5FormatTest {
     }
 
     @Test
-    public void testDegreesToSemicircles() {
-        // GPSBabel 1.5.4 truncates the product
-        assertEquals(573855352, GarminMapSource5Format.degreesToSemicircles(48.1));
-        assertEquals(-573855352, GarminMapSource5Format.degreesToSemicircles(-48.1));
-        assertEquals(Integer.MIN_VALUE, GarminMapSource5Format.degreesToSemicircles(180.0));
-        assertEquals(Integer.MIN_VALUE, GarminMapSource5Format.degreesToSemicircles(Double.NaN));
-        assertEquals(Integer.MIN_VALUE, GarminMapSource5Format.degreesToSemicircles(-180.0));
-    }
-
-    @Test
     public void testToTimeT() {
         assertEquals(0, GarminMapSource5Format.toTimeT(null));
         assertEquals(0, GarminMapSource5Format.toTimeT(fromMillis(999)));
