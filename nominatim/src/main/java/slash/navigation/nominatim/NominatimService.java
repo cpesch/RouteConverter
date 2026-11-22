@@ -21,6 +21,7 @@
 package slash.navigation.nominatim;
 
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.geocoding.RequestThrottle;
 import slash.navigation.geocoding.BaseGeocodingService;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
@@ -48,6 +49,9 @@ import static slash.common.io.Transfer.trim;
 
 public class NominatimService extends BaseGeocodingService {
     private static final Preferences preferences = Preferences.userNodeForPackage(NominatimService.class);
+    private static final String DEFAULT_URL = "https://nominatim.openstreetmap.org";
+    // the public instance allows at most one request per second
+    private static final RequestThrottle publicInstanceThrottle = new RequestThrottle(1000);
     private static final String NOMINATIM_URL_PREFERENCE = "nominatiumUrl";
 
     public String getName() {
@@ -63,11 +67,13 @@ public class NominatimService extends BaseGeocodingService {
     }
 
     private String getNominatimUrl() {
-        return preferences.get(NOMINATIM_URL_PREFERENCE, "https://nominatim.openstreetmap.org");
+        return preferences.get(NOMINATIM_URL_PREFERENCE, DEFAULT_URL);
     }
 
     private String execute(String uri) throws IOException {
         String url = getNominatimUrl() + uri;
+        if (url.startsWith(DEFAULT_URL))
+            publicInstanceThrottle.acquire();
         Get get = new Get(url);
         String result = get.executeAsString();
         if (get.isSuccessful())
