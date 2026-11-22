@@ -64,7 +64,7 @@ public class BabelGoldenWriteIT {
             "GarminPcx5Format", "CompeGPSDataRouteFormat", "CompeGPSDataTrackFormat",
             "CompeGPSDataWaypointFormat", "OziExplorerRouteFormat", "OziExplorerTrackFormat",
             "OziExplorerWaypointFormat", "MagellanMapSendFormat", "AlanTrackLogFormat",
-            "AlanWaypointsAndRoutesFormat", "GarminMapSource5Format"
+            "AlanWaypointsAndRoutesFormat", "GarminMapSource5Format", "GarminMapSource6Format", "GarminPoiFormat"
     );
 
     // inputs a native format refuses on purpose where GPSBabel 1.5.4 writes nonsense, as "class/input"
@@ -81,12 +81,18 @@ public class BabelGoldenWriteIT {
     // the OziExplorer formats write all text as Windows-1252 (#391), 1.5.4 writes route point text as UTF-8
     // bytes and replaces the euro sign in waypoint files;
     // Magellan MapSend writes all text as Windows-1252 with a length byte that counts the bytes written (#431),
-    // 1.5.4 writes UTF-8 bytes behind a length byte that counts characters, which corrupts the file
+    // 1.5.4 writes UTF-8 bytes behind a length byte that counts characters, which corrupts the file;
+    // Garmin MapSource 5.x writes all text as Windows-1252 with record lengths that count the bytes written (#452),
+    // 1.5.4 writes UTF-8 bytes, record lengths that count characters and waypoints with non-ASCII names twice;
+    // Garmin POI writes the category in the code page the header declares, Windows-1252 (#453), 1.5.4 writes the UTF-8
+    // bytes of the command line option, from which its option parser also drops the double quotes
     private static final Set<String> CORRECTED_BY_DESIGN = Set.of(
             "GarminPcx5Format",
             "CompeGPSDataRouteFormat/synthetic", "CompeGPSDataTrackFormat/synthetic", "CompeGPSDataWaypointFormat/synthetic",
             "OziExplorerRouteFormat/from11.gpx", "OziExplorerRouteFormat/synthetic", "OziExplorerWaypointFormat/synthetic",
-            "MagellanMapSendFormat/from11.gpx", "MagellanMapSendFormat/synthetic"
+            "MagellanMapSendFormat/from11.gpx", "MagellanMapSendFormat/synthetic",
+            "GarminMapSource5Format/from11.gpx", "GarminMapSource5Format/synthetic",
+            "GarminPoiFormat/synthetic"
     );
     // native writers of formats GPSBabel 1.5.4 never wrote: there is no write golden and none can exist
     // (spec 00083.3 decision D3.1, issue #386: "there is no oracle for the writer"); see TourExchangeFormatTest
@@ -124,6 +130,21 @@ public class BabelGoldenWriteIT {
     private static final int ALAN_WPR_ROUTE_DATE_OFFSET = 43492;
     private static final int ALAN_WPR_ROUTE_DATE_LENGTH = 8;
 
+    // Garmin POI stamps the creation time into the Header1 record behind 'GRMREC00'
+    private static final int GPI_CREATION_TIME_OFFSET = 16;
+    private static final int GPI_CREATION_TIME_LENGTH = 4;
+
+    private static boolean gpiEqual(byte[] expected, byte[] actual) {
+        int end = GPI_CREATION_TIME_OFFSET + GPI_CREATION_TIME_LENGTH;
+        if (expected.length != actual.length || expected.length < end)
+            return Arrays.equals(expected, actual);
+        byte[] expectedMasked = expected.clone();
+        byte[] actualMasked = actual.clone();
+        Arrays.fill(expectedMasked, GPI_CREATION_TIME_OFFSET, end, (byte) 0);
+        Arrays.fill(actualMasked, GPI_CREATION_TIME_OFFSET, end, (byte) 0);
+        return Arrays.equals(expectedMasked, actualMasked);
+    }
+
     private static boolean pcx5Equal(byte[] expected, byte[] actual) {
         String[] expectedLines = new String(expected, StandardCharsets.ISO_8859_1).split("\n", -1);
         String[] actualLines = new String(actual, StandardCharsets.ISO_8859_1).split("\n", -1);
@@ -151,7 +172,72 @@ public class BabelGoldenWriteIT {
         return Arrays.equals(expectedMasked, actualMasked);
     }
 
-    private static boolean bytesEqual(String className, byte[] expected, byte[] actual) {
+    // Garmin MapSource 6.x: the header's creator record names the writer and its release date (spec 00083.15
+    // D15.1, issue #451): signature, version and every record after the header must match byte for byte, the
+    // creator's watermark and release date only where the class's allowlist names them
+    private static final int GDB_CREATOR_RECORD_OFFSET = 13;
+    static final String GDB_WATERMARK = "header.creator.watermark";
+    static final String GDB_RELEASE_DATE = "header.creator.release-date";
+
+    // the creator record's fields: [program version, watermark, date, time, everything behind the record]
+    private static List<byte[]> splitGdbHeader(byte[] bytes) {
+        if (bytes.length < GDB_CREATOR_RECORD_OFFSET + 5)
+            return null;
+        int length = (bytes[GDB_CREATOR_RECORD_OFFSET] & 0xFF) | (bytes[GDB_CREATOR_RECORD_OFFSET + 1] & 0xFF) << 8 |
+                (bytes[GDB_CREATOR_RECORD_OFFSET + 2] & 0xFF) << 16 | (bytes[GDB_CREATOR_RECORD_OFFSET + 3] & 0xFF) << 24;
+        int start = GDB_CREATOR_RECORD_OFFSET + 5;
+        int end = start + length;
+        if (bytes[GDB_CREATOR_RECORD_OFFSET + 4] != 'A' || length < 2 || end > bytes.length)
+            return null;
+        List<byte[]> result = new ArrayList<>();
+        result.add(Arrays.copyOfRange(bytes, 0, start + 2));
+        int position = start + 2;
+        for (int i = 0; i < 3; i++) {
+            int nul = position;
+            while (nul < end && bytes[nul] != 0)
+                nul++;
+            if (nul >= end)
+                return null;
+            result.add(Arrays.copyOfRange(bytes, position, nul));
+            position = nul + 1;
+        }
+        if (position != end)
+            return null;
+        result.add(Arrays.copyOfRange(bytes, end, bytes.length));
+        return result;
+    }
+
+    private static boolean isAllowlisted(List<String> allowlist, String field) {
+        for (String line : allowlist) {
+            String[] parts = line.trim().split("\\s+", 3);
+            if (parts.length > 1 && parts[1].equals(field))
+                return true;
+        }
+        return false;
+    }
+
+    private static boolean gdbEqual(byte[] expected, byte[] actual, List<String> allowlist) {
+        List<byte[]> expectedParts = splitGdbHeader(expected);
+        List<byte[]> actualParts = splitGdbHeader(actual);
+        if (expectedParts == null || actualParts == null)
+            return Arrays.equals(expected, actual);
+        // the record length in the header prefix follows the watermark and date
+        boolean variableHeader = isAllowlisted(allowlist, GDB_WATERMARK) || isAllowlisted(allowlist, GDB_RELEASE_DATE);
+        byte[] expectedPrefix = expectedParts.get(0), actualPrefix = actualParts.get(0);
+        if (variableHeader) {
+            expectedPrefix = expectedPrefix.clone();
+            actualPrefix = actualPrefix.clone();
+            Arrays.fill(expectedPrefix, GDB_CREATOR_RECORD_OFFSET, GDB_CREATOR_RECORD_OFFSET + 4, (byte) 0);
+            Arrays.fill(actualPrefix, GDB_CREATOR_RECORD_OFFSET, GDB_CREATOR_RECORD_OFFSET + 4, (byte) 0);
+        }
+        return Arrays.equals(expectedPrefix, actualPrefix) &&
+                (isAllowlisted(allowlist, GDB_WATERMARK) || Arrays.equals(expectedParts.get(1), actualParts.get(1))) &&
+                (isAllowlisted(allowlist, GDB_RELEASE_DATE) || Arrays.equals(expectedParts.get(2), actualParts.get(2))) &&
+                (isAllowlisted(allowlist, GDB_RELEASE_DATE) || Arrays.equals(expectedParts.get(3), actualParts.get(3))) &&
+                Arrays.equals(expectedParts.get(4), actualParts.get(4));
+    }
+
+    private static boolean bytesEqual(String className, byte[] expected, byte[] actual, List<String> allowlist) {
         if ("GeoCachingFormat".equals(className)) {
             String expectedText = normalizeXmlWhitespace(new String(expected, StandardCharsets.UTF_8));
             String actualText = normalizeXmlWhitespace(new String(actual, StandardCharsets.UTF_8));
@@ -161,6 +247,10 @@ public class BabelGoldenWriteIT {
             return pcx5Equal(expected, actual);
         if ("AlanWaypointsAndRoutesFormat".equals(className))
             return alanWprEqual(expected, actual);
+        if ("GarminMapSource6Format".equals(className))
+            return gdbEqual(expected, actual, allowlist);
+        if ("GarminPoiFormat".equals(className))
+            return gpiEqual(expected, actual);
         return Arrays.equals(expected, actual);
     }
 
@@ -202,7 +292,7 @@ public class BabelGoldenWriteIT {
 
         boolean corrected = CORRECTED_BY_DESIGN.contains(className) || CORRECTED_BY_DESIGN.contains(className + "/" + inputName);
         if (BYTE_STABLE.contains(className) && !corrected) {
-            if (!bytesEqual(className, expectedBytes, actualBytes))
+            if (!bytesEqual(className, expectedBytes, actualBytes, readAllowlist(className, "write/" + inputName)))
                 differences.add(className + " " + inputName + ": byte-stable write golden differs");
             return;
         }
