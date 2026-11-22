@@ -169,11 +169,11 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
     private String reviewPart(JsonNode properties) {
         JsonNode ratingNode = properties.get(FIVE_STAR_RATING_PUBLISHED);
         Integer rating = ratingNode != null && ratingNode.isNumber() ? ratingNode.intValue() : null;
-        String text = trim(text(properties.get(REVIEW_TEXT_PUBLISHED)));
+        String reviewText = trim(text(properties.get(REVIEW_TEXT_PUBLISHED)));
 
         if (rating == null)
-            return text;
-        return !isEmpty(text) ? rating + "/5 " + text : rating + "/5";
+            return reviewText;
+        return !isEmpty(reviewText) ? rating + "/5 " + reviewText : rating + "/5";
     }
 
     private ObjectNode createFeature(ObjectMapper mapper, Wgs84Position position) {
