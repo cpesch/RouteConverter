@@ -120,11 +120,7 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
 
             JsonNode geometry = feature.path("geometry");
             if (geometry.isMissingNode() || geometry.isNull()) {
-                if (description == null) {
-                    log.fine("Skipping feature without geometry and without description.");
-                    continue;
-                }
-                result.add(new Wgs84Position(null, null, null, null, time, description));
+                addCoordinateless(result, description, time, "Skipping feature without geometry and without description.");
                 continue;
             }
 
@@ -145,11 +141,7 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
 
             // Takeout's marker for "no location information"
             if (longitude == 0.0 && latitude == 0.0) {
-                if (description == null) {
-                    log.fine("Skipping [0,0] feature without description.");
-                    continue;
-                }
-                result.add(new Wgs84Position(null, null, null, null, time, description));
+                addCoordinateless(result, description, time, "Skipping [0,0] feature without description.");
                 continue;
             }
 
@@ -160,6 +152,14 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
             result.add(new Wgs84Position(longitude, latitude, elevation, null, time, description));
         }
         return result;
+    }
+
+    private void addCoordinateless(List<Wgs84Position> result, String description, CompactCalendar time, String skipLogMessage) {
+        if (description == null) {
+            log.fine(skipLogMessage);
+            return;
+        }
+        result.add(new Wgs84Position(null, null, null, null, time, description));
     }
 
     private String text(JsonNode node) {
