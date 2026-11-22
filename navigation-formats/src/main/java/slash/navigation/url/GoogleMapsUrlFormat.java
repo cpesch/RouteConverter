@@ -361,7 +361,12 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
         if (!matcher.matches())
             throw new IllegalStateException("malformed token '" + rawToken + "'");
 
-        int field = Integer.parseInt(matcher.group(1));
+        int field;
+        try {
+            field = Integer.parseInt(matcher.group(1));
+        } catch (NumberFormatException e) {
+            throw new IllegalStateException("field number out of range in '" + rawToken + "'");
+        }
         char type = matcher.group(2).charAt(0);
         String value = matcher.group(3);
         index[0]++;

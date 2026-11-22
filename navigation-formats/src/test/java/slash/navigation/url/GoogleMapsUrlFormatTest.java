@@ -515,6 +515,19 @@ public class GoogleMapsUrlFormatTest {
     }
 
     @Test
+    public void testParseDirOversizedFieldNumberFallsBackToNamesOnly() {
+        String url = LIVE_DIR_CAR_2026.replace("!3e0", "!99999999999e0");
+        List<Wgs84Position> positions = parsePositions(url);
+        assertNotNull(positions);
+        assertEquals(2, positions.size());
+        for (Wgs84Position position : positions) {
+            assertNull(position.getLongitude());
+            assertNull(position.getLatitude());
+        }
+        assertNull(travelModeOf(url));
+    }
+
+    @Test
     public void testCreateRouteNameWithTravelMode() {
         List<Wgs84Position> positions = parsePositions(LIVE_DIR_CAR_2026);
         assertEquals("Hamburg to Hannover (bicycle)", GoogleMapsUrlFormat.createRouteName(positions, "bicycle"));
