@@ -21,6 +21,7 @@
 package slash.navigation.holux;
 
 import org.junit.Test;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatRegistry;
@@ -518,6 +519,47 @@ public class MtkLoggerBinaryFormatTest {
             new HoluxM241BinaryFormat().read(new ByteArrayInputStream(data), holux);
             assertTrue("run " + run, holux.getRoutes().isEmpty());
         }
+    }
+
+    @Test
+    public void zeroFilledFileWithPlausibleBitmaskIsNotRecognized() throws IOException {
+        // all-zero records have no '*' and a checksum of 0 in its place; GPSBabel 1.5.4 reads them as 0/0 without time
+        byte[] zeros = new byte[4096];
+        ByteBuffer.wrap(zeros).order(LITTLE_ENDIAN).putInt(2, bits(UTC, LATITUDE, LONGITUDE));
+        assertTrue(read(zeros).isEmpty());
+        assertTrue(read(sector(header(BASIC), new byte[SECTOR - 0x200])).isEmpty());
+
+        byte[] sparse = new byte[20000];
+        ByteBuffer.wrap(sparse).order(LITTLE_ENDIAN).putInt(2, bits(UTC, LATITUDE, LONGITUDE));
+        for (int i = 997; i < sparse.length; i += 997)
+            sparse[i] = 0x41;
+        assertTrue(read(sparse).isEmpty());
+
+        // the full registry leaves both to the formats after it, which read no route either
+        for (byte[] data : new byte[][]{zeros, sparse}) {
+            ParserResult result = new NavigationFormatParser(new NavigationFormatRegistry()).read(new ByteArrayInputStream(data));
+            assertFalse(result.getFormat() != null && MtkLoggerBinaryFormat.class.equals(result.getFormat().getClass()));
+            for (BaseRoute<?, ?> route : result.getAllRoutes())
+                assertEquals(0, route.getPositionCount());
+        }
+    }
+
+    @Test
+    public void zeroRecordsDoNotCountForRecognition() throws IOException {
+        // a few real records followed by zero fill instead of 0xFF fill
+        assertTrue(read(sector(header(BASIC), record(BASIC, rec()), record(BASIC, rec().utc(TIME + 1)),
+                new byte[26 * 10])).isEmpty());
+        // GPSBabel reads the zero records as positions at 0/0 without time; they are kept once the file is recognized
+        GpxRoute route = readTrack(sector(header(BASIC), record(BASIC, rec()), record(BASIC, rec().utc(TIME + 1)),
+                new byte[25], record(BASIC, rec().utc(TIME + 2))));
+        assertEquals(asList("TP000001", "TP000002", "TP000003", "TP000004"), descriptions(route));
+        assertNull(route.getPosition(2).getTime());
+    }
+
+    @Test
+    public void holuxDumpPaddedWithZerosIsNotRecognized() throws IOException {
+        // else the Holux format would decline it as a generic dump
+        assertTrue(read(sector(header(BASIC), holuxRecord(), holuxRecord(), holuxRecord(), new byte[SECTOR / 2])).isEmpty());
     }
 
     @Test

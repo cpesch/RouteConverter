@@ -180,7 +180,7 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
         private final int[] logTypeSizes = MTK_LOG_TYPE_SIZES.clone();
         private boolean holux245;
         private int bitmask, logLength, period, distance, speed, trackEvent;
-        private int count, validChecksumCount;
+        private int count, validChecksumCount, starredValidChecksumCount;
         private final List<GpxPosition> wayPoints = new ArrayList<>();
         private final List<GpxRoute> tracks = new ArrayList<>();
         private List<GpxPosition> trackPositions;
@@ -377,8 +377,9 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
 
             if (validChecksumCount == 0)
                 return emptyList();
-            // the generic records end with '*' and checksum: decline files where that is the exception
-            if (!holux && validChecksumCount * 2 < count)
+            // the generic records end with '*' and checksum: decline files where that is the exception;
+            // an all-zero record has a matching checksum in the place of its missing '*'
+            if (!holux && starredValidChecksumCount * 2 < count)
                 return emptyList();
 
             List<GpxRoute> result = new ArrayList<>();
@@ -507,9 +508,12 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
                 i += logTypeSizes[k];
             }
 
+            boolean starred = false;
             if (!holux) {
-                if (u8(offset + i) == '*')
+                if (u8(offset + i) == '*') {
+                    starred = true;
                     i++; // skip '*' separator
+                }
                 else if (u8(offset + i) == 0xff)
                     // in some case star-crc hasn't been written on power off: skip the record including '*' and crc
                     return i + 2;
@@ -530,6 +534,8 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
             // keeps a pending log restart or waypoint event for the next record
             if (validChecksum) {
                 validChecksumCount++;
+                if (starred)
+                    starredValidChecksumCount++;
                 addTrackPoint(count, bitmask, item);
                 trackEvent = 0;
             }
