@@ -21,13 +21,18 @@
 package slash.navigation.url;
 
 import org.junit.Test;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Collections.singletonList;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
@@ -547,6 +552,67 @@ public class GoogleMapsUrlFormatTest {
     public void testIsParseableShortLink() {
         assertTrue(format.isParseableUrl("https://maps.app.goo.gl/AbCdEfGhiJ"));
         assertTrue(format.isParseableUrl("https://goo.gl/maps/AbCdEfGhiJ"));
+    }
+
+    @Test
+    public void testIsParseableListUrls() {
+        assertTrue(format.isParseableUrl("https://www.google.com/maps/@/data=!3m1!4b1!4m3!11m2!2sLISTID!3e3"));
+        assertTrue(format.isParseableUrl("https://www.google.com/maps/placelists/list/LISTID"));
+        assertTrue(format.isParseableUrl("https://maps.app.goo.gl/AbCdEfGhiJ"));
+        assertTrue(format.isParseableUrl(LIVE_DIR_CAR_2026));
+        assertTrue(format.isParseableUrl(INPUT11_PLACE_2026));
+    }
+
+    @Test
+    public void testProcessListUrlAppendsRouteFromStub() {
+        List<Wgs84Position> stubPositions = new ArrayList<>();
+        stubPositions.add(new Wgs84Position(13.404954, 52.520008, null, null, null, "Berlin"));
+        stubPositions.add(new Wgs84Position(9.993685, 53.551085, null, null, null, "Hamburg"));
+        Wgs84Route stubRoute = format.createRoute(Waypoints, "Stub list", stubPositions);
+
+        List<String> calledWith = new ArrayList<>();
+        format.setListFetcher(listId -> {
+            calledWith.add(listId);
+            return stubRoute;
+        });
+
+        ParserContextImpl<Wgs84Route> context = new ParserContextImpl<>();
+        String url = format.findURL("https://www.google.com/maps/@/data=!3m1!4b1!4m3!11m2!2sLISTID!3e3");
+        format.processURL(url, "UTF-8", context);
+
+        assertEquals(1, context.getRoutes().size());
+        assertSame(stubRoute, context.getRoutes().get(0));
+        assertEquals(singletonList("LISTID"), calledWith);
+    }
+
+    @Test
+    public void testProcessListUrlNullFetchAppendsNothing() {
+        format.setListFetcher(listId -> null);
+
+        ParserContextImpl<Wgs84Route> context = new ParserContextImpl<>();
+        String url = format.findURL("https://www.google.com/maps/@/data=!3m1!4b1!4m3!11m2!2sLISTID!3e3");
+        format.processURL(url, "UTF-8", context);
+
+        assertTrue(context.getRoutes().isEmpty());
+    }
+
+    @Test
+    public void testProcessShortLinkToListAppendsRoute() {
+        String innerUrl = "https://www.google.com/maps/@/data=!3m1!4b1!4m3!11m2!2sLISTID!3e3";
+        GoogleMapsUrlFormat.RedirectResolver resolver = url -> url.equals("https://maps.app.goo.gl/x") ? innerUrl : null;
+        String resolved = format.resolveShortUrl("https://maps.app.goo.gl/x", resolver);
+        assertEquals(innerUrl, resolved);
+
+        Wgs84Route stubRoute = format.createRoute(Waypoints, "Stub list",
+                singletonList(new Wgs84Position(13.404954, 52.520008, null, null, null, "Berlin")));
+        format.setListFetcher(listId -> stubRoute);
+
+        ParserContextImpl<Wgs84Route> context = new ParserContextImpl<>();
+        String found = format.findURL(resolved);
+        format.processURL(found, "UTF-8", context);
+
+        assertEquals(1, context.getRoutes().size());
+        assertSame(stubRoute, context.getRoutes().get(0));
     }
 
     @Test

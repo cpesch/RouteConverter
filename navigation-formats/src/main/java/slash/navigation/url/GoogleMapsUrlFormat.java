@@ -79,6 +79,16 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
         return status >= 300 && status < 400 ? head.getLocationHeader() : null;
     };
 
+    interface ListFetcher {
+        Wgs84Route fetch(String listId);
+    }
+
+    private ListFetcher listFetcher = listId -> GoogleMapsListClient.fetchList(listId, this);
+
+    void setListFetcher(ListFetcher listFetcher) {
+        this.listFetcher = listFetcher;
+    }
+
     public String getExtension() {
         return ".url";
     }
@@ -94,7 +104,8 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     public boolean isParseableUrl(String url) {
         String found = internalFindUrl(url);
         return found != null && (found.startsWith("?") || found.startsWith("/dir/") ||
-                found.startsWith("/place/") || found.startsWith("SHORTLINK:"));
+                found.startsWith("/place/") || found.startsWith("SHORTLINK:") ||
+                GoogleMapsListClient.extractListId(found) != null);
     }
 
     public static boolean isGoogleMapsProfileUrl(URL url) {
@@ -125,17 +136,24 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
             String innerFound = internalFindUrl(resolved);
             if (innerFound != null)
                 processURL(innerFound, encoding, context);
-        } else if (url.startsWith("/dir/")) {
-            String path = url.substring(5);
-            List<Wgs84Position> positions = parsePositions(path);
-            if (!positions.isEmpty())
-                context.appendRoute(createRoute(Route, createRouteName(positions, parseTravelMode(path)), positions));
-        } else if (url.startsWith("/place/")) {
-            Wgs84Position position = parsePlacePosition(url.substring(7));
-            if (position != null)
-                context.appendRoute(createRoute(Route, null, singletonList(position)));
-        } else
-            super.processURL(url, encoding, context);
+        } else {
+            String listId = GoogleMapsListClient.extractListId(url);
+            if (listId != null) {
+                Wgs84Route route = listFetcher.fetch(listId);
+                if (route != null)
+                    context.appendRoute(route);
+            } else if (url.startsWith("/dir/")) {
+                String path = url.substring(5);
+                List<Wgs84Position> positions = parsePositions(path);
+                if (!positions.isEmpty())
+                    context.appendRoute(createRoute(Route, createRouteName(positions, parseTravelMode(path)), positions));
+            } else if (url.startsWith("/place/")) {
+                Wgs84Position position = parsePlacePosition(url.substring(7));
+                if (position != null)
+                    context.appendRoute(createRoute(Route, null, singletonList(position)));
+            } else
+                super.processURL(url, encoding, context);
+        }
     }
 
     String resolveShortUrl(String url, RedirectResolver resolver) {
