@@ -469,6 +469,17 @@ public class GarminMapSource5FormatTest {
     }
 
     @Test
+    public void testWriteInvalidLatitudeInRouteOnlyList() {
+        // a list with no separate Waypoints-characteristic route never calls addWaypoints(),
+        // so the range check has to apply inside addRoute()/addRoute(..., track) as well
+        try {
+            write(List.of(route(Route, "Bad", position(11.5, 300.0, null, null, "bad"))));
+            fail("IOException expected");
+        } catch (IOException expected) {
+        }
+    }
+
+    @Test
     public void testWriteWindows1252() throws IOException {
         byte[] bytes = write(route(Waypoints, "W", position(11.5, 48.1, null, null, "Größe; € 3")));
         assertTrue(indexOf(bytes, new byte[]{'G', 'r', (byte) 0xF6, (byte) 0xDF, 'e', 0}) > 0);

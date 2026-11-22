@@ -27,19 +27,20 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.GpxBackedNavigationFormat;
 import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.gpsbabel.LittleEndianInput;
 import slash.navigation.gpsbabel.LittleEndianOutput;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -217,20 +218,30 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
             read(new byte[count], count);
         }
 
-        private ByteBuffer number(int size) throws MpsException {
+        // the byte order decoding itself is delegated to LittleEndianInput, only the
+        // GPSBabel-specific EOF behaviour (a number read past EOF is fatal) stays here
+        private LittleEndianInput number(int size) throws MpsException {
             if (available() < size)
                 throw new MpsException("Unexpected end of file");
-            ByteBuffer buffer = ByteBuffer.wrap(bytes, (int) position, size).order(ByteOrder.LITTLE_ENDIAN);
+            LittleEndianInput input = new LittleEndianInput(Arrays.copyOfRange(bytes, (int) position, (int) position + size));
             position += size;
-            return buffer;
+            return input;
         }
 
         int getInt32() throws MpsException {
-            return number(4).getInt();
+            try {
+                return number(4).readInt32();
+            } catch (EOFException e) {
+                throw new MpsException("Unexpected end of file");
+            }
         }
 
         double getDouble() throws MpsException {
-            return number(8).getDouble();
+            try {
+                return number(8).readDouble();
+            } catch (EOFException e) {
+                throw new MpsException("Unexpected end of file");
+            }
         }
 
         /** mps_readstr(): at most size bytes up to and including a NUL, the bytes before the NUL are returned */
@@ -719,7 +730,7 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
         private final Names writtenRouteWaypoints = new Names();
         private int routePointCount;
 
-        private Wpt createWpt(GpxPosition position) {
+        private Wpt createWpt(GpxPosition position) throws IOException {
             Wpt wpt = new Wpt();
             wpt.longitude = formatPosition(position.getLongitude()).doubleValue();
             wpt.latitude = formatPosition(position.getLatitude()).doubleValue();
@@ -728,6 +739,11 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
             wpt.time = toTimeT(position.getTime());
             wpt.shortName = asGpsBabelText(asName(position.getDescription()));
             wpt.notes = asGpsBabelText(asDesc(position.getDescription()));
+            normalize(wpt);
+            if (wpt.latitude < -90 || wpt.latitude > 90.0)
+                throw new IOException("Invalid latitude " + position.getLatitude() + " in waypoint " + wpt.shortName);
+            if (wpt.longitude < -180 || wpt.longitude > 180.0)
+                throw new IOException("Invalid longitude " + position.getLongitude() + " in waypoint " + wpt.shortName);
             return wpt;
         }
 
@@ -742,11 +758,6 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
                 if (!isValid(position))
                     continue;
                 Wpt wpt = createWpt(position);
-                normalize(wpt);
-                if (wpt.latitude < -90 || wpt.latitude > 90.0)
-                    throw new IOException("Invalid latitude " + position.getLatitude() + " in waypoint " + wpt.shortName);
-                if (wpt.longitude < -180 || wpt.longitude > 180.0)
-                    throw new IOException("Invalid longitude " + position.getLongitude() + " in waypoint " + wpt.shortName);
                 waypoints.add(wpt);
                 if (wpt.shortName == null)
                     wpt.shortName = wpt.notes != null ? wpt.notes : String.format("WPT%03d", waypoints.size());
@@ -757,7 +768,7 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
         }
 
         // gpx.cc <rte>/<trk> and route_add_wpt()/track_add_wpt()
-        void addRoute(GpxRoute route, List<GpxPosition> positions, boolean track) {
+        void addRoute(GpxRoute route, List<GpxPosition> positions, boolean track) throws IOException {
             Rte rte = new Rte();
             rte.name = asGpsBabelText(asRouteName(route.getName()));
             for (GpxPosition position : positions) {
