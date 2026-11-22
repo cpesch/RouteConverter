@@ -35,11 +35,21 @@ public class MBTilesFile {
             throw new RuntimeException(e);
         }
 
-        String format = getFormat();
-        if (format == null)
-            throw new IllegalArgumentException("'metadata.format' field was not found. Is this an MBTiles database?");
-        if (!SUPPORTED_FORMATS.contains(format))
-            throw new IllegalArgumentException(format("Unsupported 'metadata.format: %s'. Supported format(s) are: %s", format, SUPPORTED_FORMATS));
+        try {
+            String format = getFormat();
+            if (format == null)
+                throw new IllegalArgumentException("'metadata.format' field was not found. Is this an MBTiles database?");
+            if (!SUPPORTED_FORMATS.contains(format))
+                throw new IllegalArgumentException(format("Unsupported 'metadata.format: %s'. Supported format(s) are: %s", format, SUPPORTED_FORMATS));
+        } catch (RuntimeException e) {
+            // release the database file: a rejected file must not stay open (and locked on Windows)
+            try {
+                connection.close();
+            } catch (SQLException closeException) {
+                e.addSuppressed(closeException);
+            }
+            throw e;
+        }
     }
 
     public void close() {

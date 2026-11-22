@@ -90,5 +90,7 @@ class MBTilesFileTest {
         File file = createMBTiles("pbf", "tile.png");
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> new MBTilesFile(file));
         assertTrue(exception.getMessage().contains("pbf"));
+        // the rejected file must not stay open: on Windows an open SQLite connection locks it
+        assertTrue(file.delete(), "rejected MBTiles file is still open");
     }
 }
