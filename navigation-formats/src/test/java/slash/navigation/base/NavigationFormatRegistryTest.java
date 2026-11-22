@@ -28,6 +28,7 @@ import slash.navigation.columbus.GarbleColumbusGpsType1Format;
 import slash.navigation.csv.CsvCommaFormat;
 import slash.navigation.csv.CsvSemicolonFormat;
 import slash.navigation.csv.Flightradar24Format;
+import slash.navigation.csv.GoogleTakeoutSavedListFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
@@ -90,6 +91,7 @@ public class NavigationFormatRegistryTest {
         assertEquals(ColumbusFusionFormat.class, formats.get(index++).getClass());
         assertEquals(QstarzQ1000Format.class, formats.get(index++).getClass());
         assertEquals(Iblue747Format.class, formats.get(index++).getClass());
+        assertEquals(GoogleTakeoutSavedListFormat.class, formats.get(index++).getClass());
         assertEquals(CsvCommaFormat.class, formats.get(index++).getClass());
         assertEquals(CsvSemicolonFormat.class, formats.get(index++).getClass());
         assertEquals(Flightradar24Format.class, formats.get(index++).getClass());

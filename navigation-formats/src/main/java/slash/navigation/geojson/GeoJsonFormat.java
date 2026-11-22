@@ -51,6 +51,8 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
     private static final String DATE = "date";
     private static final String LOCATION = "location";
     private static final String NAME = "name";
+    private static final String FIVE_STAR_RATING_PUBLISHED = "five_star_rating_published";
+    private static final String REVIEW_TEXT_PUBLISHED = "review_text_published";
 
     public String getExtension() {
         return ".json";
@@ -96,7 +98,36 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
             return result;
 
         for (JsonNode feature : features) {
+            JsonNode properties = feature.path("properties");
+            String name = trim(text(properties.get(NAME)));
+            String address = trim(text(properties.get(ADDRESS)));
+
+            // Bewertungen.json and GespeicherteOrte.json use a location object
+            JsonNode location = properties.get(LOCATION);
+            if (location != null && location.isObject()) {
+                name = trim(text(location.get(NAME)));
+                address = trim(text(location.get(ADDRESS)));
+            }
+
+            String description = asDescription(name, address);
+            String reviewPart = reviewPart(properties);
+            if (reviewPart != null)
+                description = description != null ? description + "; " + reviewPart : reviewPart;
+            if (description != null)
+                description = trimLineFeeds(description);
+
+            CompactCalendar time = parseTime(trim(text(properties.get(DATE))));
+
             JsonNode geometry = feature.path("geometry");
+            if (geometry.isMissingNode() || geometry.isNull()) {
+                if (description == null) {
+                    log.fine("Skipping feature without geometry and without description.");
+                    continue;
+                }
+                result.add(new Wgs84Position(null, null, null, null, time, description));
+                continue;
+            }
+
             if (!"Point".equals(geometry.path("type").asText())) {
                 log.warning("Reading Geometry object " + geometry + " is not supported.");
                 continue;
@@ -109,32 +140,40 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
                 continue;
             }
 
-            JsonNode properties = feature.path("properties");
-            String name = trim(text(properties.get(NAME)));
-            String address = trim(text(properties.get(ADDRESS)));
+            double longitude = coordinates.get(0).doubleValue();
+            double latitude = coordinates.get(1).doubleValue();
 
-            // Bewertungen.json and GespeicherteOrte.json use a location object
-            JsonNode location = properties.get(LOCATION);
-            if (location != null && location.isObject()) {
-                name = trim(text(location.get(NAME)));
-                address = trim(text(location.get(ADDRESS)));
+            // Takeout's marker for "no location information"
+            if (longitude == 0.0 && latitude == 0.0) {
+                if (description == null) {
+                    log.fine("Skipping [0,0] feature without description.");
+                    continue;
+                }
+                result.add(new Wgs84Position(null, null, null, null, time, description));
+                continue;
             }
 
             Double elevation = coordinates.size() > 2 && coordinates.get(2).isNumber() ? coordinates.get(2).doubleValue() : null;
             if (isEmpty(elevation))
                 elevation = null;
 
-            CompactCalendar time = parseTime(trim(text(properties.get(DATE))));
-
-            result.add(new Wgs84Position(coordinates.get(0).doubleValue(),
-                    coordinates.get(1).doubleValue(), elevation,
-                    null, time, asDescription(name, address)));
+            result.add(new Wgs84Position(longitude, latitude, elevation, null, time, description));
         }
         return result;
     }
 
     private String text(JsonNode node) {
         return node != null && !node.isNull() ? node.asText() : null;
+    }
+
+    private String reviewPart(JsonNode properties) {
+        JsonNode ratingNode = properties.get(FIVE_STAR_RATING_PUBLISHED);
+        Integer rating = ratingNode != null && ratingNode.isNumber() ? ratingNode.intValue() : null;
+        String text = trim(text(properties.get(REVIEW_TEXT_PUBLISHED)));
+
+        if (rating == null)
+            return text;
+        return !isEmpty(text) ? rating + "/5 " + text : rating + "/5";
     }
 
     private ObjectNode createFeature(ObjectMapper mapper, Wgs84Position position) {
@@ -156,16 +195,18 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
         }
         feature.set("properties", properties);
 
-        ObjectNode geometry = mapper.createObjectNode();
-        geometry.put("type", "Point");
-        ArrayNode coordinates = geometry.putArray("coordinates");
-        if (position.getLongitude() != null)
+        if (position.hasCoordinates()) {
+            ObjectNode geometry = mapper.createObjectNode();
+            geometry.put("type", "Point");
+            ArrayNode coordinates = geometry.putArray("coordinates");
             coordinates.add(position.getLongitude());
-        if (position.getLatitude() != null)
             coordinates.add(position.getLatitude());
-        if (position.getElevation() != null)
-            coordinates.add(position.getElevation());
-        feature.set("geometry", geometry);
+            if (position.getElevation() != null)
+                coordinates.add(position.getElevation());
+            feature.set("geometry", geometry);
+        } else {
+            feature.putNull("geometry");
+        }
 
         return feature;
     }

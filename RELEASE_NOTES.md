@@ -8,6 +8,7 @@
 - Offline MBTiles maps whose tiles are stored as WebP images can now be displayed; before, only PNG and JPEG MBTiles opened
 - Position list > Manage… reorders, creates, renames, deletes and changes the type of the position lists of a file, for example the routes and tracks of a GPX file; it replaces the New, Rename and Delete buttons below the position list; the position list, its type and the Manage button now share one row, the map toggle moved to the Format row, and the Content line moved into the tool tip of the position list (#400)
 - Tour Exchange Format (.tef) files can now be written. No program is known to import them; for Map&Guide use the BCR format (#386)
+- Google Takeout's Saved-list CSVs (Starred places.csv, Want to go.csv, Favorites.csv and custom lists) can now be opened; dropped pins come in with coordinates, other places can be completed afterwards with Positions > Complete > Coordinates (#440)
 
 ### Changes
 
@@ -32,6 +33,8 @@
 ### Fixes
 
 - An offline MBTiles map that RouteConverter cannot display, such as one with vector tiles, no longer stays locked on Windows until RouteConverter exits
+- Google Takeout saved places and reviews without location information no longer show up as positions at 0°/0° in the Atlantic when opened as GeoJSON; they come in as positions without coordinates (#440)
+- Google Takeout reviews (Reviews.json / Bewertungen.json) now show their star rating and review text in the description when opened as GeoJSON (#440)
 - Formats read and written with GPSBabel work again when no GPSBabel path is set under Extras > Options: on Java 25 RouteConverter took its working directory for the GPSBabel program. (#419)
 - OziExplorer route and waypoint files whose lines are padded with commas, as spreadsheet exports write them, and OziExplorer CE Route2 (.rt2) files are read again
 - Top and Bottom in the positions table keep the moved positions selected (#403)
