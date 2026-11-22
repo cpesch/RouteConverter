@@ -1,0 +1,7 @@
+OziExplorer Route File Version 1.0
+WGS 84
+Reserved 1
+Reserved 2
+R,0,Route 1,A route,
+W,0,,1,Start,47.500000,8.250000,,0,1,3,0,65535,First,0,0
+W,0,,2,End,47.600000,8.350000,,0,1,3,0,65535,Second,0,0

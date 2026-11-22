@@ -1,0 +1,7 @@
+OziExplorer Waypoint File Version 1.1
+WGS 84
+Reserved 2
+Reserved 3
+1,Alpha,47.500000,8.250000,,0,1,3,0,65535,Alpha desc,0,0,0,328,6,0,17
+2,Beta,47.600000,8.350000,,0,1,3,0,65535,Beta desc,0,0,0,300,6,0,17
+3,Gamma,47.700000,8.450000,,0,1,3,0,65535,Gamma desc,0,0,0,310,6,0,17
