@@ -4,12 +4,15 @@
 
 ### New features
 
+- Google Maps saved lists (Favorites, Want to go, own lists) exported by Google Takeout as CSV can now be opened; they carry no coordinates, so add them with Positions > Complete > Coordinates (places whose link has coordinates get them right away)
 - The offline map themes Biker, Dark, Indigo and Motorider that come with the map renderer can now be chosen next to Default and Osmarender
 - Offline MBTiles maps whose tiles are stored as WebP images can now be displayed; before, only PNG and JPEG MBTiles opened
 - Position list > Manage… reorders, creates, renames, deletes and changes the type of the position lists of a file, for example the routes and tracks of a GPX file; it replaces the New, Rename and Delete buttons below the position list; the position list, its type and the Manage button now share one row, the map toggle moved to the Format row, and the Content line moved into the tool tip of the position list (#400)
 - Tour Exchange Format (.tef) files can now be written. No program is known to import them; for Map&Guide use the BCR format (#386)
 - MTK logger binary files (.bin) from iBlue 747, Qstarz BT-Q1000, Transystem and other MediaTek-based GPS loggers can be read
 - Online maps and overlays show the attribution supplied by the map catalog, so new map providers can name their exact terms without a RouteConverter update; applied overlays now show their attribution next to the map's (#438)
+- Obfuscated Garmin POI (.gpi) files, as commercial POI packages often come, can now be read; GPSBabel could not read them (#453)
+- Garmin POI (.gpi) files in other code pages than Western European, for example Central European, Cyrillic, Greek or UTF-8, can now be read; GPSBabel refused them (#453)
 
 ### Changes
 
@@ -28,10 +31,13 @@
 - Magellan MapSend (.wpt) files are read and written by RouteConverter itself and no longer need GPSBabel (#431)
 - National Geographic TOPO! 3 and 4 (.tpo) files are read by RouteConverter itself and no longer need GPSBabel; the format is now listed as National Geographic Topo 3/4 (#450)
 - Garmin MapSource 6.x (.gdb) files are read and written by RouteConverter itself and no longer need GPSBabel (#451)
+- Garmin MapSource 5.x (.mps) files are read and written by RouteConverter itself and no longer need GPSBabel (#452)
+- Garmin POI (.gpi) files are read and written by RouteConverter itself and no longer need GPSBabel (#453)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 - Every menu entry and submenu now has an icon (#400)
 - Maps and overlays from the OpenStreetMap tile servers keep their tiles on disk across restarts, in the cache folder of the application directory, and download a tile again only once it is older than 7 days, as the OpenStreetMap tile usage policy asks; before, every start downloaded all tiles again
 - Opening an offline map for the first time selects a theme made for that map's provider, for example Elevate for OpenAndroMaps and the Freizeitkarte theme for Freizeitkarte maps, if it is downloaded; a theme you chose for a map or provider is kept
+- Positions > Complete > Coordinates also tries the name alone when a description like "name; note" finds nothing, and requests to the public Nominatim and Photon servers are spaced one second apart, as their usage policies ask
 - A Google Takeout Records.json export of several hundred MB to a few GB now opens without running out of memory, skips inaccurate Wi-Fi/cell fixes, keeps speed and heading, and splits into one track per day and phone instead of merging several phones into one zig-zag track; a Semantic Location History export now gets one named track per trip, for example "2021-01-05 10:12 CYCLING", instead of merging a whole day into one track, and a visit without a name now falls back to its address (#441)
 
 ### Fixes

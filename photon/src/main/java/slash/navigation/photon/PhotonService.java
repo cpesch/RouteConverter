@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geojson.*;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.geocoding.RequestThrottle;
 import slash.navigation.geocoding.BaseGeocodingService;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
@@ -48,6 +49,9 @@ import static slash.common.io.Transfer.trim;
 
 public class PhotonService extends BaseGeocodingService {
     private static final Preferences preferences = Preferences.userNodeForPackage(PhotonService.class);
+    private static final String DEFAULT_URL = "https://photon.komoot.io";
+    // the public instance allows at most one request per second
+    private static final RequestThrottle publicInstanceThrottle = new RequestThrottle(1000);
     private static final String PHOTON_URL_PREFERENCE = "photonUrl";
 
     public String getName() {
@@ -63,11 +67,13 @@ public class PhotonService extends BaseGeocodingService {
     }
 
     private String getPhotonUrl() {
-        return preferences.get(PHOTON_URL_PREFERENCE, "https://photon.komoot.io");
+        return preferences.get(PHOTON_URL_PREFERENCE, DEFAULT_URL);
     }
 
     private String execute(String uri) throws IOException {
         String url = getPhotonUrl() + uri;
+        if (url.startsWith(DEFAULT_URL))
+            publicInstanceThrottle.acquire();
         Get get = new Get(url);
         String result = get.executeAsString();
         if (get.isSuccessful())

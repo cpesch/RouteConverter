@@ -146,4 +146,13 @@ public class PositionAugmenterTest {
 
         assertTrue(PositionAugmenter.NO_COORDINATE_PREDICATE.shouldOverwrite(position));
     }
+
+    @Test
+    public void testGeocodingQueriesTryDescriptionThenName() {
+        assertEquals(asList("Cafe Alpha; Try the soup", "Cafe Alpha"), PositionAugmenter.asGeocodingQueries("Cafe Alpha; Try the soup"));
+        assertEquals(asList("Musterstrasse 1, 10115 Berlin"), PositionAugmenter.asGeocodingQueries(" Musterstrasse 1, 10115 Berlin "));
+        assertEquals(asList("; only a note"), PositionAugmenter.asGeocodingQueries("; only a note"));
+        assertTrue(PositionAugmenter.asGeocodingQueries(null).isEmpty());
+        assertTrue(PositionAugmenter.asGeocodingQueries("  ").isEmpty());
+    }
 }
