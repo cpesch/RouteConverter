@@ -81,12 +81,15 @@ public class BabelGoldenWriteIT {
     // the OziExplorer formats write all text as Windows-1252 (#391), 1.5.4 writes route point text as UTF-8
     // bytes and replaces the euro sign in waypoint files;
     // Magellan MapSend writes all text as Windows-1252 with a length byte that counts the bytes written (#431),
-    // 1.5.4 writes UTF-8 bytes behind a length byte that counts characters, which corrupts the file
+    // 1.5.4 writes UTF-8 bytes behind a length byte that counts characters, which corrupts the file;
+    // Garmin MapSource 5.x writes all text as Windows-1252 with record lengths that count the bytes written (#452),
+    // 1.5.4 writes UTF-8 bytes, record lengths that count characters and waypoints with non-ASCII names twice
     private static final Set<String> CORRECTED_BY_DESIGN = Set.of(
             "GarminPcx5Format",
             "CompeGPSDataRouteFormat/synthetic", "CompeGPSDataTrackFormat/synthetic", "CompeGPSDataWaypointFormat/synthetic",
             "OziExplorerRouteFormat/from11.gpx", "OziExplorerRouteFormat/synthetic", "OziExplorerWaypointFormat/synthetic",
-            "MagellanMapSendFormat/from11.gpx", "MagellanMapSendFormat/synthetic"
+            "MagellanMapSendFormat/from11.gpx", "MagellanMapSendFormat/synthetic",
+            "GarminMapSource5Format/from11.gpx", "GarminMapSource5Format/synthetic"
     );
     // native writers of formats GPSBabel 1.5.4 never wrote: there is no write golden and none can exist
     // (spec 00083.3 decision D3.1, issue #386: "there is no oracle for the writer"); see TourExchangeFormatTest
