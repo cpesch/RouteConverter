@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Random;
 
 import static java.util.Arrays.asList;
+import static java.util.Arrays.copyOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -349,9 +350,39 @@ public class NationalGeographicTopo3FormatTest {
         assertEquals(" Lead", positions.get(0).getDescription());
         assertEquals("Trail ", positions.get(1).getDescription());
         assertEquals("a\tb; c d", positions.get(2).getDescription());
-        assertEquals("e f; g h i", positions.get(3).getDescription());
+        assertEquals("e f; g h", positions.get(3).getDescription());
         // Windows-1252, where GPSBabel 1.5.4 decoded UTF-8 and delivered replacement characters
         assertEquals("M\u00fcller \u20ac; \u00e9t\u00e9", positions.get(4).getDescription());
+    }
+
+    @Test
+    public void testStringsEndAtTheFirstNul() throws IOException {
+        // GPSBabel 1.5.4 held the strings as C strings; an empty string gives no GPX element
+        byte[] data = new TopoFileBuilder()
+                .block(TRACK_STYLES_BLOCK, styles(style(0, 0, 0, "So\u0000lid", 1, 0)))
+                .block(TRACKS_BLOCK, tracks(track(1, "Tr\u0000ack", new Bytes().point(10.5, 47.25)),
+                        track(1, "\u0000", new Bytes().point(10.5, 47.25))))
+                .block(WAYPOINTS_BLOCK, waypoints(waypoint("Ab\u0000cd", 11.5, 48.25, 0, "x\u0000yz"),
+                        waypoint("\u0000name", 11.75, 48.5, 0, ""),
+                        waypoint("Peak\u0000", 12.0, 48.75, 0, "\u0000comment")))
+                .block(ROUTES_BLOCK, routes(route("Ro\u0000ute", 1), route("\u0000", 2)))
+                .block(TEXT_LABELS_BLOCK, textLabels(textLabel(15.0, 51.0, "he\u0000llo")))
+                .build();
+        List<GpxRoute> routes = read(data);
+        assertEquals(5, routes.size());
+        List<GpxPosition> waypoints = routes.get(0).getPositions();
+        assertEquals("Ab; x", waypoints.get(0).getDescription());
+        assertNull(waypoints.get(1).getDescription());
+        assertEquals("Peak", waypoints.get(2).getDescription());
+        assertEquals("TXT 1; he", waypoints.get(3).getDescription());
+        assertEquals("Ro", routes.get(1).getName());
+        assertEquals("Ab; x", routes.get(1).getPositions().get(0).getDescription());
+        assertNull(routes.get(2).getName());
+        // route_add_wpt() names a route point without name after its number across all routes
+        assertEquals("RPT002", routes.get(2).getPositions().get(0).getDescription());
+        assertEquals("Tr", routes.get(3).getName());
+        assertEquals(asList("Style=So", "Width=1", "Dashed=0", "Color=#000000"), routes.get(3).getDescription());
+        assertNull(routes.get(4).getName());
     }
 
     @Test
@@ -476,6 +507,24 @@ public class NationalGeographicTopo3FormatTest {
             System.arraycopy(data, 0, truncated, 0, length);
             assertNoRoutes(truncated);
         }
+    }
+
+    @Test
+    public void testMissingIgnoredBytesAtTheEndOfTheFile() throws IOException {
+        // GPSBabel reads the bytes after a waypoint and after a track style with gbfgetc(), which returns EOF
+        // at the end of the file without failing
+        byte[] waypointsLast = waypointFile(waypoint("A", 11.5, 48.25, 0, ""), waypoint("B", 11.75, 48.5, 0, ""));
+        for (int missing = 0; missing <= 4; missing++)
+            assertEquals(2, readSingle(copyOf(waypointsLast, waypointsLast.length - missing)).getPositionCount());
+        assertNoRoutes(copyOf(waypointsLast, waypointsLast.length - 5));
+
+        byte[] stylesLast = new TopoFileBuilder()
+                .block(TRACKS_BLOCK, tracks(track(1, "T", new Bytes().point(10.5, 47.25))))
+                .block(TRACK_STYLES_BLOCK, defaultStyles())
+                .build();
+        for (int missing = 0; missing <= 2; missing++)
+            assertEquals(Track, readSingle(copyOf(stylesLast, stylesLast.length - missing)).getCharacteristics());
+        assertNoRoutes(copyOf(stylesLast, stylesLast.length - 3));
     }
 
     @Test(timeout = 10000)

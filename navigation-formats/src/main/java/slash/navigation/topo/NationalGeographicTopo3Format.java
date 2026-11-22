@@ -220,7 +220,7 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
                 List<GpxPosition> positions = new ArrayList<>();
                 for (Point waypoint : waypoints) {
                     // GPSBabel's waypt_add(): a waypoint without description takes its name
-                    if (waypoint.description == null)
+                    if (waypoint.description == null || waypoint.description.isEmpty())
                         waypoint.description = waypoint.shortName;
                     positions.add(createPosition(waypoint));
                 }
@@ -253,8 +253,22 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
             return (int) length;
         }
 
+        /**
+         * GPSBabel 1.5.4 held the strings as C strings: they end at the first NUL
+         */
         private String readString(int length) throws EOFException {
-            return asGpxText(new String(input.readBytes(length), CHARSET));
+            byte[] bytes = input.readBytes(length);
+            int end = 0;
+            while (end < bytes.length && bytes[end] != 0)
+                end++;
+            return asGpxText(new String(bytes, 0, end, CHARSET));
+        }
+
+        /**
+         * gbfgetc() returns EOF at the end of the file and GPSBabel ignores these bytes
+         */
+        private void skipIgnoredBytes(int count) throws EOFException {
+            input.skip(Math.min(count, input.remaining()));
         }
 
         /**
@@ -304,7 +318,7 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
 
                 style.wide = input.readUInt8();
                 style.dash = input.readUInt8();
-                input.skip(2);
+                skipIgnoredBytes(2);
                 styles[i] = style;
             }
 
@@ -333,7 +347,7 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
                     positions.add(createPosition(point));
                 // the GPX reader of RouteConverter skips tracks without points
                 if (!positions.isEmpty())
-                    tracks.add(new GpxRoute(new Gpx10Format(), Track, name, asDescription(description), positions));
+                    tracks.add(new GpxRoute(new Gpx10Format(), Track, emptyToNull(name), asDescription(description), positions));
             }
         }
 
@@ -370,7 +384,7 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
 
                 index.add(new Point(waypoint));
                 waypoints.add(waypoint);
-                input.skip(4);
+                skipIgnoredBytes(4);
             }
             return index;
         }
@@ -384,6 +398,7 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
 
             // per route: 2 unknown, name length, comment, point count
             int routeCount = readLength(5);
+            int routePointCount = 0;
             for (int i = 0; i < routeCount; i++) {
                 readInt();
                 readInt();
@@ -397,10 +412,15 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
                     long number = readInt();
                     if (number < 1 || number > index.size())
                         throw new InvalidTopoException("Route " + (i + 1) + " refers to undefined waypoint " + number);
-                    positions.add(createPosition(new Point(index.get((int) number - 1))));
+                    Point point = new Point(index.get((int) number - 1));
+                    // route_add_wpt() numbers a point without name across all routes
+                    routePointCount++;
+                    if (point.shortName == null || point.shortName.isEmpty())
+                        point.shortName = String.format("RPT%03d", routePointCount);
+                    positions.add(createPosition(point));
                 }
                 // GPSBabel delivers a route without points as an empty <rte>, which the GPX reader keeps
-                routes.add(new GpxRoute(new Gpx10Format(), Route, name, null, positions));
+                routes.add(new GpxRoute(new Gpx10Format(), Route, emptyToNull(name), null, positions));
             }
         }
 
@@ -618,10 +638,15 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
 
     private GpxPosition createPosition(Point point) {
         normalizePosition(point);
-        // the GPX that RouteConverter reads delivers the shortname as <name> and the description as <desc>
-        String description = asDescription(point.shortName, point.description);
+        // the GPX that RouteConverter reads delivers the shortname as <name> and the description as <desc>;
+        // GPSBabel writes no element for an empty string
+        String description = asDescription(emptyToNull(point.shortName), emptyToNull(point.description));
         return new GpxPosition(asGpxCoordinate(point.longitude), asGpxCoordinate(point.latitude),
                 asGpxElevation(point.elevation), null, null, description);
+    }
+
+    private static String emptyToNull(String string) {
+        return string == null || string.isEmpty() ? null : string;
     }
 
     private static double asGpxCoordinate(double value) {
