@@ -22,6 +22,7 @@ package slash.navigation.url;
 
 import slash.navigation.base.BaseUrlParsingFormat;
 import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteComments;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 import slash.navigation.rest.Head;
@@ -64,6 +65,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     private static final Pattern SHORT_URL_PATTERN = Pattern.compile(".*(http[s]?://(?:maps\\.app\\.goo\\.gl|goo\\.gl/maps)/[^\\s]+).*");
     private static final int MAX_REDIRECT_HOPS = 5;
     private static final Pattern PLACE_COORDINATE_PATTERN = Pattern.compile(".*?!3d(-?\\d+\\.\\d+)!4d(-?\\d+\\.\\d+).*");
+    private static final Pattern DATA_TOKEN_PATTERN = Pattern.compile("(\\d+)([a-z])(.*)", Pattern.DOTALL);
 
     interface RedirectResolver {
         String resolveLocation(String url) throws IOException;
@@ -124,9 +126,10 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
             if (innerFound != null)
                 processURL(innerFound, encoding, context);
         } else if (url.startsWith("/dir/")) {
-            List<Wgs84Position> positions = parsePositions(url.substring(5));
+            String path = url.substring(5);
+            List<Wgs84Position> positions = parsePositions(path);
             if (!positions.isEmpty())
-                context.appendRoute(createRoute(Route, null, positions));
+                context.appendRoute(createRoute(Route, createRouteName(positions, parseTravelMode(path)), positions));
         } else if (url.startsWith("/place/")) {
             Wgs84Position position = parsePlacePosition(url.substring(7));
             if (position != null)
@@ -167,14 +170,240 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     }
 
     List<Wgs84Position> parsePositions(String url) {
+        List<String> segments = pathStopSegments(url);
+        DirectionsData directions = parseDirectionsData(url, segments.size());
+
         List<Wgs84Position> result = new ArrayList<>();
-        String[] segments = url.split("/");
-        for (String segment : segments) {
-            if (segment.startsWith("@") || segment.startsWith("data"))
-                break;
-            result.add(asWgs84Position(null, null, decodeUri(segment)));
+        for (int i = 0; i < segments.size(); i++) {
+            String segment = segments.get(i);
+            Double longitude = null, latitude = null;
+            String description = decodeUri(segment);
+
+            if (PLAIN_POSITION_PATTERN.matcher(segment).matches()) {
+                Wgs84Position plainPosition = parsePlainPosition(segment);
+                longitude = plainPosition.getLongitude();
+                latitude = plainPosition.getLatitude();
+                description = null;
+            }
+
+            Stop stop = directions != null ? directions.stops.get(i) : null;
+            if (stop != null && stop.longitude != null && stop.latitude != null) {
+                longitude = stop.longitude;
+                latitude = stop.latitude;
+            }
+
+            result.add(asWgs84Position(longitude, latitude, description));
+
+            if (stop != null) {
+                for (double[] via : stop.vias)
+                    result.add(asWgs84Position(via[0], via[1], null));
+            }
         }
         return result;
+    }
+
+    String parseTravelMode(String url) {
+        List<String> segments = pathStopSegments(url);
+        DirectionsData directions = parseDirectionsData(url, segments.size());
+        return directions != null ? directions.travelMode : null;
+    }
+
+    static String createRouteName(List<Wgs84Position> positions, String travelMode) {
+        return travelMode != null ? RouteComments.createRouteName(positions) + " (" + travelMode + ")" : null;
+    }
+
+    private static List<String> pathStopSegments(String url) {
+        List<String> result = new ArrayList<>();
+        for (String segment : url.split("/")) {
+            if (segment.startsWith("@") || segment.startsWith("data"))
+                break;
+            result.add(segment);
+        }
+        return result;
+    }
+
+    private static String extractDataSection(String url) {
+        for (String segment : url.split("/")) {
+            if (segment.startsWith("data=")) {
+                String data = segment.substring(5);
+                int questionMark = data.indexOf('?');
+                return questionMark != -1 ? data.substring(0, questionMark) : data;
+            }
+        }
+        return null;
+    }
+
+    private static DirectionsData parseDirectionsData(String url, int pathStopCount) {
+        String data = extractDataSection(url);
+        if (data == null)
+            return null;
+
+        List<DataToken> topLevel = parseDataTokens(data);
+        if (topLevel == null)
+            return null;
+
+        DataToken directionsBlock = findDirectionsBlock(topLevel);
+        if (directionsBlock == null) {
+            log.fine("No directions block found in Google Maps data= blob '" + data + "'");
+            return null;
+        }
+
+        List<Stop> stops = new ArrayList<>();
+        String travelMode = null;
+        for (DataToken child : directionsBlock.children) {
+            if (child.field == 1 && child.type == 'm')
+                stops.add(toStop(child));
+            else if (child.field == 3 && child.type == 'e')
+                travelMode = parseTravelModeName(child.value);
+        }
+
+        if (stops.size() != pathStopCount) {
+            log.fine("Google Maps data= blob '" + data + "' has " + stops.size() +
+                    " stops, but path has " + pathStopCount + " segments");
+            return null;
+        }
+
+        DirectionsData result = new DirectionsData();
+        result.stops = stops;
+        result.travelMode = travelMode;
+        return result;
+    }
+
+    private static DataToken findDirectionsBlock(List<DataToken> topLevel) {
+        for (DataToken token : topLevel) {
+            if (token.field == 4 && token.type == 'm' && !token.children.isEmpty()) {
+                DataToken first = token.children.get(0);
+                if (first.field == 4 && first.type == 'm')
+                    return first;
+            }
+        }
+        return null;
+    }
+
+    private static Stop toStop(DataToken stopToken) {
+        Stop stop = new Stop();
+        for (DataToken child : stopToken.children) {
+            if (child.field == 2 && child.type == 'm') {
+                double[] coordinate = toCoordinate(child);
+                if (coordinate != null) {
+                    stop.longitude = coordinate[0];
+                    stop.latitude = coordinate[1];
+                }
+            } else if (child.field == 3 && child.type == 'm') {
+                for (DataToken viaChild : child.children) {
+                    if (viaChild.field == 1 && viaChild.type == 'm') {
+                        double[] coordinate = toCoordinate(viaChild);
+                        if (coordinate != null)
+                            stop.vias.add(coordinate);
+                    }
+                }
+            }
+        }
+        return stop;
+    }
+
+    private static double[] toCoordinate(DataToken coordinateBlock) {
+        Double longitude = null, latitude = null;
+        for (DataToken child : coordinateBlock.children) {
+            if (child.field == 1 && child.type == 'd')
+                longitude = parseDouble(child.value, false);
+            else if (child.field == 2 && child.type == 'd')
+                latitude = parseDouble(child.value, false);
+        }
+        return longitude != null && latitude != null ? new double[]{longitude, latitude} : null;
+    }
+
+    private static String parseTravelModeName(String code) {
+        switch (code) {
+            case "0":
+                return "car";
+            case "1":
+                return "bicycle";
+            case "2":
+                return "walking";
+            case "3":
+                return "transit";
+            default:
+                return null;
+        }
+    }
+
+    private static List<DataToken> parseDataTokens(String data) {
+        List<String> raw = new ArrayList<>();
+        for (String part : data.split("!")) {
+            if (!part.isEmpty())
+                raw.add(part);
+        }
+        try {
+            int[] index = {0};
+            List<DataToken> result = parseDataTokenSiblings(raw, index, raw.size());
+            if (index[0] != raw.size())
+                throw new IllegalStateException("leftover tokens in " + data);
+            return result;
+        } catch (IllegalStateException e) {
+            log.fine("Cannot parse Google Maps data= blob '" + data + "': " + e);
+            return null;
+        }
+    }
+
+    private static List<DataToken> parseDataTokenSiblings(List<String> raw, int[] index, int end) {
+        List<DataToken> result = new ArrayList<>();
+        while (index[0] < end)
+            result.add(parseDataToken(raw, index));
+        if (index[0] != end)
+            throw new IllegalStateException("malformed token nesting");
+        return result;
+    }
+
+    private static DataToken parseDataToken(List<String> raw, int[] index) {
+        String rawToken = raw.get(index[0]);
+        Matcher matcher = DATA_TOKEN_PATTERN.matcher(rawToken);
+        if (!matcher.matches())
+            throw new IllegalStateException("malformed token '" + rawToken + "'");
+
+        int field = Integer.parseInt(matcher.group(1));
+        char type = matcher.group(2).charAt(0);
+        String value = matcher.group(3);
+        index[0]++;
+
+        DataToken token = new DataToken(field, type, value);
+        if (type == 'm') {
+            int count;
+            try {
+                count = Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                throw new IllegalStateException("non-numeric m count in '" + rawToken + "'");
+            }
+            int childEnd = index[0] + count;
+            if (count < 0 || childEnd > raw.size())
+                throw new IllegalStateException("m count runs past end in '" + rawToken + "'");
+            token.children.addAll(parseDataTokenSiblings(raw, index, childEnd));
+        }
+        return token;
+    }
+
+    private static final class DataToken {
+        final int field;
+        final char type;
+        final String value;
+        final List<DataToken> children = new ArrayList<>();
+
+        DataToken(int field, char type, String value) {
+            this.field = field;
+            this.type = type;
+            this.value = value;
+        }
+    }
+
+    private static final class Stop {
+        Double longitude;
+        Double latitude;
+        final List<double[]> vias = new ArrayList<>();
+    }
+
+    private static final class DirectionsData {
+        List<Stop> stops;
+        String travelMode;
     }
 
     protected String findURL(String text) {

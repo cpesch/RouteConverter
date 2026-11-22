@@ -11,6 +11,7 @@
 - Tour Exchange Format (.tef) files can now be written. No program is known to import them; for Map&Guide use the BCR format (#386)
 - MTK logger binary files (.bin) from iBlue 747, Qstarz BT-Q1000, Transystem and other MediaTek-based GPS loggers can be read
 - Online maps and overlays show the attribution supplied by the map catalog, so new map providers can name their exact terms without a RouteConverter update; applied overlays now show their attribution next to the map's (#438)
+- Pasting or opening a Google Maps directions link now imports the coordinates of every stop, any via-points dragged onto the route, and names the route after the travel mode shown in Google Maps, for example "Hamburg to Hannover (bicycle)" (#439)
 - Obfuscated Garmin POI (.gpi) files, as commercial POI packages often come, can now be read; GPSBabel could not read them (#453)
 - Garmin POI (.gpi) files in other code pages than Western European, for example Central European, Cyrillic, Greek or UTF-8, can now be read; GPSBabel refused them (#453)
 
