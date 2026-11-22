@@ -44,7 +44,9 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.nio.charset.CodingErrorAction.REPORT;
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -299,7 +301,8 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
         private int version;
         // waypt_add()ed user waypoints and read_route_wpt_head, the waypoints only used by routes
         private final List<Wpt> waypoints = new ArrayList<>();
-        private final List<Wpt> routeWaypoints = new ArrayList<>();
+        private final Names waypointNames = new Names();
+        private final Names routeWaypointNames = new Names();
         private final List<Rte> routes = new ArrayList<>();
         private final List<Rte> tracks = new ArrayList<>();
         // rte_waypts in route.cc: numbers the route points without name across all routes
@@ -362,7 +365,7 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
                         else if (wpt.waypointClass == MAPSOURCE_DEFAULT_CLASS)
                             addWaypoint(wpt);
                         else
-                            routeWaypoints.add(wpt.copy());
+                            routeWaypointNames.add(wpt.copy());
                     }
                     case 'R' -> {
                         readRoute();
@@ -403,6 +406,7 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
         private void addWaypoint(Wpt wpt) {
             normalize(wpt);
             waypoints.add(wpt);
+            waypointNames.add(wpt);
             if (wpt.description == null || wpt.description.isEmpty())
                 wpt.description = wpt.notes != null ? wpt.notes : wpt.shortName;
         }
@@ -465,9 +469,9 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
         // find_waypt_by_name(), then the waypoints only used by routes, then a fallback from the link
         private Wpt findRoutePoint(byte[] name, int latitude, int longitude, double altitude) {
             String shortName = decode(name);
-            Wpt found = findByName(waypoints, shortName);
+            Wpt found = waypointNames.find(shortName);
             if (found == null)
-                found = findByName(routeWaypoints, shortName);
+                found = routeWaypointNames.find(shortName);
             if (found != null)
                 return found.copy();
 
@@ -623,18 +627,24 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
         return new BigDecimal(value).setScale(digits, RoundingMode.HALF_EVEN).doubleValue();
     }
 
-    // QString's operator==: a null and an empty string are equal
-    private static boolean qEquals(String a, String b) {
-        return (a == null ? "" : a).equals(b == null ? "" : b);
-    }
+    /**
+     * The waypoints of find_waypt_by_name() and mps_find_wpt_q_by_name() by name: the first waypoint
+     * with a name wins, a null and an empty name are equal like QString's operator==.
+     */
+    static class Names {
+        private final Map<String, Wpt> waypoints = new HashMap<>();
 
-    // find_waypt_by_name() and mps_find_wpt_q_by_name(): the first waypoint with this name
-    static Wpt findByName(List<Wpt> waypoints, String name) {
-        for (Wpt candidate : waypoints) {
-            if (qEquals(candidate.shortName, name))
-                return candidate;
+        private static String key(String name) {
+            return name == null ? "" : name;
         }
-        return null;
+
+        void add(Wpt wpt) {
+            waypoints.putIfAbsent(key(wpt.shortName), wpt);
+        }
+
+        Wpt find(String name) {
+            return waypoints.get(key(name));
+        }
     }
 
     // waypt_add(): wraps the position into range once
@@ -704,8 +714,9 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
         private final List<Rte> routes = new ArrayList<>();
         private final List<Rte> tracks = new ArrayList<>();
         // written_wpt_head and written_route_wpt_head
-        private final List<Wpt> writtenWaypoints = new ArrayList<>();
-        private final List<Wpt> writtenRouteWaypoints = new ArrayList<>();
+        private final Names waypointNames = new Names();
+        private final Names writtenWaypoints = new Names();
+        private final Names writtenRouteWaypoints = new Names();
         private int routePointCount;
 
         private Wpt createWpt(GpxPosition position) {
@@ -741,6 +752,7 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
                     wpt.shortName = wpt.notes != null ? wpt.notes : String.format("WPT%03d", waypoints.size());
                 if (wpt.description == null || wpt.description.isEmpty())
                     wpt.description = wpt.notes != null ? wpt.notes : wpt.shortName;
+                waypointNames.add(wpt);
             }
         }
 
@@ -763,8 +775,7 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
         }
 
         private boolean isWritten(Wpt wpt) {
-            return findByName(writtenWaypoints, wpt.shortName) != null ||
-                    findByName(writtenRouteWaypoints, wpt.shortName) != null;
+            return writtenWaypoints.find(wpt.shortName) != null || writtenRouteWaypoints.find(wpt.shortName) != null;
         }
 
         byte[] write() {
@@ -785,7 +796,7 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
                 for (Wpt wpt : rte.points) {
                     if (isWritten(wpt))
                         continue;
-                    if (findByName(waypoints, wpt.shortName) == null) {
+                    if (waypointNames.find(wpt.shortName) == null) {
                         writeRecord(output, 'W', writeWaypoint(wpt, true));
                         writtenRouteWaypoints.add(wpt);
                     } else {
@@ -912,7 +923,7 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
     }
 
     // mps_routehdr_w(), mps_routedatapoint_w() and mps_routetrlr_w() for version 5
-    static byte[] writeRoute(Rte rte, List<Wpt> writtenRouteWaypoints) {
+    static byte[] writeRoute(Rte rte, Names writtenRouteWaypoints) {
         double maxLatitude = -90.0, maxLongitude = -180.0, minLatitude = 90.0, minLongitude = 180.0;
         double maxAltitude = UNKNOWN_ALTITUDE, minAltitude = -UNKNOWN_ALTITUDE;
         for (Wpt wpt : rte.points) {
@@ -949,7 +960,7 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
                 writeLink(output, previous, wpt);
 
             writeString(output, wpt.shortName);
-            boolean routePoint = findByName(writtenRouteWaypoints, wpt.shortName) != null;
+            boolean routePoint = writtenRouteWaypoints.find(wpt.shortName) != null;
             output.writeInt32(mapSourceWaypointClass(routePoint));
             writeString(output, "");                        // country
             writeSubclass(output);

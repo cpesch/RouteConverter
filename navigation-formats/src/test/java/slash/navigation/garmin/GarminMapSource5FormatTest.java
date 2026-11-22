@@ -337,6 +337,17 @@ public class GarminMapSource5FormatTest {
         assertEquals(0, routes.get(1).getPositionCount());
     }
 
+    @Test(timeout = 5000)
+    public void testRoutePointDataRunningIntoEndOfFile() throws IOException {
+        MpsBuilder builder = new MpsBuilder(5);
+        byte[] route = builder.routePayload("R", false, point("A", 8, 1, 2, null), point("B", 8, 3, 4, null));
+        // the first route point: name "A\0" (2) + class (4) + country (1) + subclass (22), then one non-zero byte
+        // of the zero terminated data and the end of the file: GPSBabel 1.5.4 keeps reading that byte forever
+        byte[] truncated = Arrays.copyOf(route, FIRST_POINT + 2 + 4 + 1 + 22 + 1);
+        truncated[truncated.length - 1] = 0x05;
+        assertTrue(read(builder.record(route.length, 'R', truncated).toBytes()).isEmpty());
+    }
+
     // the first route point of a route without bounds: name "R\0" (2) + autoname (1) + bounds flag (1) + count (4)
     private static final int FIRST_POINT = 8;
 
