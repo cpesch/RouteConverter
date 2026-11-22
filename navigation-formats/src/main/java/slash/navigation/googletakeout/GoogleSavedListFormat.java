@@ -58,7 +58,8 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
     private static final String NUMBER = "([-+]?\\d{1,3}(?:\\.\\d+)?)";
     private static final String SEPARATOR = "\\s*(?:,|%2C|%2c)\\s*\\+?";
     private static final Pattern URL_COORDINATES_PATTERN = Pattern.compile(
-            "(?:@|/search/|/place/|/dir/|[?&](?:q|ll|query|center|destination)=)" + NUMBER + SEPARATOR + NUMBER);
+            "(?:/search/|/place/|/dir/|[?&](?:q|query|destination)=)" + NUMBER + SEPARATOR + NUMBER);
+    private static final Pattern PLACE_PIN_PATTERN = Pattern.compile("!3d" + NUMBER + "!4d" + NUMBER);
     private static final Pattern NOTE_COORDINATES_PATTERN = Pattern.compile(
             "\\s*" + NUMBER + "\\s*,\\s*" + NUMBER + "\\s*");
 
@@ -171,8 +172,9 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
         if (title == null && coordinates == null)
             return null;
 
+        String description = coordinates != null ? asDescription(title, note) : title;
         return new Wgs84Position(coordinates != null ? coordinates[0] : null,
-                coordinates != null ? coordinates[1] : null, null, null, null, asDescription(title, note));
+                coordinates != null ? coordinates[1] : null, null, null, null, description);
     }
 
     /**
@@ -181,7 +183,14 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
     static double[] parseUrlCoordinates(String url) {
         if (url == null)
             return null;
-        Matcher matcher = URL_COORDINATES_PATTERN.matcher(url);
+        double[] coordinates = firstValidCoordinates(PLACE_PIN_PATTERN, url);
+        if (coordinates == null)
+            coordinates = firstValidCoordinates(URL_COORDINATES_PATTERN, url);
+        return coordinates;
+    }
+
+    private static double[] firstValidCoordinates(Pattern pattern, String url) {
+        Matcher matcher = pattern.matcher(url);
         while (matcher.find()) {
             double[] coordinates = asCoordinates(matcher.group(1), matcher.group(2));
             if (coordinates != null)

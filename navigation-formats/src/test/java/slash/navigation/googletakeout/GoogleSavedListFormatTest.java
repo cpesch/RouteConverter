@@ -103,7 +103,7 @@ public class GoogleSavedListFormatTest {
         assertEquals("Want to go", route.getName());
         assertEquals(2, route.getPositionCount());
         assertNoCoordinates(route.getPosition(0), "Cafe Alpha");
-        assertNoCoordinates(route.getPosition(1), "Bistro Beta; Try the soup");
+        assertNoCoordinates(route.getPosition(1), "Bistro Beta");
         assertNull(route.getPosition(0).getTime());
         assertNull(route.getPosition(0).getElevation());
     }
@@ -120,7 +120,7 @@ public class GoogleSavedListFormatTest {
         Wgs84Route route = routes.get(0);
         assertEquals("Places for the summer trip", route.getName());
         assertEquals(2, route.getPositionCount());
-        assertNoCoordinates(route.getPosition(0), "Cafe Alpha; Near the station");
+        assertNoCoordinates(route.getPosition(0), "Cafe Alpha");
         assertNoCoordinates(route.getPosition(1), "Bistro Beta");
     }
 
@@ -142,7 +142,7 @@ public class GoogleSavedListFormatTest {
         assertEquals(1, routes.size());
         Wgs84Route route = routes.get(0);
         assertEquals(2, route.getPositionCount());
-        assertNoCoordinates(route.getPosition(0), "Alpha, Beta & Co; First line second line");
+        assertNoCoordinates(route.getPosition(0), "Alpha, Beta & Co");
         assertNoCoordinates(route.getPosition(1), "Gamma \"Delta\"");
     }
 
@@ -159,10 +159,32 @@ public class GoogleSavedListFormatTest {
         Wgs84Route route = routes.get(0);
         assertEquals(5, route.getPositionCount());
         assertCoordinates(route.getPosition(0), 13.404954, 52.520008, "Dropped pin");
-        assertCoordinates(route.getPosition(1), 2.3522, 48.8566, "Viewpoint");
+        assertNoCoordinates(route.getPosition(1), "Viewpoint");
         assertCoordinates(route.getPosition(2), 151.2093, -33.8688, "Query pin");
         assertCoordinates(route.getPosition(3), -74.0060, 40.7128, "Note pin; 40.7128, -74.0060");
         assertNoCoordinates(route.getPosition(4), "Unknown place");
+    }
+
+    @Test
+    public void testReadRowWithPlacePinAndNote() throws IOException {
+        List<Wgs84Route> routes = read("Title,Note,URL\n" +
+                "Pin with note,my note,https://www.google.com/maps/place/X/data=!3d52.5162746!4d13.3777041\n");
+
+        assertEquals(1, routes.size());
+        Wgs84Route route = routes.get(0);
+        assertEquals(1, route.getPositionCount());
+        assertCoordinates(route.getPosition(0), 13.3777041, 52.5162746, "Pin with note; my note");
+    }
+
+    @Test
+    public void testReadRowWithPlaceUrlAndNoteHasNoCoordinates() throws IOException {
+        List<Wgs84Route> routes = read("Title,Note,URL\n" +
+                "Place with note,try the cake," + PLACE_URL_1 + "\n");
+
+        assertEquals(1, routes.size());
+        Wgs84Route route = routes.get(0);
+        assertEquals(1, route.getPositionCount());
+        assertNoCoordinates(route.getPosition(0), "Place with note");
     }
 
     @Test
@@ -174,10 +196,15 @@ public class GoogleSavedListFormatTest {
         assertNull(GoogleSavedListFormat.parseUrlCoordinates("https://www.google.com/maps/search/0.0,0.0"));
         assertArrayEquals(new double[]{13.4, 52.5},
                 GoogleSavedListFormat.parseUrlCoordinates("https://www.google.com/maps/search/52.5,+13.4"), DELTA);
-        assertArrayEquals(new double[]{-0.1276, 51.5072},
-                GoogleSavedListFormat.parseUrlCoordinates("https://www.google.com/maps?ll=51.5072,-0.1276&z=12"), DELTA);
+        assertNull(GoogleSavedListFormat.parseUrlCoordinates("https://www.google.com/maps?ll=51.5072,-0.1276&z=12"));
         assertArrayEquals(new double[]{32.5825, 0.0},
                 GoogleSavedListFormat.parseUrlCoordinates("https://www.google.com/maps/place/0.0,32.5825"), DELTA);
+        assertArrayEquals(new double[]{13.3777041, 52.5162746},
+                GoogleSavedListFormat.parseUrlCoordinates("https://www.google.com/maps/place/Brandenburger+Tor/@52.5,13.3,17z/data=!3m1!4b1!4m6!3m5!1s0x47a851c655f20989:0x26bbfb4e84674c63!8m2!3d52.5162746!4d13.3777041"), DELTA);
+        assertNull(GoogleSavedListFormat.parseUrlCoordinates("https://www.google.com/maps/@52.5,13.4,15z"));
+        assertNull(GoogleSavedListFormat.parseUrlCoordinates("https://www.google.com/maps?center=52.5,13.4"));
+        assertNull(GoogleSavedListFormat.parseUrlCoordinates("https://www.google.com/maps/place/X/data=!3d0.0!4d0.0"));
+        assertNull(GoogleSavedListFormat.parseUrlCoordinates("https://www.google.com/maps/place/X/data=!3d95.0!4d13.4"));
     }
 
     @Test
