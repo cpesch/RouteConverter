@@ -180,7 +180,7 @@ public class MapSelector {
     }
 
     static String combineCopyrightTexts(String mapText, List<String> overlayTexts) {
-        String result = mapText != null ? mapText : "";
+        StringBuilder result = new StringBuilder(mapText != null ? mapText : "");
         List<String> appended = new ArrayList<>();
         for (String overlayText : overlayTexts) {
             if (overlayText == null || overlayText.isBlank()) {
@@ -189,10 +189,13 @@ public class MapSelector {
             if (overlayText.equals(mapText) || appended.contains(overlayText)) {
                 continue;
             }
-            result = result.isEmpty() ? overlayText : result + "<br>" + overlayText;
+            if (!result.isEmpty()) {
+                result.append("<br>");
+            }
+            result.append(overlayText);
             appended.add(overlayText);
         }
-        return result;
+        return result.toString();
     }
 
     static int clampZoom(int zoomLevel, byte zoomLevelMin, byte zoomLevelMax) {
