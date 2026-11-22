@@ -52,8 +52,10 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.*;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
+import static slash.common.io.Transfer.trim;
 import static slash.common.io.Transfer.widthInDigits;
 import static slash.common.type.CompactCalendar.fromMillis;
+import static slash.navigation.base.BaseNavigationFormat.asName;
 import static slash.navigation.base.RouteComments.formatNumberedPosition;
 import static slash.navigation.base.RouteComments.getNumberedPosition;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
@@ -279,7 +281,12 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        NavigationPosition coordinates = BaseRouteConverter.getInstance().getGeocodingServiceFacade().getPositionFor(position.getDescription());
+                        NavigationPosition coordinates = null;
+                        for (String query : asGeocodingQueries(position.getDescription())) {
+                            coordinates = BaseRouteConverter.getInstance().getGeocodingServiceFacade().getPositionFor(query);
+                            if (coordinates != null)
+                                break;
+                        }
                         if (coordinates != null)
                             positionsModel.edit(index,
                                     new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
@@ -292,6 +299,20 @@ public class PositionAugmenter {
                     }
                 }
         );
+    }
+
+    // RouteConverter descriptions are "name; description", e.g. a place name and a note:
+    // try the whole description first, then the name alone, which a geocoder may find
+    static List<String> asGeocodingQueries(String description) {
+        List<String> result = new ArrayList<>();
+        String trimmed = trim(description);
+        if (trimmed == null)
+            return result;
+        result.add(trimmed);
+        String name = asName(trimmed);
+        if (name != null && !name.equals(trimmed))
+            result.add(name);
+        return result;
     }
 
     public void addCoordinates() {

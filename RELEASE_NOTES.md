@@ -37,6 +37,7 @@
 - Every menu entry and submenu now has an icon (#400)
 - Maps and overlays from the OpenStreetMap tile servers keep their tiles on disk across restarts, in the cache folder of the application directory, and download a tile again only once it is older than 7 days, as the OpenStreetMap tile usage policy asks; before, every start downloaded all tiles again
 - Opening an offline map for the first time selects a theme made for that map's provider, for example Elevate for OpenAndroMaps and the Freizeitkarte theme for Freizeitkarte maps, if it is downloaded; a theme you chose for a map or provider is kept
+- Positions > Complete > Coordinates also tries the name alone when a description like "name; note" finds nothing, and requests to the public Nominatim and Photon servers are spaced one second apart, as their usage policies ask
 
 ### Fixes
 
