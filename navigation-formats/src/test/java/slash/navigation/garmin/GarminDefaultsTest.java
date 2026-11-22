@@ -92,9 +92,24 @@ public class GarminDefaultsTest {
 
     @Test
     public void testMapSourceDefaults() {
+        assertEquals(0, MAPSOURCE_DEFAULT_CLASS);
+        assertEquals(8, MAPSOURCE_HIDDEN_ROUTE_WAYPOINT_CLASS);
+        assertEquals(0, mapSourceWaypointClass(false));
+        assertEquals(8, mapSourceWaypointClass(true));
         assertEquals(1, MAPSOURCE_WAYPOINT_DISPLAY);
-        assertEquals(0, MAPSOURCE_WAYPOINT_COLOUR);
-        assertEquals(0, MAPSOURCE_TRACK_COLOUR);
+        assertEquals(0, MAPSOURCE_WAYPOINT_COLOR);
+        assertEquals(1, MAPSOURCE_TRACK_DISPLAY);
+        assertEquals(0, MAPSOURCE_TRACK_COLOR);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMapSourceWaypointIconForVersionBelow3() {
+        mapSourceWaypointIconNumber(2);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMapSourceWaypointIconForVersionAbove5() {
+        mapSourceWaypointIconNumber(6);
     }
 
     @Test
