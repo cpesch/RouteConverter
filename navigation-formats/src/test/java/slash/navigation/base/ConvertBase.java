@@ -21,7 +21,7 @@
 package slash.navigation.base;
 
 import org.junit.Test;
-import slash.navigation.babel.GarminMapSource6Format;
+import slash.navigation.garmin.GarminMapSource6Format;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.tcx.TcxFormat;
 
