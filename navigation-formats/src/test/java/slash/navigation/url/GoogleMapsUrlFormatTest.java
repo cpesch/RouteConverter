@@ -501,6 +501,20 @@ public class GoogleMapsUrlFormatTest {
     }
 
     @Test
+    public void testParseDirNonNumericStopCoordinateIsIgnoredNotThrown() {
+        String url = LIVE_DIR_CAR_2026.replace("!1d9.9871703!2d53.5488282", "!1dX!2d53.5488282");
+        List<Wgs84Position> positions = parsePositions(url);
+        assertNotNull(positions);
+        assertEquals(2, positions.size());
+        Wgs84Position position1 = positions.get(0);
+        assertNull(position1.getLongitude());
+        assertNull(position1.getLatitude());
+        Wgs84Position position2 = positions.get(1);
+        assertDoubleEquals(9.7320104, position2.getLongitude());
+        assertDoubleEquals(52.3758916, position2.getLatitude());
+    }
+
+    @Test
     public void testCreateRouteNameWithTravelMode() {
         List<Wgs84Position> positions = parsePositions(LIVE_DIR_CAR_2026);
         assertEquals("Hamburg to Hannover (bicycle)", GoogleMapsUrlFormat.createRouteName(positions, "bicycle"));

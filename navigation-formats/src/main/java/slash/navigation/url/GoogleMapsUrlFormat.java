@@ -179,10 +179,10 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
             Double longitude = null, latitude = null;
             String description = decodeUri(segment);
 
-            Matcher plainPositionMatcher = PLAIN_POSITION_PATTERN.matcher(segment);
-            if (plainPositionMatcher.matches()) {
-                latitude = parseDouble(plainPositionMatcher.group(1));
-                longitude = parseDouble(plainPositionMatcher.group(2));
+            if (PLAIN_POSITION_PATTERN.matcher(segment).matches()) {
+                Wgs84Position plainPosition = parsePlainPosition(segment);
+                longitude = plainPosition.getLongitude();
+                latitude = plainPosition.getLatitude();
                 description = null;
             }
 
@@ -243,8 +243,10 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
             return null;
 
         DataToken directionsBlock = findDirectionsBlock(topLevel);
-        if (directionsBlock == null)
+        if (directionsBlock == null) {
+            log.fine("No directions block found in Google Maps data= blob '" + data + "'");
             return null;
+        }
 
         List<Stop> stops = new ArrayList<>();
         String travelMode = null;
@@ -255,8 +257,11 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
                 travelMode = parseTravelModeName(child.value);
         }
 
-        if (stops.size() != pathStopCount)
+        if (stops.size() != pathStopCount) {
+            log.fine("Google Maps data= blob '" + data + "' has " + stops.size() +
+                    " stops, but path has " + pathStopCount + " segments");
             return null;
+        }
 
         DirectionsData result = new DirectionsData();
         result.stops = stops;
@@ -301,9 +306,9 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
         Double longitude = null, latitude = null;
         for (DataToken child : coordinateBlock.children) {
             if (child.field == 1 && child.type == 'd')
-                longitude = parseDouble(child.value);
+                longitude = parseDouble(child.value, false);
             else if (child.field == 2 && child.type == 'd')
-                latitude = parseDouble(child.value);
+                latitude = parseDouble(child.value, false);
         }
         return longitude != null && latitude != null ? new double[]{longitude, latitude} : null;
     }
