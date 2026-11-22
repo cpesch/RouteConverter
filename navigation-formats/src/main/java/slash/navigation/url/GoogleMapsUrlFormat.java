@@ -186,18 +186,16 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
                 description = null;
             }
 
-            if (directions != null) {
-                Stop stop = directions.stops.get(i);
-                if (stop.longitude != null && stop.latitude != null) {
-                    longitude = stop.longitude;
-                    latitude = stop.latitude;
-                }
+            Stop stop = directions != null ? directions.stops.get(i) : null;
+            if (stop != null && stop.longitude != null && stop.latitude != null) {
+                longitude = stop.longitude;
+                latitude = stop.latitude;
             }
 
             result.add(asWgs84Position(longitude, latitude, description));
 
-            if (directions != null) {
-                for (double[] via : directions.stops.get(i).vias)
+            if (stop != null) {
+                for (double[] via : stop.vias)
                     result.add(asWgs84Position(via[0], via[1], null));
             }
         }
