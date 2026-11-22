@@ -26,6 +26,7 @@
 - Alan Map 500 Tracklog (.trl) and Waypoints and Routes (.wpr) files are read and written by RouteConverter itself and no longer need GPSBabel (#432)
 - Holux M-241 Binary (.bin) files are read by RouteConverter itself and no longer need GPSBabel (#433)
 - Magellan MapSend (.wpt) files are read and written by RouteConverter itself and no longer need GPSBabel (#431)
+- Garmin MapSource 6.x (.gdb) files are read and written by RouteConverter itself and no longer need GPSBabel (#451)
 - Garmin MapSource 5.x (.mps) files are read and written by RouteConverter itself and no longer need GPSBabel (#452)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 - Every menu entry and submenu now has an icon (#400)
