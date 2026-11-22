@@ -26,6 +26,7 @@
 - Alan Map 500 Tracklog (.trl) and Waypoints and Routes (.wpr) files are read and written by RouteConverter itself and no longer need GPSBabel (#432)
 - Holux M-241 Binary (.bin) files are read by RouteConverter itself and no longer need GPSBabel (#433)
 - Magellan MapSend (.wpt) files are read and written by RouteConverter itself and no longer need GPSBabel (#431)
+- Garmin MapSource 6.x (.gdb) files are read and written by RouteConverter itself and no longer need GPSBabel (#451)
 - The Delete positions dialog now shows distance, threshold and speed in the unit system chosen under Extras > Options > Display (Metric / Statute / Nautic), instead of always in meters and km/h (#398)
 - Every menu entry and submenu now has an icon (#400)
 - Maps and overlays from the OpenStreetMap tile servers keep their tiles on disk across restarts, in the cache folder of the application directory, and download a tile again only once it is older than 7 days, as the OpenStreetMap tile usage policy asks; before, every start downloaded all tiles again
