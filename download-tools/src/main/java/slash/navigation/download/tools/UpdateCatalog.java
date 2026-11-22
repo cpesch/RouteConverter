@@ -29,9 +29,13 @@ import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
+import slash.navigation.download.tools.helpers.HttpRangeReader;
+import slash.navigation.download.tools.helpers.RangeReader;
+import slash.navigation.download.tools.helpers.RemoteMapReader;
 import slash.navigation.graphhopper.PbfUtil;
 import slash.navigation.rest.Post;
 
+import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -53,6 +57,8 @@ import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.Failed;
 import static slash.navigation.download.State.NotModified;
+import static slash.navigation.download.tools.helpers.RemoteMapReader.readMapEntries;
+import static slash.navigation.download.tools.helpers.RemoteMapReader.readMapHeader;
 import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
 import static slash.navigation.hgt.HgtFiles.DOT_HGT;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.extractMBTilesBoundingBox;
@@ -275,9 +281,16 @@ public class UpdateCatalog extends BaseDownloadTool {
                 log.warning(format("Error reading ZIP file %s: %s", download.getFile().getFile(), e));
             }
 
+            // the .map is not the first entry or its header is larger than the first range
+            if (mapType.getFragment().isEmpty() || mapType.getBoundingBox() == null)
+                describeMapZip(mapType, map.getUri(), new HttpRangeReader(url), checksum.getContentLength());
+
         } else if (hasExtension(map.getUri(), DOT_MAP)) {
             log.info(format("Found Mapsforge map %s", map.getUri()));
             BoundingBox boundingBox = extractMapBoundingBox(download.getFile().getFile());
+            // the header is larger than the first range
+            if (boundingBox == null)
+                boundingBox = extractRemoteMapBoundingBox(map.getUri(), new HttpRangeReader(url), checksum.getContentLength());
             if (boundingBox != null)
                 mapType.setBoundingBox(asBoundingBoxType(boundingBox));
         } else if (hasExtension(map.getUri(), DOT_MBTILES)) {
@@ -289,6 +302,64 @@ public class UpdateCatalog extends BaseDownloadTool {
             log.warning(format("Ignoring %s as a map", map.getUri()));
 
         updatePartially(datasourceType);
+    }
+
+    /**
+     * Describes the {@code .map} entries of a map zip by reading its central directory and the mapsforge
+     * headers of the entries with range requests: the fragments replace those found in the first range.
+     * Finds {@code .map} entries behind other entries, such as the readme files and the nested theme zip
+     * of alternativaslibres.org, and mapsforge headers larger than the first range, such as those of paws.cz.
+     */
+    static void describeMapZip(MapType mapType, String uri, RangeReader reader, Long fileSize) {
+        if (fileSize == null) {
+            log.warning(format("Cannot read the central directory of %s without its size", uri));
+            return;
+        }
+
+        List<RemoteMapReader.MapEntry> entries;
+        try {
+            entries = readMapEntries(reader, fileSize);
+        } catch (IOException e) {
+            log.warning(format("Cannot read the map entries of %s: %s", uri, e));
+            return;
+        }
+        if (entries.isEmpty()) {
+            log.warning(format("Found no map in URI %s", uri));
+            return;
+        }
+
+        mapType.getFragment().clear();
+        for (RemoteMapReader.MapEntry entry : entries) {
+            log.info(format("Found map %s in URI %s with its central directory", entry.name(), uri));
+            try {
+                mapType.getFragment().add(createFragmentType(entry.name(), entry.time() != -1 ? entry.time() : null, entry.size()));
+            } catch (IOException e) {
+                log.warning(format("Cannot describe map %s in URI %s: %s", entry.name(), uri, e));
+            }
+
+            BoundingBox boundingBox = extractMapBoundingBox(new ByteArrayInputStream(entry.header()), entry.size());
+            if (boundingBox != null)
+                mapType.setBoundingBox(asBoundingBoxType(boundingBox));
+        }
+    }
+
+    /**
+     * Extracts the bounding box of a bare mapsforge map whose header is larger than the first range.
+     */
+    static BoundingBox extractRemoteMapBoundingBox(String uri, RangeReader reader, Long fileSize) {
+        if (fileSize == null) {
+            log.warning(format("Cannot read the map header of %s without its size", uri));
+            return null;
+        }
+
+        try {
+            byte[] header = readMapHeader(reader, fileSize);
+            log.info(format("Read map header of %d bytes from %s", header.length, uri));
+            return extractMapBoundingBox(new ByteArrayInputStream(header), fileSize);
+        } catch (IOException e) {
+            log.warning(format("Cannot read the map header of %s: %s", uri, e));
+            return null;
+        }
     }
 
     private void updateTheme(DatasourceType datasourceType, Theme theme) {
