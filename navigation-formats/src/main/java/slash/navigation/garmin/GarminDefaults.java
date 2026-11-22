@@ -69,6 +69,8 @@ public final class GarminDefaults {
      * (3, 4 or 5), after {@code mps_converted_icon_number()} in mapsource.cc.
      */
     public static int mapSourceWaypointIconNumber(int mapSourceVersion) {
+        if (mapSourceVersion < 3 || mapSourceVersion > 5)
+            throw new IllegalArgumentException("mapsource version " + mapSourceVersion + " not in 3..5");
         return mapSourceConvertedIconNumber(waypointIconNumber(Format.MAPSOURCE), mapSourceVersion);
     }
 
@@ -134,12 +136,24 @@ public final class GarminDefaults {
     /** the waypoint colour the GDB writer stores: always 0 ("color" in {@code GdbFormat::write_waypoint()}) */
     public static final int GDB_WAYPOINT_COLOR = 0;
 
+    /** {@code MPSDEFAULTWPTCLASS} in mapsource.cc: the class of a visible waypoint */
+    public static final int MAPSOURCE_DEFAULT_CLASS = WAYPOINT_CLASS_USER_WAYPOINT;
+    /** {@code MPSHIDDENROUTEWPTCLASS} in mapsource.cc: the class of a waypoint that only exists in a route */
+    public static final int MAPSOURCE_HIDDEN_ROUTE_WAYPOINT_CLASS = WAYPOINT_CLASS_MAP_POINT;
+
+    /** the waypoint class the MapSource writer uses ({@code mps_waypoint_w()}, {@code mps_routedatapoint_w()}) */
+    public static int mapSourceWaypointClass(boolean routePoint) {
+        return routePoint ? MAPSOURCE_HIDDEN_ROUTE_WAYPOINT_CLASS : MAPSOURCE_DEFAULT_CLASS;
+    }
+
     /** {@code display} in {@code mps_waypoint_w()}: show the waypoint with its name */
     public static final int MAPSOURCE_WAYPOINT_DISPLAY = 1;
     /** {@code colour} in {@code mps_waypoint_w()}: unknown colour (black is 1, white is 16) */
-    public static final int MAPSOURCE_WAYPOINT_COLOUR = 0;
+    public static final int MAPSOURCE_WAYPOINT_COLOR = 0;
+    /** the display flag {@code hdr[1]} in {@code mps_trackhdr_w()}: show the track */
+    public static final int MAPSOURCE_TRACK_DISPLAY = 1;
     /** {@code colour} in {@code mps_trackhdr_w()}: unknown colour */
-    public static final int MAPSOURCE_TRACK_COLOUR = 0;
+    public static final int MAPSOURCE_TRACK_COLOR = 0;
 
     // --- colours (gt_colors) -----------------------------------------------------------
 
