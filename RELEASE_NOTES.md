@@ -9,6 +9,7 @@
 - Position list > Manage… reorders, creates, renames, deletes and changes the type of the position lists of a file, for example the routes and tracks of a GPX file; it replaces the New, Rename and Delete buttons below the position list; the position list, its type and the Manage button now share one row, the map toggle moved to the Format row, and the Content line moved into the tool tip of the position list (#400)
 - Tour Exchange Format (.tef) files can now be written. No program is known to import them; for Map&Guide use the BCR format (#386)
 - MTK logger binary files (.bin) from iBlue 747, Qstarz BT-Q1000, Transystem and other MediaTek-based GPS loggers can be read
+- Online maps and overlays show the attribution supplied by the map catalog, so new map providers can name their exact terms without a RouteConverter update; applied overlays now show their attribution next to the map's (#438)
 
 ### Changes
 
