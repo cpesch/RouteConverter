@@ -29,6 +29,7 @@ import slash.navigation.babel.*;
 import slash.navigation.ozi.*;
 import slash.navigation.compegps.*;
 import slash.navigation.garmin.GarminPoiDbFormat;
+import slash.navigation.garmin.GarminPoiFormat;
 import slash.navigation.loc.GeoCachingFormat;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;

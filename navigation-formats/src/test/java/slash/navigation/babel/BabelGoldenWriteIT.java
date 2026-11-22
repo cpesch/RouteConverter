@@ -64,7 +64,7 @@ public class BabelGoldenWriteIT {
             "GarminPcx5Format", "CompeGPSDataRouteFormat", "CompeGPSDataTrackFormat",
             "CompeGPSDataWaypointFormat", "OziExplorerRouteFormat", "OziExplorerTrackFormat",
             "OziExplorerWaypointFormat", "MagellanMapSendFormat", "AlanTrackLogFormat",
-            "AlanWaypointsAndRoutesFormat", "GarminMapSource5Format"
+            "AlanWaypointsAndRoutesFormat", "GarminMapSource5Format", "GarminPoiFormat"
     );
 
     // inputs a native format refuses on purpose where GPSBabel 1.5.4 writes nonsense, as "class/input"
@@ -81,12 +81,15 @@ public class BabelGoldenWriteIT {
     // the OziExplorer formats write all text as Windows-1252 (#391), 1.5.4 writes route point text as UTF-8
     // bytes and replaces the euro sign in waypoint files;
     // Magellan MapSend writes all text as Windows-1252 with a length byte that counts the bytes written (#431),
-    // 1.5.4 writes UTF-8 bytes behind a length byte that counts characters, which corrupts the file
+    // 1.5.4 writes UTF-8 bytes behind a length byte that counts characters, which corrupts the file;
+    // Garmin POI writes the category in the code page the header declares, Windows-1252 (#453), 1.5.4 writes the UTF-8
+    // bytes of the command line option, from which its option parser also drops the double quotes
     private static final Set<String> CORRECTED_BY_DESIGN = Set.of(
             "GarminPcx5Format",
             "CompeGPSDataRouteFormat/synthetic", "CompeGPSDataTrackFormat/synthetic", "CompeGPSDataWaypointFormat/synthetic",
             "OziExplorerRouteFormat/from11.gpx", "OziExplorerRouteFormat/synthetic", "OziExplorerWaypointFormat/synthetic",
-            "MagellanMapSendFormat/from11.gpx", "MagellanMapSendFormat/synthetic"
+            "MagellanMapSendFormat/from11.gpx", "MagellanMapSendFormat/synthetic",
+            "GarminPoiFormat/synthetic"
     );
     // native writers of formats GPSBabel 1.5.4 never wrote: there is no write golden and none can exist
     // (spec 00083.3 decision D3.1, issue #386: "there is no oracle for the writer"); see TourExchangeFormatTest
@@ -123,6 +126,21 @@ public class BabelGoldenWriteIT {
     // 32-bit values behind its waypoint indices
     private static final int ALAN_WPR_ROUTE_DATE_OFFSET = 43492;
     private static final int ALAN_WPR_ROUTE_DATE_LENGTH = 8;
+
+    // Garmin POI stamps the creation time into the Header1 record behind 'GRMREC00'
+    private static final int GPI_CREATION_TIME_OFFSET = 16;
+    private static final int GPI_CREATION_TIME_LENGTH = 4;
+
+    private static boolean gpiEqual(byte[] expected, byte[] actual) {
+        int end = GPI_CREATION_TIME_OFFSET + GPI_CREATION_TIME_LENGTH;
+        if (expected.length != actual.length || expected.length < end)
+            return Arrays.equals(expected, actual);
+        byte[] expectedMasked = expected.clone();
+        byte[] actualMasked = actual.clone();
+        Arrays.fill(expectedMasked, GPI_CREATION_TIME_OFFSET, end, (byte) 0);
+        Arrays.fill(actualMasked, GPI_CREATION_TIME_OFFSET, end, (byte) 0);
+        return Arrays.equals(expectedMasked, actualMasked);
+    }
 
     private static boolean pcx5Equal(byte[] expected, byte[] actual) {
         String[] expectedLines = new String(expected, StandardCharsets.ISO_8859_1).split("\n", -1);
@@ -161,6 +179,8 @@ public class BabelGoldenWriteIT {
             return pcx5Equal(expected, actual);
         if ("AlanWaypointsAndRoutesFormat".equals(className))
             return alanWprEqual(expected, actual);
+        if ("GarminPoiFormat".equals(className))
+            return gpiEqual(expected, actual);
         return Arrays.equals(expected, actual);
     }
 
