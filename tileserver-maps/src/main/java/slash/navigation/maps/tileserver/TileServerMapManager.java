@@ -100,6 +100,12 @@ public class TileServerMapManager {
         }
     }
 
+    public static String resolveCopyrightText(String copyrightKey, String attribution) {
+        if (attribution != null && !attribution.isBlank())
+            return attribution.strip().replaceAll("\\s+", " ");
+        return retrieveCopyrightText(copyrightKey);
+    }
+
     public void scanTileServers() {
         tileServerService.initialize();
 
@@ -108,7 +114,7 @@ public class TileServerMapManager {
                 availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
                         type.getUrlPattern(), type.getHost(), formatBoolean(type.isActive()),
                         formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
-                        type.getCopyright(), retrieveCopyrightText(type.getCopyright())));
+                        type.getCopyright(), resolveCopyrightText(type.getCopyright(), type.getAttribution())));
 
             for (OverlayServerType type : tileServerService.getOverlays()) {
                 // inactive overlays are dead tile servers: neither offer them nor restore them as applied
@@ -119,7 +125,7 @@ public class TileServerMapManager {
                 availableOverlaysModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
                         type.getUrlPattern(), type.getHost(), active,
                         formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
-                        type.getCopyright(), retrieveCopyrightText(type.getCopyright())));
+                        type.getCopyright(), resolveCopyrightText(type.getCopyright(), type.getAttribution())));
             }
         });
     }

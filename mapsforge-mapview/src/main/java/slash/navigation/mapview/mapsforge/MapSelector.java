@@ -25,10 +25,12 @@ import org.mapsforge.map.model.MapViewPosition;
 import slash.navigation.gui.Application;
 import slash.navigation.maps.item.Item;
 import slash.navigation.maps.item.ItemComboBox;
+import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.LocalTheme;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
+import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.mapsforge.models.JoinedListComboBoxModel;
 import slash.navigation.mapview.mapsforge.models.TableModelToComboBoxModelAdapter;
 import slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer;
@@ -42,6 +44,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -51,6 +55,7 @@ import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
+import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Transfer.toArray;
 import static slash.common.system.Platform.isWindows;
 import static slash.navigation.gui.events.Range.asRange;
@@ -81,8 +86,12 @@ public class MapSelector {
     private JPanel mapViewPanel;
     private JLabel labelCopyrightText;
     private boolean updatingZoom = false;
+    private final ItemTableModel<TileServer> appliedOverlaysModel;
+    private LocalMap displayedMap;
 
-    public MapSelector(MapsforgeMapManager mapManager, final AwtGraphicMapView mapView) {
+    public MapSelector(MapsforgeMapManager mapManager, final AwtGraphicMapView mapView,
+                        ItemTableModel<TileServer> appliedOverlaysModel) {
+        this.appliedOverlaysModel = appliedOverlaysModel;
         $$$setupUI$$$();
         mapViewPanel.add(mapView, MAP_SELECTOR_CONSTRAINTS);
 
@@ -135,7 +144,11 @@ public class MapSelector {
 
         labelCopyrightText.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
-                String uri = extractCopyrightHref(labelCopyrightText.getText());
+                String copyrightText = displayedMap != null ? displayedMap.getCopyrightText() : null;
+                if (copyrightText == null) {
+                    return;
+                }
+                String uri = extractCopyrightHref(copyrightText);
                 if (uri != null) {
                     try {
                         // should be ExternalPrograms#startBrowser
@@ -147,14 +160,39 @@ public class MapSelector {
             }
         });
 
+        // applied overlays are also restored from preferences at startup, which doesn't run on the EDT
+        appliedOverlaysModel.addTableModelListener(e -> invokeInAwtEventQueue(this::updateCopyrightLabel));
+
         if (selectedItem != null) {
             handleMapUpdate(selectedItem);
         }
     }
 
     private void handleMapUpdate(LocalMap map) {
-        String copyrightText = map.getCopyrightText();
-        labelCopyrightText.setText("<html>" + copyrightText);
+        displayedMap = map;
+        updateCopyrightLabel();
+    }
+
+    private void updateCopyrightLabel() {
+        List<String> overlayTexts = appliedOverlaysModel.getItems().stream().map(TileServer::copyrightText).toList();
+        String mapText = displayedMap != null ? displayedMap.getCopyrightText() : null;
+        labelCopyrightText.setText("<html>" + combineCopyrightTexts(mapText, overlayTexts));
+    }
+
+    static String combineCopyrightTexts(String mapText, List<String> overlayTexts) {
+        String result = mapText != null ? mapText : "";
+        List<String> appended = new ArrayList<>();
+        for (String overlayText : overlayTexts) {
+            if (overlayText == null || overlayText.isBlank()) {
+                continue;
+            }
+            if (overlayText.equals(mapText) || appended.contains(overlayText)) {
+                continue;
+            }
+            result = result.isEmpty() ? overlayText : result + "<br>" + overlayText;
+            appended.add(overlayText);
+        }
+        return result;
     }
 
     static int clampZoom(int zoomLevel, byte zoomLevelMin, byte zoomLevelMax) {
