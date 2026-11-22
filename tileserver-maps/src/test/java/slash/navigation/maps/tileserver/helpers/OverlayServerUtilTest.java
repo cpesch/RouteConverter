@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class OverlayServerUtilTest {
@@ -37,6 +38,30 @@ public class OverlayServerUtilTest {
                     <host>overlay.example.com</host>
                     <urlPattern>/overlay/{z}/{x}/{y}.png</urlPattern>
                     <copyright>overlay</copyright>
+                </overlayServer>
+            </catalog>
+            """;
+
+    private static final String XML_WITH_ATTRIBUTION = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <catalog xmlns="http://api.routeconverter.com/v1/schemas/overlayserver-catalog">
+                <overlayServer id="hiking" name="Hiking Overlay" minZoom="3" maxZoom="17" active="false">
+                    <host>overlay.example.com</host>
+                    <urlPattern>/overlay/{z}/{x}/{y}.png</urlPattern>
+                    <copyright>overlay</copyright>
+                    <attribution>Map data &amp;copy; &lt;a href="https://example.org/"&gt;Example&lt;/a&gt;</attribution>
+                </overlayServer>
+            </catalog>
+            """;
+
+    private static final String XML_WITH_UNKNOWN_ELEMENT = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <catalog xmlns="http://api.routeconverter.com/v1/schemas/overlayserver-catalog">
+                <overlayServer id="hiking" name="Hiking Overlay" minZoom="3" maxZoom="17" active="false">
+                    <host>overlay.example.com</host>
+                    <urlPattern>/overlay/{z}/{x}/{y}.png</urlPattern>
+                    <copyright>overlay</copyright>
+                    <futureElement>x</futureElement>
                 </overlayServer>
             </catalog>
             """;
@@ -56,6 +81,28 @@ public class OverlayServerUtilTest {
         assertEquals(3, overlayServerType.getMinZoom().intValue());
         assertEquals(17, overlayServerType.getMaxZoom().intValue());
         assertEquals(Boolean.FALSE, overlayServerType.isActive());
+        assertNull(overlayServerType.getAttribution());
+    }
+
+    @Test
+    public void testUnmarshalAttribution() throws Exception {
+        CatalogType catalogType = OverlayServerUtil.unmarshal(new ByteArrayInputStream(XML_WITH_ATTRIBUTION.getBytes(StandardCharsets.UTF_8)));
+
+        OverlayServerType overlayServerType = catalogType.getOverlayServer().get(0);
+        assertEquals("Map data &copy; <a href=\"https://example.org/\">Example</a>", overlayServerType.getAttribution());
+    }
+
+    @Test
+    public void testUnmarshalIgnoresUnknownElement() throws Exception {
+        CatalogType catalogType = OverlayServerUtil.unmarshal(new ByteArrayInputStream(XML_WITH_UNKNOWN_ELEMENT.getBytes(StandardCharsets.UTF_8)));
+
+        assertEquals(1, catalogType.getOverlayServer().size());
+        OverlayServerType overlayServerType = catalogType.getOverlayServer().get(0);
+        assertEquals("hiking", overlayServerType.getId());
+        assertEquals("Hiking Overlay", overlayServerType.getName());
+        assertEquals("/overlay/{z}/{x}/{y}.png", overlayServerType.getUrlPattern());
+        assertEquals("overlay", overlayServerType.getCopyright());
+        assertNull(overlayServerType.getAttribution());
     }
 }
 
