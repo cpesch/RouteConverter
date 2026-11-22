@@ -595,7 +595,13 @@ public class GarminMapSource6FormatTest {
     public void testSemicirclesAreTruncatedLikeGpsBabel154() {
         assertEquals(1, GarminMapSource6Format.degreesToSemicircles(1.7 / SEMICIRCLES_PER_DEGREE));
         assertEquals(-1, GarminMapSource6Format.degreesToSemicircles(-1.7 / SEMICIRCLES_PER_DEGREE));
-        assertEquals(Integer.MAX_VALUE, GarminMapSource6Format.degreesToSemicircles(180.0));
+        // out of the int range: INT_MIN like the x86 builds of GPSBabel 1.5.4
+        assertEquals(Integer.MIN_VALUE, GarminMapSource6Format.degreesToSemicircles(180.0));
+        assertEquals(Integer.MIN_VALUE, GarminMapSource6Format.degreesToSemicircles(190.0));
+        assertEquals(Integer.MIN_VALUE, GarminMapSource6Format.degreesToSemicircles(-190.0));
+        assertEquals(Integer.MIN_VALUE, GarminMapSource6Format.degreesToSemicircles(Double.NaN));
+        assertEquals(-2147483648, GarminMapSource6Format.degreesToSemicircles(-180.0));
+        assertEquals(2147483647, GarminMapSource6Format.degreesToSemicircles(179.99999999999));
         assertEquals(-1073741824, GarminMapSource6Format.degreesToSemicircles(-90.0));
     }
 

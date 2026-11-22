@@ -42,12 +42,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.singletonList;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -827,11 +827,16 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
     }
 
     /**
-     * GPS_Math_Deg_To_Semi() of GPSBabel 1.5.4: the product is truncated towards zero
-     * (master rounds); out of range values saturate.
+     * GPS_Math_Deg_To_Semi() of GPSBabel 1.5.4: the product is truncated towards zero (master
+     * rounds). A product outside the int range or NaN is undefined behaviour in C; the shipped x86
+     * builds of 1.5.4 return INT_MIN for it (cvttsd2si), which happens for +180 degrees and for
+     * unnormalized track positions.
      */
     static int degreesToSemicircles(double degrees) {
-        return (int) (SEMICIRCLES_PER_DEGREE * degrees);
+        double product = SEMICIRCLES_PER_DEGREE * degrees;
+        if (Double.isNaN(product) || product >= 2147483648.0 || product <= -2147483649.0)
+            return Integer.MIN_VALUE;
+        return (int) product;
     }
 
     private static void writeLatLon(LittleEndianOutput output, double degrees) {
@@ -847,7 +852,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
 
     private static byte[] filled(int count) {
         byte[] bytes = new byte[count];
-        java.util.Arrays.fill(bytes, (byte) 0xFF);
+        Arrays.fill(bytes, (byte) 0xFF);
         return bytes;
     }
 
@@ -1129,7 +1134,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
                 if (bytes.length + suffix.length() < NAME_LENGTH) {
                     name = name + suffix;
                 } else {
-                    byte[] replaced = java.util.Arrays.copyOf(bytes, bytes.length);
+                    byte[] replaced = Arrays.copyOf(bytes, bytes.length);
                     byte[] suffixBytes = suffix.getBytes(UTF_8);
                     System.arraycopy(suffixBytes, 0, replaced, bytes.length - suffixBytes.length, suffixBytes.length);
                     name = new String(replaced, UTF_8);
