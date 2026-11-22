@@ -522,7 +522,7 @@ public class MapsforgeMapView extends BaseMapView {
             }
         });
 
-        mapSelector = new MapSelector(getMapManager(), mapView);
+        mapSelector = new MapSelector(getMapManager(), mapView, mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel());
         mapViewMoverAndZoomer = new MapViewMoverAndZoomer(mapView, getLayerManager());
         mapViewCoordinateDisplayer.initialize(mapView, mapViewCallback);
         // the listener only reacts to changes, so apply the stored setting once

@@ -31,13 +31,15 @@
     <xsd:complexType name="overlayServerType">
         <xsd:annotation>
             <xsd:documentation>
-                an overlay server contains an id, a name, a minimum and maximum zoom level, a set of host names, a tile url pattern and a copyright.
+                an overlay server contains an id, a name, a minimum and maximum zoom level, a set of host names, a tile url pattern, a copyright
+                and an optional attribution: an HTML snippet shown instead of the copyright's text.
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
             <xsd:element name="host" type="xsd:string" maxOccurs="unbounded"/>
             <xsd:element name="urlPattern" type="xsd:string"/>
             <xsd:element name="copyright" type="xsd:string"/>
+            <xsd:element name="attribution" type="xsd:string" minOccurs="0"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
