@@ -273,6 +273,9 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
 
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
         byte[] bytes = source.readAllBytes();
+        // detection guard: a file that is not a MapSource file is never claimed
+        if (!isMps(bytes))
+            return null;
         try {
             return new Reader(bytes).read();
         } catch (MpsException e) {
