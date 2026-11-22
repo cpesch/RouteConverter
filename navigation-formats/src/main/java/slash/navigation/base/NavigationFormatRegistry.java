@@ -45,6 +45,7 @@ import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.garmin.GarminPcx5Format;
 import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.geojson.GeoJsonFormat;
+import slash.navigation.googletakeout.GoogleSavedListFormat;
 import slash.navigation.googletimeline.GoogleTimelineFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
@@ -190,6 +191,7 @@ public class NavigationFormatRegistry {
         addFormat(FitFormat.class);
         addFormat(GoogleTimelineFormat.class);
         addFormat(GeoJsonFormat.class);
+        addFormat(GoogleSavedListFormat.class);
         addFormat(MSFSFlightPlanFormat.class);
 
         // kind of meta-format
