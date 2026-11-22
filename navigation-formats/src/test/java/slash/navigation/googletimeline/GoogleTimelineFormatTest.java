@@ -344,6 +344,15 @@ public class GoogleTimelineFormatTest {
             "  ]" +
             "}";
 
+    private static final String RECORDS_DEVICE_NUMBERING_FILTERED_FIRST_JSON =
+            "{" +
+            "  \"locations\": [" +
+            "    {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000, \"timestamp\": \"2022-01-12T08:00:00Z\", \"deviceTag\": \"111\", \"accuracy\": 9999}," +
+            "    {\"latitudeE7\": 525210000, \"longitudeE7\": 134060000, \"timestamp\": \"2022-01-12T09:00:00Z\", \"deviceTag\": \"222\"}," +
+            "    {\"latitudeE7\": 525220000, \"longitudeE7\": 134070000, \"timestamp\": \"2022-01-12T10:00:00Z\", \"deviceTag\": \"111\"}" +
+            "  ]" +
+            "}";
+
     private static final String RECORDS_NO_ADJACENT_DAY_MERGE_JSON =
             "{" +
             "  \"locations\": [" +
@@ -972,6 +981,25 @@ public class GoogleTimelineFormatTest {
         assertEquals("2022-01-12 (device 1)", routes.get(0).getName());
         assertEquals("2022-01-12 (device 2)", routes.get(1).getName());
         assertEquals("2022-01-13", routes.get(2).getName()); // single device that day, plain name
+    }
+
+    @Test
+    public void testReadTakeoutRecordsDeviceNumberingSurvivesFilteredFirstRecord() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(RECORDS_DEVICE_NUMBERING_FILTERED_FIRST_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(2, routes.size());
+        // deviceTag "111" appears first in the file (even though that record is dropped by
+        // the accuracy filter), so it must still claim device number 1; "222", whose only
+        // record survives, is numbered 2 - not the other way around.
+        assertEquals("2022-01-12 (device 1)", routes.get(0).getName());
+        assertEquals(52.522, routes.get(0).getPositions().get(0).getLatitude(), 0.0001);
+        assertEquals("2022-01-12 (device 2)", routes.get(1).getName());
+        assertEquals(52.521, routes.get(1).getPositions().get(0).getLatitude(), 0.0001);
     }
 
     @Test

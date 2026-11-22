@@ -679,11 +679,15 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
      * (see DeviceRegistry), or null when the record is filtered out or unparseable.
      */
     private RecordPoint parseTakeoutLocationRecord(JsonNode location, DeviceRegistry registry) {
+        // Register the deviceTag's first-appearance slot before filtering, so a record that
+        // is later dropped (accuracy filter, bad E7 coordinates, missing timestamp) still
+        // reserves its device's number in file order.
+        int device = registry.numberFor(location);
         Wgs84Position position = parseTakeoutLocation(location);
         if (position == null) {
             return null;
         }
-        return new RecordPoint(position, registry.numberFor(location));
+        return new RecordPoint(position, device);
     }
 
     private Wgs84Position parsePlaceVisit(JsonNode placeVisit) {
