@@ -848,12 +848,10 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         byte[] write(String category, List<Wpt> wpts, long garminTime) {
             Block root = new Block();
             ShortNames shortNames = new ShortNames();
-            List<String> addedRawShortNames = new ArrayList<>();
             for (Wpt wpt : wpts) {
-                // enum_waypt_cb(): sort out nearly equal waypoints, compared before mkshort() renames them
-                if (isNearlyEqualToAdded(root.wpts, addedRawShortNames, wpt))
+                // enum_waypt_cb(): sort out nearly equal waypoints
+                if (isNearlyEqualToAdded(root.wpts, wpt))
                     continue;
-                addedRawShortNames.add(wpt.shortName);
                 wpt.shortName = shortNames.mkshort(wpt.shortName);
                 root.add(wpt);
             }
@@ -873,13 +871,9 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
 
         // the coordinates come from BigDecimal.doubleValue(), so there is no NaN or -0.0 and Double.compare()
         // is the == of the C++ original
-        // compares against the raw, pre-mkshort() name of each already added waypoint: added.shortName has
-        // since been overwritten by mkshort() and may have been renamed for uniqueness, which must not affect
-        // whether a later waypoint counts as a duplicate of it
-        private static boolean isNearlyEqualToAdded(List<Wpt> added, List<String> addedRawShortNames, Wpt wpt) {
-            for (int i = 0; i < added.size(); i++) {
-                Wpt compare = added.get(i);
-                if (isSame(addedRawShortNames.get(i), wpt.shortName) &&
+        private static boolean isNearlyEqualToAdded(List<Wpt> added, Wpt wpt) {
+            for (Wpt compare : added) {
+                if (isSame(compare.shortName, wpt.shortName) &&
                         Double.compare(compare.latitude, wpt.latitude) == 0 &&
                         Double.compare(compare.longitude, wpt.longitude) == 0 &&
                         isSame(compare.description, wpt.description) && isSame(compare.notes, wpt.notes))

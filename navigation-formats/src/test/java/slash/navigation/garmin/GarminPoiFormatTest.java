@@ -540,6 +540,16 @@ public class GarminPoiFormatTest {
     }
 
     @Test
+    public void comparesDuplicatesWithTheNamesAlreadyMadeUniqueLikeGpsBabel154() throws IOException {
+        // enum_waypt_cb() compares the original name with the names mkshort() already made unique: the third
+        // waypoint equals the second, which is stored as "Foo.1", so 1.5.4 keeps it as "Foo.2"; only the fourth,
+        // which equals the first "Foo", is dropped (checked with the GPSBabel 1.5.4 binary)
+        GpxRoute route = route("Dedup", position(10.0, 50.0, "Foo"), position(10.1, 50.0, "Foo"),
+                position(10.1, 50.0, "Foo"), position(10.0, 50.0, "Foo"));
+        assertEquals(List.of("Foo", "Foo.1", "Foo.2"), readDescriptions(write(route, 0)));
+    }
+
+    @Test
     public void splitsIntoBlocksOfAtMost128Waypoints() throws IOException {
         Random random = new Random(4711);
         List<GpxPosition> positions = new ArrayList<>();
