@@ -11,6 +11,7 @@
 - Tour Exchange Format (.tef) files can now be written. No program is known to import them; for Map&Guide use the BCR format (#386)
 - MTK logger binary files (.bin) from iBlue 747, Qstarz BT-Q1000, Transystem and other MediaTek-based GPS loggers can be read
 - Online maps and overlays show the attribution supplied by the map catalog, so new map providers can name their exact terms without a RouteConverter update; applied overlays now show their attribution next to the map's (#438)
+- Pasting or opening a Google Maps directions link now imports the coordinates of every stop, any via-points dragged onto the route, and names the route after the travel mode shown in Google Maps, for example "Hamburg to Hannover (bicycle)" (#439)
 - Obfuscated Garmin POI (.gpi) files, as commercial POI packages often come, can now be read; GPSBabel could not read them (#453)
 - Garmin POI (.gpi) files in other code pages than Western European, for example Central European, Cyrillic, Greek or UTF-8, can now be read; GPSBabel refused them (#453)
 
@@ -38,6 +39,7 @@
 - Maps and overlays from the OpenStreetMap tile servers keep their tiles on disk across restarts, in the cache folder of the application directory, and download a tile again only once it is older than 7 days, as the OpenStreetMap tile usage policy asks; before, every start downloaded all tiles again
 - Opening an offline map for the first time selects a theme made for that map's provider, for example Elevate for OpenAndroMaps and the Freizeitkarte theme for Freizeitkarte maps, if it is downloaded; a theme you chose for a map or provider is kept
 - Position > Complete… > Coordinates also tries the name alone when a description like "name; note" finds nothing, and requests to the public Nominatim and Photon servers are spaced one second apart, as their usage policies ask
+- A Google Takeout Records.json export of several hundred MB to a few GB now opens without running out of memory, skips inaccurate Wi-Fi/cell fixes, keeps speed and heading, and splits into one track per day and phone instead of merging several phones into one zig-zag track; a Semantic Location History export now gets one named track per trip, for example "2021-01-05 10:12 CYCLING", instead of merging a whole day into one track, and a visit without a name now falls back to its address (#441)
 
 ### Fixes
 
