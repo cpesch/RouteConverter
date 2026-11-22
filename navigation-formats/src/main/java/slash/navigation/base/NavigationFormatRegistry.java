@@ -38,7 +38,6 @@ import slash.navigation.copilot.CoPilot9Format;
 import slash.navigation.csv.CsvCommaFormat;
 import slash.navigation.csv.CsvSemicolonFormat;
 import slash.navigation.csv.Flightradar24Format;
-import slash.navigation.csv.GoogleTakeoutSavedListFormat;
 import slash.navigation.excel.MicrosoftExcel2008Format;
 import slash.navigation.excel.MicrosoftExcel97Format;
 import slash.navigation.fit.FitFormat;
@@ -219,7 +218,6 @@ public class NavigationFormatRegistry {
         addFormat(WintecWbt202TesFormat.class);
 
         // greedy native formats
-        addFormat(GoogleTakeoutSavedListFormat.class);
         addFormat(CsvCommaFormat.class);
         addFormat(CsvSemicolonFormat.class);
         addFormat(Flightradar24Format.class);

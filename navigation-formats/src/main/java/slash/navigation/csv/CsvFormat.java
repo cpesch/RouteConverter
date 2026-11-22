@@ -79,10 +79,6 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
         return rowAsMap;
     }
 
-    protected String getRouteName(ParserContext<CsvRoute> context) {
-        return null;
-    }
-
     public void read(InputStream source, ParserContext<CsvRoute> context) throws IOException {
         try (Reader reader = readAsReaderPreferringUtf8(source)) {
             if (!read(new BufferedReader(reader), context))
@@ -115,7 +111,7 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
         }
 
         if (!positions.isEmpty()) {
-            context.appendRoute(new CsvRoute(this, getRouteName(context), positions));
+            context.appendRoute(new CsvRoute(this, null, positions));
             return true;
         } else
             return false;
