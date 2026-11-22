@@ -25,6 +25,7 @@ import org.junit.Test;
 import slash.navigation.alan.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.*;
 import slash.navigation.ozi.*;
+import slash.navigation.garmin.GarminMapSource5Format;
 import slash.navigation.garmin.GarminMapSource6Format;
 import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.garmin.GarminPoiFormat;
