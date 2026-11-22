@@ -309,6 +309,98 @@ public class GoogleTimelineFormatTest {
 
     private static final String INVALID_JSON = "{\"invalid\": \"format\"}";
 
+    private static final String RECORDS_LOCATIONS_NOT_FIRST_KEY_JSON =
+            "{" +
+            "  \"foo\": 1," +
+            "  \"locations\": [" +
+            "    {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000, \"timestamp\": \"2024-12-23T10:00:00Z\"}," +
+            "    {\"latitudeE7\": 525300000, \"longitudeE7\": 134150000, \"timestamp\": \"2024-12-23T11:00:00Z\"}" +
+            "  ]" +
+            "}";
+
+    private static final String RECORDS_ACCURACY_JSON =
+            "{" +
+            "  \"locations\": [" +
+            "    {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000, \"timestamp\": \"2024-12-23T10:00:00Z\", \"accuracy\": 200}," +
+            "    {\"latitudeE7\": 525210000, \"longitudeE7\": 134060000, \"timestamp\": \"2024-12-23T11:00:00Z\", \"accuracy\": 201}," +
+            "    {\"latitudeE7\": 525220000, \"longitudeE7\": 134070000, \"timestamp\": \"2024-12-23T12:00:00Z\"}" +
+            "  ]" +
+            "}";
+
+    private static final String RECORDS_VELOCITY_HEADING_JSON =
+            "{" +
+            "  \"locations\": [" +
+            "    {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000, \"timestamp\": \"2024-12-23T10:00:00Z\"," +
+            "     \"velocity\": 10, \"heading\": 270}" +
+            "  ]" +
+            "}";
+
+    private static final String RECORDS_TWO_DEVICES_JSON =
+            "{" +
+            "  \"locations\": [" +
+            "    {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000, \"timestamp\": \"2022-01-12T08:00:00Z\", \"deviceTag\": \"111\"}," +
+            "    {\"latitudeE7\": 525210000, \"longitudeE7\": 134060000, \"timestamp\": \"2022-01-12T09:00:00Z\", \"deviceTag\": \"222\"}," +
+            "    {\"latitudeE7\": 525220000, \"longitudeE7\": 134070000, \"timestamp\": \"2022-01-13T08:00:00Z\", \"deviceTag\": \"222\"}" +
+            "  ]" +
+            "}";
+
+    private static final String RECORDS_NO_ADJACENT_DAY_MERGE_JSON =
+            "{" +
+            "  \"locations\": [" +
+            "    {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000, \"timestamp\": \"2022-01-12T23:59:00Z\"}," +
+            "    {\"latitudeE7\": 525200100, \"longitudeE7\": 134050100, \"timestamp\": \"2022-01-13T00:01:00Z\"}" +
+            "  ]" +
+            "}";
+
+    private static final String SEMANTIC_TWO_SEGMENTS_SAME_DAY_JSON =
+            "{" +
+            "  \"timelineObjects\": [" +
+            "    {\"activitySegment\": {" +
+            "      \"activityType\": \"CYCLING\"," +
+            "      \"startLocation\": {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000}," +
+            "      \"endLocation\": {\"latitudeE7\": 525300000, \"longitudeE7\": 134150000}," +
+            "      \"duration\": {\"startTimestamp\": \"2021-01-05T10:12:00Z\", \"endTimestamp\": \"2021-01-05T11:00:00Z\"}" +
+            "    }}," +
+            "    {\"activitySegment\": {" +
+            "      \"activityType\": \"WALKING\"," +
+            "      \"startLocation\": {\"latitudeE7\": 525400000, \"longitudeE7\": 134250000}," +
+            "      \"endLocation\": {\"latitudeE7\": 525500000, \"longitudeE7\": 134350000}," +
+            "      \"duration\": {\"startTimestamp\": \"2021-01-05T14:00:00Z\", \"endTimestamp\": \"2021-01-05T14:30:00Z\"}" +
+            "    }}" +
+            "  ]" +
+            "}";
+
+    private static final String PLACE_VISIT_ADDRESS_ONLY_JSON =
+            "{" +
+            "  \"timelineObjects\": [" +
+            "    {\"placeVisit\": {" +
+            "      \"location\": {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000, \"address\": \"Unter den Linden 1, Berlin\"}," +
+            "      \"duration\": {\"startTimestamp\": \"2024-12-23T09:00:00Z\"}" +
+            "    }}" +
+            "  ]" +
+            "}";
+
+    private static final String PLACE_VISIT_SEMANTIC_TYPE_ONLY_JSON =
+            "{" +
+            "  \"timelineObjects\": [" +
+            "    {\"placeVisit\": {" +
+            "      \"location\": {\"latitudeE7\": 525200000, \"longitudeE7\": 134050000, \"semanticType\": \"TYPE_HOME\"}," +
+            "      \"duration\": {\"startTimestamp\": \"2024-12-23T09:00:00Z\"}" +
+            "    }}" +
+            "  ]" +
+            "}";
+
+    private static final String PLACE_VISIT_CENTER_COORDINATES_JSON =
+            "{" +
+            "  \"timelineObjects\": [" +
+            "    {\"placeVisit\": {" +
+            "      \"location\": {\"name\": \"Mystery place\"}," +
+            "      \"centerLatE7\": 525200000, \"centerLngE7\": 134050000," +
+            "      \"duration\": {\"startTimestamp\": \"2024-12-23T09:00:00Z\"}" +
+            "    }}" +
+            "  ]" +
+            "}";
+
     @Test
     public void testParseCoordinatesGeoPrefix() {
         Double[] result = GoogleTimelineFormat.parseCoordinates("geo:53.569885,10.029150");
@@ -665,6 +757,7 @@ public class GoogleTimelineFormatTest {
 
         Wgs84Route track = routes.get(0);
         assertEquals(RouteCharacteristics.Track, track.getCharacteristics());
+        assertEquals("2024-12-23 10:00 WALKING", track.getName());
         assertEquals(4, track.getPositions().size()); // start, 2 raw points, end
         for (Wgs84Position pos : track.getPositions()) {
             assertEquals("WALKING", pos.getDescription());
@@ -689,6 +782,7 @@ public class GoogleTimelineFormatTest {
 
         Wgs84Route track = routes.get(0);
         assertEquals(RouteCharacteristics.Track, track.getCharacteristics());
+        assertEquals("2024-12-23 10:00 WALKING", track.getName());
         assertEquals(4, track.getPositions().size()); // start, 2 waypoints, end
     }
 
@@ -748,6 +842,228 @@ public class GoogleTimelineFormatTest {
 
         List<Wgs84Route> routes = context.getRoutes();
         assertEquals(0, routes.size());
+    }
+
+    @Test
+    public void testReadTakeoutRecordsStreamingLargeFile() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        int count = 3000;
+        StringBuilder json = new StringBuilder();
+        json.append("{\"locations\":[");
+        for (int i = 0; i < count; i++) {
+            if (i > 0) json.append(",");
+            String timestamp = i < count / 2 ? "2022-01-12T10:00:00Z" : "2022-01-13T10:00:00Z";
+            json.append("{\"latitudeE7\":525200000,\"longitudeE7\":134050000,\"timestamp\":\"")
+                    .append(timestamp).append("\",\"deviceTag\":\"1\"}");
+        }
+        json.append("]}");
+        assertTrue("fixture must exceed the streaming probe's 64 KiB mark", json.length() > (1 << 16));
+
+        InputStream input = new ByteArrayInputStream(json.toString().getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(2, routes.size()); // two UTC days, one device
+        int total = routes.get(0).getPositions().size() + routes.get(1).getPositions().size();
+        assertEquals(count, total);
+    }
+
+    @Test
+    public void testReadLargeIOSFileStillUsesReadTree() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        StringBuilder json = new StringBuilder();
+        json.append("[");
+        int count = 400;
+        for (int i = 0; i < count; i++) {
+            if (i > 0) json.append(",");
+            json.append("{\"startTime\": \"2024-12-23T10:00:00Z\", \"endTime\": \"2024-12-23T10:05:00Z\",")
+                    .append(" \"timelinePath\": {\"points\": [")
+                    .append("{\"location\": \"geo:52.5200,13.4050\", \"durationMinutesOffsetFromStartTime\": \"0\"}")
+                    .append("]}}");
+        }
+        json.append("]");
+        assertTrue("fixture must exceed the streaming probe's 64 KiB mark", json.length() > (1 << 16));
+
+        InputStream input = new ByteArrayInputStream(json.toString().getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertTrue(routes.size() > 0);
+    }
+
+    @Test
+    public void testReadTakeoutRecordsLocationsNotFirstKey() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(RECORDS_LOCATIONS_NOT_FIRST_KEY_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(1, routes.size());
+        assertEquals(2, routes.get(0).getPositions().size());
+    }
+
+    @Test
+    public void testE7ToDegreesUnsignedOverflowLatitude() {
+        assertEquals(-0.0000001, GoogleTimelineFormat.e7ToDegrees(4294967295L, true), 0.00000001);
+    }
+
+    @Test
+    public void testE7ToDegreesOutOfRangeLatitudeAfterOverflowFix() {
+        assertNull(GoogleTimelineFormat.e7ToDegrees(950000000L, true));
+    }
+
+    @Test
+    public void testE7ToDegreesNegativeLatitudeWithinRange() {
+        assertEquals(-90.0, GoogleTimelineFormat.e7ToDegrees(-900000000L, true), 0.00000001);
+    }
+
+    @Test
+    public void testE7ToDegreesUnsignedOverflowLongitude() {
+        assertEquals(-180.0, GoogleTimelineFormat.e7ToDegrees(2494967296L, false), 0.00000001);
+    }
+
+    @Test
+    public void testE7ToDegreesOutOfRangeLongitudeAfterOverflowFix() {
+        assertNull(GoogleTimelineFormat.e7ToDegrees(1800000001L, false));
+    }
+
+    @Test
+    public void testReadTakeoutRecordsAccuracyFilter() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(RECORDS_ACCURACY_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(1, routes.size());
+        assertEquals(2, routes.get(0).getPositions().size()); // accuracy 201 skipped, 200 and missing kept
+    }
+
+    @Test
+    public void testReadTakeoutRecordsVelocityAndHeading() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(RECORDS_VELOCITY_HEADING_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        Wgs84Position position = context.getRoutes().get(0).getPositions().get(0);
+        assertEquals(36.0, position.getSpeed(), 0.001); // 10 m/s * 3.6
+        assertEquals(270.0, position.getHeading(), 0.001);
+    }
+
+    @Test
+    public void testReadTakeoutRecordsDeviceNumbering() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(RECORDS_TWO_DEVICES_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(3, routes.size());
+        assertEquals("2022-01-12 (device 1)", routes.get(0).getName());
+        assertEquals("2022-01-12 (device 2)", routes.get(1).getName());
+        assertEquals("2022-01-13", routes.get(2).getName()); // single device that day, plain name
+    }
+
+    @Test
+    public void testReadTakeoutRecordsNoAdjacentDayMerge() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(RECORDS_NO_ADJACENT_DAY_MERGE_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(2, routes.size()); // Records.json never merges across days, even at (almost) the same place
+        assertEquals("2022-01-12", routes.get(0).getName());
+        assertEquals("2022-01-13", routes.get(1).getName());
+    }
+
+    @Test
+    public void testReadSemanticLocationHistoryTwoSegmentsSameDay() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(SEMANTIC_TWO_SEGMENTS_SAME_DAY_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(2, routes.size()); // two activitySegment tracks, no placeVisit, so no Visits route
+        assertEquals("2021-01-05 10:12 CYCLING", routes.get(0).getName());
+        assertEquals("2021-01-05 14:00 WALKING", routes.get(1).getName());
+    }
+
+    @Test
+    public void testCreateSegmentNameActivityTypeOnly() {
+        assertEquals("WALKING", GoogleTimelineFormat.createSegmentName(null, "WALKING"));
+    }
+
+    @Test
+    public void testCreateSegmentNameNeitherStartNorActivityType() {
+        assertEquals("Activity", GoogleTimelineFormat.createSegmentName(null, null));
+    }
+
+    @Test
+    public void testCreateSegmentNameStartTimeOnly() {
+        CompactCalendar start = parseTime("2021-01-05T10:12:00Z");
+        assertEquals("2021-01-05 10:12", GoogleTimelineFormat.createSegmentName(start, null));
+    }
+
+    @Test
+    public void testCreateSegmentNameFromOldStyleMillis() {
+        CompactCalendar start = CompactCalendar.fromMillis(1609841520000L); // 2021-01-05T10:12:00Z
+        assertTrue(GoogleTimelineFormat.createSegmentName(start, null).startsWith("2021-01-05 10:12"));
+    }
+
+    @Test
+    public void testPlaceVisitFallsBackToAddress() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(PLACE_VISIT_ADDRESS_ONLY_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(1, routes.size());
+        assertEquals("Unter den Linden 1, Berlin", routes.get(0).getPositions().get(0).getDescription());
+    }
+
+    @Test
+    public void testPlaceVisitFallsBackToSemanticType() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(PLACE_VISIT_SEMANTIC_TYPE_ONLY_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(1, routes.size());
+        assertEquals("TYPE_HOME", routes.get(0).getPositions().get(0).getDescription());
+    }
+
+    @Test
+    public void testPlaceVisitFallsBackToCenterCoordinates() throws Exception {
+        GoogleTimelineFormat format = new GoogleTimelineFormat();
+        ParserContext<Wgs84Route> context = createParserContext();
+
+        InputStream input = new ByteArrayInputStream(PLACE_VISIT_CENTER_COORDINATES_JSON.getBytes(UTF8_ENCODING));
+        format.read(input, context);
+
+        List<Wgs84Route> routes = context.getRoutes();
+        assertEquals(1, routes.size());
+        Wgs84Position position = routes.get(0).getPositions().get(0);
+        assertEquals("Mystery place", position.getDescription());
+        assertEquals(13.4050, position.getLongitude(), 0.000001);
+        assertEquals(52.5200, position.getLatitude(), 0.000001);
     }
 
     @Test

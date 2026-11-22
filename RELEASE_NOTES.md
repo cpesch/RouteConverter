@@ -30,6 +30,7 @@
 - Every menu entry and submenu now has an icon (#400)
 - Maps and overlays from the OpenStreetMap tile servers keep their tiles on disk across restarts, in the cache folder of the application directory, and download a tile again only once it is older than 7 days, as the OpenStreetMap tile usage policy asks; before, every start downloaded all tiles again
 - Opening an offline map for the first time selects a theme made for that map's provider, for example Elevate for OpenAndroMaps and the Freizeitkarte theme for Freizeitkarte maps, if it is downloaded; a theme you chose for a map or provider is kept
+- A Google Takeout Records.json export of several hundred MB to a few GB now opens without running out of memory, skips inaccurate Wi-Fi/cell fixes, keeps speed and heading, and splits into one track per day and phone instead of merging several phones into one zig-zag track; a Semantic Location History export now gets one named track per trip, for example "2021-01-05 10:12 CYCLING", instead of merging a whole day into one track, and a visit without a name now falls back to its address (#441)
 
 ### Fixes
 

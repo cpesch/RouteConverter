@@ -19,6 +19,8 @@
 */
 package slash.navigation.googletimeline;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -66,6 +68,34 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     //   "adjacentDayMergeThresholdMeters", <meters>) to override.
     private static final double ADJACENT_DAY_MERGE_THRESHOLD_METERS_DEFAULT = 500.0;
 
+    // Wi-Fi/cell fixes in Records.json carry accuracy radii of 100 m to several km and
+    // spike otherwise-clean GPS tracks. Skip a record whose accuracy exceeds this, keep
+    // records that don't report accuracy at all. Hidden preference, no Options dialog UI:
+    // set with Preferences.userNodeForPackage(GoogleTimelineFormat.class).putDouble(
+    //   "maximumAccuracyMeters", <meters>) to override.
+    private static final double MAXIMUM_ACCURACY_METERS_DEFAULT = 200.0;
+
+    // Jackson streams Records.json instead of building a full JsonNode tree for it: the
+    // file can be hundreds of MB to several GB. The probe below needs to look ahead far
+    // enough to read the first object's first field name without losing the ability to
+    // reset back to the start of the content.
+    private static final int PROBE_MARK_LIMIT = 1 << 16;
+
+    private static final Comparator<CompactCalendar> DAY_COMPARATOR = (a, b) -> {
+        if (a.before(b)) return -1;
+        if (a.after(b)) return 1;
+        return 0;
+    };
+
+    private static final Comparator<Wgs84Position> POSITION_TIME_COMPARATOR = (a, b) -> {
+        if (a.getTime() == null && b.getTime() == null) return 0;
+        if (a.getTime() == null) return 1;
+        if (b.getTime() == null) return -1;
+        if (a.getTime().before(b.getTime())) return -1;
+        if (a.getTime().after(b.getTime())) return 1;
+        return 0;
+    };
+
     public String getExtension() {
         return ".json";
     }
@@ -103,6 +133,18 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
             reader.reset();
         }
 
+        // Records.json can be hundreds of MB to several GB: probe just the first field
+        // name so that shape can be streamed instead of loaded into one JsonNode tree.
+        reader.mark(PROBE_MARK_LIMIT);
+        String firstFieldName = probeFirstObjectFieldName(reader);
+        reader.reset();
+
+        if ("locations".equals(firstFieldName)) {
+            log.fine("Detected Google Takeout Records.json format (locations wrapper), streaming");
+            readTakeoutRecordsStreaming(reader, context);
+            return;
+        }
+
         JsonNode root = new ObjectMapper().readTree(reader);
 
         if (root == null) {
@@ -118,8 +160,9 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
             log.fine("Detected Android Google Timeline format (semanticSegments wrapper)");
             readOnDevice((ArrayNode) root.get("semanticSegments"), false, context);
         } else if (root.isObject() && root.has("locations") && root.get("locations").isArray()) {
-            // Google Takeout shape: Records.json
-            log.fine("Detected Google Takeout Records.json format (locations wrapper)");
+            // Google Takeout shape: Records.json, "locations" was not the first key so the
+            // streaming probe above missed it; fall back to the already-parsed tree.
+            log.fine("Detected Google Takeout Records.json format (locations wrapper), fallback");
             readTakeoutRecords((ArrayNode) root.get("locations"), context);
         } else if (root.isObject() && root.has("timelineObjects") && root.get("timelineObjects").isArray()) {
             // Google Takeout shape: Semantic Location History
@@ -128,6 +171,61 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         } else {
             // An unknown JSON file is not an error of this format
             log.fine("GoogleTimelineFormat: unsupported root node type " + root.getNodeType() + ", not a recognized Google Timeline shape");
+        }
+    }
+
+    /**
+     * Peeks at the first field name of a JSON object without consuming it: the caller
+     * must reset the (marked) reader afterwards. Returns null for anything that is not
+     * an object with at least one field (e.g. a bare array).
+     */
+    private String probeFirstObjectFieldName(BufferedReader reader) throws IOException {
+        JsonParser parser = new ObjectMapper().getFactory().createParser(reader);
+        parser.disable(JsonParser.Feature.AUTO_CLOSE_SOURCE);
+        try {
+            if (parser.nextToken() != JsonToken.START_OBJECT) {
+                return null;
+            }
+            if (parser.nextToken() != JsonToken.FIELD_NAME) {
+                return null;
+            }
+            return parser.currentName();
+        } finally {
+            parser.close();
+        }
+    }
+
+    /**
+     * Streams Records.json's "locations" array instead of reading the whole file into a
+     * JsonNode tree: maps and keeps only the resulting position for each record.
+     */
+    private void readTakeoutRecordsStreaming(BufferedReader reader, ParserContext<Wgs84Route> context) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonParser parser = mapper.getFactory().createParser(reader);
+        parser.disable(JsonParser.Feature.AUTO_CLOSE_SOURCE);
+        try {
+            JsonToken token;
+            while ((token = parser.nextToken()) != null) {
+                if (token == JsonToken.FIELD_NAME && "locations".equals(parser.currentName())) {
+                    parser.nextToken();
+                    break;
+                }
+            }
+
+            DeviceRegistry registry = new DeviceRegistry();
+            List<RecordPoint> recordPoints = new ArrayList<>();
+            if (parser.currentToken() == JsonToken.START_ARRAY) {
+                while (parser.nextToken() != JsonToken.END_ARRAY) {
+                    JsonNode location = parser.readValueAsTree();
+                    RecordPoint recordPoint = parseTakeoutLocationRecord(location, registry);
+                    if (recordPoint != null) {
+                        recordPoints.add(recordPoint);
+                    }
+                }
+            }
+            emitRecordTracks(recordPoints, context);
+        } finally {
+            parser.close();
         }
     }
 
@@ -190,18 +288,18 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     }
 
     private void readTakeoutRecords(ArrayNode locations, ParserContext<Wgs84Route> context) {
-        List<Wgs84Position> points = new ArrayList<>();
+        DeviceRegistry registry = new DeviceRegistry();
+        List<RecordPoint> recordPoints = new ArrayList<>();
         for (JsonNode location : locations) {
-            Wgs84Position position = parseTakeoutLocation(location);
-            if (position != null) {
-                points.add(position);
+            RecordPoint recordPoint = parseTakeoutLocationRecord(location, registry);
+            if (recordPoint != null) {
+                recordPoints.add(recordPoint);
             }
         }
-        groupAndEmitTracks(points, context);
+        emitRecordTracks(recordPoints, context);
     }
 
     private void readTakeoutSemanticLocationHistory(ArrayNode timelineObjects, ParserContext<Wgs84Route> context) {
-        List<Wgs84Position> points = new ArrayList<>();
         List<Wgs84Position> visitPositions = new ArrayList<>();
 
         for (JsonNode timelineObject : timelineObjects) {
@@ -213,11 +311,15 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
                     visitPositions.add(position);
                 }
             } else if (timelineObject.has("activitySegment")) {
-                points.addAll(parseActivitySegment(timelineObject.path("activitySegment")));
+                JsonNode segment = timelineObject.path("activitySegment");
+                List<Wgs84Position> points = parseActivitySegment(segment);
+                if (!points.isEmpty()) {
+                    CompactCalendar startTime = parseTimeField(segment.path("duration"), "startTimestamp", "startTimestampMs");
+                    String activityType = segment.path("activityType").asText(null);
+                    context.appendRoute(new Wgs84Route(this, Track, createSegmentName(startTime, activityType), points));
+                }
             }
         }
-
-        groupAndEmitTracks(points, context);
 
         if (!visitPositions.isEmpty()) {
             context.appendRoute(new Wgs84Route(this, Waypoints, "Visits", visitPositions));
@@ -225,20 +327,50 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     }
 
     /**
+     * Groups Records.json positions by calendar day and device (see DeviceRegistry) and
+     * emits one Track route per day, or one per device on a day with points from more
+     * than one device - no adjacent-day merge, unlike the on-device groupAndEmitTracks.
+     */
+    private void emitRecordTracks(List<RecordPoint> recordPoints, ParserContext<Wgs84Route> context) {
+        // CompactCalendar is not Comparable, so a natural-ordering TreeMap would throw
+        // ClassCastException as soon as a second key needs to be compared
+        Map<CompactCalendar, Map<Integer, List<Wgs84Position>>> pointsByDayAndDevice = new TreeMap<>(DAY_COMPARATOR);
+        for (RecordPoint recordPoint : recordPoints) {
+            Wgs84Position position = recordPoint.position;
+            if (position.getTime() == null) continue;
+
+            CompactCalendar day = getStartOfDay(position.getTime());
+            pointsByDayAndDevice.computeIfAbsent(day, k -> new TreeMap<>())
+                    .computeIfAbsent(recordPoint.device, k -> new ArrayList<>())
+                    .add(position);
+        }
+
+        for (Map.Entry<CompactCalendar, Map<Integer, List<Wgs84Position>>> dayEntry : pointsByDayAndDevice.entrySet()) {
+            String dayName = formatDateName(dayEntry.getKey());
+            Map<Integer, List<Wgs84Position>> byDevice = dayEntry.getValue();
+            boolean multipleDevices = byDevice.size() > 1;
+
+            for (Map.Entry<Integer, List<Wgs84Position>> deviceEntry : byDevice.entrySet()) {
+                List<Wgs84Position> dayPoints = deviceEntry.getValue();
+                sort(dayPoints, POSITION_TIME_COMPARATOR);
+
+                String name = multipleDevices ? dayName + " (device " + deviceEntry.getKey() + ")" : dayName;
+                context.appendRoute(new Wgs84Route(this, Track, name, dayPoints));
+            }
+        }
+    }
+
+    /**
      * Groups positions by calendar day and emits one Track route per day, merging a day
      * into the still-open previous track when its first point is (almost) the same place
      * as the previous track's last point - see ADJACENT_DAY_MERGE_THRESHOLD_METERS above.
-     * Shared by the on-device timelinePath points and the Takeout Records.json/Semantic
-     * Location History path points.
+     * Used only by the on-device timelinePath points (iOS/Android exports); Takeout
+     * Records.json and Semantic Location History use their own grouping (above).
      */
     private void groupAndEmitTracks(List<Wgs84Position> points, ParserContext<Wgs84Route> context) {
         // CompactCalendar is not Comparable, so a natural-ordering TreeMap would throw
         // ClassCastException as soon as a second key needs to be compared
-        Map<CompactCalendar, List<Wgs84Position>> pointsByDay = new TreeMap<>((a, b) -> {
-            if (a.before(b)) return -1;
-            if (a.after(b)) return 1;
-            return 0;
-        });
+        Map<CompactCalendar, List<Wgs84Position>> pointsByDay = new TreeMap<>(DAY_COMPARATOR);
         for (Wgs84Position point : points) {
             if (point.getTime() == null) continue;
 
@@ -253,14 +385,7 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         for (Map.Entry<CompactCalendar, List<Wgs84Position>> entry : pointsByDay.entrySet()) {
             List<Wgs84Position> dayPoints = entry.getValue();
             // Sort by timestamp, stable for ties
-            sort(dayPoints, (a, b) -> {
-                if (a.getTime() == null && b.getTime() == null) return 0;
-                if (a.getTime() == null) return 1;
-                if (b.getTime() == null) return -1;
-                if (a.getTime().before(b.getTime())) return -1;
-                if (a.getTime().after(b.getTime())) return 1;
-                return 0;
-            });
+            sort(dayPoints, POSITION_TIME_COMPARATOR);
 
             if (pendingPoints != null && isSameLocation(pendingPoints.get(pendingPoints.size() - 1), dayPoints.get(0))) {
                 pendingPoints.addAll(dayPoints);
@@ -519,6 +644,14 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
             return null;
         }
 
+        JsonNode accuracyNode = location.path("accuracy");
+        if (accuracyNode.isNumber()) {
+            double maximumAccuracyMeters = preferences.getDouble("maximumAccuracyMeters", MAXIMUM_ACCURACY_METERS_DEFAULT);
+            if (accuracyNode.asDouble() > maximumAccuracyMeters) {
+                return null;
+            }
+        }
+
         CompactCalendar time = parseTimeField(location, "timestamp", "timestampMs");
         if (time == null) {
             return null;
@@ -526,7 +659,31 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
 
         Double elevation = location.path("altitude").isNumber() ? location.path("altitude").asDouble() : null;
 
-        return new Wgs84Position(coords[0], coords[1], elevation, null, time, null);
+        Wgs84Position position = new Wgs84Position(coords[0], coords[1], elevation, null, time, null);
+
+        JsonNode velocityNode = location.path("velocity");
+        if (velocityNode.isNumber()) {
+            position.setSpeed(velocityNode.asDouble() * 3.6);
+        }
+
+        JsonNode headingNode = location.path("heading");
+        if (headingNode.isNumber()) {
+            position.setHeading(headingNode.asDouble());
+        }
+
+        return position;
+    }
+
+    /**
+     * Maps a single Records.json location to a position tagged with its device number
+     * (see DeviceRegistry), or null when the record is filtered out or unparseable.
+     */
+    private RecordPoint parseTakeoutLocationRecord(JsonNode location, DeviceRegistry registry) {
+        Wgs84Position position = parseTakeoutLocation(location);
+        if (position == null) {
+            return null;
+        }
+        return new RecordPoint(position, registry.numberFor(location));
     }
 
     private Wgs84Position parsePlaceVisit(JsonNode placeVisit) {
@@ -538,11 +695,17 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         CompactCalendar time = parseTimeField(placeVisit.path("duration"), "startTimestamp", "startTimestampMs");
 
         String name = location.path("name").asText(null);
+        String address = location.path("address").asText(null);
         String semanticType = location.path("semanticType").asText(null);
         String description = (name != null && !name.isEmpty()) ? name :
-                ((semanticType != null && !semanticType.isEmpty()) ? semanticType : null);
+                (address != null && !address.isEmpty()) ? address :
+                (semanticType != null && !semanticType.isEmpty()) ? semanticType : null;
 
-        return parseE7Position(location, "latitudeE7", "longitudeE7", time, description);
+        Wgs84Position position = parseE7Position(location, "latitudeE7", "longitudeE7", time, description);
+        if (position == null) {
+            position = parseE7Position(placeVisit, "centerLatE7", "centerLngE7", time, description);
+        }
+        return position;
     }
 
     private List<Wgs84Position> parseActivitySegment(JsonNode segment) {
@@ -599,13 +762,35 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
             return null;
         }
 
-        double latitude = node.path(latField).asLong() / 1e7;
-        double longitude = node.path(lngField).asLong() / 1e7;
-        if (Math.abs(latitude) > 90 || Math.abs(longitude) > 180) {
+        Double latitude = e7ToDegrees(node.path(latField).asLong(), true);
+        Double longitude = e7ToDegrees(node.path(lngField).asLong(), false);
+        if (latitude == null || longitude == null) {
             return null;
         }
 
         return new Double[]{longitude, latitude};
+    }
+
+    /**
+     * Converts an E7-scaled fixed-point value (degrees * 1e7) to degrees, rejecting a
+     * value outside the valid coordinate range. Some old Takeout exports store a negative
+     * E7 value as an unsigned 32-bit integer (e.g. latitude 4294967295 for -1); undo that
+     * wrap-around before the range check whenever the raw value is above the valid range's
+     * positive end.
+     */
+    static Double e7ToDegrees(long e7, boolean latitude) {
+        long maximumValidE7 = latitude ? 900000000L : 1800000000L;
+        if (e7 > maximumValidE7) {
+            e7 -= 4294967296L;
+        }
+
+        double degrees = e7 / 1e7;
+        double maximumDegrees = latitude ? 90.0 : 180.0;
+        if (Math.abs(degrees) > maximumDegrees) {
+            return null;
+        }
+
+        return degrees;
     }
 
     private Wgs84Position parseE7Position(JsonNode node, String latField, String lngField, CompactCalendar time, String description) {
@@ -653,11 +838,60 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException("GoogleTimelineFormat is read-only");
     }
 
+    /**
+     * Names a Semantic Location History activitySegment track: "yyyy-MM-dd HH:mm <activityType>"
+     * from the UTC start of its duration, falling back to just the timestamp, just the
+     * activity type, or finally "Activity" when neither is available.
+     */
+    static String createSegmentName(CompactCalendar start, String activityType) {
+        boolean hasActivityType = activityType != null && !activityType.isEmpty();
+
+        if (start == null) {
+            return hasActivityType ? activityType : "Activity";
+        }
+
+        Calendar calendar = start.getCalendar();
+        String timestamp = String.format("%04d-%02d-%02d %02d:%02d",
+                calendar.get(YEAR), calendar.get(MONTH) + 1, calendar.get(DAY_OF_MONTH),
+                calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+        return hasActivityType ? timestamp + " " + activityType : timestamp;
+    }
+
     private static class Activity {
         final String type;
 
         Activity(String type) {
             this.type = type;
+        }
+    }
+
+    /**
+     * Numbers distinct Records.json deviceTag values in order of first appearance in the
+     * file, starting at 1. A record without a deviceTag field is its own distinct device,
+     * numbered the same way (null is a valid HashMap/LinkedHashMap key).
+     */
+    private static class DeviceRegistry {
+        private final Map<String, Integer> numbersByDeviceTag = new LinkedHashMap<>();
+        private int nextNumber = 1;
+
+        int numberFor(JsonNode location) {
+            JsonNode deviceTagNode = location.path("deviceTag");
+            String deviceTag = (deviceTagNode.isMissingNode() || deviceTagNode.isNull()) ? null : deviceTagNode.asText();
+            return numbersByDeviceTag.computeIfAbsent(deviceTag, k -> nextNumber++);
+        }
+    }
+
+    /**
+     * A Records.json position tagged with its device number (see DeviceRegistry), so that
+     * emitRecordTracks can group by calendar day and device without re-reading the source node.
+     */
+    private static class RecordPoint {
+        final Wgs84Position position;
+        final int device;
+
+        RecordPoint(Wgs84Position position, int device) {
+            this.position = position;
+            this.device = device;
         }
     }
 }
