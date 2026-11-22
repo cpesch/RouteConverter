@@ -16,38 +16,31 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+
+    Copyright (C) 2007 Per Borgentun, e4borgen(at)yahoo.com
+    With lot of inspiration from wbt-200.c
+       Copyright (C) 2006 Andy Armstrong
+    Translated to Java from GPSBabel mtk_logger.cc (master 9c1e336) for RouteConverter, 2026; modified.
 */
 
-package slash.navigation.babel;
+package slash.navigation.holux;
 
 /**
- * Reads National Geographic Topo 3 (.tpo) files.
+ * Reads MTK Logger Binary (.bin) files of iBlue 747, Qstarz BT-Q1000, Transystem and other MediaTek based loggers.
+ * <p>
+ * GPSBabel's {@code mtk-bin} format: 8 byte double coordinates, a 4 byte float height and a '*' before
+ * the checksum. Dumps with a Holux marker string are left to the {@link HoluxM241BinaryFormat}.
  *
  * @author Christian Pesch
  */
 
-public class NationalGeographicTopo3Format extends BabelFormat {
-    public String getExtension() {
-        return ".tpo";
-    }
+public class MtkLoggerBinaryFormat extends MtkBinaryFormat {
 
     public String getName() {
-        return "National Geographic Topo 3 (*" + getExtension() + ")";
+        return "MTK Logger Binary (*" + getExtension() + ")";
     }
 
-    protected String getFormatName() {
-        return "tpo3";
-    }
-
-    public boolean isSupportsWriting() {
-        return false;
-    }
-
-    public boolean isSupportsMultipleRoutes() {
-        return false;
-    }
-
-    protected boolean isStreamingCapable() {
+    boolean isHolux() {
         return false;
     }
 }

@@ -27,6 +27,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class MapServerUtilTest {
@@ -38,6 +39,30 @@ public class MapServerUtilTest {
                     <host>b.tile.openstreetmap.org</host>
                     <urlPattern>/tiles/{z}/{x}/{y}.png</urlPattern>
                     <copyright>osm</copyright>
+                </mapServer>
+            </catalog>
+            """;
+
+    private static final String XML_WITH_ATTRIBUTION = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <catalog xmlns="http://api.routeconverter.com/v1/schemas/mapserver-catalog">
+                <mapServer id="osm" name="OpenStreetMap" minZoom="1" maxZoom="18" active="true">
+                    <host>a.tile.openstreetmap.org</host>
+                    <urlPattern>/tiles/{z}/{x}/{y}.png</urlPattern>
+                    <copyright>osm</copyright>
+                    <attribution>Map data &amp;copy; &lt;a href="https://example.org/"&gt;Example&lt;/a&gt;</attribution>
+                </mapServer>
+            </catalog>
+            """;
+
+    private static final String XML_WITH_UNKNOWN_ELEMENT = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <catalog xmlns="http://api.routeconverter.com/v1/schemas/mapserver-catalog">
+                <mapServer id="osm" name="OpenStreetMap" minZoom="1" maxZoom="18" active="true">
+                    <host>a.tile.openstreetmap.org</host>
+                    <urlPattern>/tiles/{z}/{x}/{y}.png</urlPattern>
+                    <copyright>osm</copyright>
+                    <futureElement>x</futureElement>
                 </mapServer>
             </catalog>
             """;
@@ -57,6 +82,28 @@ public class MapServerUtilTest {
         assertEquals(1, mapServerType.getMinZoom().intValue());
         assertEquals(18, mapServerType.getMaxZoom().intValue());
         assertEquals(Boolean.TRUE, mapServerType.isActive());
+        assertNull(mapServerType.getAttribution());
+    }
+
+    @Test
+    public void testUnmarshalAttribution() throws Exception {
+        CatalogType catalogType = MapServerUtil.unmarshal(new ByteArrayInputStream(XML_WITH_ATTRIBUTION.getBytes(StandardCharsets.UTF_8)));
+
+        MapServerType mapServerType = catalogType.getMapServer().get(0);
+        assertEquals("Map data &copy; <a href=\"https://example.org/\">Example</a>", mapServerType.getAttribution());
+    }
+
+    @Test
+    public void testUnmarshalIgnoresUnknownElement() throws Exception {
+        CatalogType catalogType = MapServerUtil.unmarshal(new ByteArrayInputStream(XML_WITH_UNKNOWN_ELEMENT.getBytes(StandardCharsets.UTF_8)));
+
+        assertEquals(1, catalogType.getMapServer().size());
+        MapServerType mapServerType = catalogType.getMapServer().get(0);
+        assertEquals("osm", mapServerType.getId());
+        assertEquals("OpenStreetMap", mapServerType.getName());
+        assertEquals("/tiles/{z}/{x}/{y}.png", mapServerType.getUrlPattern());
+        assertEquals("osm", mapServerType.getCopyright());
+        assertNull(mapServerType.getAttribution());
     }
 }
 

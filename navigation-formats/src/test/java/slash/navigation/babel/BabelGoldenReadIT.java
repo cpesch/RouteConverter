@@ -67,7 +67,8 @@ public class BabelGoldenReadIT {
             if (trimmed.isEmpty() || trimmed.startsWith("#"))
                 continue;
             String[] parts = trimmed.split("\\s+", 2);
-            if (parts.length > 0 && parts[0].equals(samplePath))
+            // the columns are separated by whitespace: a space in a sample path is written as %20
+            if (parts.length > 0 && parts[0].replace("%20", " ").equals(samplePath))
                 result.add(line);
         }
         return result;

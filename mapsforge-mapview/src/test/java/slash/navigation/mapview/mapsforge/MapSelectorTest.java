@@ -23,15 +23,19 @@ import org.junit.Test;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import java.util.Collections;
+import java.util.List;
 
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.mapview.mapsforge.MapSelector.DescriptionKeySelectionManager;
 import static slash.navigation.mapview.mapsforge.MapSelector.clampZoom;
+import static slash.navigation.mapview.mapsforge.MapSelector.combineCopyrightTexts;
 import static slash.navigation.mapview.mapsforge.MapSelector.isSeparator;
 import static slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer.DOWNLOAD_MAP;
 import static slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer.SEPARATOR_TO_DOWNLOAD_MAP;
@@ -132,5 +136,26 @@ public class MapSelectorTest {
             int index = manager.selectionForKey(key, model);
             assertFalse(index == 3 || index == 4);
         }
+    }
+
+    @Test
+    public void combineCopyrightTextsWithoutOverlays() {
+        assertEquals("M", combineCopyrightTexts("M", Collections.emptyList()));
+    }
+
+    @Test
+    public void combineCopyrightTextsWithOverlays() {
+        assertEquals("M<br>A<br>B", combineCopyrightTexts("M", List.of("A", "B")));
+    }
+
+    @Test
+    public void combineCopyrightTextsSkipsDuplicatesAndBlanks() {
+        assertEquals("M<br>A", combineCopyrightTexts("M", asList("M", "A", "A", null, "  ")));
+    }
+
+    @Test
+    public void combineCopyrightTextsWithoutMap() {
+        assertEquals("A", combineCopyrightTexts(null, List.of("A")));
+        assertEquals("", combineCopyrightTexts(null, Collections.emptyList()));
     }
 }
