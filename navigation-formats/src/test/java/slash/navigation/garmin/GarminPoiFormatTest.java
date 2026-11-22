@@ -314,6 +314,49 @@ public class GarminPoiFormatTest {
         assertEquals(List.of("Plain"), readDescriptions(gpi(1252, group("G", area(waypoint(1.0, 1.0, plain))))));
     }
 
+    @Test
+    public void readsTheSpeedOfAnAlertWithExtraData() throws IOException {
+        // GPSBabel reads tag 0x80003 without its main length and appends no speed; the Oppmann layout
+        // reads the speed of format version 01 speed cameras (declared deviation)
+        byte[] alertWithExtraData = record(3, concat(int16(0), int16(1389), int32(0), new byte[]{1, 1, 5, 0x10}),
+                record(27, new byte[5]));
+        assertEquals(List.of("Camera@50"),
+                readDescriptions(gpi(1252, group("G", area(waypoint(1.0, 1.0, "Camera", alertWithExtraData))))));
+    }
+
+    @Test
+    public void stopsAtAnEndRecordWithFlags() throws IOException {
+        byte[] bytes = concat(header1("00", 0, null), header2("00", 1252, null),
+                group("G", area(waypoint(1.0, 1.0, "A"))), concat(int16(0xffff), int16(8), int32(0), int32(0)));
+        assertEquals(List.of("A"), readDescriptions(bytes));
+    }
+
+    private static byte[] nestedAreas(int depth, byte[] innermost) {
+        // written front to back: every Area record holds the next one in its extra data
+        LittleEndianOutput output = new LittleEndianOutput();
+        for (int level = depth; level >= 1; level--) {
+            output.writeUInt16(8);
+            output.writeUInt16(8);
+            output.writeInt32(23 + (level - 1) * 35 + innermost.length);
+            output.writeInt32(23);
+            output.writeBytes(new byte[23]);
+        }
+        output.writeBytes(innermost);
+        return output.toByteArray();
+    }
+
+    @Test
+    public void readsWaypointsInNestedAreasUpToTheBound() throws IOException {
+        byte[] bytes = gpi(1252, nestedAreas(GarminPoiFormat.MAXIMUM_NESTING - 2, waypoint(1.0, 1.0, "Deep")));
+        assertEquals(List.of("Deep"), readDescriptions(bytes));
+    }
+
+    @Test
+    public void refusesHostilelyDeepNestingWithoutStackOverflow() throws IOException {
+        assertTrue(read(gpi(1252, nestedAreas(100_000, new byte[0]))).isEmpty());
+        assertTrue(read(gpi(1252, nestedAreas(GarminPoiFormat.MAXIMUM_NESTING + 2, waypoint(1.0, 1.0, "Deep")))).isEmpty());
+    }
+
     // obfuscated files of format version 01
 
     /**
@@ -442,6 +485,16 @@ public class GarminPoiFormatTest {
         byte[] group = concat(int32(0x80009), int32(groupSize + 8 + 1636), int32(groupSize), category, area,
                 int32(5), int32(1636), GarminPoiFormat.DEFAULT_BITMAP);
         assertArrayEquals(concat(header, group, int32(0xffff), int32(0)), actual);
+    }
+
+    @Test
+    public void writesTextLikeGpsBabelGotItFromRouteConvertersGpx() throws IOException {
+        // the XML parser keeps a carriage return written as &#13;, QTextCodec writes '?' per UTF-16 unit
+        byte[] bytes = write(route("Text", position(9.0, 49.0, "Crlf; desc\r\nmore"),
+                position(9.1, 49.0, "\uD83D\uDE00 face; x\uD83D\uDE00y")), 0);
+        assertTrue(indexOf(bytes, writtenString("desc\r\nmore")) > 0);
+        assertTrue(indexOf(bytes, writtenString("?? face")) > 0);
+        assertTrue(indexOf(bytes, writtenString("x??y")) > 0);
     }
 
     @Test

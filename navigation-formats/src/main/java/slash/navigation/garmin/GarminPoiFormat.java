@@ -42,6 +42,7 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
@@ -90,6 +91,9 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
     static final long GARMIN_EPOCH_OFFSET = 631065600L;
     private static final double SEMICIRCLES_PER_DEGREE = 2147483648.0 / 180.0;
     private static final int UNKNOWN_SIZE = -1;
+    // Oppmann's record structure nests four to five levels deep; the bound keeps hostile files from
+    // exhausting the stack
+    static final int MAXIMUM_NESTING = 32;
 
     public String getExtension() {
         return ".gpi";
@@ -315,18 +319,20 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             // GarminGPIFormat::read()
             while (true) {
                 int position = input.position();
-                if (input.readInt32() == END)
+                if (input.readUInt16() == END)
                     break;
                 input.seek(position);
                 Record record = readRecord(data.length);
-                readRecordContent(record, null);
+                readRecordContent(record, null, 0);
                 input.seek(record.end);
             }
             return positions;
         }
 
         // the loops of read_poi(), read_poi_list() and read_poi_group() over the subordinated records
-        private void readRecords(int start, int end, Wpt poi) throws EOFException, GpiException {
+        private void readRecords(int start, int end, Wpt poi, int depth) throws EOFException, GpiException {
+            if (depth > MAXIMUM_NESTING)
+                throw new GpiException("Records nested deeper than " + MAXIMUM_NESTING + " levels at " + start);
             input.seek(start);
             while (end - input.position() >= 8) {
                 int position = input.position();
@@ -334,23 +340,23 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
                     break;
                 input.seek(position);
                 Record record = readRecord(end);
-                readRecordContent(record, poi);
+                readRecordContent(record, poi, depth);
                 input.seek(record.end);
             }
         }
 
         // GarminGPIFormat::read_tag(); record types GPSBabel does not interpret are skipped by their length
-        private void readRecordContent(Record record, Wpt poi) throws EOFException, GpiException {
+        private void readRecordContent(Record record, Wpt poi, int depth) throws EOFException, GpiException {
             switch (record.type) {
-                case WAYPOINT -> readWaypoint(record);
+                case WAYPOINT -> readWaypoint(record, depth);
                 case ALERT -> {
                     if (poi != null)
                         readAlert(poi);
                 }
-                case AREA -> readRecords(record.mainEnd, record.end, null);
+                case AREA -> readRecords(record.mainEnd, record.end, null, depth + 1);
                 case POI_GROUP -> {
                     readString(record.end);                 // group name
-                    readRecords(input.position(), record.end, null);
+                    readRecords(input.position(), record.end, null, depth + 1);
                 }
                 case COMMENT -> {
                     if (poi != null)
@@ -368,7 +374,7 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         }
 
         // GarminGPIFormat::read_poi()
-        private void readWaypoint(Record record) throws EOFException, GpiException {
+        private void readWaypoint(Record record, int depth) throws EOFException, GpiException {
             double latitude = semicirclesToDegrees(input.readInt32());
             double longitude = semicirclesToDegrees(input.readInt32());
             input.readUInt16();                             // always 1
@@ -377,7 +383,7 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
 
             // GPSBabel reads the subordinated records right behind the shortname; with extra data
             // they start behind the main data
-            readRecords(record.hasExtraData() ? record.mainEnd : input.position(), record.end, poi);
+            readRecords(record.hasExtraData() ? record.mainEnd : input.position(), record.end, poi, depth + 1);
 
             if (isEmpty(poi.description) && !isEmpty(poi.notes))
                 poi.description = poi.notes;
@@ -387,7 +393,9 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             positions.add(createPosition(poi));
         }
 
-        // read_tag() case 0x3: the speed of a speed camera becomes part of the shortname
+        // read_tag() case 0x3: the speed of a speed camera becomes part of the shortname. For an alert with
+        // extra data (tag 0x80003) GPSBabel reads the two halves of the main length as proximity and speed
+        // and never appends a speed; the Oppmann layout reads the real speed
         private void readAlert(Wpt poi) throws EOFException {
             input.readInt16();                              // proximity distance in meters
             double speed = (double) input.readInt16() / 100; // speed in meters per second
@@ -708,8 +716,18 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
     static class Writer {
         private final LittleEndianOutput output = new LittleEndianOutput();
 
+        // QTextCodec::fromUnicode() replaces every UTF-16 unit it cannot encode with '?', so a character
+        // outside the Basic Multilingual Plane becomes "??"
         private static byte[] encode(String string) {
-            return string != null ? string.getBytes(WRITE_CHARSET) : new byte[0];
+            if (string == null)
+                return new byte[0];
+            CharsetEncoder encoder = WRITE_CHARSET.newEncoder();
+            StringBuilder builder = new StringBuilder(string.length());
+            for (int i = 0; i < string.length(); i++) {
+                char c = string.charAt(i);
+                builder.append(encoder.canEncode(c) ? c : '?');
+            }
+            return builder.toString().getBytes(WRITE_CHARSET);
         }
 
         // GarminGPIFormat::write_string()
@@ -874,13 +892,14 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
     }
 
     /**
-     * The text as GPSBabel's GPX reader got it from RouteConverter's GPX: the XML parser normalizes line
-     * ends to a line feed, the reader trims the character data with QString::trimmed().
+     * The text as GPSBabel's GPX reader got it from RouteConverter's GPX: the reader trims the character
+     * data with QString::trimmed(). RouteConverter's GPX writes a carriage return as {@code &#13;}, which
+     * the XML parser keeps.
      */
     static String asGpxReaderText(String string) {
         if (string == null)
             return null;
-        String text = string.replace("\r\n", "\n").replace('\r', '\n');
+        String text = string;
         int start = 0, end = text.length();
         while (start < end && isQtSpace(text.charAt(start)))
             start++;
