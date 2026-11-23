@@ -34,6 +34,7 @@ import slash.navigation.loc.GeoCachingFormat;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -59,6 +60,13 @@ public class ZipFormatTest {
             "<waypoint><name id=\"GC1\"><![CDATA[First]]></name><coord lat=\"52.1\" lon=\"12.1\"/></waypoint>\n" +
             "<waypoint><name id=\"GC2\"><![CDATA[Second]]></name><coord lat=\"52.2\" lon=\"12.2\"/></waypoint>\n" +
             "</loc>\n";
+    // no XML declaration and no BOM, like the garbled KML that GarbleKml22Format exists for:
+    // read as raw windows-1252 bytes, the umlauts are not valid UTF-8, so Kml22Format declines
+    // and GarbleKml22Format reads it instead, extending Kml22Format
+    private static final String GARBLE_KML = "<kml xmlns=\"http://www.opengis.net/kml/2.2\"><Document><Placemark>" +
+            "<name>Grün Ö Ä ß Straße</name>" +
+            "<Point><coordinates>12.3,51.3,0</coordinates></Point>" +
+            "</Placemark></Document></kml>";
 
     private final NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
     private final List<File> files = new ArrayList<>();
@@ -78,6 +86,20 @@ public class ZipFormatTest {
                 zip.write(namesAndContents[i + 1].getBytes(UTF_8));
                 zip.closeEntry();
             }
+        }
+        return file;
+    }
+
+    private File zipBytes(String name1, byte[] content1, String name2, byte[] content2) throws IOException {
+        File file = File.createTempFile("zipformattest", ".zip");
+        files.add(file);
+        try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(file))) {
+            zip.putNextEntry(new ZipEntry(name1));
+            zip.write(content1);
+            zip.closeEntry();
+            zip.putNextEntry(new ZipEntry(name2));
+            zip.write(content2);
+            zip.closeEntry();
         }
         return file;
     }
@@ -111,6 +133,15 @@ public class ZipFormatTest {
         ParserResult result = parser.read(zip("a.gpx", GPX10, "b.kml", KML22));
         assertTrue(result.isSuccessful());
         assertEquals(Gpx11Format.class, result.getFormat().getClass());
+        assertEquals(2, result.getAllRoutes().size());
+    }
+
+    @Test
+    public void reportsTheBaseFormatForAGarbledAndARegularEntryOfTheSameFormat() throws IOException {
+        byte[] garbled = GARBLE_KML.getBytes(Charset.forName("windows-1252"));
+        ParserResult result = parser.read(zipBytes("a.kml", garbled, "b.kml", KML22.getBytes(UTF_8)));
+        assertTrue(result.isSuccessful());
+        assertEquals(Kml22Format.class, result.getFormat().getClass());
         assertEquals(2, result.getAllRoutes().size());
     }
 
