@@ -188,6 +188,41 @@ public class GoogleSavedListFormatTest {
     }
 
     @Test
+    public void testReadGermanList() throws IOException {
+        List<Wgs84Route> routes = read("\uFEFFTitel,Notiz,URL,Tags\n" +
+                "Cafe Alpha,,"+ PLACE_URL_1 + ",\n" +
+                "Bistro Beta,Suppe probieren," + PLACE_URL_2 + ",Essen\n" +
+                "Stecknadel,,\"https://www.google.com/maps/search/52.520008,13.404954\",\n", new File("Favoriten.csv"));
+
+        assertEquals(1, routes.size());
+        Wgs84Route route = routes.get(0);
+        assertEquals("Favoriten", route.getName());
+        assertEquals(3, route.getPositionCount());
+        assertNoCoordinates(route.getPosition(0), "Cafe Alpha");
+        assertNoCoordinates(route.getPosition(1), "Bistro Beta");
+        assertCoordinates(route.getPosition(2), 13.404954, 52.520008, "Stecknadel");
+    }
+
+    @Test
+    public void testReadUnknownLanguageByColumnPosition() throws IOException {
+        // stands for any Takeout language whose column names are not known; not a confirmed export header
+        List<Wgs84Route> routes = read("Titre,Note,URL,Tags,Commentaire\n" +
+                "Cafe Alpha,Près de la gare," + PLACE_URL_1 + ",,\n" +
+                "Point,\"40.7128,-74.0060\"," + PLACE_URL_2 + ",,\n");
+
+        assertEquals(1, routes.size());
+        Wgs84Route route = routes.get(0);
+        assertEquals(2, route.getPositionCount());
+        assertNoCoordinates(route.getPosition(0), "Cafe Alpha");
+        assertCoordinates(route.getPosition(1), -74.0060, 40.7128, "Point; 40.7128,-74.0060");
+    }
+
+    @Test
+    public void testColumnsByPositionNeedGoogleMapsLinks() throws IOException {
+        assertEquals(0, read("Name,Beschreibung,URL\nAlpha,,https://example.com/alpha\nBeta,,\n").size());
+    }
+
+    @Test
     public void testParseUrlCoordinates() {
         assertNull(GoogleSavedListFormat.parseUrlCoordinates(null));
         assertNull(GoogleSavedListFormat.parseUrlCoordinates(PLACE_URL_1));
@@ -249,6 +284,12 @@ public class GoogleSavedListFormatTest {
         assertFalse(GoogleSavedListFormat.isHeader("Title,Note"));
         assertFalse(GoogleSavedListFormat.isHeader("Title,URL,Lat,Lng"));
         assertFalse(GoogleSavedListFormat.isHeader("Places for the summer trip"));
+        assertTrue(GoogleSavedListFormat.isHeader("Titel,Notiz,URL,Tags"));
+        assertTrue(GoogleSavedListFormat.isHeader("Titre,Note,URL,Tags,Commentaire"));
+        assertFalse(GoogleSavedListFormat.isHeader("Name,URL"));
+        assertFalse(GoogleSavedListFormat.isHeader("A,B,C,URL"));
+        assertFalse(GoogleSavedListFormat.isHeader("A,B,URL,D,E,F"));
+        assertFalse(GoogleSavedListFormat.isHeader("Titel,Notiz,URL,Breite,Länge"));
     }
 
     @Test
@@ -256,6 +297,19 @@ public class GoogleSavedListFormatTest {
         File file = temporaryFile("Title,Note,URL,Tags,Comment\n" +
                 "Cafe Alpha,," + PLACE_URL_1 + ",,\n" +
                 "Bistro Beta,Try the soup," + PLACE_URL_2 + ",,\n");
+
+        ParserResult result = new NavigationFormatParser(new NavigationFormatRegistry()).read(file);
+
+        assertTrue(result.isSuccessful());
+        assertEquals(GoogleSavedListFormat.class, result.getFormat().getClass());
+        assertEquals(2, result.getTheRoute().getPositionCount());
+    }
+
+    @Test
+    public void testParserDetectsGermanSavedList() throws IOException {
+        File file = temporaryFile("\uFEFFTitel,Notiz,URL,Tags\n" +
+                "Cafe Alpha,," + PLACE_URL_1 + ",\n" +
+                "Bistro Beta,Suppe probieren," + PLACE_URL_2 + ",\n");
 
         ParserResult result = new NavigationFormatParser(new NavigationFormatRegistry()).read(file);
 

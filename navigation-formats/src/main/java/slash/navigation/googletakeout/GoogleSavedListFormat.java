@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Locale.ROOT;
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -39,16 +40,23 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  * Reads the saved lists (Favorites, Want to go, own lists) that Google Takeout exports as
  * {@code Saved/<list>.csv}: title, note, URL, tags and comment per place, but no coordinates.
  * Places become positions without coordinates unless the URL or the note carries them; the
- * user adds coordinates with Positions &gt; Complete &gt; Coordinates.
+ * user adds coordinates with Position &gt; Complete&hellip; &gt; Coordinates.
+ * <p>
+ * Takeout localizes the folder ({@code Saved}, {@code Gespeichert}, ...) and the column names
+ * ({@code Title,Note,URL} in English, {@code Titel,Notiz,URL} in German). Column names known
+ * from real exports are matched by name; for other languages the columns are taken by their
+ * position, title first, note second and {@code URL} third, as long as a row links to Google Maps.
  *
  * @see <a href="https://developers.google.com/data-portability/schema-reference/save">Google's schema</a>
  * @author Christian Pesch
  */
 
 public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
-    private static final String TITLE = "title";
-    private static final String NOTE = "note";
+    private static final Set<String> TITLE_COLUMNS = new HashSet<>(Arrays.asList("title", "titel"));
+    private static final Set<String> NOTE_COLUMNS = new HashSet<>(Arrays.asList("note", "notiz"));
     private static final String URL = "url";
+    private static final int URL_COLUMN_INDEX = 2;
+    private static final int MAXIMUM_COLUMN_COUNT = 5;
     private static final Set<String> COORDINATE_COLUMNS = new HashSet<>(Arrays.asList(
             "latitude", "longitude", "lat", "lon", "lng", "breite", "länge", "breitengrad", "längengrad",
             "coordinates", "koordinaten"));
@@ -60,6 +68,8 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
     private static final Pattern URL_COORDINATES_PATTERN = Pattern.compile(
             "(?:/search/|/place/|/dir/|[?&](?:q|query|destination)=)" + NUMBER + SEPARATOR + NUMBER);
     private static final Pattern PLACE_PIN_PATTERN = Pattern.compile("!3d" + NUMBER + "!4d" + NUMBER);
+    private static final Pattern GOOGLE_MAPS_URL_PATTERN = Pattern.compile(
+            "^https?://(?:(?:[a-z]+\\.)?google\\.[a-z.]+/maps|maps\\.google\\.|maps\\.app\\.goo\\.gl/)", CASE_INSENSITIVE);
     private static final Pattern NOTE_COORDINATES_PATTERN = Pattern.compile(
             "\\s*" + NUMBER + "\\s*,\\s*" + NUMBER + "\\s*");
 
@@ -97,13 +107,15 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
         boolean byteOrderMark = false;
         List<String> leadingLines = new ArrayList<>();
         int headerLineIndex = -1;
+        Columns columns = null;
         String line;
         for (int i = 0; i < HEADER_SEARCH_ROW_LIMIT && (line = reader.readLine()) != null; i++) {
             if (i == 0 && line.startsWith("\uFEFF")) {
                 byteOrderMark = true;
                 line = line.substring(1);
             }
-            if (isHeader(line)) {
+            columns = parseHeader(line);
+            if (columns != null) {
                 headerLineIndex = i;
                 break;
             }
@@ -120,30 +132,72 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
             reader.readLine();
 
         List<Wgs84Position> positions = new ArrayList<>();
+        boolean linksToGoogleMaps = false;
         CsvSchema schema = CsvSchema.emptySchema().withHeader();
         ObjectReader objectReader = new CsvMapper().readerFor(LinkedHashMap.class).with(schema);
         try (MappingIterator<LinkedHashMap<String, String>> iterator = objectReader.readValues(reader)) {
             while (iterator.hasNext()) {
-                Wgs84Position position = createPosition(lowerCaseKeys(iterator.next()));
+                Map<String, String> row = lowerCaseKeys(iterator.next());
+                String url = trim(row.get(URL));
+                if (url != null && GOOGLE_MAPS_URL_PATTERN.matcher(url).find())
+                    linksToGoogleMaps = true;
+                Wgs84Position position = createPosition(trim(row.get(columns.title)), trim(row.get(columns.note)), url);
                 if (position != null)
                     positions.add(position);
             }
         }
 
+        // columns taken by position could belong to any CSV with a URL column: insist on Google Maps
+        if (!columns.byName && !linksToGoogleMaps)
+            return;
+
         if (!positions.isEmpty())
             context.appendRoute(new Wgs84Route(this, Waypoints, createRouteName(context.getFile(), leadingLines), positions));
     }
 
+    private static class Columns {
+        final String title;
+        final String note;
+        final boolean byName;
+
+        Columns(String title, String note, boolean byName) {
+            this.title = title;
+            this.note = note;
+            this.byName = byName;
+        }
+    }
+
     static boolean isHeader(String line) {
-        Set<String> cells = new HashSet<>();
+        return parseHeader(line) != null;
+    }
+
+    private static Columns parseHeader(String line) {
+        List<String> cells = new ArrayList<>();
         for (String cell : line.split(",", -1))
             cells.add(trimQuotes(cell).toLowerCase(ROOT));
-        if (!cells.contains(TITLE) || !cells.contains(URL))
-            return false;
+        if (!cells.contains(URL))
+            return null;
         for (String cell : cells)
             if (COORDINATE_COLUMNS.contains(cell))
-                return false;
-        return true;
+                return null;
+
+        String title = firstOf(cells, TITLE_COLUMNS);
+        if (title != null) {
+            return new Columns(title, firstOf(cells, NOTE_COLUMNS), true);
+        }
+
+        // a language whose column names are not known: Takeout writes title, note, URL, tags, comment
+        if (cells.indexOf(URL) == URL_COLUMN_INDEX && cells.size() <= MAXIMUM_COLUMN_COUNT &&
+                !cells.get(0).isEmpty() && !cells.get(1).isEmpty())
+            return new Columns(cells.get(0), cells.get(1), false);
+        return null;
+    }
+
+    private static String firstOf(List<String> cells, Set<String> names) {
+        for (String cell : cells)
+            if (names.contains(cell))
+                return cell;
+        return null;
     }
 
     private static String trimQuotes(String cell) {
@@ -160,11 +214,7 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
         return result;
     }
 
-    private Wgs84Position createPosition(Map<String, String> row) {
-        String title = trim(row.get(TITLE));
-        String note = trim(row.get(NOTE));
-        String url = trim(row.get(URL));
-
+    private Wgs84Position createPosition(String title, String note, String url) {
         double[] coordinates = parseUrlCoordinates(url);
         if (coordinates == null)
             coordinates = parseNoteCoordinates(note);
