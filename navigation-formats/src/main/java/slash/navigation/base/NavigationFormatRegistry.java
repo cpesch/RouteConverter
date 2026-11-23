@@ -48,6 +48,7 @@ import slash.navigation.garmin.GarminPcx5Format;
 import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.garmin.GarminPoiFormat;
 import slash.navigation.geojson.GeoJsonFormat;
+import slash.navigation.googletakeout.GoogleCommuteRoutesFormat;
 import slash.navigation.googletakeout.GoogleSavedListFormat;
 import slash.navigation.googletimeline.GoogleTimelineFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
@@ -194,6 +195,7 @@ public class NavigationFormatRegistry {
         addFormat(MicrosoftExcel97Format.class);
         addFormat(MicrosoftExcel2008Format.class);
         addFormat(FitFormat.class);
+        addFormat(GoogleCommuteRoutesFormat.class);
         addFormat(GoogleTimelineFormat.class);
         addFormat(GeoJsonFormat.class);
         addFormat(GoogleSavedListFormat.class);

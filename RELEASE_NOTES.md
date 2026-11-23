@@ -7,6 +7,7 @@
 - Garmin POI (.gpi) files: the position list now takes the name of the POI collection stored in the file, for example BMW_Motorrad_v18, and saving a position list as .gpi stores its name there
 - Google Maps saved lists (Favorites, Want to go, own lists) exported by Google Takeout as CSV can now be opened; they carry no coordinates, so add them with Position > Complete… > Coordinates (places whose link has coordinates get them right away)
 - The offline map themes Biker, Dark, Indigo and Motorider that come with the map renderer can now be chosen next to Default and Osmarender
+- Google Maps commute routes exported by Google Takeout (Commute routes.json, Routen für Pendelstrecke.json) can now be opened: their start and destination places become a waypoint list
 - Offline MBTiles maps whose tiles are stored as WebP images can now be displayed; before, only PNG and JPEG MBTiles opened
 - Position list > Manage… reorders, creates, renames, deletes and changes the type of the position lists of a file, for example the routes and tracks of a GPX file; it replaces the New, Rename and Delete buttons below the position list; the position list, its type and the Manage button now share one row, the map toggle moved to the Format row, and the Content line moved into the tool tip of the position list (#400)
 - Tour Exchange Format (.tef) files can now be written. No program is known to import them; for Map&Guide use the BCR format (#386)
