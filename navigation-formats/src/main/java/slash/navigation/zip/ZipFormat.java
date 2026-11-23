@@ -78,6 +78,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
     }
 
     public void read(InputStream source, ParserContext<BaseRoute<?, ?>> context) throws IOException {
+        PhotoSidecars photoSidecars = new PhotoSidecars();
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
@@ -94,8 +95,21 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
                     continue;
                 }
 
+                String entryName = entry.getName();
+                String photoName = PhotoSidecars.photoNameOfSidecar(entryName);
+                if (photoName != null) {
+                    photoSidecars.addSidecar(photoName, bytes);
+                    zip.closeEntry();
+                    continue;
+                }
+
                 try {
-                    context.parse(new ByteArrayInputStream(bytes), context.getStartDate(), Files.getExtension(entry.getName()));
+                    int routeCountBefore = context.getRoutes().size();
+                    context.parse(new ByteArrayInputStream(bytes), context.getStartDate(), Files.getExtension(entryName));
+                    if (PhotoSidecars.isPhoto(entryName)) {
+                        List<BaseRoute<?, ?>> routes = context.getRoutes();
+                        photoSidecars.addPhotoRoutes(entryName, routes.subList(routeCountBefore, routes.size()));
+                    }
                 } catch (Exception e) {
                     // one entry that no format can read must not end reading the archive
                     log.fine("Cannot read zip entry " + entry.getName() + ": " + e);
@@ -105,6 +119,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
         } catch (IOException e) {
             log.fine("Error reading invalid zip entry from " + source + ": " + e);
         }
+        photoSidecars.removePhotosWithoutCoordinates(context);
     }
 
     public void write(BaseRoute<?, ?> route, OutputStream target, int startIndex, int endIndex) throws IOException {
