@@ -19,6 +19,7 @@
 
 ### Changes
 
+- Position lists read from a file inside a ZIP archive are named after that file when it has no name of its own, for example gps_location_2024-01-09 in a Google Takeout export
 - RouteConverter now runs on Java 25: the Windows, macOS, Debian and Flatpak downloads bundle it; the Linux jar needs Java 25 or later installed and says so on an older Java (#167)
 - Geocaching.com/EasyGPS (.loc) files are read and written by RouteConverter itself and no longer need GPSBabel (#384)
 - Garmin POI Database (.xcsv) files are read and written by RouteConverter itself and no longer need GPSBabel (#385)

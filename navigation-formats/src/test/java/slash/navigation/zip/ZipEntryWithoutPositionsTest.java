@@ -21,6 +21,7 @@ package slash.navigation.zip;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserResult;
@@ -35,6 +36,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -90,5 +93,15 @@ public class ZipEntryWithoutPositionsTest {
         ParserResult result = parser.read(zip("Takeout/Zeitachse/Settings.json", SETTINGS_JSON, "Takeout/README.txt", README_TXT));
         if (result.isSuccessful())
             assertEquals(0, result.getAllRoutes().stream().mapToInt(route -> route.getPositionCount()).sum());
+    }
+
+    @Test
+    public void listsAreNamedAfterTheirEntry() throws IOException {
+        ParserResult result = parser.read(zip("Takeout/Gps Location/gps_location_2024-01-09.csv",
+                "Latitude,Longitude,Time\n50.2,8.4,09.01.24 09:14:11\n50.3,8.5,09.01.24 09:14:12\n",
+                "Takeout/places.kml", KML22));
+        assertTrue(result.isSuccessful());
+        assertEquals(asList("D", "gps_location_2024-01-09"),
+                result.getAllRoutes().stream().map(BaseRoute::getName).sorted().collect(toList()));
     }
 }

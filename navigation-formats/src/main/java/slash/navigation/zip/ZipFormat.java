@@ -36,6 +36,8 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static slash.navigation.base.RouteComments.createRouteName;
+
 /**
  * Reads routes from ZIP Archive (.zip) files.
  *
@@ -107,10 +109,11 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
                 try {
                     int routeCountBefore = context.getRoutes().size();
                     context.parse(new ByteArrayInputStream(bytes), context.getStartDate(), Files.getExtension(entryName));
-                    if (PhotoSidecars.isPhoto(entryName)) {
-                        List<BaseRoute<?, ?>> routes = context.getRoutes();
-                        photoSidecars.addPhotoRoutes(entryName, routes.subList(routeCountBefore, routes.size()));
-                    }
+                    List<BaseRoute<?, ?>> routes = context.getRoutes();
+                    List<BaseRoute<?, ?>> entryRoutes = routes.subList(routeCountBefore, routes.size());
+                    nameAfterEntry(entryRoutes, entryName, context);
+                    if (PhotoSidecars.isPhoto(entryName))
+                        photoSidecars.addPhotoRoutes(entryName, entryRoutes);
                 } catch (Exception e) {
                     // one entry that no format can read must not end reading the archive
                     log.fine("Cannot read zip entry " + entry.getName() + ": " + e);
@@ -125,6 +128,28 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
         // no entry had routes: decline, since a ZIP archive cannot stand for an empty position list
         if (context.getRoutes().size() == archiveRouteCountBefore)
             throw new IllegalArgumentException("No routes in ZIP archive " + source);
+    }
+
+    /**
+     * Names the position lists of an entry after the entry when the format found no name or,
+     * reading from the archive's file, took the archive's name: the daily GPS files of a Google
+     * Takeout archive become gps_location_2024-01-09 instead of an unnamed list
+     */
+    static void nameAfterEntry(List<BaseRoute<?, ?>> routes, String entryName, ParserContext<BaseRoute<?, ?>> context) {
+        String archiveName = context.getFile() != null ? removeExtension(context.getFile().getName()) : null;
+        String name = removeExtension(entryName.substring(entryName.lastIndexOf('/') + 1));
+        for (BaseRoute<?, ?> route : routes) {
+            String routeName = route.getName();
+            // CSV and other formats derive "first to last" from the descriptions when they have no name
+            if (routeName == null || routeName.isBlank() || routeName.equals(archiveName) ||
+                    routeName.equals(createRouteName(route.getPositions())))
+                route.setName(name);
+        }
+    }
+
+    private static String removeExtension(String name) {
+        int dot = name.lastIndexOf('.');
+        return dot > 0 ? name.substring(0, dot) : name;
     }
 
     public void write(BaseRoute<?, ?> route, OutputStream target, int startIndex, int endIndex) throws IOException {
