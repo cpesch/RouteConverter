@@ -31,13 +31,16 @@ import slash.navigation.kml.Kml22Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.photo.PhotoFormat;
 import slash.navigation.tcx.TcxFormat;
+import slash.navigation.zip.ZipFormat;
 
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -218,6 +221,32 @@ public class NavigationFormatParser {
         return result;
     }
 
+    /**
+     * The format to report for what was read: normally the format that read the source. A ZIP
+     * archive is only a container - its entries were read by other formats, which the nested
+     * parse recorded after it - so when every entry was read by the same format, that format is
+     * reported instead of falling back to GPX 1.1 for the container; a garble-tolerant variant
+     * counts as the format it extends. Mixed entries keep the container, which {@link #determineFormat} turns into GPX 1.1 as before.
+     */
+    static NavigationFormat<BaseRoute<?, ?>> preferredFormat(List<NavigationFormat<BaseRoute<?, ?>>> formats) {
+        NavigationFormat<BaseRoute<?, ?>> first = formats.get(0);
+        if (!(((NavigationFormat<?>) first) instanceof ZipFormat))
+            return first;
+
+        NavigationFormat<BaseRoute<?, ?>> entryFormat = null;
+        Set<Class<?>> entryFormatClasses = new HashSet<>();
+        for (NavigationFormat<BaseRoute<?, ?>> format : formats) {
+            if (((NavigationFormat<?>) format) instanceof ZipFormat)
+                continue;
+            // a garble-tolerant variant reads the same format as the class it extends
+            boolean garble = format instanceof GarbleNavigationFormat;
+            entryFormatClasses.add(garble ? format.getClass().getSuperclass() : format.getClass());
+            if (entryFormat == null || (entryFormat instanceof GarbleNavigationFormat && !garble))
+                entryFormat = format;
+        }
+        return entryFormatClasses.size() == 1 ? entryFormat : first;
+    }
+
     private void commentRoutes(List<BaseRoute<?, ?>> routes) {
         commentRoutePositions(routes);
         for (BaseRoute<?, ?> route : routes) {
@@ -234,7 +263,7 @@ public class NavigationFormatParser {
         List<BaseRoute<?, ?>> source = context.getRoutes();
         // if (source != null && source.size() > 0) {
         if (source != null && !context.getFormats().isEmpty()) {
-            NavigationFormat<BaseRoute<?, ?>> format = determineFormat(source, context.getFormats().get(0));
+            NavigationFormat<BaseRoute<?, ?>> format = determineFormat(source, preferredFormat(context.getFormats()));
             List<BaseRoute<?, ?>> destination = convertRoute(source, format);
             log.info("Detected '" + format.getName() + "' with " + destination.size() + " route(s) and " +
                     getPositionCounts(destination) + " positions");
