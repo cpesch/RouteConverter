@@ -24,6 +24,7 @@ import slash.common.io.Files;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.ParserContext;
+import slash.navigation.base.ProbeTimings;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 
@@ -82,6 +83,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
     public void read(InputStream source, ParserContext<BaseRoute<?, ?>> context) throws IOException {
         int archiveRouteCountBefore = context.getRoutes().size();
         PhotoSidecars photoSidecars = new PhotoSidecars();
+        boolean measuring = ProbeTimings.start(context.getFile() != null ? context.getFile().getName() : "ZIP archive");
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
@@ -106,6 +108,8 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
                     continue;
                 }
 
+                ProbeTimings.startEntry(entryName);
+                long entryStartNanos = System.nanoTime();
                 try {
                     int routeCountBefore = context.getRoutes().size();
                     context.parse(new ByteArrayInputStream(bytes), context.getStartDate(), Files.getExtension(entryName));
@@ -116,12 +120,17 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
                         photoSidecars.addPhotoRoutes(entryName, entryRoutes);
                 } catch (Exception e) {
                     // one entry that no format can read must not end reading the archive
-                    log.fine("Cannot read zip entry " + entry.getName() + ": " + e);
+                    log.fine("Cannot read zip entry " + entryName + ": " + e);
+                } finally {
+                    ProbeTimings.endEntry(System.nanoTime() - entryStartNanos);
                 }
                 zip.closeEntry();
             }
         } catch (IOException e) {
             log.fine("Error reading invalid zip entry from " + source + ": " + e);
+        } finally {
+            if (measuring)
+                ProbeTimings.finish();
         }
         photoSidecars.removePhotosWithoutCoordinates(context);
 
