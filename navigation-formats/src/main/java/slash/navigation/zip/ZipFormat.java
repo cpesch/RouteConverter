@@ -20,6 +20,7 @@
 
 package slash.navigation.zip;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import slash.common.io.Files;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseRoute;
@@ -152,9 +153,10 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
             return;
         }
 
-        String photoName = PhotoSidecars.photoNameOfSidecar(entryName);
-        if (photoName != null) {
-            photoSidecars.addSidecar(photoName, bytes);
+        // photo sidecars are recognized by their content and never probed as navigation files
+        JsonNode sidecar = PhotoSidecars.parseSidecar(entryName, bytes);
+        if (sidecar != null) {
+            photoSidecars.addSidecar(entryName, sidecar);
             return;
         }
 
