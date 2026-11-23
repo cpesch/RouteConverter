@@ -20,9 +20,9 @@
 
 package slash.navigation.converter.gui.panels;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import slash.common.io.Transfer;
 import slash.common.helpers.DateTimeParserException;
@@ -41,9 +41,12 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
-import static org.junit.Assert.*;
 import static slash.common.io.Transfer.formatTime;
 
 public class PositionsModelCallbackImplTest {
@@ -56,7 +59,7 @@ public class PositionsModelCallbackImplTest {
     private NavigationPosition position;
     private Locale originalLocale;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         originalLocale = Locale.getDefault();
         Locale.setDefault(Locale.GERMAN);
@@ -67,7 +70,7 @@ public class PositionsModelCallbackImplTest {
         position = mock(NavigationPosition.class);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         Locale.setDefault(originalLocale);
     }
@@ -164,16 +167,16 @@ public class PositionsModelCallbackImplTest {
         NavigationPosition referencePosition = createTestPosition(2025, 2, 1, 21, 34, 56);
         NavigationPosition position = createTestPosition(2025, 2, 1, 21, 34, 56);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, sut.getStringAt(position, DATE_TIME_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, sut.getStringAt(position, DATE_TIME_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, DATE_COLUMN_INDEX, sut.getStringAt(position, DATE_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, DATE_COLUMN_INDEX, sut.getStringAt(position, DATE_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, TIME_COLUMN_INDEX, sut.getStringAt(position, TIME_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, TIME_COLUMN_INDEX, sut.getStringAt(position, TIME_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, DESCRIPTION_COLUMN_INDEX, sut.getStringAt(position, DESCRIPTION_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, DESCRIPTION_COLUMN_INDEX, sut.getStringAt(position, DESCRIPTION_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
 //        sut.setValueAt(position, LONGITUDE_COLUMN_INDEX, sut.getStringAt(position, LONGITUDE_COLUMN_INDEX));
@@ -196,13 +199,13 @@ public class PositionsModelCallbackImplTest {
         NavigationPosition referencePosition = createTestPosition(1945, 2, 1, 21, 34, 56);
         NavigationPosition position = createTestPosition(1945, 2, 1, 21, 34, 56);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, sut.getStringAt(position, DATE_TIME_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, sut.getStringAt(position, DATE_TIME_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, DATE_COLUMN_INDEX, sut.getStringAt(position, DATE_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, DATE_COLUMN_INDEX, sut.getStringAt(position, DATE_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, TIME_COLUMN_INDEX, sut.getStringAt(position, TIME_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, TIME_COLUMN_INDEX, sut.getStringAt(position, TIME_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
     }
 
@@ -213,16 +216,16 @@ public class PositionsModelCallbackImplTest {
         NavigationPosition referencePosition = createTestPosition(2025, 2, 1, 21, 34, 56);
         NavigationPosition position = createTestPosition(2025, 2, 1, 21, 34, 56);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, sut.getStringAt(position, DATE_TIME_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, sut.getStringAt(position, DATE_TIME_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, DATE_COLUMN_INDEX, sut.getStringAt(position, DATE_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, DATE_COLUMN_INDEX, sut.getStringAt(position, DATE_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, TIME_COLUMN_INDEX, sut.getStringAt(position, TIME_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, TIME_COLUMN_INDEX, sut.getStringAt(position, TIME_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, DESCRIPTION_COLUMN_INDEX, sut.getStringAt(position, DESCRIPTION_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, DESCRIPTION_COLUMN_INDEX, sut.getStringAt(position, DESCRIPTION_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
 //        sut.setValueAt(position, LONGITUDE_COLUMN_INDEX, sut.getStringAt(position, LONGITUDE_COLUMN_INDEX));
@@ -245,13 +248,13 @@ public class PositionsModelCallbackImplTest {
         NavigationPosition referencePosition = createTestPosition(1945, 2, 1, 21, 34, 56);
         NavigationPosition position = createTestPosition(1945, 2, 1, 21, 34, 56);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, sut.getStringAt(position, DATE_TIME_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, sut.getStringAt(position, DATE_TIME_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, DATE_COLUMN_INDEX, sut.getStringAt(position, DATE_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, DATE_COLUMN_INDEX, sut.getStringAt(position, DATE_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
 
-        assertFalse("unchanged value must report not applied", sut.setValueAt(position, TIME_COLUMN_INDEX, sut.getStringAt(position, TIME_COLUMN_INDEX)));
+        assertFalse(sut.setValueAt(position, TIME_COLUMN_INDEX, sut.getStringAt(position, TIME_COLUMN_INDEX)), "unchanged value must report not applied");
         assertEquals(referencePosition, position);
     }
 
@@ -754,7 +757,7 @@ public class PositionsModelCallbackImplTest {
             mockedBaseRouteConverter.when(BaseRouteConverter::getInstance).thenReturn(mockConverter);
             mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(bundle);
 
-            assertFalse("rejected value must report not applied", sut.setValueAt(position, column, invalidInput));
+            assertFalse(sut.setValueAt(position, column, invalidInput), "rejected value must report not applied");
         }
 
         verification.run();
@@ -766,7 +769,7 @@ public class PositionsModelCallbackImplTest {
         CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
         when(position.getTime()).thenReturn(oldTime);
 
-        assertFalse("rejected value must report not applied", sut.setValueAt(position, DATE_COLUMN_INDEX, "not a date"));
+        assertFalse(sut.setValueAt(position, DATE_COLUMN_INDEX, "not a date"), "rejected value must report not applied");
 
         verify(position, atLeast(1)).getTime();
         verify(position).setTime(oldTime);
@@ -778,7 +781,7 @@ public class PositionsModelCallbackImplTest {
         CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
         when(position.getTime()).thenReturn(oldTime);
 
-        assertFalse("rejected value must report not applied", sut.setValueAt(position, TIME_COLUMN_INDEX, "not a time"));
+        assertFalse(sut.setValueAt(position, TIME_COLUMN_INDEX, "not a time"), "rejected value must report not applied");
 
         verify(position, atLeast(1)).getTime();
         verify(position).setTime(oldTime);
@@ -790,14 +793,14 @@ public class PositionsModelCallbackImplTest {
         CompactCalendar oldTime = cal(2025, 1, 1, 1, 2, 3);
         when(position.getTime()).thenReturn(oldTime);
 
-        assertFalse("rejected value must report not applied", sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, "not a date time"));
+        assertFalse(sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, "not a date time"), "rejected value must report not applied");
 
         verify(position, atLeast(1)).getTime();
         verify(position).setTime(oldTime);
     }
 
     private void runSetTimeTestStep(int column, String toSet, CompactCalendar expectedSet) {
-        assertTrue("applied value must report applied", sut.setValueAt(position, column, toSet));
+        assertTrue(sut.setValueAt(position, column, toSet), "applied value must report applied");
         verify(position, atLeast(1)).getTime();
         verify(position).setTime(expectedSet);
         verifyNoMoreInteractions(position);

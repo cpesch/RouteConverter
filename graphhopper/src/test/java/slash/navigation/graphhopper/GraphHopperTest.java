@@ -21,11 +21,10 @@ package slash.navigation.graphhopper;
 
 import crosby.binary.Fileformat;
 import crosby.binary.Osmformat;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
@@ -44,9 +43,9 @@ import java.util.UUID;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.ensureDirectory;
@@ -58,21 +57,21 @@ public class GraphHopperTest {
     private static final String DK_SH_URI = "europe/dk+sh-latest.osm.pbf";
     private static final String HAMBURG_URI = "europe/germany/hamburg-latest.osm.pbf";
 
-    @Rule
-    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    public File temporaryFolder;
 
     // the production code resolves graph files below the application directory, so use a name
     // unique per test and delete whatever the test created below it again in tearDown()
     private String dataSourceDirectoryName;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         GraphHopper.TEST_MODE = true;
 
         dataSourceDirectoryName = "graphhopper-test-" + UUID.randomUUID();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         File directory = new File(getApplicationDirectory(), dataSourceDirectoryName);
         if (directory.exists())
@@ -137,12 +136,12 @@ public class GraphHopperTest {
         when(graphHopperDataSource.getFiles()).thenReturn(singletonList(malaFatraFile));
         when(malaFatraFile.getDataSource()).thenReturn(graphHopperDataSource);
 
-        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
+        GraphHopper hopper = new GraphHopper(new DownloadManager(newFile(temporaryFolder, "queueFile.xml")));
         hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
 
         // simulate a graph for a distant, unrelated region that is already loaded from an
         // earlier route drawn in this session -- the file still exists on disk
-        File previouslyLoadedFile = temporaryFolder.newFile("denmark-latest.osm.pbf");
+        File previouslyLoadedFile = newFile(temporaryFolder, "denmark-latest.osm.pbf");
         hopper.setOsmPbfFile(previouslyLoadedFile);
 
         // now route through Mala Fatra, Slovakia: nowhere near the previously loaded graph
@@ -151,9 +150,9 @@ public class GraphHopperTest {
                 new LongitudeAndLatitude(19.0663111, 49.2578493),
                 new LongitudeAndLatitude(19.0763111, 49.2678493)));
 
-        assertTrue("GraphHopper must recognize it needs to download the graph for the route's " +
-                        "actual region instead of trusting the previously loaded, unrelated graph",
-                future.isRequiresDownload());
+        assertTrue(future.isRequiresDownload(),
+                "GraphHopper must recognize it needs to download the graph for the route's " +
+                        "actual region instead of trusting the previously loaded, unrelated graph");
     }
 
     // rc#105: when the graph descriptor computed for the current route is already fully present
@@ -179,12 +178,12 @@ public class GraphHopperTest {
         ensureDirectory(malaFatraLocalFile.getParentFile());
         assertTrue(malaFatraLocalFile.createNewFile());
 
-        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
+        GraphHopper hopper = new GraphHopper(new DownloadManager(newFile(temporaryFolder, "queueFile.xml")));
         hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
 
         // simulate a graph for a distant, unrelated region that is already loaded from an
         // earlier route drawn in this session -- the file still exists on disk
-        File previouslyLoadedFile = temporaryFolder.newFile("denmark-latest.osm.pbf");
+        File previouslyLoadedFile = newFile(temporaryFolder, "denmark-latest.osm.pbf");
         hopper.setOsmPbfFile(previouslyLoadedFile);
 
         // now route through Mala Fatra, Slovakia, whose graph is already present locally
@@ -192,12 +191,12 @@ public class GraphHopperTest {
                 new LongitudeAndLatitude(19.0663111, 49.2578493),
                 new LongitudeAndLatitude(19.0763111, 49.2678493)));
 
-        assertFalse("GraphHopper must not require a download when the graph for the route's " +
-                        "actual region is already present locally",
-                future.isRequiresDownload());
-        assertEquals("GraphHopper must switch osmPbfFile to the already present graph for the " +
-                        "current route instead of leaving the previously loaded graph in place",
-                malaFatraLocalFile, hopper.getOsmPbfFile());
+        assertFalse(future.isRequiresDownload(),
+                "GraphHopper must not require a download when the graph for the route's " +
+                        "actual region is already present locally");
+        assertEquals(malaFatraLocalFile,
+                hopper.getOsmPbfFile(), "GraphHopper must switch osmPbfFile to the already present graph for the " +
+                        "current route instead of leaving the previously loaded graph in place");
     }
 
     // rc#243: a local graph whose bounding box contains the route may still have no roads there --
@@ -228,7 +227,7 @@ public class GraphHopperTest {
         ensureDirectory(dkShProperties.getParentFile());
         assertTrue(dkShProperties.createNewFile());
 
-        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml"))) {
+        GraphHopper hopper = new GraphHopper(new DownloadManager(newFile(temporaryFolder, "queueFile.xml"))) {
             boolean coversAll(java.util.List<LongitudeAndLatitude> longitudeAndLatitudes) {
                 return localGraphCoversRoute;
             }
@@ -266,9 +265,9 @@ public class GraphHopperTest {
                 new LongitudeAndLatitude(9.97, 53.55),
                 new LongitudeAndLatitude(9.98, 53.552)));
 
-        assertTrue("GraphHopper must move on to the Hamburg graph and require its download when " +
-                        "the local dk+sh graph has no roads for the route",
-                future.isRequiresDownload());
+        assertTrue(future.isRequiresDownload(),
+                "GraphHopper must move on to the Hamburg graph and require its download when " +
+                        "the local dk+sh graph has no roads for the route");
     }
 
     @Test
@@ -280,8 +279,8 @@ public class GraphHopperTest {
                 new LongitudeAndLatitude(10.12, 54.32),
                 new LongitudeAndLatitude(10.14, 54.33)));
 
-        assertFalse("GraphHopper must not require a download when the local graph covers the route",
-                future.isRequiresDownload());
+        assertFalse(future.isRequiresDownload(),
+                "GraphHopper must not require a download when the local graph covers the route");
         assertEquals(new File(getApplicationDirectory(dataSourceDirectoryName), DK_SH_URI), hopper.getOsmPbfFile());
     }
 
@@ -294,15 +293,15 @@ public class GraphHopperTest {
         when(graphHopperDataSource.getDirectory()).thenReturn(dataSourceDirectoryName);
         when(graphHopperDataSource.getFiles()).thenReturn(emptyList());
 
-        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
+        GraphHopper hopper = new GraphHopper(new DownloadManager(newFile(temporaryFolder, "queueFile.xml")));
         hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
 
         MapDescriptor mapDescriptor = mock(MapDescriptor.class);
         when(mapDescriptor.getIdentifier()).thenReturn("test-map");
         when(mapDescriptor.getBoundingBox()).thenReturn(new BoundingBox(19.5, 49.6, 18.5, 48.9));
 
-        assertFalse("No graph descriptor at all for the region must not be reported as available",
-                hopper.isRoutingDataAvailable(mapDescriptor));
+        assertFalse(hopper.isRoutingDataAvailable(mapDescriptor),
+                "No graph descriptor at all for the region must not be reported as available");
     }
 
     @Test
@@ -317,15 +316,15 @@ public class GraphHopperTest {
         when(graphHopperDataSource.getFiles()).thenReturn(singletonList(malaFatraFile));
         when(malaFatraFile.getDataSource()).thenReturn(graphHopperDataSource);
 
-        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
+        GraphHopper hopper = new GraphHopper(new DownloadManager(newFile(temporaryFolder, "queueFile.xml")));
         hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
 
         MapDescriptor mapDescriptor = mock(MapDescriptor.class);
         when(mapDescriptor.getIdentifier()).thenReturn("test-map");
         when(mapDescriptor.getBoundingBox()).thenReturn(new BoundingBox(19.2, 49.5, 18.7, 49.0));
 
-        assertFalse("A remote file without a checksum must not be reported as available",
-                hopper.isRoutingDataAvailable(mapDescriptor));
+        assertFalse(hopper.isRoutingDataAvailable(mapDescriptor),
+                "A remote file without a checksum must not be reported as available");
     }
 
     @Test
@@ -342,15 +341,15 @@ public class GraphHopperTest {
         when(graphHopperDataSource.getFiles()).thenReturn(singletonList(malaFatraFile));
         when(malaFatraFile.getDataSource()).thenReturn(graphHopperDataSource);
 
-        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
+        GraphHopper hopper = new GraphHopper(new DownloadManager(newFile(temporaryFolder, "queueFile.xml")));
         hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
 
         MapDescriptor mapDescriptor = mock(MapDescriptor.class);
         when(mapDescriptor.getIdentifier()).thenReturn("test-map");
         when(mapDescriptor.getBoundingBox()).thenReturn(new BoundingBox(19.2, 49.5, 18.7, 49.0));
 
-        assertFalse("A graph that is published but not yet downloaded must not be reported as available",
-                hopper.isRoutingDataAvailable(mapDescriptor));
+        assertFalse(hopper.isRoutingDataAvailable(mapDescriptor),
+                "A graph that is published but not yet downloaded must not be reported as available");
     }
 
     @Test
@@ -366,14 +365,14 @@ public class GraphHopperTest {
         File graphDirectory = ensureDirectory(new File(graphHopperDirectory, "mala-fatra"));
         assertTrue(new File(graphDirectory, "properties").createNewFile());
 
-        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
+        GraphHopper hopper = new GraphHopper(new DownloadManager(newFile(temporaryFolder, "queueFile.xml")));
         hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
 
         MapDescriptor mapDescriptor = mock(MapDescriptor.class);
         when(mapDescriptor.getIdentifier()).thenReturn("mala-fatra");
 
-        assertTrue("A graph directory that already exists locally must be reported as available",
-                hopper.isRoutingDataAvailable(mapDescriptor));
+        assertTrue(hopper.isRoutingDataAvailable(mapDescriptor),
+                "A graph directory that already exists locally must be reported as available");
     }
 
     // rc#180: the method is named "remaining download size" and sums into an accumulator, but
@@ -388,11 +387,11 @@ public class GraphHopperTest {
 
         GraphHopper hopper = hopperWith(dataSource("kurviger"), dataSource("mapsforge"), dataSource);
 
-        assertEquals("The remaining download size for several maps must sum the sizes of every " +
-                        "map's missing graph instead of stopping after the first",
-                300L, hopper.calculateRemainingDownloadSize(asList(
+        assertEquals(300L,
+                hopper.calculateRemainingDownloadSize(asList(
                         mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)),
-                        mapDescriptor("europe/austria", new BoundingBox(16.9, 48.8, 9.7, 46.5)))));
+                        mapDescriptor("europe/austria", new BoundingBox(16.9, 48.8, 9.7, 46.5)))), "The remaining download size for several maps must sum the sizes of every " +
+                        "map's missing graph instead of stopping after the first");
     }
 
     // rc#180: kurviger graphs, mapsforge graphs and geofabrik PBFs are interchangeable sources
@@ -406,9 +405,9 @@ public class GraphHopperTest {
                 dataSource("mapsforge", downloadable("mapsforge/europe/germany.map", germany, 200L)),
                 dataSource("routing", downloadable("europe/germany-latest.osm.pbf", germany, 300L)));
 
-        assertEquals("Interchangeable alternatives for one map must count once, not add up",
-                100L, hopper.calculateRemainingDownloadSize(singletonList(
-                        mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)))));
+        assertEquals(100L,
+                hopper.calculateRemainingDownloadSize(singletonList(
+                        mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)))), "Interchangeable alternatives for one map must count once, not add up");
     }
 
     // rc#180: since the per-map rule now looks at every map separately, a downloadable that
@@ -421,10 +420,10 @@ public class GraphHopperTest {
 
         GraphHopper hopper = hopperWith(dataSource("kurviger"), dataSource("mapsforge"), dataSource);
 
-        assertEquals("A downloadable serving several maps of one call must be counted once",
-                100L, hopper.calculateRemainingDownloadSize(asList(
+        assertEquals(100L,
+                hopper.calculateRemainingDownloadSize(asList(
                         mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)),
-                        mapDescriptor("europe/austria", new BoundingBox(16.9, 48.8, 9.7, 46.5)))));
+                        mapDescriptor("europe/austria", new BoundingBox(16.9, 48.8, 9.7, 46.5)))), "A downloadable serving several maps of one call must be counted once");
     }
 
     // rc#180: nothing is missing, so nothing remains to download -- for any number of maps.
@@ -438,10 +437,10 @@ public class GraphHopperTest {
 
         GraphHopper hopper = hopperWith(dataSource("kurviger"), dataSource("mapsforge"), dataSource);
 
-        assertEquals("Present graphs must not add to the remaining download size",
-                0L, hopper.calculateRemainingDownloadSize(asList(
+        assertEquals(0L,
+                hopper.calculateRemainingDownloadSize(asList(
                         mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)),
-                        mapDescriptor("europe/austria", new BoundingBox(16.9, 48.8, 9.7, 46.5)))));
+                        mapDescriptor("europe/austria", new BoundingBox(16.9, 48.8, 9.7, 46.5)))), "Present graphs must not add to the remaining download size");
     }
 
     // rc#180: a downloadable without a checksum has an unknown size -- it is skipped, and the
@@ -454,9 +453,15 @@ public class GraphHopperTest {
                 dataSource("mapsforge", downloadable("mapsforge/europe/germany.map", germany, 200L)),
                 dataSource("routing"));
 
-        assertEquals("A descriptor without a checksum must be skipped in favor of the next " +
-                        "alternative instead of ending the search for the map's size",
-                200L, hopper.calculateRemainingDownloadSize(singletonList(
-                        mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)))));
+        assertEquals(200L,
+                hopper.calculateRemainingDownloadSize(singletonList(
+                        mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)))), "A descriptor without a checksum must be skipped in favor of the next " +
+                        "alternative instead of ending the search for the map's size");
+    }
+
+    private static File newFile(File parent, String child) throws IOException {
+        File result = new File(parent, child);
+        result.createNewFile();
+        return result;
     }
 }

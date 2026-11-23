@@ -20,14 +20,19 @@
 
 package slash.navigation.download.actions;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.FileAndChecksum;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 import java.io.File;
@@ -35,7 +40,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.State.Queued;
 
@@ -51,7 +55,7 @@ public class ValidatorTest {
     private File fragment2;
     private File absent;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         target = File.createTempFile("validator-target", ".bin");
         writeContent(target, "hello");
@@ -66,7 +70,7 @@ public class ValidatorTest {
         assertTrue(absent.delete()); // make it absent
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         deleteIfExists(target);
         deleteIfExists(fragment1);

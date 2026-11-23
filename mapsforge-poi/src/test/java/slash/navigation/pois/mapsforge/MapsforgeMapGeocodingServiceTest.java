@@ -19,7 +19,7 @@
 */
 package slash.navigation.pois.mapsforge;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tag;
 import org.mapsforge.core.model.Tile;
@@ -40,7 +40,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static slash.navigation.maps.mapsforge.MapType.MBTiles;

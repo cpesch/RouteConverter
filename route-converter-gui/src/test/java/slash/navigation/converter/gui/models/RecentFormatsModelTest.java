@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.models;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.gpx.Gpx11Format;
@@ -36,7 +36,7 @@ import java.util.prefs.Preferences;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RecentFormatsModelTest {
     private static final int LIMIT = 5;
@@ -45,7 +45,7 @@ public class RecentFormatsModelTest {
     private final NavigationFormatRegistry registry = new NavigationFormatRegistry();
     private RecentFormatsModel recentFormatsModel;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         // In-memory preferences isolate the test from the shared user store: parallel
         // surefire forks all write java.util.prefs through the same OS backing store,

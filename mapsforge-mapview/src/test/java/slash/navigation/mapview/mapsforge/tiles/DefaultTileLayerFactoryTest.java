@@ -19,10 +19,9 @@
 */
 package slash.navigation.mapview.mapsforge.tiles;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mapsforge.core.graphics.TileBitmap;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.layer.Layer;
@@ -44,24 +43,24 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.INSTANCE;
 import static slash.navigation.maps.mapsforge.MapType.Download;
 
 public class DefaultTileLayerFactoryTest {
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    public File temporaryFolder;
     private File persistentTileCacheDirectory;
     private DefaultTileLayerFactory factory;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
-        persistentTileCacheDirectory = temporaryFolder.newFolder("tiles");
+        persistentTileCacheDirectory = newFolder(temporaryFolder, "tiles");
         factory = createFactory();
     }
 
@@ -117,7 +116,7 @@ public class DefaultTileLayerFactoryTest {
         for (int i = 0; i < 100 && !after.containsKey(job); i++)
             Thread.sleep(50);
 
-        assertTrue("tile downloaded before the restart must be served from disk", after.containsKey(job));
+        assertTrue(after.containsKey(job), "tile downloaded before the restart must be served from disk");
         assertNotNull(after.get(job));
     }
 
@@ -137,7 +136,7 @@ public class DefaultTileLayerFactoryTest {
 
         Layer layer = factory.createLayerForMap(map);
 
-        assertTrue("Download map must produce a TileDownloadLayer", layer instanceof TileDownloadLayer);
+        assertTrue(layer instanceof TileDownloadLayer, "Download map must produce a TileDownloadLayer");
     }
 
     /**
@@ -178,8 +177,17 @@ public class DefaultTileLayerFactoryTest {
     private static void assertDecodesAs2x2(byte[] tileBytes) throws IOException {
         TileBitmap bitmap = INSTANCE.createTileBitmap(new ByteArrayInputStream(tileBytes), 2, false);
 
-        assertNotNull("WebP-decoded tile bitmap must not be null once imageio-webp is on the classpath", bitmap);
+        assertNotNull(bitmap, "WebP-decoded tile bitmap must not be null once imageio-webp is on the classpath");
         assertEquals(2, bitmap.getWidth());
         assertEquals(2, bitmap.getHeight());
+    }
+
+    private static File newFolder(File root, String... subDirs) throws IOException {
+        String subFolder = String.join("/", subDirs);
+        File result = new File(root, subFolder);
+        if (!result.mkdirs()) {
+            throw new IOException("Couldn't create folders " + root);
+        }
+        return result;
     }
 }

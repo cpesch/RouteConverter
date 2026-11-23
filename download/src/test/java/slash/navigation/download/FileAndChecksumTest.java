@@ -20,30 +20,31 @@
 
 package slash.navigation.download;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileAndChecksumTest {
 
-    @Rule
-    public TemporaryFolder tmp = new TemporaryFolder();
+    @TempDir
+    public File tmp;
 
     @Test
     public void testGetFile() throws IOException {
-        File file = tmp.newFile("test.zip");
+        File file = newFile(tmp, "test.zip");
         FileAndChecksum fc = new FileAndChecksum(file, null);
         assertEquals(file, fc.getFile());
     }
 
     @Test
     public void testGetExpectedChecksum() throws IOException {
-        File file = tmp.newFile("test.zip");
+        File file = newFile(tmp, "test.zip");
         Checksum checksum = new Checksum(null, null, "abc123");
         FileAndChecksum fc = new FileAndChecksum(file, checksum);
         assertEquals(checksum, fc.getExpectedChecksum());
@@ -51,14 +52,14 @@ public class FileAndChecksumTest {
 
     @Test
     public void testInitialActualChecksumIsNull() throws IOException {
-        File file = tmp.newFile("test.zip");
+        File file = newFile(tmp, "test.zip");
         FileAndChecksum fc = new FileAndChecksum(file, null);
         assertNull(fc.getActualChecksum());
     }
 
     @Test
     public void testSetAndGetActualChecksum() throws IOException {
-        File file = tmp.newFile("test.zip");
+        File file = newFile(tmp, "test.zip");
         FileAndChecksum fc = new FileAndChecksum(file, null);
         Checksum actual = new Checksum(null, null, "def456");
         fc.setActualChecksum(actual);
@@ -67,7 +68,7 @@ public class FileAndChecksumTest {
 
     @Test
     public void testSetExpectedChecksum() throws IOException {
-        File file = tmp.newFile("test.zip");
+        File file = newFile(tmp, "test.zip");
         Checksum original = new Checksum(null, null, "original");
         FileAndChecksum fc = new FileAndChecksum(file, original);
         Checksum updated = new Checksum(null, null, "updated");
@@ -77,7 +78,7 @@ public class FileAndChecksumTest {
 
     @Test
     public void testToStringContainsFileName() throws IOException {
-        File file = tmp.newFile("mymap.zip");
+        File file = newFile(tmp, "mymap.zip");
         FileAndChecksum fc = new FileAndChecksum(file, null);
         String s = fc.toString();
         assertTrue(s.contains("mymap.zip"));
@@ -85,9 +86,15 @@ public class FileAndChecksumTest {
 
     @Test
     public void testNullExpectedChecksum() throws IOException {
-        File file = tmp.newFile("test.zip");
+        File file = newFile(tmp, "test.zip");
         FileAndChecksum fc = new FileAndChecksum(file, null);
         assertNull(fc.getExpectedChecksum());
+    }
+
+    private static File newFile(File parent, String child) throws IOException {
+        File result = new File(parent, child);
+        result.createNewFile();
+        return result;
     }
 }
 

@@ -19,9 +19,9 @@
 */
 package slash.navigation.maps.mapsforge;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.helpers.DataSourceService;
@@ -30,8 +30,8 @@ import slash.navigation.maps.tileserver.TileServerMapManager;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.navigation.maps.mapsforge.MapsforgeMapManager.extractMapProvider;
@@ -39,7 +39,7 @@ import static slash.navigation.maps.mapsforge.MapsforgeMapManager.extractMapProv
 public class MapsforgeMapManagerDefaultThemeTest {
     private MapsforgeMapManager mapManager;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         List<DataSource> dataSources = List.of(
                 createDataSource("openandromaps", "maps/openandromaps5", "openandromaps/Elevate.xml"),
@@ -59,7 +59,7 @@ public class MapsforgeMapManagerDefaultThemeTest {
         mapManager = new MapsforgeMapManager(dataSourceManager, tileServerMapManager);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (mapManager != null)
             mapManager.dispose();

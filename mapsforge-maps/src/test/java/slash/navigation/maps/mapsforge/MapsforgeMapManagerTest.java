@@ -20,7 +20,7 @@
 
 package slash.navigation.maps.mapsforge;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.map.rendertheme.internal.MapsforgeThemes;
 import slash.navigation.maps.mapsforge.impl.VectorTheme;
 
@@ -36,10 +36,10 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mapsforge.map.rendertheme.internal.MapsforgeThemes.HILLSHADING;
 import static slash.navigation.maps.mapsforge.MapsforgeMapManager.createBuiltinThemes;
 import static slash.navigation.maps.mapsforge.MapsforgeMapManager.isMapsforgeMapFile;
@@ -134,7 +134,7 @@ public class MapsforgeMapManagerTest {
     public void testBuiltinThemesAreReadable() throws IOException {
         for (VectorTheme theme : createBuiltinThemes()) {
             try (InputStream stream = theme.getXmlRenderTheme().getRenderThemeAsStream()) {
-                assertNotNull(theme.description(), stream);
+                assertNotNull(stream, theme.description());
             }
         }
     }

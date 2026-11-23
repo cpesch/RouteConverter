@@ -19,9 +19,9 @@
 */
 package slash.navigation.download;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.download.executor.DownloadExecutor;
 
 import java.io.File;
@@ -34,8 +34,8 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.download.State.Queued;
 
 /**
@@ -64,7 +64,7 @@ public class DownloadExecutorFailureLoggingTest {
     private File queueFile, target, tempFile;
     private DownloadManager manager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         LOG.addHandler(handler);
 
@@ -74,7 +74,7 @@ public class DownloadExecutorFailureLoggingTest {
         tempFile = createTempFile("download", ".tmp");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         LOG.removeHandler(handler);
         manager.dispose();
@@ -101,8 +101,8 @@ public class DownloadExecutorFailureLoggingTest {
         executor.run();
 
         LogRecord record = findRecord(Level.SEVERE);
-        assertNotNull("expected a SEVERE log record for the failed download", record);
-        assertNotNull("the throwable must be attached to the log record, not just its text", record.getThrown());
+        assertNotNull(record, "expected a SEVERE log record for the failed download");
+        assertNotNull(record.getThrown(), "the throwable must be attached to the log record, not just its text");
     }
 
     private LogRecord findRecord(Level level) {

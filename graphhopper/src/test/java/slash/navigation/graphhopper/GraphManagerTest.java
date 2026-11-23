@@ -1,8 +1,8 @@
 package slash.navigation.graphhopper;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.MapDescriptor;
@@ -18,7 +18,9 @@ import java.util.prefs.Preferences;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -31,7 +33,7 @@ public class GraphManagerTest {
     private GraphManager graphManager;
     private final List<File> createdDirectories = new ArrayList<>();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         // In-memory preferences isolate the test from the shared user store: parallel
         // surefire forks all read java.util.prefs through the same OS backing store, so
@@ -48,7 +50,7 @@ public class GraphManagerTest {
         hamburg = File.createTempFile("hamburg", ".pbf", germanyGraphDirectory);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         GraphManager.setPreferences(Preferences.userNodeForPackage(GraphManager.class));
         assertTrue(croatia.delete());

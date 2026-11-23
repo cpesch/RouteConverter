@@ -19,9 +19,9 @@
 */
 package slash.navigation.mapview.mapsforge.updater;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -44,7 +44,7 @@ public class UpdateDecouplerTest {
     private ExecutorService executor;
     private UpdateDecoupler decoupler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         positionsModel = mock(PositionsModel.class);
         executor = Executors.newSingleThreadExecutor();
@@ -53,7 +53,7 @@ public class UpdateDecouplerTest {
         decoupler = new UpdateDecoupler(positionsModel, factory, executor);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         decoupler.dispose();
     }

@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.tools;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -30,7 +30,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.converter.tools.ResourceBundleCompletenessReport.DEFAULT_REGRESSION_THRESHOLD;
 import static slash.navigation.converter.tools.ResourceBundleCompletenessReport.LocaleCompleteness;
 
@@ -150,11 +152,13 @@ public class ResourceBundleCompletenessReportTest {
         assertEquals(50.0, result.get("fr").percent(), 0.001);
     }
 
-    @Test(expected = IOException.class)
-    public void testAnalyzeDirectoryOfNonExistentDirectoryThrows() throws IOException {
-        File directory = new File("does-not-exist-" + System.nanoTime());
+    @Test
+    public void testAnalyzeDirectoryOfNonExistentDirectoryThrows() {
+        assertThrows(IOException.class, () -> {
+            File directory = new File("does-not-exist-" + System.nanoTime());
 
-        report.analyzeDirectory(directory, "Bundle", "en");
+            report.analyzeDirectory(directory, "Bundle", "en");
+        });
     }
 
     @Test
