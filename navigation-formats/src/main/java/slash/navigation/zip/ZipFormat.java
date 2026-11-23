@@ -114,6 +114,9 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
                 }
             }
         } catch (ZipException e) {
+            // unlike readStream()'s per-entry catches, this is read()'s only caller,
+            // NavigationFormatParser.probeFormat(), which already catches Exception
+            // generically and treats it like a declined format, same as an IOException
             throw new IllegalArgumentException("Not a ZIP archive " + file + ": " + e, e);
         }
     }
