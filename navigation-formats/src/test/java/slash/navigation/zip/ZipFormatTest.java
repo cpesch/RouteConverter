@@ -158,6 +158,36 @@ public class ZipFormatTest {
         assertEquals(asList(1, 2), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
     }
 
+    private static String largeGpx(int waypoints) {
+        StringBuilder buffer = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<gpx version=\"1.0\" creator=\"test\" xmlns=\"http://www.topografix.com/GPX/1/0\">\n");
+        for (int i = 0; i < waypoints; i++)
+            buffer.append("<wpt lat=\"50.").append(1000 + i).append("\" lon=\"10.").append(1000 + i)
+                    .append("\"><name>Waypoint ").append(i).append("</name></wpt>\n");
+        return buffer.append("</gpx>\n").toString();
+    }
+
+    @Test
+    public void readsStreamedEntriesLargerThanTheReadBuffer() throws IOException {
+        // ZipOutputStream writes data descriptors, so ZipInputStream knows no entry size up front,
+        // like Google Takeout archives; the first entry is far larger than BufferedInputStream's 8 KB
+        String large = largeGpx(1000);
+        assertTrue(large.length() > 4 * 8192);
+        ParserResult result = parser.read(zip("Takeout/a.gpx", large, "Takeout/b.kml", KML22, "Takeout/c.gpx", GPX10));
+        assertTrue(result.isSuccessful());
+        assertEquals(asList(2, 2, 1000), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+    }
+
+    @Test
+    public void readsTheEntriesAfterAnEntryNoFormatReads() throws IOException {
+        StringBuilder noise = new StringBuilder();
+        for (int i = 0; i < 2000; i++)
+            noise.append("line ").append(i).append(" of a readme without positions\n");
+        ParserResult result = parser.read(zip("Takeout/README.txt", noise.toString(), "Takeout/b.kml", KML22, "Takeout/c.gpx", GPX10));
+        assertTrue(result.isSuccessful());
+        assertEquals(asList(2, 2), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+    }
+
     @Test
     public void reportsTheEntryFormatOfAnArchiveInAnArchive() throws IOException {
         File inner = zip("a.gpx", GPX10);

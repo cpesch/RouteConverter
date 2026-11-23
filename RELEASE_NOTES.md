@@ -45,6 +45,7 @@
 
 ### Fixes
 
+- ZIP archives written as a stream, such as Google Takeout exports, now open completely: files larger than 8 KB inside them were skipped, and a file no format could read could end reading the archive
 - A ZIP archive with several KML files no longer loses the positions of the first file and shows those of a later file twice
 - A ZIP archive whose files all have the same format is now shown and saved in that format, for example Garmin POI (.gpi) or KML, instead of always as GPX 1.1; archives with mixed formats still use GPX 1.1
 - An offline MBTiles map that RouteConverter cannot display, such as one with vector tiles, no longer stays locked on Windows until RouteConverter exits

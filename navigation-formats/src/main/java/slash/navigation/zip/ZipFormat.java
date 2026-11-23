@@ -21,14 +21,13 @@
 package slash.navigation.zip;
 
 import slash.common.io.Files;
-import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 
-import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,6 +44,7 @@ import java.util.zip.ZipInputStream;
 
 public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
     private static final Logger log = Logger.getLogger(ZipFormat.class.getName());
+    static final int MAXIMUM_ENTRY_SIZE = 256 * 1024 * 1024;
     static {
         System.setProperty("sun.zip.encoding", "default");
     }
@@ -81,13 +81,25 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
-                if(entry.isDirectory())
+                if (entry.isDirectory())
                     continue;
 
-                NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip));
-                int size = (int) entry.getSize() + 1;
-                buffer.mark(size);
-                context.parse(buffer, context.getStartDate(), Files.getExtension(entry.getName()));
+                // read the whole entry so that every format probe can reset() to its start: streamed
+                // archives like Google Takeout carry the size in a data descriptor after the data, so
+                // entry.getSize() is -1 and a mark() derived from it broke reset() after 8 KB
+                byte[] bytes = zip.readNBytes(MAXIMUM_ENTRY_SIZE + 1);
+                if (bytes.length > MAXIMUM_ENTRY_SIZE) {
+                    log.warning("Skipping zip entry " + entry.getName() + " larger than " + MAXIMUM_ENTRY_SIZE + " bytes");
+                    zip.closeEntry();
+                    continue;
+                }
+
+                try {
+                    context.parse(new ByteArrayInputStream(bytes), context.getStartDate(), Files.getExtension(entry.getName()));
+                } catch (Exception e) {
+                    // one entry that no format can read must not end reading the archive
+                    log.fine("Cannot read zip entry " + entry.getName() + ": " + e);
+                }
                 zip.closeEntry();
             }
         } catch (IOException e) {
