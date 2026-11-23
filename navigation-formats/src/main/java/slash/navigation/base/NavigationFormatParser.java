@@ -155,18 +155,17 @@ public class NavigationFormatParser {
         return declined ? ProbeOutcome.DECLINED : ProbeOutcome.READ;
     }
 
+    // reads an entry of a container such as a ZIP archive: unlike a file of its own, an entry no
+    // format reads routes from names no format, so the settings and README files of a Google
+    // Takeout archive do not turn the archive's format into a mix reported as GPX 1.1
     private void internalRead(InputStream buffer, List<NavigationFormat<BaseRoute<?, ?>>> formats, ParserContext<BaseRoute<?, ?>> context) throws IOException {
         int routeCountBefore = context.getRoutes().size();
-        NavigationFormat<BaseRoute<?, ?>> firstSuccessfulFormat = null;
 
         try {
             for (NavigationFormat<BaseRoute<?, ?>> format : formats) {
                 ProbeOutcome outcome = probeFormat(format, buffer, context, routeCountBefore);
                 if (outcome == ProbeOutcome.MATCHED)
                     break;
-                // if no route has been read, take the first that didn't throw an exception
-                if (outcome == ProbeOutcome.READ && firstSuccessfulFormat == null)
-                    firstSuccessfulFormat = format;
 
                 try {
                     buffer.reset();
@@ -178,9 +177,6 @@ public class NavigationFormatParser {
         } finally {
             buffer.close();
         }
-
-        if (context.getRoutes().isEmpty() && context.getFormats().isEmpty() && firstSuccessfulFormat != null)
-            context.addFormat(firstSuccessfulFormat);
     }
 
     public ParserResult read(File source, List<? extends NavigationFormat<?>> formats) throws IOException {

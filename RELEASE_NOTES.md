@@ -49,6 +49,7 @@
 - Photos in a Google Takeout ZIP archive are now placed from the JSON file Google writes next to each photo (IMG_1.jpg.json), since Google removes the GPS data from most photos; photos without any location no longer show up as position lists without coordinates
 - A ZIP archive with several KML files no longer loses the positions of the first file and shows those of a later file twice
 - A ZIP archive whose files all have the same format is now shown and saved in that format, for example Garmin POI (.gpi) or KML, instead of always as GPX 1.1; archives with mixed formats still use GPX 1.1
+- A ZIP archive whose settings or README files carry no positions, such as a Google Takeout export, is now shown in the format of the files that do, instead of as GPX 1.1; a ZIP archive without any positions no longer fails with an error
 - An offline MBTiles map that RouteConverter cannot display, such as one with vector tiles, no longer stays locked on Windows until RouteConverter exits
 - Google Takeout saved places and reviews without location information no longer show up as positions at 0°/0° in the Atlantic when opened as GeoJSON; they come in as positions without coordinates (#440)
 - Google Takeout reviews (Reviews.json / Bewertungen.json) now show their star rating and review text in the description when opened as GeoJSON (#440)

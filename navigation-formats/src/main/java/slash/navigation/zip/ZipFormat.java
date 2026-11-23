@@ -78,6 +78,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
     }
 
     public void read(InputStream source, ParserContext<BaseRoute<?, ?>> context) throws IOException {
+        int archiveRouteCountBefore = context.getRoutes().size();
         PhotoSidecars photoSidecars = new PhotoSidecars();
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
@@ -120,6 +121,10 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
             log.fine("Error reading invalid zip entry from " + source + ": " + e);
         }
         photoSidecars.removePhotosWithoutCoordinates(context);
+
+        // no entry had routes: decline, since a ZIP archive cannot stand for an empty position list
+        if (context.getRoutes().size() == archiveRouteCountBefore)
+            throw new IllegalArgumentException("No routes in ZIP archive " + source);
     }
 
     public void write(BaseRoute<?, ?> route, OutputStream target, int startIndex, int endIndex) throws IOException {
