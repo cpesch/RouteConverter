@@ -54,6 +54,7 @@
 - A ZIP archive whose settings or README files carry no positions, such as a Google Takeout export, is now shown in the format of the files that do, instead of as GPX 1.1; a ZIP archive without any positions no longer fails with an error
 - An offline MBTiles map that RouteConverter cannot display, such as one with vector tiles, no longer stays locked on Windows until RouteConverter exits
 - Google Takeout saved places and reviews without location information no longer show up as positions at 0°/0° in the Atlantic when opened as GeoJSON; they come in as positions without coordinates (#440)
+- CSV files whose column names are written in lower case, such as timestamp, latitude, longitude and altitude in the GPS location files of Fitbit and Google Health in Google Takeout, are now read with their coordinates, elevation and time; times like 2024-01-09T09:14:11Z are understood
 - Google Takeout reviews (Reviews.json / Bewertungen.json) now show their star rating and review text in the description when opened as GeoJSON (#440)
 - Formats read and written with GPSBabel work again when no GPSBabel path is set under Extras > Options: on Java 25 RouteConverter took its working directory for the GPSBabel program. (#419)
 - OziExplorer route and waypoint files whose lines are padded with commas, as spreadsheet exports write them, and OziExplorer CE Route2 (.rt2) files are read again
