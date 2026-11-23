@@ -195,8 +195,9 @@ public class NavigationFormatRegistry {
         addFormat(MicrosoftExcel97Format.class);
         addFormat(MicrosoftExcel2008Format.class);
         addFormat(FitFormat.class);
-        addFormat(GoogleCommuteRoutesFormat.class);
         addFormat(GoogleTimelineFormat.class);
+        // after Google Timeline, which reads the big Records.json files first
+        addFormat(GoogleCommuteRoutesFormat.class);
         addFormat(GeoJsonFormat.class);
         addFormat(GoogleSavedListFormat.class);
         addFormat(MSFSFlightPlanFormat.class);

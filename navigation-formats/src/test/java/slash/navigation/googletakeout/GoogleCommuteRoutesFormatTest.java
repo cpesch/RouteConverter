@@ -92,8 +92,44 @@ public class GoogleCommuteRoutesFormatTest {
     }
 
     @Test
-    public void tripsWithoutCoordinatesGiveNoRoute() throws IOException {
-        assertEquals(0, read("{\"trips\": [{\"place_visit\": [{\"id\": \"\"}], \"transition\": []}]}").size());
+    public void tripsWithoutCoordinatesAreDeclined() {
+        assertThrows(IllegalArgumentException.class, () ->
+                read("{\"trips\": [{\"place_visit\": [{\"id\": \"\"}], \"transition\": []}]}"));
+    }
+
+    @Test
+    public void parserGivesNoCommuteListForTripsWithoutCoordinates() throws IOException {
+        File file = File.createTempFile("Commute routes", ".json");
+        try {
+            Files.writeString(file.toPath(), "{\"trips\": [{\"place_visit\": [{\"id\": \"\"}], \"transition\": []}]}");
+            ParserResult result = new NavigationFormatParser(new NavigationFormatRegistry()).read(file);
+            if (result.isSuccessful()) {
+                assertNotEquals(GoogleCommuteRoutesFormat.class, result.getFormat().getClass());
+                assertEquals(0, result.getTheRoute().getPositionCount());
+            }
+        } finally {
+            assertTrue(file.delete());
+        }
+    }
+
+    @Test
+    public void readsWithByteOrderMarkAndSkipsOtherTopLevelFields() throws IOException {
+        StringBuilder locations = new StringBuilder();
+        for (int i = 0; i < 1000; i++)
+            locations.append(i > 0 ? "," : "").append("{\"latitudeE7\": 501000000, \"longitudeE7\": 84000000}");
+        List<Wgs84Route> routes = read("\uFEFF{\"locations\": [" + locations + "], \"trips\": [{\"place_visit\": [" +
+                "{\"id\": \"DESTINATION_ID\", \"place\": {\"lat_lng\": {\"latitude\": 50.11, \"longitude\": 8.68}}}]}]}");
+        assertEquals(1, routes.get(0).getPositionCount());
+    }
+
+    @Test
+    public void asDegreesOnlyDividesLargeIntegers() throws IOException {
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        assertEquals(50.11, GoogleCommuteRoutesFormat.asDegrees(mapper.readTree("501100000")), DELTA);
+        assertEquals(181.0, GoogleCommuteRoutesFormat.asDegrees(mapper.readTree("181")), DELTA);
+        assertEquals(50.11, GoogleCommuteRoutesFormat.asDegrees(mapper.readTree("50.11")), DELTA);
+        assertThrows(IllegalArgumentException.class, () -> read("{\"trips\": [{\"place_visit\": [{\"id\": \"DESTINATION_ID\", " +
+                "\"place\": {\"lat_lng\": {\"latitude\": 181, \"longitude\": 8}}}]}]}"));
     }
 
     @Test
