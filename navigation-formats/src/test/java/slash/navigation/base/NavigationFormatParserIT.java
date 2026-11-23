@@ -20,7 +20,7 @@
 
 package slash.navigation.base;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.itn.TomTom5RouteFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
@@ -31,8 +31,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.RouteCharacteristics.*;
 
@@ -45,7 +48,7 @@ public class NavigationFormatParserIT {
         assertNotNull(result.getFormat());
         assertNotNull(result.getAllRoutes());
         assertFalse(result.getAllRoutes().isEmpty());
-        assertNotNull("Cannot read route from " + source, result.getTheRoute());
+        assertNotNull(result.getTheRoute(), "Cannot read route from " + source);
         assertTrue(result.getTheRoute().getPositionCount() > 0);
         return result;
     }

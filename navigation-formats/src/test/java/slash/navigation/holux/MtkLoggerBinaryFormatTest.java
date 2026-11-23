@@ -20,7 +20,7 @@
 
 package slash.navigation.holux;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatParser;
@@ -41,11 +41,11 @@ import java.util.Random;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.holux.MtkLoggerBinaryFormat.*;
@@ -514,10 +514,10 @@ public class MtkLoggerBinaryFormatTest {
             }
             byte[] data = dump.toByteArray();
 
-            assertEquals("run " + run, count, readTrack(data).getPositionCount());
+            assertEquals(count, readTrack(data).getPositionCount(), "run " + run);
             ParserContextImpl<GpxRoute> holux = new ParserContextImpl<>();
             new HoluxM241BinaryFormat().read(new ByteArrayInputStream(data), holux);
-            assertTrue("run " + run, holux.getRoutes().isEmpty());
+            assertTrue(holux.getRoutes().isEmpty(), "run " + run);
         }
     }
 
@@ -577,7 +577,7 @@ public class MtkLoggerBinaryFormatTest {
             for (int run = 0; run < 20; run++) {
                 byte[] data = new byte[length];
                 random.nextBytes(data);
-                assertTrue("length " + length, read(data).isEmpty());
+                assertTrue(read(data).isEmpty(), "length " + length);
             }
         }
     }

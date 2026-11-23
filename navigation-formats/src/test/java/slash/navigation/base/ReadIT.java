@@ -20,8 +20,8 @@
 
 package slash.navigation.base;
 
-import org.junit.AfterClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.igo.Igo8TrackFormat;
@@ -38,9 +38,11 @@ import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static java.util.Collections.singletonList;
-import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationTestCase.*;
@@ -79,9 +81,9 @@ public class ReadIT {
                 File readableFile = createHermeticSampleFile(file);
                 ParserResult result = parser.read(readableFile, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(file.getName())));
                 assertNotNull(result);
-                assertTrue("Cannot read route from " + file, result.isSuccessful());
+                assertTrue(result.isSuccessful(), "Cannot read route from " + file);
                 assertNotNull(result.getFormat());
-                assertNotNull("Cannot get route from " + file, result.getTheRoute());
+                assertNotNull(result.getTheRoute(), "Cannot get route from " + file);
                 assertNotNull(result.getAllRoutes());
                 assertFalse(result.getAllRoutes().isEmpty());
                 for (BaseRoute route : result.getAllRoutes()) {
@@ -94,18 +96,18 @@ public class ReadIT {
                         !file.getName().endsWith(".gdb") && !file.getName().endsWith(".nmea") &&
                         !file.getName().endsWith(".mps") && !file.getName().endsWith(".rte") &&
                         !file.getName().endsWith(".tef") && !file.getName().endsWith(".wpt"))
-                    assertNotNull("Route has no name", result.getTheRoute().getName());
+                    assertNotNull(result.getTheRoute().getName(), "Route has no name");
                 // a GoPal 3 track without positions which is not rejected because the following Nmn4Format would try to readGpxFile if forever
                 // a OziExplorer Route has a first route without a single position
                 if (ONLY_READ_BY_GPSBABEL_XCSV.contains(file.getName()))
-                    assertNotEquals("Garmin POI Database must not claim " + file, GarminPoiDbFormat.class, result.getFormat().getClass());
+                    assertNotEquals(GarminPoiDbFormat.class, result.getFormat().getClass(), "Garmin POI Database must not claim " + file);
                 else if (!file.getName().equals("dieter3-GoPal3Track.trk") && !file.getName().equals("ozi-condecourt.rte"))
-                    assertTrue("Route " + file + " has no positions", result.getTheRoute().getPositionCount() > 0);
+                    assertTrue(result.getTheRoute().getPositionCount() > 0, "Route " + file + " has no positions");
             }
         });
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws IOException {
         PrintStream printStream = new PrintStream(new FileOutputStream(createTempFile("comments", ".csv")));
         String[] strings = comments.toArray(new String[0]);
@@ -226,7 +228,7 @@ public class ReadIT {
         readFiles(".ptm", file -> {
             ParserResult result = parser.read(createHermeticSampleFile(file), parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(file.getName())));
             assertNotNull(result);
-            assertFalse("iGO8 Track must not claim " + file, ((Object) result.getFormat()) instanceof Igo8TrackFormat);
+            assertFalse(((Object) result.getFormat()) instanceof Igo8TrackFormat, "iGO8 Track must not claim " + file);
         });
     }
 
@@ -435,7 +437,7 @@ public class ReadIT {
                 try {
                     ParserResult result = parser.read(file);
                     assertNotNull(result);
-                    assertNotEquals("Can read route from " + file, 0, result.getAllRoutes().size());
+                    assertNotEquals(0, result.getAllRoutes().size(), "Can read route from " + file);
                 } catch (NumberFormatException e) {
                     // intentionally left empty
                 }
@@ -449,12 +451,12 @@ public class ReadIT {
             public void test(File file) throws IOException {
                 ParserResult result = parser.read(file);
                 assertNotNull(result);
-                assertTrue("Cannot read route from " + file, result.isSuccessful());
+                assertTrue(result.isSuccessful(), "Cannot read route from " + file);
                 // binary .BTK files used to be claimed (falsely) by the lenient GPSBabel-based CompeGPS Data
                 // formats, which hid that .xcsv also accepts them; the native CompeGPS Data formats require
                 // "G" and "U" lines first (#390)
                 if (!file.getName().endsWith(".BTK"))
-                    assertNotEquals("Can only read as .xcsv " + file, GarminPoiDbFormat.class, result.getFormat().getClass());
+                    assertNotEquals(GarminPoiDbFormat.class, result.getFormat().getClass(), "Can only read as .xcsv " + file);
             }
         });
     }
@@ -465,8 +467,8 @@ public class ReadIT {
             public void test(File file) throws IOException {
                 ParserResult result = parser.read(file);
                 assertNotNull(result);
-                assertTrue("Cannot read route from " + file, result.isSuccessful());
-                assertEquals("Cannot read as .xcsv " + file, GarminPoiDbFormat.class, result.getFormat().getClass());
+                assertTrue(result.isSuccessful(), "Cannot read route from " + file);
+                assertEquals(GarminPoiDbFormat.class, result.getFormat().getClass(), "Cannot read as .xcsv " + file);
             }
         });
     }

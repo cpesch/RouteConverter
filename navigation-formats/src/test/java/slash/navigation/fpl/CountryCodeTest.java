@@ -20,9 +20,11 @@
 
 package slash.navigation.fpl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CountryCodeTest {
 
@@ -74,7 +76,7 @@ public class CountryCodeTest {
 
     @Test
     public void testEnumHasManyValues() {
-        assertTrue("Should have more than 10 country codes", CountryCode.values().length > 10);
+        assertTrue(CountryCode.values().length > 10, "Should have more than 10 country codes");
     }
 
     @Test

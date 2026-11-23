@@ -19,7 +19,7 @@
 */
 package slash.navigation.simple;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserResult;
@@ -31,8 +31,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class GlopusFormatTest {

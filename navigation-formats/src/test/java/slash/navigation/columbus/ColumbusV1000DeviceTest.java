@@ -1,15 +1,15 @@
 package slash.navigation.columbus;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ColumbusV1000DeviceTest {
-    @Before
+    @BeforeEach
     public void setUp() {
         ColumbusV1000Device.setPreferences(new InMemoryPreferences());
     }

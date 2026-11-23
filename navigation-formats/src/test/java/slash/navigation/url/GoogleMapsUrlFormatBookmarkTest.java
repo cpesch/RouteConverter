@@ -20,15 +20,15 @@
 
 package slash.navigation.url;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 
 public class GoogleMapsUrlFormatBookmarkTest {

@@ -20,7 +20,7 @@
 
 package slash.navigation.tef;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.gpx.Gpx10Format;
@@ -34,11 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -229,15 +229,15 @@ public class TourExchangeFormatTest {
         String[] lines = xml.split("\n");
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", lines[0]);
         assertEquals("<TEF Comment=\"TourExchangeFormat\" Version=\"2.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">", lines[1]);
-        assertTrue(lines[2], lines[2].matches("<Header Datasource=\"RoutePlanningProgramm\" Name=\"Tour\" Software=\"RouteConverter [^\"]+\" CreationTime=\"\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d[+-]\\d\\d:\\d\\d\">"));
+        assertTrue(lines[2].matches("<Header Datasource=\"RoutePlanningProgramm\" Name=\"Tour\" Software=\"RouteConverter [^\"]+\" CreationTime=\"\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d[+-]\\d\\d:\\d\\d\">"), lines[2]);
         assertEquals("  <Setup CoordinateSystem=\"GeoDecimal\" Measure=\"metric\"/>", lines[3]);
-        assertTrue(lines[4], lines[4].matches("  <Route Distance=\"\\d+\" Duration=\"60\"/>"));
+        assertTrue(lines[4].matches("  <Route Distance=\"\\d+\" Duration=\"60\"/>"), lines[4]);
         assertEquals("</Header>", lines[5]);
         assertEquals("<WaypointList ItemCount=\"3\">", lines[6]);
 
-        assertTrue(lines[7], lines[7].matches("<Item Altitude=\"6\" PointDist=\"0\" PointDescription=\"Hamburg\" Prio=\"-2\" SegDist=\"\\d+\" SegTime=\"0\" TimeStamp=\"2007-06-12T09:22:45\"><Point x=\"10.032\" y=\"53.56949\"/></Item>"));
-        assertTrue(lines[8], lines[8].matches("<Item Altitude=\"0\" PointDist=\"\\d+\" PointDescription=\"Mitte\" Prio=\"4\" SegDist=\"\\d+\" SegTime=\"0\" ViaStation=\"true\"><Point x=\"10.0334\" y=\"53.5701\"/></Item>"));
-        assertTrue(lines[9], lines[9].matches("<Item Altitude=\"44\" PointDist=\"\\d+\" PointDescription=\"Ziel\" Prio=\"-4\" SegDist=\"0\" SegTime=\"0\" TimeStamp=\"2007-06-12T09:23:45\"><Point x=\"10.04\" y=\"53.58\"/></Item>"));
+        assertTrue(lines[7].matches("<Item Altitude=\"6\" PointDist=\"0\" PointDescription=\"Hamburg\" Prio=\"-2\" SegDist=\"\\d+\" SegTime=\"0\" TimeStamp=\"2007-06-12T09:22:45\"><Point x=\"10.032\" y=\"53.56949\"/></Item>"), lines[7]);
+        assertTrue(lines[8].matches("<Item Altitude=\"0\" PointDist=\"\\d+\" PointDescription=\"Mitte\" Prio=\"4\" SegDist=\"\\d+\" SegTime=\"0\" ViaStation=\"true\"><Point x=\"10.0334\" y=\"53.5701\"/></Item>"), lines[8]);
+        assertTrue(lines[9].matches("<Item Altitude=\"44\" PointDist=\"\\d+\" PointDescription=\"Ziel\" Prio=\"-4\" SegDist=\"0\" SegTime=\"0\" TimeStamp=\"2007-06-12T09:23:45\"><Point x=\"10.04\" y=\"53.58\"/></Item>"), lines[9]);
         assertEquals("</WaypointList>", lines[10]);
         assertEquals("</TEF>", lines[11]);
         assertFalse(xml.contains("Instruction"));
@@ -248,8 +248,8 @@ public class TourExchangeFormatTest {
     @Test
     public void coordinatesHaveFiveDecimalsWithoutTrailingZeros() throws IOException {
         String xml = write(route("x", position(-0.123456789, 1.0, null, null, "a"), position(179.9999951, -45.000004, null, null, "b")));
-        assertTrue(xml, xml.contains("<Point x=\"-0.12346\" y=\"1\"/>"));
-        assertTrue(xml, xml.contains("<Point x=\"180\" y=\"-45\"/>"));
+        assertTrue(xml.contains("<Point x=\"-0.12346\" y=\"1\"/>"), xml);
+        assertTrue(xml.contains("<Point x=\"180\" y=\"-45\"/>"), xml);
     }
 
     @Test
@@ -257,7 +257,7 @@ public class TourExchangeFormatTest {
         // 11.123455 and 2.000025 are stored just below the half; rounding the binary expansion would
         // give 11.12345 and 2.00002, rounding the decimal value gives what the user sees
         String xml = write(route("x", position(11.123455, 2.000025, null, null, "a"), position(1.0, 1.0, null, null, "b")));
-        assertTrue(xml, xml.contains("<Point x=\"11.12346\" y=\"2.00003\"/>"));
+        assertTrue(xml.contains("<Point x=\"11.12346\" y=\"2.00003\"/>"), xml);
     }
 
     @Test
@@ -270,7 +270,7 @@ public class TourExchangeFormatTest {
     @Test
     public void emptyNameIsDerivedFromFirstAndLastDescription() throws IOException {
         String xml = write(route(null, position(1, 2, null, null, "Hamburg"), position(3, 4, null, null, "Berlin")));
-        assertTrue(xml, xml.contains(" Name=\"von Hamburg nach Berlin\" "));
+        assertTrue(xml.contains(" Name=\"von Hamburg nach Berlin\" "), xml);
     }
 
     @Test

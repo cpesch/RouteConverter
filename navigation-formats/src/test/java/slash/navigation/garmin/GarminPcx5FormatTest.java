@@ -20,9 +20,9 @@
 
 package slash.navigation.garmin;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.gpx.GpxPosition;
@@ -43,10 +43,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -68,13 +68,13 @@ public class GarminPcx5FormatTest {
     private final GarminPcx5Format format = new GarminPcx5Format();
     private TimeZone defaultTimeZone;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         defaultTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         TimeZone.setDefault(defaultTimeZone);
     }
@@ -174,7 +174,7 @@ public class GarminPcx5FormatTest {
         assertEquals(47.5, position.getLatitude(), 1e-9);
         assertEquals(11.25, position.getLongitude(), 1e-9);
         assertEquals(500.0, position.getElevation(), 0.0);
-        assertTrue(position.getDescription(), position.getDescription().startsWith("Ab1 Cd; Some pass"));
+        assertTrue(position.getDescription().startsWith("Ab1 Cd; Some pass"), position.getDescription());
     }
 
     @Test
@@ -369,9 +369,9 @@ public class GarminPcx5FormatTest {
         GpxRoute route = format.createRoute(Waypoints, null, asList(
                 position(1.0, 1.0, 2.5, T0, "a"), position(1.0, 1.0, 3.5, T0, "b"), position(1.0, 1.0, -0.4, T0, "c")));
         String written = write(route);
-        assertTrue(written, written.contains("01-JAN-70 00:00:00     2 "));
-        assertTrue(written, written.contains("01-JAN-70 00:00:00     4 "));
-        assertTrue(written, written.contains("01-JAN-70 00:00:00    -0 "));
+        assertTrue(written.contains("01-JAN-70 00:00:00     2 "), written);
+        assertTrue(written.contains("01-JAN-70 00:00:00     4 "), written);
+        assertTrue(written.contains("01-JAN-70 00:00:00    -0 "), written);
     }
 
     @Test
@@ -409,7 +409,7 @@ public class GarminPcx5FormatTest {
         // GPSBabel 1.5.4 writes a 12 hour clock without am/pm
         for (int hour : new int[]{0, 1, 11, 12, 13, 15, 23}) {
             GpxRoute route = format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, utc(2026, 6, 5, hour, 29, 21), "P1")));
-            assertTrue(write(route), write(route).contains(String.format(" 05-JUN-26 %02d:29:21 ", hour)));
+            assertTrue(write(route).contains(String.format(" 05-JUN-26 %02d:29:21 ", hour)), write(route));
         }
     }
 
@@ -417,15 +417,15 @@ public class GarminPcx5FormatTest {
     public void positionsWithoutTimeAreWrittenWithAPlaceholderAndReadWithoutTime() throws IOException {
         // GPSBabel 1.5.4 writes the current time
         String written = write(format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, null, "P1"))));
-        assertTrue(written, written.contains(" 01-JAN-70 00:00:00   500 P1 "));
+        assertTrue(written.contains(" 01-JAN-70 00:00:00   500 P1 "), written);
         assertNull(read(written).get(0).getPosition(0).getTime());
     }
 
     @Test
     public void writesLatin1AndReplacesOtherCharacters() throws IOException {
         String written = write(format.createRoute(Waypoints, null, singletonList(position(11.25, 47.5, 500.0, T0, "Z\u00fcrich\u0001; K\u00e4se \u20ac"))));
-        assertTrue(written, written.contains("W  Z\u00fcrich N4730.00000"));
-        assertTrue(written, written.contains(" K\u00e4se ? "));
+        assertTrue(written.contains("W  Z\u00fcrich N4730.00000"), written);
+        assertTrue(written.contains(" K\u00e4se ? "), written);
     }
 
     @Test
@@ -444,7 +444,7 @@ public class GarminPcx5FormatTest {
             assertEquals(expected.getElevation(), actual.getElevation(), 0.0);
             assertEquals(expected.getTime(), actual.getTime());
             // the description is everything from column 60 on, including proximity and symbol of the written line
-            assertTrue(actual.getDescription(), actual.getDescription().startsWith(expected.getDescription()));
+            assertTrue(actual.getDescription().startsWith(expected.getDescription()), actual.getDescription());
         }
     }
 
@@ -480,7 +480,7 @@ public class GarminPcx5FormatTest {
         for (NavigationFormat<?> format : new NavigationFormatRegistry().getReadFormats())
             names.add(format.getClass().getName());
         int index = names.indexOf("slash.navigation.garmin.GarminPcx5Format");
-        assertTrue(names.toString(), index > 0);
+        assertTrue(index > 0, names.toString());
         assertFalse(names.contains("slash.navigation.babel.GarminPcx5Format"));
         assertEquals("CompeGPSDataWaypointFormat", names.get(index - 1).substring(names.get(index - 1).lastIndexOf('.') + 1));
         assertEquals("GeoCachingFormat", names.get(index + 1).substring(names.get(index + 1).lastIndexOf('.') + 1));

@@ -20,8 +20,8 @@
 
 package slash.navigation.base;
 
-import junit.framework.AssertionFailedError;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 import slash.navigation.alan.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.*;
 import slash.navigation.ozi.*;

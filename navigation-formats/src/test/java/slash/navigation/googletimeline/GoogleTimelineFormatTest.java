@@ -19,7 +19,7 @@
 */
 package slash.navigation.googletimeline;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.common.type.ISO8601;
 import slash.navigation.base.ParserContext;
@@ -33,8 +33,12 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.Calendar;
 import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 
 /**
@@ -868,7 +872,7 @@ public class GoogleTimelineFormatTest {
                     .append(timestamp).append("\",\"deviceTag\":\"1\"}");
         }
         json.append("]}");
-        assertTrue("fixture must exceed the streaming probe's 64 KiB mark", json.length() > (1 << 16));
+        assertTrue(json.length() > (1 << 16), "fixture must exceed the streaming probe's 64 KiB mark");
 
         InputStream input = new ByteArrayInputStream(json.toString().getBytes(UTF8_ENCODING));
         format.read(input, context);
@@ -895,7 +899,7 @@ public class GoogleTimelineFormatTest {
                     .append("]}}");
         }
         json.append("]");
-        assertTrue("fixture must exceed the streaming probe's 64 KiB mark", json.length() > (1 << 16));
+        assertTrue(json.length() > (1 << 16), "fixture must exceed the streaming probe's 64 KiB mark");
 
         InputStream input = new ByteArrayInputStream(json.toString().getBytes(UTF8_ENCODING));
         format.read(input, context);

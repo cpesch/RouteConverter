@@ -20,7 +20,10 @@
 
 package slash.navigation.kml;
 
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Wbt201LogTest extends NavigationTestCase {
     private final Kml20Format format = new Kml20Format();
@@ -29,6 +32,7 @@ public class Wbt201LogTest extends NavigationTestCase {
             "\t\t\t\t]]></description>";
     private static final String WBT201LOG_DESCRIPTION2 = "<descripti6&deg;</br><br>Alt.=390m (1279ft)</br><br>Speed=4Km/h (2ion>";
 
+    @Test
     public void testParseSpeed() {
         assertEquals(4.0, format.parseSpeed(WBT201LOG_DESCRIPTION));
         assertEquals(4.0, format.parseSpeed(WBT201LOG_DESCRIPTION2));

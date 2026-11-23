@@ -1,14 +1,13 @@
 package slash.navigation.wbt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.Test;
-
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
@@ -22,22 +21,22 @@ public class WintecWbt202TesFormatTest {
 	public void testBasicValues() {
 		WintecWbt202TesFormat format = new WintecWbt202TesFormat();
 
-		assertTrue("should support reading", format.isSupportsReading());
-		assertFalse("should not support writing", format.isSupportsWriting());
-		assertTrue("should support multiple routes", format.isSupportsMultipleRoutes());
-		assertEquals("unexpected extension", ".tes", format.getExtension());
-		assertEquals("unexpected name", "Wintec WBT-202 (*.tes)", format.getName());
-		assertEquals("unexpected maximum filename length", 255, format.getMaximumFileNameLength());
-		assertEquals("unexpected maximum position count", Integer.MAX_VALUE, format.getMaximumPositionCount());
-		assertEquals("unexpected maximum route name length", 64, format.getMaximumRouteNameLength());
+		assertTrue(format.isSupportsReading(), "should support reading");
+		assertFalse(format.isSupportsWriting(), "should not support writing");
+		assertTrue(format.isSupportsMultipleRoutes(), "should support multiple routes");
+		assertEquals(".tes", format.getExtension(), "unexpected extension");
+		assertEquals("Wintec WBT-202 (*.tes)", format.getName(), "unexpected name");
+		assertEquals(255, format.getMaximumFileNameLength(), "unexpected maximum filename length");
+		assertEquals(Integer.MAX_VALUE, format.getMaximumPositionCount(), "unexpected maximum position count");
+		assertEquals(64, format.getMaximumRouteNameLength(), "unexpected maximum route name length");
 	}
 
 	@Test
 	public void testGetReadFormatsByExtension() {
 		@SuppressWarnings("rawtypes")
 		List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".tes");
-		assertNotNull("returned formats is null", formats);
-		assertFalse("formats are empty", formats.isEmpty());
+		assertNotNull(formats, "returned formats is null");
+		assertFalse(formats.isEmpty(), "formats are empty");
 		assertEquals(WintecWbt202TesFormat.class, formats.get(0).getClass());
 	}
 
@@ -49,37 +48,37 @@ public class WintecWbt202TesFormatTest {
 		BaseNavigationPosition wp3 = format.createWaypoint(1713309678, 481480608, 114600512, (short) 533, 1, false);
 		BaseNavigationPosition wp4 = format.createWaypoint(1713309678, 881480608, 114600512, (short) 533, 1, false);
 
-		assertFalse("expected to be invalid",
-				format.isValidData(format.createWaypoint(1713309531, -1, 114599400, (short) 533, 1, false), null));
-		assertFalse("expected to be invalid",
-				format.isValidData(format.createWaypoint(1713309531, 0, 114599400, (short) 533, 1, false), null));
-		assertFalse("expected to be invalid",
-				format.isValidData(format.createWaypoint(1713309531, 100, 114599400, (short) 533, 1, false), null));
-		assertTrue("expected to be valid",
-				format.isValidData(format.createWaypoint(1713309531, 101, 114599400, (short) 533, 1, false), null));
+		assertFalse(format.isValidData(format.createWaypoint(1713309531, -1, 114599400, (short) 533, 1, false), null),
+				"expected to be invalid");
+		assertFalse(format.isValidData(format.createWaypoint(1713309531, 0, 114599400, (short) 533, 1, false), null),
+				"expected to be invalid");
+		assertFalse(format.isValidData(format.createWaypoint(1713309531, 100, 114599400, (short) 533, 1, false), null),
+				"expected to be invalid");
+		assertTrue(format.isValidData(format.createWaypoint(1713309531, 101, 114599400, (short) 533, 1, false), null),
+				"expected to be valid");
 
-		assertFalse("expected to be invalid",
-				format.isValidData(format.createWaypoint(1713309531, 481480480, -1, (short) 533, 1, false), null));
-		assertFalse("expected to be invalid",
-				format.isValidData(format.createWaypoint(1713309531, 481480480, 0, (short) 533, 1, false), null));
-		assertFalse("expected to be invalid",
-				format.isValidData(format.createWaypoint(1713309531, 481480480, 100, (short) 533, 1, false), null));
-		assertTrue("expected to be valid",
-				format.isValidData(format.createWaypoint(1713309531, 481480480, 101, (short) 533, 1, false), null));
+		assertFalse(format.isValidData(format.createWaypoint(1713309531, 481480480, -1, (short) 533, 1, false), null),
+				"expected to be invalid");
+		assertFalse(format.isValidData(format.createWaypoint(1713309531, 481480480, 0, (short) 533, 1, false), null),
+				"expected to be invalid");
+		assertFalse(format.isValidData(format.createWaypoint(1713309531, 481480480, 100, (short) 533, 1, false), null),
+				"expected to be invalid");
+		assertTrue(format.isValidData(format.createWaypoint(1713309531, 481480480, 101, (short) 533, 1, false), null),
+				"expected to be valid");
 
-		assertFalse("expected to be invalid", format
-				.isValidData(format.createWaypoint(1713309531, 481480480, 114599400, (short) 15001, 1, false), null));
-		assertFalse("expected to be invalid", format
-				.isValidData(format.createWaypoint(1713309531, 481480480, 114599400, (short) 15000, 1, false), null));
-		assertTrue("expected to be valid", format
-				.isValidData(format.createWaypoint(1713309531, 481480480, 114599400, (short) 14999, 1, false), null));
+		assertFalse(format
+				.isValidData(format.createWaypoint(1713309531, 481480480, 114599400, (short) 15001, 1, false), null), "expected to be invalid");
+		assertFalse(format
+				.isValidData(format.createWaypoint(1713309531, 481480480, 114599400, (short) 15000, 1, false), null), "expected to be invalid");
+		assertTrue(format
+				.isValidData(format.createWaypoint(1713309531, 481480480, 114599400, (short) 14999, 1, false), null), "expected to be valid");
 
-		assertTrue("expected to be valid", format.isValidData(wp1, null));
-		assertFalse("expected to be invalid", format.isValidData(wp1, wp1));
-		assertTrue("expected to be valid", format.isValidData(wp2, wp1));
-		assertFalse("expected to be invalid", format.isValidData(wp1, wp2));
+		assertTrue(format.isValidData(wp1, null), "expected to be valid");
+		assertFalse(format.isValidData(wp1, wp1), "expected to be invalid");
+		assertTrue(format.isValidData(wp2, wp1), "expected to be valid");
+		assertFalse(format.isValidData(wp1, wp2), "expected to be invalid");
 
-		assertTrue("expected to be valid", format.isValidData(wp3, wp1));
-		assertFalse("expected to be invalid", format.isValidData(wp4, wp1));
+		assertTrue(format.isValidData(wp3, wp1), "expected to be valid");
+		assertFalse(format.isValidData(wp4, wp1), "expected to be invalid");
 	}
 }
