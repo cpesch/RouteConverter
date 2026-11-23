@@ -20,7 +20,7 @@
 
 package slash.navigation.routing;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
@@ -31,9 +31,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests the {@link RoutingService#isRoutingDataAvailable(MapDescriptor)} default, which derives
@@ -59,8 +59,8 @@ public class RoutingServiceTest {
     // region at all is not the same as everything for the region already downloaded
     @Test
     public void isRoutingDataAvailableIsFalseForAnEmptyCoverageGrid() {
-        assertFalse("an empty coverage grid means nothing is published, not that everything is downloaded",
-                new TileGridRoutingService(Map.of()).isRoutingDataAvailable(mapDescriptor));
+        assertFalse(new TileGridRoutingService(Map.of()).isRoutingDataAvailable(mapDescriptor),
+                "an empty coverage grid means nothing is published, not that everything is downloaded");
     }
 
     @Test

@@ -20,9 +20,9 @@
 
 package slash.navigation.xml;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
@@ -50,9 +50,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Hardening of the XML read path for an untrusted upload (the online converter): a DOCTYPE with
@@ -66,7 +66,7 @@ public class XmlHardeningTest {
     private final AtomicInteger connections = new AtomicInteger();
     private File secretFile;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         server = new ServerSocket(0, 5, InetAddress.getLoopbackAddress());
         Thread acceptor = new Thread(() -> {
@@ -86,7 +86,7 @@ public class XmlHardeningTest {
         Files.writeString(secretFile.toPath(), SECRET);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         server.close();
         //noinspection ResultOfMethodCallIgnored
@@ -151,7 +151,7 @@ public class XmlHardeningTest {
         for (Object[] c : cases()) {
             String xml = "<?xml version=\"1.0\"?>" + doctype + c[1];
             String content = read((NavigationFormat<?>) c[0], xml);
-            assertFalse(c[0] + " leaked the local file", content.contains(SECRET));
+            assertFalse(content.contains(SECRET), c[0] + " leaked the local file");
         }
     }
 
@@ -161,7 +161,7 @@ public class XmlHardeningTest {
         String doctype = "<!DOCTYPE x [<!ENTITY xxe SYSTEM \"" + url + "\">]>";
         for (Object[] c : cases())
             read((NavigationFormat<?>) c[0], "<?xml version=\"1.0\"?>" + doctype + c[1]);
-        assertEquals("external entity was fetched over the network", 0, connections.get());
+        assertEquals(0, connections.get(), "external entity was fetched over the network");
     }
 
     @Test
@@ -170,7 +170,7 @@ public class XmlHardeningTest {
         String doctype = "<!DOCTYPE x SYSTEM \"" + url + "\">";
         for (Object[] c : cases())
             read((NavigationFormat<?>) c[0], "<?xml version=\"1.0\"?>" + doctype + ((String) c[1]).replace("&xxe;", "x"));
-        assertEquals("external DTD was fetched over the network", 0, connections.get());
+        assertEquals(0, connections.get(), "external DTD was fetched over the network");
     }
 
     @Test
@@ -187,8 +187,8 @@ public class XmlHardeningTest {
         for (Object[] c : cases()) {
             String content = read((NavigationFormat<?>) c[0],
                     "<?xml version=\"1.0\"?>" + doctype + ((String) c[1]).replace("&xxe;", "&l9;"));
-            assertTrue(c[0] + " expanded the bomb", content.length() < 1_000_000);
+            assertTrue(content.length() < 1_000_000, c[0] + " expanded the bomb");
         }
-        assertTrue("bomb took too long", System.currentTimeMillis() - start < 10_000);
+        assertTrue(System.currentTimeMillis() - start < 10_000, "bomb took too long");
     }
 }

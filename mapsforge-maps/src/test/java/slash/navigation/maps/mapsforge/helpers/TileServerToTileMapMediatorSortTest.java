@@ -19,8 +19,8 @@
 */
 package slash.navigation.maps.mapsforge.helpers;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 import slash.navigation.maps.mapsforge.models.TileMapTableModel;
@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.List.of;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class TileServerToTileMapMediatorSortTest {
     private ItemTableModel<TileServer> source;
@@ -62,7 +62,7 @@ public class TileServerToTileMapMediatorSortTest {
         source.addOrUpdateItem(ts("m-id", "Mid"));
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         source = new ItemTableModel<>(1);
         destination = new TileMapTableModel();

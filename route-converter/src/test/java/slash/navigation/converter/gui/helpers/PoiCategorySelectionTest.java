@@ -19,14 +19,14 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.pois.mapsforge.PoiCategory;
 
 import java.util.List;
 import java.util.Set;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PoiCategorySelectionTest {
     private static final PoiCategory BANKS = leaf("Banks");

@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.undo;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.FormatAndRoutes;
 import slash.navigation.common.NavigationPosition;
@@ -35,10 +35,10 @@ import slash.navigation.gui.undo.UndoManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
@@ -50,7 +50,7 @@ public class UndoFormatAndRoutesModelMoveTest {
     private UndoFormatAndRoutesModel model;
     private BaseRoute<?, ?> b;
 
-    @Before
+    @BeforeEach
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void setUp() {
         PositionsModelImpl positionsModel = new PositionsModelImpl(new PositionsModelCallback() {

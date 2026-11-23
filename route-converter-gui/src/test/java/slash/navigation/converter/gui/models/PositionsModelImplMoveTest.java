@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
@@ -31,7 +31,7 @@ import slash.navigation.converter.gui.panels.PositionsModelCallbackImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.navigation.gui.events.Range.increment;
 
 /**

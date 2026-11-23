@@ -20,14 +20,18 @@
 
 package slash.navigation.datasources.impl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.Fragment;
 import slash.navigation.datasources.binding.*;
 import slash.navigation.download.Checksum;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.createChecksumType;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.createFragmentType;

@@ -20,11 +20,11 @@
 
 package slash.navigation.common;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.assertNearBy;
 import static slash.navigation.common.NavigationConversion.*;

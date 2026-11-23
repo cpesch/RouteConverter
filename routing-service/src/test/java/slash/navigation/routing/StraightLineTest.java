@@ -20,16 +20,16 @@
 
 package slash.navigation.routing;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.SimpleNavigationPosition;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.routing.RoutingResult.Validity.Invalid;
 import static slash.navigation.routing.TravelRestrictions.NO_RESTRICTIONS;
 
@@ -86,7 +86,7 @@ public class StraightLineTest {
         SimpleNavigationPosition to = new SimpleNavigationPosition(9.0, 48.0);
         RoutingResult result = StraightLine.getRouteBetween(from, to);
         assertNotNull(result.distanceAndTime());
-        assertTrue("Distance should be positive", result.distanceAndTime().distance() > 0);
+        assertTrue(result.distanceAndTime().distance() > 0, "Distance should be positive");
     }
 
     @Test

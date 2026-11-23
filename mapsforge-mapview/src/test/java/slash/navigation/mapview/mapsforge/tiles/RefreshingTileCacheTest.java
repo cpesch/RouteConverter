@@ -19,8 +19,8 @@
 */
 package slash.navigation.mapview.mapsforge.tiles;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.graphics.TileBitmap;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
@@ -29,10 +29,10 @@ import org.mapsforge.map.layer.queue.Job;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.util.concurrent.TimeUnit.DAYS;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.INSTANCE;
 
 public class RefreshingTileCacheTest {
@@ -43,7 +43,7 @@ public class RefreshingTileCacheTest {
     private final Job job = new Job(new Tile(1, 2, (byte) 3, 256), false);
     private RefreshingTileCache cache;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         cache = new RefreshingTileCache(new InMemoryTileCache(16), MAXIMUM_AGE, clock::get);
     }
@@ -75,8 +75,8 @@ public class RefreshingTileCacheTest {
         TileBitmap old = bitmapFrom(NOW - MAXIMUM_AGE - 1000);
         cache.put(job, old);
 
-        assertSame("the old tile stays visible until the fresh one arrives", old, cache.getImmediately(job));
-        assertFalse("TileLayer and TileDownloadThread only download a tile the cache doesn't contain", cache.containsKey(job));
+        assertSame(old, cache.getImmediately(job), "the old tile stays visible until the fresh one arrives");
+        assertFalse(cache.containsKey(job), "TileLayer and TileDownloadThread only download a tile the cache doesn't contain");
     }
 
     @Test

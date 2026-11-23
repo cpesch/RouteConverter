@@ -19,19 +19,19 @@
 */
 package slash.navigation.googlemaps;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Locale;
 
 import static java.util.Locale.ENGLISH;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GoogleElevationServiceIT {
     private final GoogleElevationService service = new GoogleElevationService();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Locale.setDefault(ENGLISH);
     }

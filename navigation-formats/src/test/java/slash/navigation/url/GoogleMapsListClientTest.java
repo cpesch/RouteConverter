@@ -20,13 +20,15 @@
 
 package slash.navigation.url;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.url.GoogleMapsListClient.createRequestUrl;
 import static slash.navigation.url.GoogleMapsListClient.extractListId;

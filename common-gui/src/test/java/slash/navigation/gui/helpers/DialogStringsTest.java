@@ -20,13 +20,13 @@
 
 package slash.navigation.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.navigation.gui.helpers.DialogStrings.formatList;
 
 /**

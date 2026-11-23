@@ -19,13 +19,13 @@
 */
 package slash.navigation.maps.item;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ItemTableModelRemoveTest {
     private static class TestItem implements Item {

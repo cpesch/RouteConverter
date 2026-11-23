@@ -20,7 +20,7 @@
 
 package slash.navigation.download.executor;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.FileAndChecksum;
@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.State.Queued;
@@ -122,7 +122,7 @@ public class DownloadExecutorComparatorTest {
     }
 
     private static void assertEquals(int expected, int actual) {
-        assertTrue("Expected " + expected + " but was " + actual, expected == actual);
+        assertTrue(expected == actual, "Expected " + expected + " but was " + actual);
     }
 }
 

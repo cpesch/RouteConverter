@@ -24,7 +24,10 @@ import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatRegistry;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.ParserResult;
+import slash.navigation.base.Wgs84Route;
+import slash.navigation.geojson.GeoJsonFormat;
 import slash.navigation.kml.Kml22Format;
 
 import java.io.File;
@@ -36,6 +39,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -89,10 +93,31 @@ public class ZipEntryWithoutPositionsTest {
     }
 
     @Test
-    public void archiveWithoutPositionsReadsWithoutError() throws IOException {
+    public void archiveWithoutPositionsIsNotRecognized() throws IOException {
         ParserResult result = parser.read(zip("Takeout/Zeitachse/Settings.json", SETTINGS_JSON, "Takeout/README.txt", README_TXT));
-        if (result.isSuccessful())
-            assertEquals(0, result.getAllRoutes().stream().mapToInt(route -> route.getPositionCount()).sum());
+        assertFalse(result.isSuccessful());
+    }
+
+    @Test
+    public void archiveWithAnEmptyGpxIsNotRecognized() throws IOException {
+        ParserResult result = parser.read(zip("empty.gpx", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<gpx version=\"1.1\" creator=\"test\" xmlns=\"http://www.topografix.com/GPX/1/1\"></gpx>\n"));
+        assertFalse(result.isSuccessful());
+    }
+
+    @Test
+    public void emptyArchiveIsNotRecognized() throws IOException {
+        ParserResult result = parser.read(zip());
+        assertFalse(result.isSuccessful());
+    }
+
+    @Test
+    public void listsAreNamedAfterTheirEntryWithWindowsSeparators() {
+        ParserContextImpl<BaseRoute<?, ?>> context = new ParserContextImpl<>();
+        List<BaseRoute<?, ?>> routes = new ArrayList<>();
+        routes.add(new Wgs84Route(new GeoJsonFormat(), Waypoints, null, new ArrayList<>()));
+        ZipFormat.nameAfterEntry(routes, "Takeout\\Gps Location\\gps_location_2024-01-09.csv", context);
+        assertEquals("gps_location_2024-01-09", routes.get(0).getName());
     }
 
     @Test

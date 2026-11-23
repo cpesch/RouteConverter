@@ -1,15 +1,15 @@
 package slash.navigation.columbus;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 
 import java.nio.ByteBuffer;
 
 import static jakarta.xml.bind.DatatypeConverter.parseHexBinary;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.navigation.base.WaypointType.PointOfInterestC;
@@ -18,7 +18,7 @@ import static slash.navigation.base.WaypointType.Waypoint;
 public class ColumbusGpsBinaryFormatTest {
     private final ColumbusGpsBinaryFormat format = new ColumbusGpsBinaryFormat();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ColumbusV1000Device.setPreferences(new InMemoryPreferences());
         ColumbusV1000Device.setUseLocalTimeZone(false);

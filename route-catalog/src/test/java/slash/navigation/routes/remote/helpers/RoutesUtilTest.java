@@ -20,7 +20,7 @@
 
 package slash.navigation.routes.remote.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.routes.remote.binding.CatalogType;
 import slash.navigation.routes.remote.binding.CategoryType;
 import slash.navigation.routes.remote.binding.FileType;
@@ -28,9 +28,9 @@ import slash.navigation.routes.remote.binding.RouteType;
 
 import java.io.StringWriter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RoutesUtilTest {
     private static final String NAMESPACE = "http://api.routeconverter.com/v1/schemas/route-catalog";

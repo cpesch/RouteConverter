@@ -1,9 +1,8 @@
 package slash.navigation.pois.mapsforge;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
@@ -22,6 +21,7 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -44,11 +48,11 @@ public class MapsforgePoiLookupTest {
     private static final BoundingBox VISIBLE_BOUNDS = new BoundingBox(13.60, 52.60, 13.30, 52.30);
     private static final NavigationPosition CENTER = MAP_BOUNDS.getCenter();
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    public File temporaryFolder;
     private final List<File> applicationDirectoriesToDelete = new ArrayList<>();
 
-    @After
+    @AfterEach
     public void deleteApplicationDirectories() throws Exception {
         for (File directory : applicationDirectoriesToDelete)
             recursiveDelete(directory);
@@ -260,8 +264,8 @@ public class MapsforgePoiLookupTest {
             statement.setInt(6, MapsforgePoiLookup.MAX_DATABASE_ROWS);
             try (ResultSet resultSet = statement.executeQuery()) {
                 assertTrue(resultSet.next());
-                assertTrue("plan should scan poi_data_fts first, was: " + resultSet.getString("detail"),
-                        resultSet.getString("detail").contains("poi_data_fts"));
+                assertTrue(resultSet.getString("detail").contains("poi_data_fts"),
+                        "plan should scan poi_data_fts first, was: " + resultSet.getString("detail"));
             }
         }
     }
@@ -312,8 +316,8 @@ public class MapsforgePoiLookupTest {
             statement.setInt(6, MapsforgePoiLookup.MAX_DATABASE_ROWS);
             try (ResultSet resultSet = statement.executeQuery()) {
                 assertTrue(resultSet.next());
-                assertTrue("plan should scan poi_data_fts first, was: " + resultSet.getString("detail"),
-                        resultSet.getString("detail").contains("poi_data_fts"));
+                assertTrue(resultSet.getString("detail").contains("poi_data_fts"),
+                        "plan should scan poi_data_fts first, was: " + resultSet.getString("detail"));
             }
         }
     }
@@ -852,7 +856,7 @@ public class MapsforgePoiLookupTest {
     }
 
     private File createPoiFile() throws Exception {
-        File file = temporaryFolder.newFile("test.poi");
+        File file = newFile(temporaryFolder, "test.poi");
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath()); Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE TABLE poi_index (id INTEGER, lat REAL, lon REAL, PRIMARY KEY (id))");
             statement.executeUpdate("CREATE TABLE poi_data (id INTEGER, data TEXT, PRIMARY KEY (id))");
@@ -892,7 +896,7 @@ public class MapsforgePoiLookupTest {
     }
 
     private File createPoiFileV4(String fullTextOptions) throws Exception {
-        File file = temporaryFolder.newFile("test-v4.poi");
+        File file = newFile(temporaryFolder, "test-v4.poi");
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath()); Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE VIRTUAL TABLE poi_index USING rtree(id, minLat, maxLat, minLon, maxLon)");
             statement.executeUpdate("CREATE TABLE poi_data (id INTEGER, data TEXT, PRIMARY KEY (id))");
@@ -948,6 +952,12 @@ public class MapsforgePoiLookupTest {
             builder.append(keyValues[i]).append('=').append(keyValues[i + 1]);
         }
         return builder.toString();
+    }
+
+    private static File newFile(File parent, String child) throws IOException {
+        File result = new File(parent, child);
+        result.createNewFile();
+        return result;
     }
 }
 

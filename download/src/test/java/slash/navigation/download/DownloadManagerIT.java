@@ -19,10 +19,10 @@
 */
 package slash.navigation.download;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.Head;
@@ -36,7 +36,11 @@ import java.util.logging.Logger;
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.InputOutput.readFileToString;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -78,7 +82,7 @@ public class DownloadManagerIT {
             assertTrue(toDelete.delete());
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         queueFile = createTempFile("queueFile", ".xml");
         manager = new DownloadManager(queueFile);
@@ -89,7 +93,7 @@ public class DownloadManagerIT {
         delete("447bytes.txt");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (target.exists())
             assertTrue(target.delete());
@@ -184,7 +188,7 @@ public class DownloadManagerIT {
         assertEquals(lastModifiedAfterFirst, target.lastModified());
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void testSetLastModifiedForLocalFiles() {
         File txt = new File("C:\\p4\\RouteSite\\static\\test\\447bytes.txt");
@@ -193,7 +197,7 @@ public class DownloadManagerIT {
         assertTrue(zip.setLastModified(ZIP_LAST_MODIFIED.getTimeInMillis()));
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void testMapServerHEADAndGET() throws IOException {
         String[] URLS = new String[]{

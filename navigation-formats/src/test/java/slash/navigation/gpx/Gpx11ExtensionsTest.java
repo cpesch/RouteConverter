@@ -19,7 +19,7 @@
 */
 package slash.navigation.gpx;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -42,7 +42,11 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.gpx.GpxExtensionType.*;
@@ -853,7 +857,7 @@ public class Gpx11ExtensionsTest {
         GpxPositionExtension pe = new GpxPositionExtension(wpt);
         pe.removeEmptyExtensions();
 
-        assertNull("all-empty extensions removed and container cleared", wpt.getExtensions());
+        assertNull(wpt.getExtensions(), "all-empty extensions removed and container cleared");
     }
 
     @Test
@@ -935,10 +939,10 @@ public class Gpx11ExtensionsTest {
                 "<extensions><hr>120</hr></extensions>" +
                 "</trkpt></trkseg></trk></gpx>";
         GpxPosition position = getFirstPositionOfFirstRoute(readGpx(source));
-        assertEquals("hr read from a plain DOM element", Short.valueOf((short) 120), position.getHeartBeat());
+        assertEquals(Short.valueOf((short) 120), position.getHeartBeat(), "hr read from a plain DOM element");
 
         position.setHeartBeat((short) 133);
-        assertEquals("hr updated in the existing DOM element", Short.valueOf((short) 133), position.getHeartBeat());
+        assertEquals(Short.valueOf((short) 133), position.getHeartBeat(), "hr updated in the existing DOM element");
     }
 
     @Test
@@ -1179,7 +1183,7 @@ public class Gpx11ExtensionsTest {
 
         // read from plain DOM elements (course -> heading, speed, temperature)
         assertDoubleEquals(270.0, position.getHeading());
-        assertNotNull("speed read from a DOM element", position.getSpeed());
+        assertNotNull(position.getSpeed(), "speed read from a DOM element");
         assertDoubleEquals(21.5, position.getTemperature());
 
         // update the existing DOM elements in place and read back (round-trip)
@@ -1195,7 +1199,7 @@ public class Gpx11ExtensionsTest {
     private int writtenTrkSegCount(String xml) throws Exception {
         Element gpx = parse(xml);
         NodeList trks = gpx.getElementsByTagNameNS(GPX_11_NAMESPACE_URI, "trk");
-        assertTrue("expected at least one <trk>", trks.getLength() > 0);
+        assertTrue(trks.getLength() > 0, "expected at least one <trk>");
         Element trk = (Element) trks.item(0);
         int count = 0;
         for (Node child = trk.getFirstChild(); child != null; child = child.getNextSibling())
@@ -1222,7 +1226,7 @@ public class Gpx11ExtensionsTest {
                 "</trkseg></trk></gpx>";
 
         List<GpxRoute> routes = readGpx(source);
-        assertEquals("all positions of all segments end up in one route", 1, routes.size());
+        assertEquals(1, routes.size(), "all positions of all segments end up in one route");
         GpxRoute route = routes.get(0);
         assertEquals(5, route.getPositionCount());
 
@@ -1234,7 +1238,7 @@ public class Gpx11ExtensionsTest {
         assertTrue(route.getPosition(4).isStartsNewSegment());
 
         String after = writeGpx(routes);
-        assertEquals("the three original <trkseg> boundaries must survive the write", 3, writtenTrkSegCount(after));
+        assertEquals(3, writtenTrkSegCount(after), "the three original <trkseg> boundaries must survive the write");
 
         // and again after a second roundtrip
         List<GpxRoute> routes2 = readGpx(after);

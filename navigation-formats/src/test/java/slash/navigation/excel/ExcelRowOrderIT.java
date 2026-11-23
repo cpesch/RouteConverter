@@ -19,7 +19,7 @@
 */
 package slash.navigation.excel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.*;
 
 import java.io.File;
@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.io.File.createTempFile;
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.calendar;

@@ -20,17 +20,25 @@
 
 package slash.navigation.mm;
 
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class MagicMaps2GoFormatTest extends NavigationTestCase {
     MagicMaps2GoFormat format = new MagicMaps2GoFormat();
 
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isPosition("52.4135141 13.3115464 40.8000000 31.05.09 07:05:58"));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("52.4135141 13.3115464 40.8000000 31.05.09 07:05:58", new ParserContextImpl());
         assertNotNull(position);

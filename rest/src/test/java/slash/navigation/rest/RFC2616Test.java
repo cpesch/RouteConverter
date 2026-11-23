@@ -20,13 +20,13 @@
 
 package slash.navigation.rest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.util.Calendar;
 
 import static java.util.TimeZone.getTimeZone;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.TestCase.calendar;
 import static slash.navigation.rest.RFC2616.formatDate;
 import static slash.navigation.rest.RFC2616.parseDate;

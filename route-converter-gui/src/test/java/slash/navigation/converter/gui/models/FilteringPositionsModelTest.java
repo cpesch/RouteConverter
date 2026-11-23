@@ -19,14 +19,17 @@
 */
 package slash.navigation.converter.gui.models;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.gui.models.FilterPredicate;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.Mockito.*;
 
@@ -44,7 +47,7 @@ public class FilteringPositionsModelTest {
     private PositionsModel delegate;
     private FilteringPositionsModel<NavigationPosition> sut;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         delegate = mock(PositionsModel.class);
         when(delegate.getRowCount()).thenReturn(3);
