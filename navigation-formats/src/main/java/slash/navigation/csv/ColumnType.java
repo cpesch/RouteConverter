@@ -30,22 +30,27 @@ import static java.util.Arrays.asList;
  */
 
 enum ColumnType {
-    Latitude("Breite", "Breitengrad"),
-    Longitude("L\u00e4nge", "L\u00e4ngengrad"),
-    Elevation("H\u00f6he", "Altitude"),
-    Speed("Geschwindigkeit"),
-    Heading("Richtung", "Kurs", "Heading", "Course", "Direction"),
-    Pressure("Druck", "Pressure"),
-    Temperature("Temperatur", "Temperature"),
-    Heartbeat("Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
-    Time("Zeit", "Timestamp", "Zeitstempel", "Date", "Datum", "Positionszeit", "Position time", "Positiontime"),
-    Description("Beschreibung", "Comment", "Kommentar"),
-    Coordinates("Koordinaten"),
-    Unsupported();
+    Latitude(true, "Breite", "Breitengrad"),
+    Longitude(true, "L\u00e4nge", "L\u00e4ngengrad"),
+    // the hemisphere of an unsigned latitude or longitude, as in INDEX,LATITUDE,N/S,LONGITUDE,E/W
+    LatitudeHemisphere(true, "N/S"),
+    LongitudeHemisphere(true, "E/W"),
+    Elevation(true, "H\u00f6he", "Altitude"),
+    Speed(false, "Geschwindigkeit"),
+    Heading(false, "Richtung", "Kurs", "Heading", "Course", "Direction"),
+    Pressure(false, "Druck", "Pressure"),
+    Temperature(false, "Temperatur", "Temperature"),
+    Heartbeat(false, "Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
+    Time(true, "Zeit", "Timestamp", "Zeitstempel", "Date", "Datum", "Positionszeit", "Position time", "Positiontime"),
+    Description(false, "Beschreibung", "Comment", "Kommentar"),
+    Coordinates(true, "Koordinaten"),
+    Unsupported(false);
 
+    private final boolean caseInsensitive;
     private final List<String> alternativeNames;
 
-    ColumnType(String... alternativeNames) {
+    ColumnType(boolean caseInsensitive, String... alternativeNames) {
+        this.caseInsensitive = caseInsensitive;
         this.alternativeNames = asList(alternativeNames);
     }
 
@@ -54,14 +59,17 @@ enum ColumnType {
     }
 
     /**
-     * Column names match case-insensitively: Google Takeout writes
-     * {@code timestamp,latitude,longitude,altitude}.
+     * The names of coordinate, elevation and time columns match case-insensitively: Google
+     * Takeout writes {@code timestamp,latitude,longitude,altitude}. The others match exactly,
+     * so that a lower-case {@code description} column alone does not claim a foreign CSV.
      */
     boolean matches(String columnName) {
-        if (name().equalsIgnoreCase(columnName))
+        if (columnName == null)
+            return false;
+        if (caseInsensitive ? name().equalsIgnoreCase(columnName) : name().equals(columnName))
             return true;
         for (String alternativeName : getAlternativeNames())
-            if (alternativeName.equalsIgnoreCase(columnName))
+            if (caseInsensitive ? alternativeName.equalsIgnoreCase(columnName) : alternativeName.equals(columnName))
                 return true;
         return false;
     }

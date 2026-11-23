@@ -61,21 +61,52 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
         return rowAsMap;
     }
 
+    // the first non-blank value of a column of this type: writing a file whose column names differ
+    // from the default names leaves blank cells in the columns that only new positions have
     private String getValueAsString(ColumnType type) {
         String value = rowAsMap.get(type.name());
-        if (value != null)
+        if (!isBlank(value))
             return value;
 
         for (String alternativeName : type.getAlternativeNames()) {
             value = rowAsMap.get(alternativeName);
-            if (value != null)
+            if (!isBlank(value))
                 return value;
         }
 
         for (Map.Entry<String, String> entry : rowAsMap.entrySet())
-            if (entry.getValue() != null && type.matches(entry.getKey()))
+            if (!isBlank(entry.getValue()) && type.matches(entry.getKey()))
                 return entry.getValue();
         return null;
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    private boolean hasColumn(ColumnType type) {
+        for (String columnName : rowAsMap.keySet())
+            if (type.matches(columnName))
+                return true;
+        return false;
+    }
+
+    private Double applyHemisphere(Double value, ColumnType hemisphereType, String negativeHemisphere) {
+        if (value == null)
+            return null;
+        String hemisphere = trim(getValueAsString(hemisphereType));
+        if (hemisphere != null && hemisphere.equalsIgnoreCase(negativeHemisphere))
+            return -Math.abs(value);
+        return value;
+    }
+
+    private void setValueWithHemisphere(ColumnType type, Double value, ColumnType hemisphereType,
+                                        String positiveHemisphere, String negativeHemisphere) {
+        if (value != null && hasColumn(hemisphereType)) {
+            setValueAsDouble(type, Math.abs(value));
+            setValueAsString(hemisphereType, value < 0.0 ? negativeHemisphere : positiveHemisphere);
+        } else
+            setValueAsDouble(type, value);
     }
 
     private Double getValueAsDouble(ColumnType type) {
@@ -131,7 +162,7 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
     }
 
     public Double getLongitude() {
-        Double longitude = getValueAsDouble(Longitude);
+        Double longitude = applyHemisphere(getValueAsDouble(Longitude), LongitudeHemisphere, "W");
         if (longitude == null) {
             double[] coordinates = getCombinedCoordinates();
             if (coordinates != null)
@@ -141,11 +172,11 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
     }
 
     public void setLongitude(Double longitude) {
-        setValueAsDouble(Longitude, longitude);
+        setValueWithHemisphere(Longitude, longitude, LongitudeHemisphere, "E", "W");
     }
 
     public Double getLatitude() {
-        Double latitude = getValueAsDouble(Latitude);
+        Double latitude = applyHemisphere(getValueAsDouble(Latitude), LatitudeHemisphere, "S");
         if (latitude == null) {
             double[] coordinates = getCombinedCoordinates();
             if (coordinates != null)
@@ -155,7 +186,7 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
     }
 
     public void setLatitude(Double latitude) {
-        setValueAsDouble(Latitude, latitude);
+        setValueWithHemisphere(Latitude, latitude, LatitudeHemisphere, "N", "S");
     }
 
     public Double getElevation() {

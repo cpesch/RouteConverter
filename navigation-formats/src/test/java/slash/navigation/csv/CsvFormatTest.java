@@ -199,4 +199,68 @@ public class CsvFormatTest {
             assertTrue(file.delete());
         }
     }
+
+    @Test
+    public void appliesTheHemisphereColumns() throws IOException {
+        String content = """
+                INDEX,LATITUDE,N/S,LONGITUDE,E/W
+                1,33.8688,S,151.2093,E
+                2,40.7128,N,74.0060,W
+                """;
+
+        CsvCommaFormat format = new CsvCommaFormat();
+        ParserContextImpl<CsvRoute> context = new ParserContextImpl<>();
+        assertTrue(format.read(new StringReader(content), context));
+        List<CsvPosition> positions = context.getRoutes().get(0).getPositions();
+        assertEquals(-33.8688, positions.get(0).getLatitude(), 0.0);
+        assertEquals(151.2093, positions.get(0).getLongitude(), 0.0);
+        assertEquals(40.7128, positions.get(1).getLatitude(), 0.0);
+        assertEquals(-74.0060, positions.get(1).getLongitude(), 0.0);
+
+        positions.get(1).setLatitude(-1.5);
+        assertEquals("1.5", positions.get(1).getRowAsMap().get("LATITUDE"));
+        assertEquals("S", positions.get(1).getRowAsMap().get("N/S"));
+        assertEquals(-1.5, positions.get(1).getLatitude(), 0.0);
+    }
+
+    @Test
+    public void insertedPositionSurvivesWriteAndReread() throws IOException {
+        String content = """
+                timestamp,latitude,longitude,altitude
+                2024-01-09T09:14:11Z,50.2,8.4,46.3
+                2024-01-09T09:14:12Z,50.3,8.5,46.8
+                """;
+
+        CsvCommaFormat format = new CsvCommaFormat();
+        ParserContextImpl<CsvRoute> context = new ParserContextImpl<>();
+        assertTrue(format.read(new StringReader(content), context));
+        CsvRoute route = context.getRoutes().get(0);
+        route.getPositions().add(1, new CsvPosition(8.45, 50.25, 47.0, null, null, "inserted"));
+
+        java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
+        format.write(route, bytes, 0, route.getPositionCount());
+
+        ParserContextImpl<CsvRoute> reread = new ParserContextImpl<>();
+        assertTrue(format.read(new StringReader(bytes.toString(java.nio.charset.StandardCharsets.UTF_8)), reread));
+        List<CsvPosition> positions = reread.getRoutes().get(0).getPositions();
+        assertEquals(3, positions.size());
+        assertEquals(50.2, positions.get(0).getLatitude(), 0.0);
+        assertEquals(8.4, positions.get(0).getLongitude(), 0.0);
+        assertEquals(50.25, positions.get(1).getLatitude(), 0.0);
+        assertEquals(8.45, positions.get(1).getLongitude(), 0.0);
+        assertEquals(50.3, positions.get(2).getLatitude(), 0.0);
+        assertEquals(8.5, positions.get(2).getLongitude(), 0.0);
+    }
+
+    @Test
+    public void lowerCaseDescriptionAloneDoesNotClaimAForeignCsv() throws IOException {
+        String content = """
+                id,name,description,price
+                1,Chair,A wooden chair,49.90
+                """;
+
+        CsvCommaFormat format = new CsvCommaFormat();
+        ParserContextImpl<CsvRoute> context = new ParserContextImpl<>();
+        assertFalse(format.read(new StringReader(content), context));
+    }
 }
