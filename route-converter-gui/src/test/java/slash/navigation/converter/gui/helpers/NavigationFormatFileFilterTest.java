@@ -19,12 +19,15 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormat;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

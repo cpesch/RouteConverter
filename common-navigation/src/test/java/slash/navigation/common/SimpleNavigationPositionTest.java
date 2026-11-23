@@ -19,9 +19,14 @@
 */
 package slash.navigation.common;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link SimpleNavigationPosition} ? constructor variants, accessors, equals/hashCode/toString.
@@ -152,34 +157,40 @@ public class SimpleNavigationPositionTest {
         assertTrue(s.contains("Paris"));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testCalculateDistanceThrows() {
-        new SimpleNavigationPosition(10.0, 50.0).calculateDistance(new SimpleNavigationPosition(11.0, 51.0));
+        assertThrows(UnsupportedOperationException.class, () ->
+            new SimpleNavigationPosition(10.0, 50.0).calculateDistance(new SimpleNavigationPosition(11.0, 51.0)));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testCalculateAngleThrows() {
-        new SimpleNavigationPosition(10.0, 50.0).calculateAngle(new SimpleNavigationPosition(11.0, 51.0));
+        assertThrows(UnsupportedOperationException.class, () ->
+            new SimpleNavigationPosition(10.0, 50.0).calculateAngle(new SimpleNavigationPosition(11.0, 51.0)));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testCalculateElevationThrows() {
-        new SimpleNavigationPosition(10.0, 50.0).calculateElevation(new SimpleNavigationPosition(11.0, 51.0));
+        assertThrows(UnsupportedOperationException.class, () ->
+            new SimpleNavigationPosition(10.0, 50.0).calculateElevation(new SimpleNavigationPosition(11.0, 51.0)));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testCalculateTimeThrows() {
-        new SimpleNavigationPosition(10.0, 50.0).calculateTime(new SimpleNavigationPosition(11.0, 51.0));
+        assertThrows(UnsupportedOperationException.class, () ->
+            new SimpleNavigationPosition(10.0, 50.0).calculateTime(new SimpleNavigationPosition(11.0, 51.0)));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testCalculateSpeedThrows() {
-        new SimpleNavigationPosition(10.0, 50.0).calculateSpeed(new SimpleNavigationPosition(11.0, 51.0));
+        assertThrows(UnsupportedOperationException.class, () ->
+            new SimpleNavigationPosition(10.0, 50.0).calculateSpeed(new SimpleNavigationPosition(11.0, 51.0)));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testSetStartDateThrows() {
-        new SimpleNavigationPosition(10.0, 50.0).setStartDate(null);
+        assertThrows(UnsupportedOperationException.class, () ->
+            new SimpleNavigationPosition(10.0, 50.0).setStartDate(null));
     }
 }
 

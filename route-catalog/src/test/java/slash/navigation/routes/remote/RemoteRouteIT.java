@@ -19,7 +19,7 @@
 */
 package slash.navigation.routes.remote;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.ForbiddenException;
@@ -32,7 +32,12 @@ import slash.navigation.routes.Route;
 import java.io.IOException;
 
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.routes.remote.RemoteCatalog.CATEGORY_URI;
 import static slash.navigation.routes.remote.RemoteCatalog.ROUTE_URI;
 
@@ -81,48 +86,59 @@ public class RemoteRouteIT extends BaseRemoteCatalogTest {
         createAndDeleteRoute("Plus Route " + currentTimeMillis() + " A + B + C");
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotCreateRouteWithSlashes() throws IOException {
-        createAndDeleteRoute("/Slashes/Route/" + currentTimeMillis() + "/");
+        assertThrows(ForbiddenException.class, () ->
+            createAndDeleteRoute("/Slashes/Route/" + currentTimeMillis() + "/"));
     }
 
-    @Test(expected = UnAuthorizedException.class)
+    @Test
     public void testCreateRouteForbidden() throws IOException {
-        RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, WRONG_PASSWORD));
-        wrong.addRoute(API, "egal", null, REMOTE_URL);
+        assertThrows(UnAuthorizedException.class, () -> {
+            RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, WRONG_PASSWORD));
+            wrong.addRoute(API, "egal", null, REMOTE_URL);
+        });
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testCannotCreateRouteWithInvalidURL() throws IOException {
-        Category root = catalog.getRootCategory();
-        String description = "NewRoute" + currentTimeMillis();
-        catalog.addRoute(root.getHref(), description, null, "no-url");
+        assertThrows(NotFoundException.class, () -> {
+            Category root = catalog.getRootCategory();
+            String description = "NewRoute" + currentTimeMillis();
+            catalog.addRoute(root.getHref(), description, null, "no-url");
+        });
     }
 
-    @Test(expected = DuplicateNameException.class)
+    @Test
     public void testCannotCreateRouteWithSameName() throws IOException {
-        Category root = catalog.getRootCategory();
-        String description = "NewRoute" + currentTimeMillis();
-        catalog.addRoute(root.getHref(), description, null,REMOTE_URL);
-        catalog.addRoute(root.getHref(), description, null,REMOTE_URL);
+        assertThrows(DuplicateNameException.class, () -> {
+            Category root = catalog.getRootCategory();
+            String description = "NewRoute" + currentTimeMillis();
+            catalog.addRoute(root.getHref(), description, null, REMOTE_URL);
+            catalog.addRoute(root.getHref(), description, null, REMOTE_URL);
+        });
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testCannotCreateRouteWithNotExistingParent() throws IOException {
-        catalog.addRoute(API + CATEGORY_URI + currentTimeMillis() + "/", "NewRoute" + currentTimeMillis(), null, REMOTE_URL);
+        assertThrows(NotFoundException.class, () ->
+            catalog.addRoute(API + CATEGORY_URI + currentTimeMillis() + "/", "NewRoute" + currentTimeMillis(), null, REMOTE_URL));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testCannotDeleteNotExistingRoute() throws IOException {
-        catalog.deleteRoute(API + ROUTE_URI + currentTimeMillis() + "/");
+        assertThrows(NotFoundException.class, () ->
+            catalog.deleteRoute(API + ROUTE_URI + currentTimeMillis() + "/"));
     }
 
-    @Test(expected = NotOwnerException.class)
+    @Test
     public void testCannotDeleteRouteFromOtherUser() throws IOException {
-        RemoteCatalog another = new RemoteCatalog(API, new SimpleCredentials(ANOTHER_USERNAME, PASSWORD));
-        Category root = another.getRootCategory();
-        String url = another.addRoute(root.getHref(), "MyRoute" + currentTimeMillis(), null, REMOTE_URL);
-        catalog.deleteRoute(url);
+        assertThrows(NotOwnerException.class, () -> {
+            RemoteCatalog another = new RemoteCatalog(API, new SimpleCredentials(ANOTHER_USERNAME, PASSWORD));
+            Category root = another.getRootCategory();
+            String url = another.addRoute(root.getHref(), "MyRoute" + currentTimeMillis(), null, REMOTE_URL);
+            catalog.deleteRoute(url);
+        });
     }
 
     @Test
@@ -135,7 +151,7 @@ public class RemoteRouteIT extends BaseRemoteCatalogTest {
         superUser.deleteRoute(url);
 
         for (Route route : catalog.getRootCategory().getRoutes()) {
-            assertEquals("Route " + description + " still exists", route.getHref(), url);
+            assertEquals(route.getHref(), url, "Route " + description + " still exists");
         }
     }
 
@@ -188,31 +204,37 @@ public class RemoteRouteIT extends BaseRemoteCatalogTest {
         assertEquals(firstUrl, ((RemoteRoute) route5).getCategory().getHref());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testCannotUpdateNotExistingRouteUrl() throws IOException {
-        catalog.updateRoute(API + ROUTE_URI + currentTimeMillis() + "/", API, "egal", null, REMOTE_URL);
+        assertThrows(NotFoundException.class, () ->
+            catalog.updateRoute(API + ROUTE_URI + currentTimeMillis() + "/", API, "egal", null, REMOTE_URL));
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testCannotUpdateNotExistingRouteFile() throws IOException {
-        catalog.updateRoute(API + ROUTE_URI + currentTimeMillis() + "/", API, "egal", REMOTE_URL, null);
+        assertThrows(NotFoundException.class, () ->
+            catalog.updateRoute(API + ROUTE_URI + currentTimeMillis() + "/", API, "egal", REMOTE_URL, null));
     }
 
-    @Test(expected = DuplicateNameException.class)
+    @Test
     public void testCannotUpdateRouteWithSameName() throws IOException {
-        Category root = catalog.getRootCategory();
-        String name = "FirstRoute" + currentTimeMillis();
-        catalog.addRoute(root.getHref(), name, null, REMOTE_URL);
-        String url = catalog.addRoute(root.getHref(), "SecondRoute" + currentTimeMillis(), null, REMOTE_URL);
+        assertThrows(DuplicateNameException.class, () -> {
+            Category root = catalog.getRootCategory();
+            String name = "FirstRoute" + currentTimeMillis();
+            catalog.addRoute(root.getHref(), name, null, REMOTE_URL);
+            String url = catalog.addRoute(root.getHref(), "SecondRoute" + currentTimeMillis(), null, REMOTE_URL);
 
-        catalog.updateRoute(url, root.getHref(), name, null, REMOTE_URL);
+            catalog.updateRoute(url, root.getHref(), name, null, REMOTE_URL);
+        });
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotUpdateRouteWithSlashes() throws IOException {
-        Category root = catalog.getRootCategory();
-        String url = catalog.addRoute(root.getHref(), "A Route " + currentTimeMillis(), null, REMOTE_URL);
+        assertThrows(ForbiddenException.class, () -> {
+            Category root = catalog.getRootCategory();
+            String url = catalog.addRoute(root.getHref(), "A Route " + currentTimeMillis(), null, REMOTE_URL);
 
-        catalog.updateRoute(url, root.getHref(), "/Slashes/Route/" + currentTimeMillis() + "/", null, REMOTE_URL);
+            catalog.updateRoute(url, root.getHref(), "/Slashes/Route/" + currentTimeMillis() + "/", null, REMOTE_URL);
+        });
     }
 }

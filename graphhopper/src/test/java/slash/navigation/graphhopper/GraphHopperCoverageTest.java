@@ -19,9 +19,9 @@
 */
 package slash.navigation.graphhopper;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
@@ -43,11 +43,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.prefs.Preferences;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -71,7 +71,7 @@ public class GraphHopperCoverageTest {
     private DownloadManager downloadManager;
     private MapDescriptor mapDescriptor;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         GraphHopper.TEST_MODE = true;
         // an empty directory preference makes GraphManager resolve the .poly under
@@ -83,7 +83,7 @@ public class GraphHopperCoverageTest {
                 new LongitudeAndLatitude(10.0, 51.0), new LongitudeAndLatitude(10.1, 51.1));
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         GraphManager.setPreferences(Preferences.userNodeForPackage(GraphManager.class));
         File directory = new File(getApplicationDirectory(), dataSourceDirectoryName);
@@ -133,7 +133,7 @@ public class GraphHopperCoverageTest {
         GraphHopper hopper = createHopper();
         Polygon polygon = hopper.getRoutingCoverage(mapDescriptor, null);
 
-        assertNotNull("An on-disk .poly must be parsed without a download", polygon);
+        assertNotNull(polygon, "An on-disk .poly must be parsed without a download");
         verify(downloadManager, never()).queueForDownload(anyString(), anyString(), any(), any(), any());
     }
 
@@ -149,7 +149,7 @@ public class GraphHopperCoverageTest {
         assertTrue(expectedPolyFile().delete());
         Polygon second = hopper.getRoutingCoverage(mapDescriptor, null);
 
-        assertSame("A cache hit must skip re-reading the file", first, second);
+        assertSame(first, second, "A cache hit must skip re-reading the file");
         verify(downloadManager, never()).queueForDownload(anyString(), anyString(), any(), any(), any());
     }
 
@@ -164,13 +164,13 @@ public class GraphHopperCoverageTest {
         GraphHopper hopper = createHopper();
         CountDownLatch onAvailable = new CountDownLatch(1);
         Polygon first = hopper.getRoutingCoverage(mapDescriptor, onAvailable::countDown);
-        assertNull("No cache yet, so the first call must return null while the download is in flight", first);
+        assertNull(first, "No cache yet, so the first call must return null while the download is in flight");
 
         verify(downloadManager, timeout(2000)).queueForDownload(anyString(), anyString(), eq(Action.Copy), any(), isNull());
         verify(downloadManager, timeout(2000)).waitForCompletion(any());
 
-        assertFalse("onAvailable must not fire when no polygon becomes available",
-                onAvailable.await(300, TimeUnit.MILLISECONDS));
+        assertFalse(onAvailable.await(300, TimeUnit.MILLISECONDS),
+                "onAvailable must not fire when no polygon becomes available");
 
         // further calls must not trigger another download attempt
         for (int i = 0; i < 5; i++)
@@ -195,13 +195,13 @@ public class GraphHopperCoverageTest {
         GraphHopper hopper = createHopper();
         CountDownLatch onAvailable = new CountDownLatch(1);
         Polygon first = hopper.getRoutingCoverage(mapDescriptor, onAvailable::countDown);
-        assertNull("No cache yet, so the first call must return null while the download is in flight", first);
+        assertNull(first, "No cache yet, so the first call must return null while the download is in flight");
 
-        assertTrue("onAvailable must fire once the polygon becomes available",
-                onAvailable.await(5, TimeUnit.SECONDS));
+        assertTrue(onAvailable.await(5, TimeUnit.SECONDS),
+                "onAvailable must fire once the polygon becomes available");
 
         Polygon second = hopper.getRoutingCoverage(mapDescriptor, null);
-        assertNotNull("The polygon fetched in the background must be cached and returned afterwards", second);
+        assertNotNull(second, "The polygon fetched in the background must be cached and returned afterwards");
 
         verify(downloadManager, after(200).times(1))
                 .queueForDownload(anyString(), anyString(), eq(Action.Copy), any(), isNull());

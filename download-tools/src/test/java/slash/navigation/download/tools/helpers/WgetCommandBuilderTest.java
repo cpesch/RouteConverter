@@ -19,7 +19,7 @@
 */
 package slash.navigation.download.tools.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.binding.*;
 import slash.navigation.datasources.impl.DataSourceImpl;
@@ -28,7 +28,10 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WgetCommandBuilderTest {
 
@@ -74,10 +77,12 @@ public class WgetCommandBuilderTest {
         assertEquals("wget --accept '*.zip' https://example.com/", builder.formatCommand(cmd));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void buildCommandThrowsWhenSourceIsNull() {
-        DataSource ds = dataSource("id1", "http://example.com/", null, emptyList());
-        builder.buildCommand(ds, null, Paths.get("/m"));
+        assertThrows(IllegalArgumentException.class, () -> {
+            DataSource ds = dataSource("id1", "http://example.com/", null, emptyList());
+            builder.buildCommand(ds, null, Paths.get("/m"));
+        });
     }
 
     @Test

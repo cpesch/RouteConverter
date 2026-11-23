@@ -20,7 +20,7 @@
 
 package slash.navigation.base;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 
@@ -35,7 +35,7 @@ import static java.lang.Math.cos;
 import static java.lang.Math.max;
 import static java.lang.Math.sqrt;
 import static java.lang.Math.toRadians;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 public class RouteCalculationsTest {
@@ -142,7 +142,7 @@ public class RouteCalculationsTest {
         long startedAt = System.nanoTime();
         int[] result = RouteCalculations.getSignificantPositions(positions, 30.0);
         long elapsedMs = (System.nanoTime() - startedAt) / 1_000_000;
-        assertTrue("Expected under 5000 ms, took " + elapsedMs + " ms", elapsedMs < 5000);
+        assertTrue(elapsedMs < 5000, "Expected under 5000 ms, took " + elapsedMs + " ms");
         assertTrue(result.length > 0);
     }
 
@@ -152,19 +152,21 @@ public class RouteCalculationsTest {
         long startedAt = System.nanoTime();
         int[] result = RouteCalculations.getSignificantPositions(positions, 30.0);
         long elapsedMs = (System.nanoTime() - startedAt) / 1_000_000;
-        assertTrue("Expected under 60000 ms, took " + elapsedMs + " ms", elapsedMs < 60000);
+        assertTrue(elapsedMs < 60000, "Expected under 60000 ms, took " + elapsedMs + " ms");
         assertTrue(result.length > 0);
     }
 
-    @Test(expected = InterruptedException.class)
-    public void testInterruptedComputationThrows() throws InterruptedException {
-        List<Wgs84Position> positions = unbalancedTrack(50000);
-        Thread.currentThread().interrupt();
-        try {
-            RouteCalculations.getSignificantPositions(positions, 30.0);
-        } finally {
-            Thread.interrupted(); // clear the flag so it doesn't leak into later tests
-        }
+    @Test
+    public void testInterruptedComputationThrows() {
+        assertThrows(InterruptedException.class, () -> {
+            List<Wgs84Position> positions = unbalancedTrack(50000);
+            Thread.currentThread().interrupt();
+            try {
+                RouteCalculations.getSignificantPositions(positions, 30.0);
+            } finally {
+                Thread.interrupted(); // clear the flag so it doesn't leak into later tests
+            }
+        });
     }
 
     @Test
@@ -202,9 +204,9 @@ public class RouteCalculationsTest {
         int[] baselineResult = RouteCalculations.getSignificantPositions(baseline, 30.0);
         int[] shiftedResult = RouteCalculations.getSignificantPositions(shifted, 30.0);
 
-        assertArrayEquals("Simplification result should be invariant under a longitude shift, " +
-                        "including across the antimeridian",
-                baselineResult, shiftedResult);
+        assertArrayEquals(baselineResult,
+                shiftedResult, "Simplification result should be invariant under a longitude shift, " +
+                        "including across the antimeridian");
     }
 
     // --- planarOrthogonalDistance ---
@@ -243,8 +245,8 @@ public class RouteCalculationsTest {
             Double exact = d.calculateOrthogonalDistance(a, b);
 
             assertNotNull(exact);
-            assertTrue("planar " + planar + " vs exact " + exact,
-                    abs(planar - abs(exact)) <= max(1.0, 0.01 * abs(exact)));
+            assertTrue(abs(planar - abs(exact)) <= max(1.0, 0.01 * abs(exact)),
+                    "planar " + planar + " vs exact " + exact);
         }
     }
 
@@ -296,7 +298,7 @@ public class RouteCalculationsTest {
         assertNotNull(interpolated);
         // midpoint in lon ? ? 1000 ms
         long ms = interpolated.getTimeInMillis();
-        assertTrue("Expected ~1000ms, got " + ms, ms > 500 && ms < 1500);
+        assertTrue(ms > 500 && ms < 1500, "Expected ~1000ms, got " + ms);
     }
 
     // --- extrapolateTime ---
@@ -326,7 +328,7 @@ public class RouteCalculationsTest {
         CompactCalendar extrapolated = RouteCalculations.extrapolateTime(next, pred, before);
         assertNotNull(extrapolated);
         long ms = extrapolated.getTimeInMillis();
-        assertTrue("Expected ~2000ms, got " + ms, ms > 1500 && ms < 2500);
+        assertTrue(ms > 1500 && ms < 2500, "Expected ~2000ms, got " + ms);
     }
 }
 

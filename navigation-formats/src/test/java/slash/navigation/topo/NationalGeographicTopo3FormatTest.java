@@ -20,7 +20,8 @@
 
 package slash.navigation.topo;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserContextImpl;
@@ -34,13 +35,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Arrays.asList;
 import static java.util.Arrays.copyOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -499,7 +501,8 @@ public class NationalGeographicTopo3FormatTest {
         assertEquals(3, routes.get(2).getPositionCount());
     }
 
-    @Test(timeout = 30000)
+    @Test
+    @Timeout(value = 30000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void testTruncatedFilesReturnNoRoute() throws IOException {
         byte[] data = completeFile();
         for (int length = 0; length < data.length; length++) {
@@ -542,7 +545,8 @@ public class NationalGeographicTopo3FormatTest {
         assertNoRoutes(copyOf(unnamedStyleLast, unnamedStyleLast.length - 3));
     }
 
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void testOverrunningCountsAndLengths() throws IOException {
         // counts as 32 bit values
         assertNoRoutes(new TopoFileBuilder().block(WAYPOINTS_BLOCK, new Bytes().varint(0xffffffffL)).build());
@@ -557,7 +561,8 @@ public class NationalGeographicTopo3FormatTest {
                 .block(ROUTES_BLOCK, new Bytes().varint(1).varint(0).varint(0).varint(0).varint(0).varint(0xfffffff)).build());
     }
 
-    @Test(timeout = 10000)
+    @Test
+    @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void testLoopingBlockChainReturnsNoRoute() throws IOException {
         // the block at 512 points to itself, and two blocks point to each other
         assertNoRoutes(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).i32(0x7f0000).i32(512).toByteArray());
@@ -567,7 +572,8 @@ public class NationalGeographicTopo3FormatTest {
         assertNoRoutes(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).i32(0x7f0000).i32(0x90000000).toByteArray());
     }
 
-    @Test(timeout = 60000)
+    @Test
+    @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void testCorruptedFilesNeverThrow() throws IOException {
         byte[] data = completeFile();
         Random random = new Random(4711);

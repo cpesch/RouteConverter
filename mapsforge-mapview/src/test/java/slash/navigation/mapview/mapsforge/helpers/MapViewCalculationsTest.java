@@ -19,14 +19,16 @@
 */
 package slash.navigation.mapview.mapsforge.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.*;
 
 public class MapViewCalculationsTest {
@@ -39,7 +41,7 @@ public class MapViewCalculationsTest {
         assertEquals(10 * onePixel, tenPixels, 1e-9);
 
         double zoomedIn = thresholdForPixel(0.0, (byte) 15, 256, 10);
-        assertTrue("higher zoom means fewer meters per pixel", zoomedIn < tenPixels);
+        assertTrue(zoomedIn < tenPixels, "higher zoom means fewer meters per pixel");
     }
 
     @Test

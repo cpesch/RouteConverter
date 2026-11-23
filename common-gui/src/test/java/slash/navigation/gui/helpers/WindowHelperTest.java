@@ -20,13 +20,16 @@
 
 package slash.navigation.gui.helpers;
 
-import org.junit.Assume;
-import org.junit.Test;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static slash.navigation.gui.helpers.WindowHelper.boundMessage;
 import static slash.navigation.gui.helpers.WindowHelper.needsScrolling;
 
@@ -60,7 +63,7 @@ public class WindowHelperTest {
 
     @Test
     public void boundMessageWrapsLongTextInScrollPane() {
-        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
+        Assumptions.assumeFalse(GraphicsEnvironment.isHeadless());
         Object bound = boundMessage("line\n".repeat(20));
         assertTrue(bound instanceof JScrollPane);
     }

@@ -20,10 +20,10 @@
 
 package slash.navigation.base;
 
-import org.junit.Test;
 import slash.navigation.ozi.OziExplorerRouteFormat;
 import slash.navigation.ozi.OziExplorerTrackFormat;
 import slash.navigation.ozi.OziExplorerWaypointFormat;
+import org.junit.jupiter.api.Test;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 import slash.navigation.ovl.OvlFormat;

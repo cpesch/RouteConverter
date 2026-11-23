@@ -20,7 +20,7 @@
 
 package slash.navigation.base;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.alan.AlanTrackLogFormat;
 import slash.navigation.alan.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.*;
@@ -81,6 +81,7 @@ import slash.navigation.viamichelin.ViaMichelinFormat;
 
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static slash.navigation.base.ConvertBase.convertRoundtrip;
 import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
@@ -163,9 +164,10 @@ public class ConvertIT {
         });
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testConvertGpxToColumbusGpsBinary() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ColumbusGpsBinaryFormat());
+        assertThrows(AssertionError.class, () ->
+            convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new ColumbusGpsBinaryFormat()));
     }
 
     @Test
@@ -370,9 +372,10 @@ public class ConvertIT {
         convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminMapSource6Format());
     }
 
-    @Test(expected = AssertionError.class) // fails to detect .gdb because <name> are not unique
+    @Test // fails to detect .gdb because <name> are not unique
     public void testConvertTourExchangeToGarminMapSource6() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GarminMapSource6Format());
+        assertThrows(AssertionError.class, () ->
+            convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GarminMapSource6Format()));
     }
 
     @Test

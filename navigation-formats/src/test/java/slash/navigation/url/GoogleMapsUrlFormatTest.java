@@ -20,7 +20,7 @@
 
 package slash.navigation.url;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
@@ -32,9 +32,9 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.*;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
-import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsProfileUrl;
 

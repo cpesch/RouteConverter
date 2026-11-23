@@ -19,7 +19,7 @@
 */
 package slash.navigation.mapview.mapsforge.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 import slash.navigation.maps.mapsforge.ThemeStyleCategory;
@@ -28,7 +28,9 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

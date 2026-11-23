@@ -19,14 +19,14 @@
 */
 package slash.navigation.maps.item;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.event.ChangeListener;
 import java.util.prefs.Preferences;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ItemModelTest {
     private static final Preferences preferences = Preferences.userNodeForPackage(ItemModel.class);
@@ -63,7 +63,7 @@ public class ItemModelTest {
         }
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         preferences.remove("itemModelTestNullItemUrl");
         preferences.remove("itemModelTestNullItem");

@@ -20,9 +20,9 @@
 
 package slash.navigation.garmin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Checks the two rounding-sensitive fields of the "W" line, "%5.f" (altitude) and "%5e" (proximity),
@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 
 public class GarminPcx5FormatStringIT {
     private static void assertAltitude(String expected, double altitude) {
-        assertEquals("altitude " + altitude, expected, GarminPcx5Format.formatFixed(altitude, 5, 0, false));
+        assertEquals(expected, GarminPcx5Format.formatFixed(altitude, 5, 0, false), "altitude " + altitude);
     }
 
     @Test

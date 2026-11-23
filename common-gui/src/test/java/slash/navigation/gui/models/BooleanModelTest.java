@@ -20,14 +20,16 @@
 
 package slash.navigation.gui.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.Preferences;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Tests for {@link BooleanModel}.

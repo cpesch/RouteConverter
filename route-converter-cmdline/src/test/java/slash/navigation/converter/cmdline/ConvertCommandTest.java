@@ -20,9 +20,9 @@
 
 package slash.navigation.converter.cmdline;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.converter.cmdline.ConvertCommand.*;
 
 /**
@@ -53,12 +53,12 @@ public class ConvertCommandTest {
 
     private File dir;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         dir = Files.createTempDirectory("convert-test").toFile();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         File[] files = dir.listFiles();
         if (files != null)
@@ -100,7 +100,7 @@ public class ConvertCommandTest {
         assertEquals(OK, convert(resource("convert-from.rtz"), "RtzFormat", "Gpx11Format", out));
         assertTrue(text(out).contains("<gpx"));
         assertTrue(text(out).contains("Elbe 1"));
-        assertTrue(lastOutput, lastOutput.contains("\"routesRead\":1"));
+        assertTrue(lastOutput.contains("\"routesRead\":1"), lastOutput);
     }
 
     @Test
@@ -137,7 +137,7 @@ public class ConvertCommandTest {
         assertEquals(OK, convert(resource("analyze-two-tracks.gpx"), GPX_IN, "FitFormat", fit));
         assertTrue(fit.length() > 14);
         // two tracks in, one in the single-route FIT: reported, not hidden
-        assertTrue(lastOutput, lastOutput.contains("\"routesRead\":2,\"routesWritten\":1"));
+        assertTrue(lastOutput.contains("\"routesRead\":2,\"routesWritten\":1"), lastOutput);
 
         File gpx = target("back.gpx");
         assertEquals(OK, convert(fit, "FitFormat", "Gpx11Format", gpx));
@@ -187,8 +187,8 @@ public class ConvertCommandTest {
     public void sponsorGatedTargetsAreRefused() throws Exception {
         for (String sponsor : List.of("RtzFormat", "GarminFlightPlanFormat", "MSFSFlightPlanFormat", "GoRiderGpsFormat")) {
             File out = target("sponsor-" + sponsor);
-            assertEquals(sponsor, TARGET_FORMAT_NOT_ALLOWED, convert(resource("analyze-two-tracks.gpx"), GPX_IN, sponsor, out));
-            assertFalse(sponsor + " wrote a file", out.exists());
+            assertEquals(TARGET_FORMAT_NOT_ALLOWED, convert(resource("analyze-two-tracks.gpx"), GPX_IN, sponsor, out), sponsor);
+            assertFalse(out.exists(), sponsor + " wrote a file");
         }
     }
 

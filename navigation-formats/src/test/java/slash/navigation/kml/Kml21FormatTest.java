@@ -20,7 +20,7 @@
 
 package slash.navigation.kml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 
@@ -28,9 +28,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Kml21FormatTest {
@@ -106,7 +106,7 @@ public class Kml21FormatTest {
         assertEquals(3, first.get(0).getPositionCount());
 
         String written = writeKml(first);
-        assertTrue("writes KML 2.1 namespace", written.contains("earth.google.com/kml/2.1"));
+        assertTrue(written.contains("earth.google.com/kml/2.1"), "writes KML 2.1 namespace");
 
         List<KmlRoute> second = readKml(written);
         assertEquals(1, second.size());
@@ -154,7 +154,7 @@ public class Kml21FormatTest {
                 "</Folder></Folder></Document></kml>";
         List<KmlRoute> routes = readKml(kml);
         assertEquals(1, routes.size());
-        assertTrue("nested folder path must be in the route name", routes.get(0).getName().contains("outer") && routes.get(0).getName().contains("inner"));
+        assertTrue(routes.get(0).getName().contains("outer") && routes.get(0).getName().contains("inner"), "nested folder path must be in the route name");
         assertEquals(2, routes.get(0).getPositionCount());
     }
 

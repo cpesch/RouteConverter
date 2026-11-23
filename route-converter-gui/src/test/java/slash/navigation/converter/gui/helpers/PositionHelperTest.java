@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.helpers.DateTimeParserException;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
@@ -34,7 +34,10 @@ import java.util.Date;
 
 import static java.text.DateFormat.*;
 import static java.util.Locale.GERMAN;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static slash.common.TestCase.calendar;
 import static slash.common.type.CompactCalendar.*;
 import static slash.navigation.common.UnitSystem.Metric;
@@ -88,7 +91,7 @@ public class PositionHelperTest {
         CompactCalendar cal = fromMillis(0L);
         String result = formatDate(cal, "UTC");
         assertNotNull(result);
-        assertFalse("should not be empty", result.isEmpty());
+        assertFalse(result.isEmpty(), "should not be empty");
     }
 
     // ---- extractPressure / extractTemperature / extractHeartBeat ----

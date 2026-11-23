@@ -19,13 +19,13 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.geocoding.BaseGeocodingService;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 
 import java.io.IOException;
@@ -34,9 +34,9 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class AutomaticGeocodingServiceTest {
     @Test

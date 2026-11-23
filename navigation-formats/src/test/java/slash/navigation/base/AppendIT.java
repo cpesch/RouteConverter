@@ -20,7 +20,7 @@
 
 package slash.navigation.base;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
@@ -37,7 +37,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.NavigationFormatConverter.asFormat;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.assertRouteNameEquals;

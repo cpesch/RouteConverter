@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ProbeTimingsTest {
     @AfterEach
     public void tearDown() {
-        ProbeTimings.finish();
+        ProbeTimings.discard();
     }
 
     @Test
@@ -51,7 +51,7 @@ public class ProbeTimingsTest {
         ProbeTimings.endEntry(20_000_000);
 
         String summary = summary();
-        assertTrue(summary.contains("takeout.zip: 2 entries"), summary);
+        assertTrue(summary.contains("takeout.zip: 2 entries probed"), summary);
         assertTrue(summary.indexOf("20 ms  Takeout/b.kml") < summary.indexOf("10 ms  Takeout/a.gpx"), summary);
         assertTrue(summary.contains("27 ms  Kml22Format (2 probes)"), summary);
         assertTrue(summary.contains("3 ms  Gpx10Format (1 probes)"), summary);
@@ -64,10 +64,24 @@ public class ProbeTimingsTest {
         ProbeTimings.startEntry("a.gpx");
         ProbeTimings.endEntry(1);
         assertTrue(ProbeTimings.start("later.zip"));
-        assertTrue(summary().contains("later.zip: 0 entries"));
+        assertTrue(summary().contains("later.zip: 0 entries probed"));
     }
 
     private static String summary() {
         return ProbeTimings.currentSummary();
+    }
+
+    @Test
+    public void keepsOnlyTheSlowestPairs() {
+        assertTrue(ProbeTimings.start("big.zip"));
+        for (int i = 0; i < 1000; i++) {
+            ProbeTimings.startEntry("entry" + i);
+            ProbeTimings.recordProbe(new Gpx10Format(), i * 1_000_000L);
+        }
+        String summary = summary();
+        String pairs = summary.substring(summary.indexOf("Slowest entry | format pairs"));
+        assertEquals(ProbeTimings.TOP, pairs.split("\n").length - 1, summary);
+        assertTrue(pairs.contains("999 ms  entry999 | Gpx10Format"), summary);
+        assertFalse(pairs.contains("entry984 |"), summary);
     }
 }

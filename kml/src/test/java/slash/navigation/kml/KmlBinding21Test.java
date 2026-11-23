@@ -21,7 +21,8 @@ package slash.navigation.kml;
 
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import slash.navigation.kml.binding21.*;
 
 import java.io.ByteArrayInputStream;
@@ -29,7 +30,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static slash.navigation.kml.KmlUtil.*;
 
 /**
@@ -47,7 +52,7 @@ public class KmlBinding21Test {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal21(kml, out);
         String xml = out.toString("UTF-8");
-        assertFalse("marshalled XML must not be empty", xml.isEmpty());
+        assertFalse(xml.isEmpty(), "marshalled XML must not be empty");
         return unmarshal21(new StringReader(xml));
     }
 

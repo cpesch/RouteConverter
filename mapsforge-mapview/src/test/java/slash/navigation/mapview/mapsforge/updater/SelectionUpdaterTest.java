@@ -20,7 +20,7 @@
 
 package slash.navigation.mapview.mapsforge.updater;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -33,7 +33,10 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class SelectionUpdaterTest {
@@ -146,9 +149,9 @@ public class SelectionUpdaterTest {
         selectionUpdater.setSelectedPositions(new int[]{1, 2, 3}, false);
 
         assertEquals(asList(w1, w2, w3), selectionUpdater.getPositionWithLayers());
-        assertEquals("only the new position may be rendered again",
-                asList(asList(w1, w2), singletonList(w3)), selectionOperation.added);
-        assertTrue("nothing was deselected, so nothing may be removed", selectionOperation.removed.isEmpty());
+        assertEquals(asList(asList(w1, w2), singletonList(w3)),
+                selectionOperation.added, "only the new position may be rendered again");
+        assertTrue(selectionOperation.removed.isEmpty(), "nothing was deselected, so nothing may be removed");
     }
 
     @Test
@@ -164,8 +167,8 @@ public class SelectionUpdaterTest {
         selectionUpdater.setSelectedPositions(new int[]{1}, false);
 
         assertEquals(singletonList(w1), selectionUpdater.getPositionWithLayers());
-        assertEquals("the position that stayed selected must not be rendered twice",
-                singletonList(asList(w1, w2)), selectionOperation.added);
+        assertEquals(singletonList(asList(w1, w2)),
+                selectionOperation.added, "the position that stayed selected must not be rendered twice");
         assertEquals(singletonList(singletonList(w2)), selectionOperation.removed);
     }
 

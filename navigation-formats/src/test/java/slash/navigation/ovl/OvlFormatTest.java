@@ -20,12 +20,19 @@
 
 package slash.navigation.ovl;
 
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.Wgs84Position;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OvlFormatTest extends NavigationTestCase {
     OvlFormat format = new OvlFormat();
 
+    @Test
     public void testIsSectionTitle() {
         assertTrue(format.isSectionTitle("[Symbol 1]"));
         assertTrue(format.isSectionTitle("[Symbol 12]"));
@@ -45,6 +52,7 @@ public class OvlFormatTest extends NavigationTestCase {
         assertFalse(format.isSectionTitle("[ROUTE]"));
     }
 
+    @Test
     public void testOvlSectionWithOnePositionFromGpsBabel() {
         OvlSection section = new OvlSection("Symbol 5");
         section.put("Typ","1");
@@ -68,6 +76,7 @@ public class OvlFormatTest extends NavigationTestCase {
         assertNull(position.getTime());
     }
 
+    @Test
     public void testOvlSectionWithOnePositionFromEasyGps() {
         OvlSection section = new OvlSection("Symbol 78");
         section.put("Typ","3");
@@ -93,6 +102,7 @@ public class OvlFormatTest extends NavigationTestCase {
         assertNull(position.getTime());
     }
 
+    @Test
     public void testOvlSectionWithTwoPositionsFromGpsDings() {
         OvlSection section = new OvlSection("Symbol 1");
         section.put("Typ","3");

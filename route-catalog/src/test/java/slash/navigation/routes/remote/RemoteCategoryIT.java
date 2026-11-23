@@ -19,7 +19,7 @@
 */
 package slash.navigation.routes.remote;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.ForbiddenException;
@@ -32,7 +32,7 @@ import slash.navigation.routes.remote.binding.FileType;
 import java.io.IOException;
 
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static slash.navigation.routes.remote.RemoteCatalog.CATEGORY_URI;
 
 public class RemoteCategoryIT extends BaseRemoteCatalogTest {
@@ -93,57 +93,71 @@ public class RemoteCategoryIT extends BaseRemoteCatalogTest {
         createAndDeleteCategory("Plus Category " + currentTimeMillis() + " A + B + C");
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotCreateCategoryWithSlashes() throws IOException {
-        createAndDeleteCategory("/Slashes/Category/" + currentTimeMillis() + "/");
+        assertThrows(ForbiddenException.class, () ->
+            createAndDeleteCategory("/Slashes/Category/" + currentTimeMillis() + "/"));
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotCreateCategoryWithBackslashes() throws IOException {
-        createAndDeleteCategory("\\Slashes\\Category\\" + currentTimeMillis() + "/");
+        assertThrows(ForbiddenException.class, () ->
+            createAndDeleteCategory("\\Slashes\\Category\\" + currentTimeMillis() + "/"));
     }
 
-    @Test(expected = UnAuthorizedException.class)
+    @Test
     public void testCreateCategoryForbidden() throws IOException {
-        RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, WRONG_PASSWORD));
-        wrong.addCategory(API, "egal");
+        assertThrows(UnAuthorizedException.class, () -> {
+            RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, WRONG_PASSWORD));
+            wrong.addCategory(API, "egal");
+        });
     }
 
-    @Test(expected = DuplicateNameException.class)
+    @Test
     public void testCannotCreateCategoryWithSameName() throws IOException {
-        String name = "NewCategory" + currentTimeMillis();
-        catalog.addCategory(test.getHref(), name);
-        catalog.addCategory(test.getHref(), name);
+        assertThrows(DuplicateNameException.class, () -> {
+            String name = "NewCategory" + currentTimeMillis();
+            catalog.addCategory(test.getHref(), name);
+            catalog.addCategory(test.getHref(), name);
+        });
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testCannotCreateCategoryWithNotExistingParent() throws IOException {
-        catalog.addCategory(API + CATEGORY_URI + currentTimeMillis() + "/", "NewCategory" + currentTimeMillis());
+        assertThrows(NotFoundException.class, () ->
+            catalog.addCategory(API + CATEGORY_URI + currentTimeMillis() + "/", "NewCategory" + currentTimeMillis()));
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testDeleteCategoryForbidden() throws IOException {
-        RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, WRONG_PASSWORD));
-        wrong.deleteCategory(API);
+        assertThrows(ForbiddenException.class, () -> {
+            RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, WRONG_PASSWORD));
+            wrong.deleteCategory(API);
+        });
     }
 
-    @Test(expected = NotOwnerException.class)
+    @Test
     public void testCannotDeleteRootCategory() throws IOException {
-        Category root = catalog.getRootCategory();
-        catalog.deleteCategory(root.getHref());
+        assertThrows(NotOwnerException.class, () -> {
+            Category root = catalog.getRootCategory();
+            catalog.deleteCategory(root.getHref());
+        });
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testCannotDeleteNotExistingCategory() throws IOException {
-        catalog.deleteCategory(API + CATEGORY_URI + currentTimeMillis() + "/");
+        assertThrows(NotFoundException.class, () ->
+            catalog.deleteCategory(API + CATEGORY_URI + currentTimeMillis() + "/"));
     }
 
-    @Test(expected = NotOwnerException.class)
+    @Test
     public void testCannotDeleteCategoryFromOtherUser() throws IOException {
-        RemoteCatalog another = new RemoteCatalog(API, new SimpleCredentials(ANOTHER_USERNAME, PASSWORD));
-        String url = another.addCategory(test.getHref(), "MyCategory" + currentTimeMillis());
+        assertThrows(NotOwnerException.class, () -> {
+            RemoteCatalog another = new RemoteCatalog(API, new SimpleCredentials(ANOTHER_USERNAME, PASSWORD));
+            String url = another.addCategory(test.getHref(), "MyCategory" + currentTimeMillis());
 
-        catalog.deleteCategory(url);
+            catalog.deleteCategory(url);
+        });
     }
 
     @Test
@@ -195,51 +209,62 @@ public class RemoteCategoryIT extends BaseRemoteCatalogTest {
         assertEquals(firstUrl, ((RemoteCategory) category4).getParent().getHref());
     }
 
-    @Test(expected = NotOwnerException.class)
+    @Test
     public void testCannotUpdateRootCategory() throws IOException {
-        Category root = catalog.getRootCategory();
-        catalog.updateCategory(root.getHref(), API, "egal");
+        assertThrows(NotOwnerException.class, () -> {
+            Category root = catalog.getRootCategory();
+            catalog.updateCategory(root.getHref(), API, "egal");
+        });
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testCannotUpdateNotExistingCategory() throws IOException {
-        catalog.updateCategory(API + CATEGORY_URI + currentTimeMillis() + "/", API, "egal");
+        assertThrows(NotFoundException.class, () ->
+            catalog.updateCategory(API + CATEGORY_URI + currentTimeMillis() + "/", API, "egal"));
     }
 
-    @Test(expected = DuplicateNameException.class)
+    @Test
     public void testCannotUpdateCategoryWithSameName() throws IOException {
-        String name = "FirstCategory" + currentTimeMillis();
-        catalog.addCategory(test.getHref(), name);
-        String url = catalog.addCategory(test.getHref(), "SecondCategory" + currentTimeMillis());
+        assertThrows(DuplicateNameException.class, () -> {
+            String name = "FirstCategory" + currentTimeMillis();
+            catalog.addCategory(test.getHref(), name);
+            String url = catalog.addCategory(test.getHref(), "SecondCategory" + currentTimeMillis());
 
-        catalog.updateCategory(url, test.getHref(), name);
+            catalog.updateCategory(url, test.getHref(), name);
+        });
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotUpdateCategoryWithSlashes() throws IOException {
-        String url = catalog.addCategory(test.getHref(), "A Category " + currentTimeMillis());
+        assertThrows(ForbiddenException.class, () -> {
+            String url = catalog.addCategory(test.getHref(), "A Category " + currentTimeMillis());
 
-        catalog.updateCategory(url, test.getHref(), "/Slashes/Category/" + currentTimeMillis() + "/");
+            catalog.updateCategory(url, test.getHref(), "/Slashes/Category/" + currentTimeMillis() + "/");
+        });
     }
 
-    @Test(expected = DuplicateNameException.class)
+    @Test
     public void testCannotMoveToSelfAsParent() throws Exception {
-        String parentName = "Parent " + currentTimeMillis();
-        Category parent = test.create(parentName);
-        String moveName = "Move " + currentTimeMillis();
-        Category move = parent.create(moveName);
-        move.update(move, move.getName());
+        assertThrows(DuplicateNameException.class, () -> {
+            String parentName = "Parent " + currentTimeMillis();
+            Category parent = test.create(parentName);
+            String moveName = "Move " + currentTimeMillis();
+            Category move = parent.create(moveName);
+            move.update(move, move.getName());
+        });
     }
 
-    @Test(expected = DuplicateNameException.class)
+    @Test
     public void testCannotMoveToOwnChild() throws Exception {
-        String parentName = "Parent " + currentTimeMillis();
-        Category parent = test.create(parentName);
-        String moveName = "Move " + currentTimeMillis();
-        Category move = parent.create(moveName);
-        String childName = "Child " + currentTimeMillis();
-        Category child = move.create(childName);
-        move.update(child, move.getName());
+        assertThrows(DuplicateNameException.class, () -> {
+            String parentName = "Parent " + currentTimeMillis();
+            Category parent = test.create(parentName);
+            String moveName = "Move " + currentTimeMillis();
+            Category move = parent.create(moveName);
+            String childName = "Child " + currentTimeMillis();
+            Category child = move.create(childName);
+            move.update(child, move.getName());
+        });
     }
 
     @Test

@@ -19,7 +19,7 @@
 */
 package slash.navigation.kml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import jakarta.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
@@ -27,7 +27,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.kml.KmlUtil.*;
 
 /**
@@ -75,12 +78,13 @@ public class KmlUtilTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal20(kml, out);
         String xml = out.toString("UTF-8");
-        assertTrue("marshalled XML should contain kml element", xml.contains("kml"));
+        assertTrue(xml.contains("kml"), "marshalled XML should contain kml element");
     }
 
-    @Test(expected = IOException.class)
-    public void testUnmarshal20BadXml() throws IOException {
-        unmarshal20(new StringReader("<notvalid/>"));
+    @Test
+    public void testUnmarshal20BadXml() {
+        assertThrows(IOException.class, () ->
+            unmarshal20(new StringReader("<notvalid/>")));
     }
 
     private static final String KML_20_FOLDER_DOC = """
@@ -111,9 +115,10 @@ public class KmlUtilTest {
         assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
     }
 
-    @Test(expected = IOException.class)
-    public void testUnmarshal21RejectsKml20Document() throws IOException {
-        unmarshal21(new StringReader(KML_20_FOLDER_DOC));
+    @Test
+    public void testUnmarshal21RejectsKml20Document() {
+        assertThrows(IOException.class, () ->
+            unmarshal21(new StringReader(KML_20_FOLDER_DOC)));
     }
 
     // ---- KML 2.1 ----
@@ -142,17 +147,19 @@ public class KmlUtilTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal21(kml, out);
         String xml = out.toString("UTF-8");
-        assertTrue("marshalled XML should contain kml element", xml.contains("kml"));
+        assertTrue(xml.contains("kml"), "marshalled XML should contain kml element");
     }
 
-    @Test(expected = IOException.class)
-    public void testUnmarshal21BadXml() throws IOException {
-        unmarshal21(new StringReader("<notvalid/>"));
+    @Test
+    public void testUnmarshal21BadXml() {
+        assertThrows(IOException.class, () ->
+            unmarshal21(new StringReader("<notvalid/>")));
     }
 
-    @Test(expected = IOException.class)
-    public void testUnmarshal20RejectsKml21Document() throws IOException {
-        unmarshal20(new StringReader(KML_21_DOC));
+    @Test
+    public void testUnmarshal20RejectsKml21Document() {
+        assertThrows(IOException.class, () ->
+            unmarshal20(new StringReader(KML_21_DOC)));
     }
 
     // ---- KML 2.2 Beta ----
@@ -181,12 +188,13 @@ public class KmlUtilTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal22Beta(kml, out);
         String xml = out.toString("UTF-8");
-        assertTrue("marshalled XML should contain kml element", xml.contains("kml"));
+        assertTrue(xml.contains("kml"), "marshalled XML should contain kml element");
     }
 
-    @Test(expected = IOException.class)
-    public void testUnmarshal22BetaBadXml() throws IOException {
-        unmarshal22Beta(new StringReader("<notvalid/>"));
+    @Test
+    public void testUnmarshal22BetaBadXml() {
+        assertThrows(IOException.class, () ->
+            unmarshal22Beta(new StringReader("<notvalid/>")));
     }
 
     // ---- KML 2.2 ----
@@ -215,12 +223,13 @@ public class KmlUtilTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal22(kml, out);
         String xml = out.toString("UTF-8");
-        assertTrue("marshalled XML should contain kml element", xml.contains("kml"));
+        assertTrue(xml.contains("kml"), "marshalled XML should contain kml element");
     }
 
-    @Test(expected = IOException.class)
-    public void testUnmarshal22BadXml() throws IOException {
-        unmarshal22(new StringReader("<notvalid/>"));
+    @Test
+    public void testUnmarshal22BadXml() {
+        assertThrows(IOException.class, () ->
+            unmarshal22(new StringReader("<notvalid/>")));
     }
 }
 

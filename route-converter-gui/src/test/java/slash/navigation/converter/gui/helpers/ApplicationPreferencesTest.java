@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.NumberingStrategy;
@@ -28,9 +28,9 @@ import slash.navigation.rest.Credentials;
 import java.io.File;
 import java.util.prefs.Preferences;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;

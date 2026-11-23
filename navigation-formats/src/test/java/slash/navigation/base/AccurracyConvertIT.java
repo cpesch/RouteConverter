@@ -20,7 +20,7 @@
 
 package slash.navigation.base;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.columbus.ColumbusGpsType2Format;

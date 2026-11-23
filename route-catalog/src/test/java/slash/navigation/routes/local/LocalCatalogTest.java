@@ -19,16 +19,18 @@
 */
 package slash.navigation.routes.local;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.routes.Category;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests for {@link LocalCatalog}.
@@ -39,12 +41,12 @@ public class LocalCatalogTest {
 
     private File tempDir;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         tempDir = Files.createTempDirectory("local-catalog-test").toFile();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         deleteRecursive(tempDir);
     }
@@ -79,15 +81,15 @@ public class LocalCatalogTest {
         Category root = catalog.getRootCategory();
         String href = root.getHref();
         assertNotNull(href);
-        assertTrue("href should start with file:", href.startsWith("file:"));
-        assertTrue("href should contain dir name", href.contains(tempDir.getName()));
+        assertTrue(href.startsWith("file:"), "href should start with file:");
+        assertTrue(href.contains(tempDir.getName()), "href should contain dir name");
     }
 
     @Test
     public void getRootCategorySubCategoriesEmptyInitially() throws IOException {
         LocalCatalog catalog = new LocalCatalog(tempDir.getAbsolutePath());
         Category root = catalog.getRootCategory();
-        assertTrue("new temp dir should have no subcategories", root.getCategories().isEmpty());
+        assertTrue(root.getCategories().isEmpty(), "new temp dir should have no subcategories");
     }
 
     @Test
@@ -105,7 +107,7 @@ public class LocalCatalogTest {
     public void getRootCategoryRoutesEmptyInitially() throws IOException {
         LocalCatalog catalog = new LocalCatalog(tempDir.getAbsolutePath());
         Category root = catalog.getRootCategory();
-        assertTrue("new temp dir should have no routes", root.getRoutes().isEmpty());
+        assertTrue(root.getRoutes().isEmpty(), "new temp dir should have no routes");
     }
 
     @Test

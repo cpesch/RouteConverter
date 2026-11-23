@@ -20,12 +20,19 @@
 
 package slash.navigation.mm;
 
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.GkPosition;
 import slash.navigation.base.NavigationTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MagicMapsPthFormatTest extends NavigationTestCase {
     MagicMapsPthFormat format = new MagicMapsPthFormat();
 
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isNameValue("Pathsize: 98"));
         assertTrue(format.isNameValue(" Pathsize : 98 "));
@@ -37,6 +44,7 @@ public class MagicMapsPthFormatTest extends NavigationTestCase {
         assertTrue(format.isPosition("3799444.14 \t 5829944.10 \tHamburg/Uhlenhorst"));
     }
 
+    @Test
     public void testParsePosition() {
         GkPosition position = format.parsePosition("3799444.14 \t 5829944.10");
         assertNotNull(position);
@@ -49,6 +57,7 @@ public class MagicMapsPthFormatTest extends NavigationTestCase {
         assertNull(position.getDescription());
     }
 
+    @Test
     public void testParsePositionWithdescription() {
         GkPosition position = format.parsePosition("3799444.14 \t 5829944.10 \tHamburg/Uhlenhorst");
         assertNotNull(position);

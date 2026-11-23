@@ -19,9 +19,9 @@
 */
 package org.mapsforge.map.layer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.graphics.GraphicFactory;
@@ -49,8 +49,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Proves a {@link TileRendererLayer} keeps rendering after it has been removed from and re-added to
@@ -76,7 +76,7 @@ public class TileRendererLayerLifecycleTest {
     private Point topLeftPoint;
     private List<TilePosition> tilePositions;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         displayModel = new DisplayModel();
         MapViewPosition mapViewPosition = new MapViewPosition(displayModel);
@@ -103,7 +103,7 @@ public class TileRendererLayerLifecycleTest {
         canvas.setBitmap(bitmap);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws InterruptedException {
         if (layers.contains(layer))
             layers.remove(layer);
@@ -191,7 +191,7 @@ public class TileRendererLayerLifecycleTest {
             Thread.sleep(100);
         } while (System.currentTimeMillis() < deadline);
 
-        assertTrue("MapWorkerPool thread still running after teardown", !anyMapWorkerPoolThreadRunning());
+        assertTrue(!anyMapWorkerPoolThreadRunning(), "MapWorkerPool thread still running after teardown");
     }
 
     private static boolean anyMapWorkerPoolThreadRunning() {

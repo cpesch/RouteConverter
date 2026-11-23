@@ -25,7 +25,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContextImpl;
 
@@ -36,7 +36,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.calendar;
 
 /**
@@ -208,7 +212,7 @@ public class ExcelFormatTest {
         Sheet sheet = route.getWorkbook().getSheetAt(0);
         // no empty row left over from shifting rows
         for (Row row : sheet)
-            assertTrue("empty row " + row.getRowNum(), row.getPhysicalNumberOfCells() > 0);
+            assertTrue(row.getPhysicalNumberOfCells() > 0, "empty row " + row.getRowNum());
 
         ByteArrayOutputStream target = new ByteArrayOutputStream();
         format.write(route, target, 0, route.getPositionCount());
@@ -328,7 +332,7 @@ public class ExcelFormatTest {
     private static void assertLatitudes(List<ExcelPosition> positions, double... expectedLatitudes) {
         assertEquals(expectedLatitudes.length, positions.size());
         for (int i = 0; i < expectedLatitudes.length; i++)
-            assertEquals("latitude " + i, expectedLatitudes[i], positions.get(i).getLatitude(), 0.0);
+            assertEquals(expectedLatitudes[i], positions.get(i).getLatitude(), 0.0, "latitude " + i);
     }
 
     private static void assertInMemoryAndRereadLatitudesAfter(ExcelFormat format, Workbook workbook, RouteOperation operation,
