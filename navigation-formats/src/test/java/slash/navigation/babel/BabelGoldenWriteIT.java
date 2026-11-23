@@ -134,7 +134,29 @@ public class BabelGoldenWriteIT {
     private static final int GPI_CREATION_TIME_OFFSET = 16;
     private static final int GPI_CREATION_TIME_LENGTH = 4;
 
+    // Header1 carries the POI collection name: GPSBabel 1.5.4 always writes "my.gpi", the native writer the route
+    // name (decision D16.3, maintainer 2026-11-23); the comparison sets the name and Header1's record length aside
+    private static final int GPI_HEADER1_LENGTH_OFFSET = 4;
+    private static final int GPI_HEADER_NAME_LENGTH_OFFSET = 22;
+
+    private static byte[] withoutGpiHeaderName(byte[] bytes) {
+        int nameOffset = GPI_HEADER_NAME_LENGTH_OFFSET + 2;
+        if (bytes.length < nameOffset)
+            return bytes;
+        int nameLength = (bytes[GPI_HEADER_NAME_LENGTH_OFFSET] & 0xff) | (bytes[GPI_HEADER_NAME_LENGTH_OFFSET + 1] & 0xff) << 8;
+        if (bytes.length < nameOffset + nameLength)
+            return bytes;
+        byte[] result = new byte[bytes.length - nameLength];
+        System.arraycopy(bytes, 0, result, 0, nameOffset);
+        System.arraycopy(bytes, nameOffset + nameLength, result, nameOffset, bytes.length - nameOffset - nameLength);
+        Arrays.fill(result, GPI_HEADER1_LENGTH_OFFSET, GPI_HEADER1_LENGTH_OFFSET + 4, (byte) 0);
+        Arrays.fill(result, GPI_HEADER_NAME_LENGTH_OFFSET, GPI_HEADER_NAME_LENGTH_OFFSET + 2, (byte) 0);
+        return result;
+    }
+
     private static boolean gpiEqual(byte[] expected, byte[] actual) {
+        expected = withoutGpiHeaderName(expected);
+        actual = withoutGpiHeaderName(actual);
         int end = GPI_CREATION_TIME_OFFSET + GPI_CREATION_TIME_LENGTH;
         if (expected.length != actual.length || expected.length < end)
             return Arrays.equals(expected, actual);
