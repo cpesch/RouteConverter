@@ -20,9 +20,9 @@
 package slash.navigation.gui.helpers;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -33,12 +33,12 @@ import java.awt.Image;
 import java.awt.image.MultiResolutionImage;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link IconHelper}.
@@ -53,13 +53,13 @@ public class IconHelperTest {
 
     private static String previousLookAndFeel;
 
-    @BeforeClass
+    @BeforeAll
     public static void installFlatLaf() throws UnsupportedLookAndFeelException {
         previousLookAndFeel = UIManager.getLookAndFeel().getClass().getName();
         UIManager.setLookAndFeel(new FlatLightLaf());
     }
 
-    @AfterClass
+    @AfterAll
     public static void restoreLookAndFeel() throws UnsupportedLookAndFeelException {
         if (previousLookAndFeel != null) {
             try {

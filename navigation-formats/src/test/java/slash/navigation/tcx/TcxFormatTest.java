@@ -19,13 +19,13 @@
 */
 package slash.navigation.tcx;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TcxFormatTest {
     private final TcxFormat format = new Tcx2Format();

@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.converter.gui.helpers.RouteConverterLocales;
 
 import java.util.*;
@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 import static java.util.Collections.singletonList;
 import static java.util.Locale.*;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ResourceBundleTest {
     private static final Logger log = Logger.getLogger(ResourceBundleTest.class.getName());

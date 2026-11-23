@@ -19,17 +19,17 @@
 */
 package slash.navigation.brouter;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.datasources.DataSource;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -51,7 +51,7 @@ public class BRouterRemoveOutdatedSegmentsTest {
     private BRouter router;
     private File directory, current, outdated, newer;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         directory = getApplicationDirectory(DIRECTORY);
 
@@ -69,7 +69,7 @@ public class BRouterRemoveOutdatedSegmentsTest {
         router.setProfilesAndSegments(profiles, segments);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         File[] files = directory.listFiles();
         if (files != null)
@@ -80,9 +80,9 @@ public class BRouterRemoveOutdatedSegmentsTest {
 
     @Test
     public void testRemoveOutdatedSegments() {
-        assertTrue("segment with matching lookup version must be kept", current.exists());
-        assertFalse("segment with outdated lookup version must be removed", outdated.exists());
-        assertTrue("segment newer than a stale lookups.dat must be kept to avoid a re-download loop", newer.exists());
+        assertTrue(current.exists(), "segment with matching lookup version must be kept");
+        assertFalse(outdated.exists(), "segment with outdated lookup version must be removed");
+        assertTrue(newer.exists(), "segment newer than a stale lookups.dat must be kept to avoid a re-download loop");
     }
 
     private static void writeLookups(File file, int version) throws IOException {

@@ -20,7 +20,7 @@
 
 package slash.navigation.gui.events;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.event.ListDataEvent;
 
@@ -28,7 +28,9 @@ import static java.lang.Integer.MIN_VALUE;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.ListDataEvent.INTERVAL_ADDED;
 import static javax.swing.event.ListDataEvent.INTERVAL_REMOVED;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Tests for {@link IgnoreEvent}.

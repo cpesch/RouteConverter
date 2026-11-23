@@ -20,7 +20,7 @@
 
 package slash.navigation.itn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.NavigationTestCase;
 import slash.navigation.gpx.Gpx10Format;
@@ -32,8 +32,8 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static slash.common.TestCase.calendar;
 import static slash.navigation.base.NavigationTestCase.*;
 import static slash.navigation.base.RouteCharacteristics.*;

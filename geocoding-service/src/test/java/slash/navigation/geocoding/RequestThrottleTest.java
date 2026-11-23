@@ -19,12 +19,13 @@
 */
 package slash.navigation.geocoding;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.InterruptedIOException;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class RequestThrottleTest {
 

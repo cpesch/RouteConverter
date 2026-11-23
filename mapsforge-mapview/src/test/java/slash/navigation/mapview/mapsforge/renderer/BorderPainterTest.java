@@ -19,8 +19,8 @@
 */
 package slash.navigation.mapview.mapsforge.renderer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.BoundingBox;
@@ -30,7 +30,6 @@ import slash.navigation.common.SimpleNavigationPosition;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.INSTANCE;
 
@@ -38,7 +37,7 @@ public class BorderPainterTest {
     private MapViewLayerOperations operations;
     private BorderPainter painter;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         operations = mock(MapViewLayerOperations.class);
         when(operations.getTileSize()).thenReturn(256);

@@ -20,14 +20,14 @@
 
 package slash.navigation.routes.local;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for {@link LocalRoute}.
@@ -39,7 +39,7 @@ public class LocalRouteTest {
     private File existingFile;
     private File absentFile;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         existingFile = File.createTempFile("local-route-test", ".gpx");
         existingFile.deleteOnExit();
@@ -48,7 +48,7 @@ public class LocalRouteTest {
         assertTrue(absentFile.delete()); // make it absent
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (existingFile.exists())
             //noinspection ResultOfMethodCallIgnored

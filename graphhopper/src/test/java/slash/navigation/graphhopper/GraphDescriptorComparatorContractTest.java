@@ -19,7 +19,7 @@
 */
 package slash.navigation.graphhopper;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.BoundingBox;
 
 import java.lang.reflect.Field;
@@ -28,8 +28,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

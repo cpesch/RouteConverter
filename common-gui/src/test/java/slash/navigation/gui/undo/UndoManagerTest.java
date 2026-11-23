@@ -20,12 +20,15 @@
 
 package slash.navigation.gui.undo;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link UndoManager}.

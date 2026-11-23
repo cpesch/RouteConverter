@@ -20,7 +20,7 @@
 
 package slash.navigation.babel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatParser;
@@ -41,8 +41,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Compares what the GPSBabel-backed formats write today against the golden files recorded by
@@ -341,6 +341,6 @@ public class BabelGoldenWriteIT {
                 compareInput(className, format, inputName, allDifferences);
         }
 
-        assertTrue("Differences from golden write files:\n" + String.join("\n", allDifferences), allDifferences.isEmpty());
+        assertTrue(allDifferences.isEmpty(), "Differences from golden write files:\n" + String.join("\n", allDifferences));
     }
 }

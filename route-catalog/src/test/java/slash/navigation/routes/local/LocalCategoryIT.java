@@ -19,9 +19,9 @@
 */
 package slash.navigation.routes.local;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.routes.Category;
 
@@ -29,7 +29,12 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getTemporaryDirectory;
 
@@ -39,13 +44,13 @@ public class LocalCategoryIT {
     private File path;
     private LocalCatalog catalog;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         path = ensureDirectory(new File(getTemporaryDirectory(), "local-catalog-" + currentTimeMillis()));
         catalog = new LocalCatalog(path.getAbsolutePath());
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         catalog.getRootCategory().delete();
     }
@@ -104,14 +109,16 @@ public class LocalCategoryIT {
         createAndDeleteCategory("Plus Category " + currentTimeMillis() + " A + B + C");
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotCreateCategoryWithSlashes() throws IOException {
-        createAndDeleteCategory("/Slashes/Category/" + currentTimeMillis() + "/");
+        assertThrows(ForbiddenException.class, () ->
+            createAndDeleteCategory("/Slashes/Category/" + currentTimeMillis() + "/"));
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotCreateCategoryWithBackslashes() throws IOException {
-        createAndDeleteCategory("\\Slashes\\Category\\" + currentTimeMillis() + "/");
+        assertThrows(ForbiddenException.class, () ->
+            createAndDeleteCategory("\\Slashes\\Category\\" + currentTimeMillis() + "/"));
     }
 
     @Test

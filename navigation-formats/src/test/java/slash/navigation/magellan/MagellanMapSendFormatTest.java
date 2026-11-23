@@ -20,7 +20,7 @@
 
 package slash.navigation.magellan;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserContextImpl;
@@ -37,11 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -274,7 +274,7 @@ public class MagellanMapSendFormatTest {
             output.writeInt32(1);
             waypoint(output, "A", "B", 1, 1.0, 2.0, 3.0);
             output.writeInt32(0);
-            assertTrue("type " + type, read(output.toByteArray()).isEmpty());
+            assertTrue(read(output.toByteArray()).isEmpty(), "type " + type);
         }
     }
 
@@ -456,7 +456,7 @@ public class MagellanMapSendFormatTest {
         for (NavigationFormat<?> format : new NavigationFormatRegistry().getReadFormats())
             names.add(format.getClass().getName());
         int index = names.indexOf("slash.navigation.magellan.MagellanMapSendFormat");
-        assertTrue(names.toString(), index > 0);
+        assertTrue(index > 0, names.toString());
         assertFalse(names.contains("slash.navigation.babel.MagellanMapSendFormat"));
         assertEquals("NationalGeographicTopo3Format", simpleName(names.get(index - 1)));
         assertEquals("AlanTrackLogFormat", simpleName(names.get(index + 1)));

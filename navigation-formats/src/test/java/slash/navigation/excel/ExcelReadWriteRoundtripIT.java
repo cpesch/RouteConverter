@@ -20,11 +20,11 @@
 
 package slash.navigation.excel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
@@ -46,27 +46,25 @@ public class ExcelReadWriteRoundtripIT {
 
     @Test
     public void testXlsRoundtrip() throws Exception {
-        ignoreLocalTimeZone(() -> {
+        ignoreLocalTimeZone(() ->
             readWriteRoundtrip(TEST_PATH + "from.xls", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
                     ExcelRoute sourceRoute = (ExcelRoute) source.getAllRoutes().get(0);
                     ExcelRoute targetRoute = (ExcelRoute) target.getAllRoutes().get(0);
                     checkRoutes(sourceRoute, targetRoute);
                 }
-            });
-        });
+            }));
     }
 
     @Test
     public void testXlsxRoundtrip() throws Exception {
-        ignoreLocalTimeZone(() -> {
+        ignoreLocalTimeZone(() ->
             readWriteRoundtrip(TEST_PATH + "from.xlsx", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
                     ExcelRoute sourceRoute = (ExcelRoute) source.getAllRoutes().get(0);
                     ExcelRoute targetRoute = (ExcelRoute) target.getAllRoutes().get(0);
                     checkRoutes(sourceRoute, targetRoute);
                 }
-            });
-        });
+            }));
     }
 }

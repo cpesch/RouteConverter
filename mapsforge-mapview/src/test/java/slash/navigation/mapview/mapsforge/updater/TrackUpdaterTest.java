@@ -20,7 +20,7 @@
 
 package slash.navigation.mapview.mapsforge.updater;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class TrackUpdaterTest {

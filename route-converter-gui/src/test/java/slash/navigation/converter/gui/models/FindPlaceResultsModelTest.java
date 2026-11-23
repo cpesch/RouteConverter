@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
@@ -28,9 +28,9 @@ import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.converter.gui.models.FindPlaceResultsModel.CATEGORY_COLUMN;
 import static slash.navigation.converter.gui.models.FindPlaceResultsModel.GEOCODING_SERVICE_COLUMN;
 import static slash.navigation.converter.gui.models.FindPlaceResultsModel.LATITUDE_COLUMN;

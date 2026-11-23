@@ -20,10 +20,13 @@
 
 package slash.navigation.simple;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.Wgs84Position;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class GoRiderGpsFormatTest {

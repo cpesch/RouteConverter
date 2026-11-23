@@ -19,13 +19,15 @@
 */
 package slash.navigation.routes.remote;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.io.Transfer.decodeUri;

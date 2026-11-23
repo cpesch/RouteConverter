@@ -27,9 +27,12 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.type.CompactCalendar.UTC;
 
-public abstract class TestCase extends junit.framework.TestCase {
+public abstract class TestCase {
     private static final DateFormat LONG_DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.ENGLISH);
 
     public static void assertDoubleEquals(double expected, double was) {
@@ -64,13 +67,13 @@ public abstract class TestCase extends junit.framework.TestCase {
             double expectedPlusOffset = expected * (1.0 + offset);
             if (expectedPlusOffset == 0.0)
                 expectedPlusOffset = offset;
-            assertTrue(actual + " is not within +" + offset + " of " + expected + " to " + expectedPlusOffset,
-                    actual >= 0.0 ? actual < expectedPlusOffset : actual > expectedPlusOffset);
+            assertTrue(actual >= 0.0 ? actual < expectedPlusOffset : actual > expectedPlusOffset,
+                    actual + " is not within +" + offset + " of " + expected + " to " + expectedPlusOffset);
             double expectedMinusOffset = expected * (1.0 - offset);
             if (expectedMinusOffset == 0.0)
                 expectedMinusOffset = -offset;
-            assertTrue(actual + " is not within -" + offset + " of " + expectedMinusOffset + " to " + expected,
-                    actual >= 0.0 ? actual > expectedMinusOffset : actual < expectedMinusOffset);
+            assertTrue(actual >= 0.0 ? actual > expectedMinusOffset : actual < expectedMinusOffset,
+                    actual + " is not within -" + offset + " of " + expectedMinusOffset + " to " + expected);
         }
     }
 

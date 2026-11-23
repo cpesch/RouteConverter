@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.RouteDistanceAndTimeCache;
 
@@ -31,9 +31,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link LocalRouteDistanceAndTimeFiller}: pending-URL dedup, queue-full drop,
@@ -204,7 +204,7 @@ public class LocalRouteDistanceAndTimeFillerTest {
 
         filler.fill("url");
         executor.runAll();
-        assertNull("failed parse must not cache", cache.getDistanceAndTime("url"));
+        assertNull(cache.getDistanceAndTime("url"), "failed parse must not cache");
 
         // the pending mark was cleared in the finally block, so a retry is accepted and succeeds
         filler.fill("url");

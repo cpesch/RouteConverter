@@ -20,7 +20,7 @@
 
 package slash.navigation.gopal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserResult;
@@ -28,8 +28,8 @@ import slash.navigation.base.ParserResult;
 import java.io.File;
 import java.io.IOException;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 
 public class GoPalTrackFormatIT {

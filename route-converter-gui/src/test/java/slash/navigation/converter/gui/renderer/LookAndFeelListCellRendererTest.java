@@ -20,12 +20,12 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ListResourceBundle;
 import java.util.ResourceBundle;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.navigation.converter.gui.renderer.LookAndFeelListCellRenderer.resolveText;
 
 /**

@@ -19,14 +19,16 @@
 */
 package slash.navigation.common;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.common.PositionParser.*;
 
@@ -77,7 +79,7 @@ public class PositionParserTest {
         assertDoubleEquals(13.383570, position.getLongitude());
         assertDoubleEquals(54.096930, position.getLatitude());
         assertDoubleEquals(0.0, position.getElevation());
-        Assert.assertEquals("description", position.getDescription());
+        Assertions.assertEquals("description", position.getDescription());
     }
 
     @Test

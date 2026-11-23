@@ -19,7 +19,7 @@
 */
 package slash.navigation.routes.remote;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.routes.NotFoundException;
 import slash.navigation.routes.NotOwnerException;
@@ -29,7 +29,10 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.routes.remote.RemoteCatalog.FILE_URI;
 
 public class RemoteFileIT extends BaseRemoteCatalogTest {
@@ -57,16 +60,19 @@ public class RemoteFileIT extends BaseRemoteCatalogTest {
         assertNotFound(fileTypeUrl);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void testCannotDeleteNotExistingFile() throws IOException {
-        catalog.deleteFile(API + FILE_URI + currentTimeMillis() + "/");
+        assertThrows(NotFoundException.class, () ->
+            catalog.deleteFile(API + FILE_URI + currentTimeMillis() + "/"));
     }
 
-    @Test(expected = NotOwnerException.class)
+    @Test
     public void testCannotDeleteFileFromOtherUser() throws IOException {
-        RemoteCatalog another = new RemoteCatalog(API, new SimpleCredentials(ANOTHER_USERNAME, PASSWORD));
-        String url = another.addFile(SAMPLE_FILE);
-        catalog.deleteFile(url);
+        assertThrows(NotOwnerException.class, () -> {
+            RemoteCatalog another = new RemoteCatalog(API, new SimpleCredentials(ANOTHER_USERNAME, PASSWORD));
+            String url = another.addFile(SAMPLE_FILE);
+            catalog.deleteFile(url);
+        });
     }
 
     @Test

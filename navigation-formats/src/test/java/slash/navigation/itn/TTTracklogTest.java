@@ -20,10 +20,15 @@
 
 package slash.navigation.itn;
 
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationTestCase;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class TTTracklogTest extends NavigationTestCase {
 
+    @Test
     public void testTTTracklogStartPosition() {
         TomTomPosition position = new TomTomPosition(0, 0, "12:23:10 Start (#1)");
         assertEquals("Start", position.getReason());
@@ -33,6 +38,7 @@ public class TTTracklogTest extends NavigationTestCase {
         assertEquals(calendar(1970, 1, 1, 12, 23, 10), position.getTime());
     }
 
+    @Test
     public void testTTTracklogSpeedAndElevationPosition() {
         TomTomPosition position = new TomTomPosition(0, 0, "13:31 v=54.5 alt=79 (#3634)");
         assertEquals("v=54.5 alt=79", position.getReason());
@@ -42,6 +48,7 @@ public class TTTracklogTest extends NavigationTestCase {
         assertEquals(calendar(1970, 1, 1, 13, 31, 0), position.getTime());
     }
 
+    @Test
     public void testTTTracklogPausePosition() {
         TomTomPosition position = new TomTomPosition(0, 0, "13:58 0.7 min Pause (#5444)");
         assertEquals("0.7 min Pause", position.getReason());
@@ -51,6 +58,7 @@ public class TTTracklogTest extends NavigationTestCase {
         assertEquals(calendar(1970, 1, 1, 13, 58, 0), position.getTime());
     }
 
+    @Test
     public void testTTTracklogPauseWithElevationPosition() {
         TomTomPosition position = new TomTomPosition(0, 0, "15:04 0.7 min Pause 48.2m (#1377)");
         assertEquals("0.7 min Pause 48.2m", position.getReason());

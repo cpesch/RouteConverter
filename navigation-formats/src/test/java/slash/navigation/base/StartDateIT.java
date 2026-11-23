@@ -20,7 +20,7 @@
 
 package slash.navigation.base;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.gopal.GoPalTrackFormat;
@@ -37,8 +37,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import static java.util.Calendar.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static slash.common.TestCase.calendar;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.NavigationTestCase.*;

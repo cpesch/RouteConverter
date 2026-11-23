@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.geocoding.BaseGeocodingService;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
@@ -36,13 +36,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class GeocodingServiceFacadeTest {
     private Preferences preferences;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         preferences = new InMemoryPreferences();
     }

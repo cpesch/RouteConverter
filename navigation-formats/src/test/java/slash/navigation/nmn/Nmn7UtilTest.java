@@ -20,7 +20,7 @@
 
 package slash.navigation.nmn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.nmn.binding7.Route;
 
 import java.io.ByteArrayInputStream;
@@ -29,8 +29,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Tests for {@link Nmn7Util} unmarshal/marshal round-trips.
