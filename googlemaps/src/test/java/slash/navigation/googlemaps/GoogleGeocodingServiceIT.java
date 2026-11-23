@@ -19,8 +19,8 @@
 */
 package slash.navigation.googlemaps;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
@@ -31,12 +31,15 @@ import java.util.Locale;
 
 import static java.util.Collections.singletonList;
 import static java.util.Locale.ENGLISH;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GoogleGeocodingServiceIT {
     private final GoogleGeocodingService service = new GoogleGeocodingService();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Locale.setDefault(ENGLISH);
     }

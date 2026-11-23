@@ -19,12 +19,12 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.awt.Point;
 import java.awt.Rectangle;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.navigation.converter.gui.helpers.AbstractTablePopupMenu.keyboardPopupLocation;
 
 /**

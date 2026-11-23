@@ -20,8 +20,8 @@
 
 package slash.navigation.kml;
 
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -30,9 +30,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static slash.common.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.NavigationTestCase.*;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
@@ -132,14 +132,14 @@ public class KmlFormatIT {
     public void testGoogleEarthNetworkLink() throws Exception {
         List<KmlRoute> routes = readKmlFile(new Kml22Format(), SAMPLE_PATH + "network_link_google_earth.kml");
         assertNotNull(routes);
-        TestCase.assertEquals(2, routes.size());
+        Assertions.assertEquals(2, routes.size());
     }
 
     @Test
     public void testGoogleMapsNetworkLink() throws Exception {
         List<KmlRoute> routes = readKmlFile(new Kml21Format(), SAMPLE_PATH + "network_link_google_maps.kml");
         assertNotNull(routes);
-        TestCase.assertEquals(2, routes.size());
+        Assertions.assertEquals(2, routes.size());
     }
 
     @Test

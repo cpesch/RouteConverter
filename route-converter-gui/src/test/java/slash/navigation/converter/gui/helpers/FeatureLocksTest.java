@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 
 import java.util.List;
@@ -29,14 +29,14 @@ import java.util.prefs.Preferences;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FeatureLocksTest {
     private static final List<String> FEATURES = asList("fpl-g1000", "msfs-pln", "rt-gorider", "rtz-ecdis");
 
     private Preferences preferences;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         preferences = new InMemoryPreferences();
     }

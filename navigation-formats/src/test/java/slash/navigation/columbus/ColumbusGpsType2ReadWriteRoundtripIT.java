@@ -20,14 +20,14 @@
 
 package slash.navigation.columbus;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
@@ -37,7 +37,7 @@ public class ColumbusGpsType2ReadWriteRoundtripIT {
 
     @Test
     public void testTypeARoundtrip() throws Exception {
-        ignoreLocalTimeZone(() -> {
+        ignoreLocalTimeZone(() ->
             readWriteRoundtrip(TEST_PATH + "from-columbusv1000-type2.csv", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
                     SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
@@ -53,13 +53,12 @@ public class ColumbusGpsType2ReadWriteRoundtripIT {
                         assertEquals(targetPosition.getHeartBeat(), sourcePosition.getHeartBeat());
                     }
                 }
-            });
-        });
+            }));
     }
 
     @Test
     public void testTypeBRoundtrip() throws Exception {
-        ignoreLocalTimeZone(() -> {
+        ignoreLocalTimeZone(() ->
             readWriteRoundtrip(TEST_PATH + "from-columbusv1000-type2b.csv", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
                     SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
@@ -76,7 +75,6 @@ public class ColumbusGpsType2ReadWriteRoundtripIT {
                         assertNull(targetPosition.getHeartBeat());
                     }
                 }
-            });
-        });
+            }));
     }
 }

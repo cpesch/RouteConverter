@@ -19,7 +19,7 @@
 */
 package slash.navigation.mapview.mapsforge.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
@@ -34,10 +34,10 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.mapview.mapsforge.helpers.GroupLayerHelper.addToGroupLayer;
 import static slash.navigation.mapview.mapsforge.helpers.GroupLayerHelper.removeFromGroupLayer;
 
@@ -74,7 +74,7 @@ public class GroupLayerHelperTest {
 
         assertEquals(3, groupLayer.layers.size());
         for (Layer layer : groupLayer.layers)
-            assertSame("every child needs a display model or Layer#draw throws", displayModel, layer.getDisplayModel());
+            assertSame(displayModel, layer.getDisplayModel(), "every child needs a display model or Layer#draw throws");
     }
 
     /**
@@ -128,7 +128,7 @@ public class GroupLayerHelperTest {
 
         removeFromGroupLayer(groupLayer, asList(layers.get(1), layers.get(3)));
 
-        assertEquals("removing a delta must not drop the rest of the group", 3, groupLayer.layers.size());
+        assertEquals(3, groupLayer.layers.size(), "removing a delta must not drop the rest of the group");
         assertTrue(groupLayer.layers.contains(layers.get(0)));
         assertTrue(groupLayer.layers.contains(layers.get(2)));
         assertTrue(groupLayer.layers.contains(layers.get(4)));

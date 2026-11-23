@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadTableModel;
@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.DownloadTableModel.DESCRIPTION_COLUMN;

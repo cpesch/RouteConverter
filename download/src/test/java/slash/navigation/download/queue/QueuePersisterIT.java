@@ -1,8 +1,8 @@
 package slash.navigation.download.queue;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.FileAndChecksum;
@@ -14,8 +14,8 @@ import java.util.List;
 
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.download.Action.Copy;
@@ -27,7 +27,7 @@ public class QueuePersisterIT {
     private final QueuePersister persister = new QueuePersister();
     private File queueFile, tempFile, fileTarget, fragmentTarget1, fragmentTarget2;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         queueFile = createTempFile("queueFile", ".xml");
         tempFile = createTempFile("tempFile", ".xml");
@@ -36,7 +36,7 @@ public class QueuePersisterIT {
         fragmentTarget2 = createTempFile("fragmentTarget2", ".xml");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (queueFile.exists())
             assertTrue(queueFile.delete());

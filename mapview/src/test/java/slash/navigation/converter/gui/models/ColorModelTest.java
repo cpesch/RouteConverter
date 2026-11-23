@@ -19,13 +19,14 @@
 */
 package slash.navigation.converter.gui.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 
 import java.awt.*;
 import java.util.prefs.Preferences;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests for {@link ColorModel}.

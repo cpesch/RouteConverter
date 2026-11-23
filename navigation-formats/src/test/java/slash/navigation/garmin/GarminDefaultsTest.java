@@ -20,9 +20,10 @@
 
 package slash.navigation.garmin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static slash.navigation.garmin.GarminDefaults.*;
 
 public class GarminDefaultsTest {
@@ -34,9 +35,10 @@ public class GarminDefaultsTest {
             assertEquals(18, waypointIconNumber(format));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWaypointIconWithoutFormat() {
-        waypointIconNumber(null);
+        assertThrows(IllegalArgumentException.class, () ->
+            waypointIconNumber(null));
     }
 
     @Test
@@ -73,9 +75,10 @@ public class GarminDefaultsTest {
         assertEquals(18, gdbWaypointIconNumber(3));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testGdbWaypointIconForUnknownVersion() {
-        gdbWaypointIconNumber(4);
+        assertThrows(IllegalArgumentException.class, () ->
+            gdbWaypointIconNumber(4));
     }
 
     @Test
@@ -102,14 +105,16 @@ public class GarminDefaultsTest {
         assertEquals(0, MAPSOURCE_TRACK_COLOR);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testMapSourceWaypointIconForVersionBelow3() {
-        mapSourceWaypointIconNumber(2);
+        assertThrows(IllegalArgumentException.class, () ->
+            mapSourceWaypointIconNumber(2));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testMapSourceWaypointIconForVersionAbove5() {
-        mapSourceWaypointIconNumber(6);
+        assertThrows(IllegalArgumentException.class, () ->
+            mapSourceWaypointIconNumber(6));
     }
 
     @Test

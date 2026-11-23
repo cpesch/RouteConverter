@@ -20,9 +20,9 @@
 
 package slash.navigation.converter.gui.models;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 
 import java.io.File;
@@ -35,7 +35,9 @@ import java.util.prefs.Preferences;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.io.Files.toFile;
 
 public class RecentUrlsModelTest {
@@ -46,7 +48,7 @@ public class RecentUrlsModelTest {
     private Preferences preferences;
     private List<File> tempFiles;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         preferences = new InMemoryPreferences();
         preferences.putInt(MAXIMUM_RECENT_URL_COUNT_PREFERENCE, LIMIT);
@@ -56,7 +58,7 @@ public class RecentUrlsModelTest {
         assertEquals(0, model.getUrls().size());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         for (File file : tempFiles)
             if (file.exists())

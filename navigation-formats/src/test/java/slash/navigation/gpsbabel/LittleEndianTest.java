@@ -20,14 +20,15 @@
 
 package slash.navigation.gpsbabel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.EOFException;
 import java.nio.charset.Charset;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LittleEndianTest {
     private static final Charset WINDOWS_1252 = Charset.forName("windows-1252");
@@ -92,69 +93,82 @@ public class LittleEndianTest {
         assertEquals(0, in.remaining());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofUInt8() throws Exception {
-        new LittleEndianInput(new byte[0]).readUInt8();
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[0]).readUInt8());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofInt16() throws Exception {
-        new LittleEndianInput(new byte[1]).readInt16();
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[1]).readInt16());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofUInt16() throws Exception {
-        new LittleEndianInput(new byte[1]).readUInt16();
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[1]).readUInt16());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofInt32() throws Exception {
-        new LittleEndianInput(new byte[3]).readInt32();
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[3]).readInt32());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofUInt32() throws Exception {
-        new LittleEndianInput(new byte[3]).readUInt32();
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[3]).readUInt32());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofFloat() throws Exception {
-        new LittleEndianInput(new byte[3]).readFloat();
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[3]).readFloat());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofDouble() throws Exception {
-        new LittleEndianInput(new byte[7]).readDouble();
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[7]).readDouble());
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofBytes() throws Exception {
-        new LittleEndianInput(new byte[2]).readBytes(3);
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[2]).readBytes(3));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofSkip() throws Exception {
-        new LittleEndianInput(new byte[2]).skip(3);
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[2]).skip(3));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofSeek() throws Exception {
-        new LittleEndianInput(new byte[2]).seek(3);
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[2]).seek(3));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofFixedString() throws Exception {
-        new LittleEndianInput(new byte[2]).readFixedString(3, UTF_8);
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[2]).readFixedString(3, UTF_8));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofPascalStringBody() throws Exception {
-        new LittleEndianInput(new byte[]{5, 'a'}).readPascalString(UTF_8);
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[]{5, 'a'}).readPascalString(UTF_8));
     }
 
-    @Test(expected = EOFException.class)
+    @Test
     public void testEofCStringWithoutNul() throws Exception {
-        new LittleEndianInput(new byte[]{'a', 'b'}).readCString(UTF_8);
+        assertThrows(EOFException.class, () ->
+            new LittleEndianInput(new byte[]{'a', 'b'}).readCString(UTF_8));
     }
 
     @Test

@@ -20,7 +20,7 @@
 
 package slash.navigation.ozi;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.common.Datums;
@@ -37,11 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -106,7 +106,7 @@ public class OziExplorerRouteFormatTest {
         String[] contents = {RTE, PLT, WPT};
         for (int f = 0; f < formats.length; f++)
             for (int c = 0; c < contents.length; c++)
-                assertEquals("format " + f + " content " + c, f == c ? 1 : 0, read(formats[f], contents[c]).size());
+                assertEquals(f == c ? 1 : 0, read(formats[f], contents[c]).size(), "format " + f + " content " + c);
     }
 
     @Test
@@ -339,8 +339,8 @@ public class OziExplorerRouteFormatTest {
         GpxPosition timed = new GpxPosition(8.25, 47.5, null, null, slash.common.type.CompactCalendar.fromMillis(86400000L + 43200000L), "T");
         GpxRoute route = new GpxRoute(new Gpx10Format(), Track, "Named", null, new ArrayList<>(asList(timed)));
         String written = write(new OziExplorerTrackFormat(), route);
-        assertTrue(written, written.contains("0,2,255,Named,0,0,2,8421376\r\n0\r\n"));
-        assertTrue(written, written.endsWith("47.500000,8.250000,1,-777,25570.5000000,,\r\n"));
+        assertTrue(written.contains("0,2,255,Named,0,0,2,8421376\r\n0\r\n"), written);
+        assertTrue(written.endsWith("47.500000,8.250000,1,-777,25570.5000000,,\r\n"), written);
     }
 
     @Test
@@ -385,8 +385,8 @@ public class OziExplorerRouteFormatTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         new OziExplorerRouteFormat().write(route, out, 0, 1);
         String text = new String(out.toByteArray(), CP1252);
-        assertTrue(text, text.contains("R,1,Gr\u00F6\u00DFe,,"));
-        assertTrue(text, text.contains("W,1,,1,\u20AC 1,"));
+        assertTrue(text.contains("R,1,Gr\u00F6\u00DFe,,"), text);
+        assertTrue(text.contains("W,1,,1,\u20AC 1,"), text);
 
         GpxRoute waypoints = new GpxRoute(new Gpx10Format(), Waypoints, null, null, new ArrayList<>(asList(
                 position(8.25, 47.5, null, "\u20AC \u00C4"))));

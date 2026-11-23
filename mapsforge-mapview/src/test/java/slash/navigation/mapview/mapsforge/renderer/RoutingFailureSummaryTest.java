@@ -19,9 +19,9 @@
 */
 package slash.navigation.mapview.mapsforge.renderer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.navigation.routing.RoutingResult.Validity.Invalid;
 import static slash.navigation.routing.RoutingResult.Validity.PointNotFound;
 import static slash.navigation.routing.RoutingResult.Validity.Timeout;

@@ -20,13 +20,15 @@
 
 package slash.navigation.download;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.*;

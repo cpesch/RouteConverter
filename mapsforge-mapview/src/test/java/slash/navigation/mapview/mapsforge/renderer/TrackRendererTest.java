@@ -19,8 +19,8 @@
 */
 package slash.navigation.mapview.mapsforge.renderer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
@@ -38,7 +38,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,7 +56,7 @@ public class TrackRendererTest {
     private GroupLayer trackLayer;
     private TrackRenderer renderer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         graphicFactory = mock(GraphicFactory.class);
         when(graphicFactory.createPaint()).thenReturn(mock(Paint.class));
@@ -101,9 +103,9 @@ public class TrackRendererTest {
 
         renderer.renderTrack(pairWithLayers, () -> {});
 
-        assertEquals("Should add 3 lines to track layer", 3, trackLayer.layers.size());
+        assertEquals(3, trackLayer.layers.size(), "Should add 3 lines to track layer");
         for (Layer layer : trackLayer.layers) {
-            assertTrue("Each layer should be a Line", layer instanceof Line);
+            assertTrue(layer instanceof Line, "Each layer should be a Line");
         }
     }
 
@@ -120,7 +122,7 @@ public class TrackRendererTest {
 
         renderer.renderTrack(pairWithLayers, () -> {});
 
-        assertEquals("Should skip pair without coordinates", 2, trackLayer.layers.size());
+        assertEquals(2, trackLayer.layers.size(), "Should skip pair without coordinates");
     }
 
     @Test
@@ -129,8 +131,8 @@ public class TrackRendererTest {
 
         renderer.renderTrack(asList(pairWithLayer), () -> {});
 
-        assertNotNull("Layer should be set on pair", pairWithLayer.getLayer());
-        assertTrue("Layer should be a Line", pairWithLayer.getLayer() instanceof Line);
+        assertNotNull(pairWithLayer.getLayer(), "Layer should be set on pair");
+        assertTrue(pairWithLayer.getLayer() instanceof Line, "Layer should be a Line");
     }
 
     @Test
@@ -139,7 +141,7 @@ public class TrackRendererTest {
 
         renderer.renderTrack(pairWithLayers, () -> {});
 
-        assertEquals("Should handle empty list gracefully", 0, trackLayer.layers.size());
+        assertEquals(0, trackLayer.layers.size(), "Should handle empty list gracefully");
     }
 
     @Test
@@ -153,7 +155,7 @@ public class TrackRendererTest {
 
         renderer.renderTrack(pairWithLayers, () -> {});
 
-        assertEquals("Should not add any lines if all pairs lack coordinates", 0, trackLayer.layers.size());
+        assertEquals(0, trackLayer.layers.size(), "Should not add any lines if all pairs lack coordinates");
     }
 
     @Test
@@ -163,8 +165,8 @@ public class TrackRendererTest {
         renderer.renderTrack(asList(pairWithLayer), () -> {});
 
         DistanceAndTime distanceAndTime = pairWithLayer.getDistanceAndTime();
-        assertNotNull("Should calculate distance and time", distanceAndTime);
-        assertNotNull("Distance should be calculated", distanceAndTime.distance());
-        assertNotNull("Time should be calculated", distanceAndTime.timeInMillis());
+        assertNotNull(distanceAndTime, "Should calculate distance and time");
+        assertNotNull(distanceAndTime.distance(), "Distance should be calculated");
+        assertNotNull(distanceAndTime.timeInMillis(), "Time should be calculated");
     }
 }

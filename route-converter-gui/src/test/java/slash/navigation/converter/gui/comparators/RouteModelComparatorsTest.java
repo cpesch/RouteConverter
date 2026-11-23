@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.comparators;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.RouteMetadataSource;
 import slash.navigation.routes.Category;
@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.converter.gui.comparators.RouteModelComparators.byCreator;
 import static slash.navigation.converter.gui.comparators.RouteModelComparators.byDistance;
 import static slash.navigation.converter.gui.comparators.RouteModelComparators.byDuration;

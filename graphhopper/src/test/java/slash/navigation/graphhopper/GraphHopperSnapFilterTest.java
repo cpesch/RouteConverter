@@ -27,13 +27,13 @@ import com.graphhopper.storage.BaseGraph;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.storage.index.LocationIndexTree;
 import com.graphhopper.storage.index.Snap;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.routing.TravelMode;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GraphHopperSnapFilterTest {
     // a car-only road and, about 11 m north of it, a separated bike-only cycleway
@@ -46,7 +46,7 @@ public class GraphHopperSnapFilterTest {
     private EncodingManager encodingManager;
     private LocationIndexTree locationIndex;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         BooleanEncodedValue carAccess = VehicleAccess.create("car");
         BooleanEncodedValue bikeAccess = VehicleAccess.create("bike");

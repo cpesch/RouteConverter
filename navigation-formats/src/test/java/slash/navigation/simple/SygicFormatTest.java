@@ -19,12 +19,19 @@
 */
 package slash.navigation.simple;
 
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.Wgs84Position;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SygicFormatTest extends NavigationTestCase {
     SygicUnicodeFormat format = new SygicUnicodeFormat();
 
+    @Test
     public void testIsValidLine() {
         assertTrue(format.isValidLine("; something"));
         assertTrue(format.isValidLine("2.324360\t48.826760\tRue Antoine Chantin(14ème Arrondissement Paris), Paris"));
@@ -32,6 +39,7 @@ public class SygicFormatTest extends NavigationTestCase {
         assertTrue(format.isValidLine(""));
     }
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("2.324360\t48.826760\tRue Antoine Chantin(14ème Arrondissement Paris), Paris"));
         assertTrue(format.isPosition("17.556660\t54.758830\tLeba Lebska\t+48598662069"));
@@ -40,6 +48,7 @@ public class SygicFormatTest extends NavigationTestCase {
         assertFalse(format.isPosition("17.556660    54.758830    Leba Lebska     +48598662069"));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("17.556660\t54.758830\tLeba Lebska\t+48598662069", null);
         assertEquals(17.556660, position.getLongitude());
@@ -48,6 +57,7 @@ public class SygicFormatTest extends NavigationTestCase {
         assertEquals("Leba Lebska +48598662069", position.getDescription());
     }
 
+    @Test
     public void testParsePositionWithoutElevation() {
         Wgs84Position position = format.parsePosition("2.324360\t48.826760\tRue Antoine Chantin(14ème Arrondissement Paris), Paris", null);
         assertEquals(2.324360, position.getLongitude());

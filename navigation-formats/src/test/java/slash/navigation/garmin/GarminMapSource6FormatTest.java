@@ -20,7 +20,7 @@
 
 package slash.navigation.garmin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.gpsbabel.LittleEndianOutput;
 import slash.navigation.gpx.Gpx10Format;
@@ -38,10 +38,10 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -192,7 +192,7 @@ public class GarminMapSource6FormatTest {
             Builder file = header(version);
             file.record('W', waypoint(version, "Home", 0, 48.1, 11.5, 520.0, "my notes", null, T1));
             List<GpxRoute> routes = read(end(file));
-            assertEquals("version " + version, 1, routes.size());
+            assertEquals(1, routes.size(), "version " + version);
             GpxRoute route = routes.get(0);
             assertEquals(Waypoints, route.getCharacteristics());
             GpxPosition position = route.getPosition(0);
@@ -220,7 +220,7 @@ public class GarminMapSource6FormatTest {
         for (int version : new int[]{0, 4, 15}) {
             Builder file = header(version);
             file.record('W', waypoint(3, "Home", 0, 48.1, 11.5, null, null, null, null));
-            assertTrue("version " + version, read(end(file)).isEmpty());
+            assertTrue(read(end(file)).isEmpty(), "version " + version);
         }
         Builder file = header(3, "Other");
         file.record('W', waypoint(3, "Home", 0, 48.1, 11.5, null, null, null, null));
@@ -234,7 +234,7 @@ public class GarminMapSource6FormatTest {
         byte[] complete = end(valid);
         // every truncation, including one without the end record
         for (int length = 0; length < complete.length - 7; length++)
-            assertTrue("length " + length, read(Arrays.copyOf(complete, length)).isEmpty());
+            assertTrue(read(Arrays.copyOf(complete, length)).isEmpty(), "length " + length);
 
         // a record length overrunning the file
         assertTrue(read(end(header(3).i32(1000).bytes('W').fill(10, 0))).isEmpty());

@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Set.of;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.navigation.base.WaypointType.Parking;
 import static slash.navigation.base.WaypointType.PointOfInterestC;
 import static slash.navigation.base.WaypointType.PointOfInterestD;

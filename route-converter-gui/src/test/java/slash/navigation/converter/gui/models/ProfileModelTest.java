@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.models;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -61,7 +61,7 @@ public class ProfileModelTest {
     private PatchedXYSeries series;
     private ProfileModel profileModel;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         delegate = new PositionsModelImpl(new PositionsModelCallback() {
             public String getStringAt(NavigationPosition position, int columnIndex) {
