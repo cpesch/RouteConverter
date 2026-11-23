@@ -20,7 +20,7 @@
 
 package slash.navigation.rtz;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.BaseRoute;
@@ -40,10 +40,10 @@ import java.util.List;
 import java.util.TimeZone;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
@@ -57,7 +57,7 @@ public class RtzFormatTest extends NavigationTestCase {
     private BaseRoute<?, ?> readFile(String fileName) throws IOException {
         ParserResult result = parser.read(new File(TEST_PATH + fileName),
                 parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(".rtz"));
-        assertNotNull("Cannot read route from " + fileName, result);
+        assertNotNull(result, "Cannot read route from " + fileName);
         assertTrue(result.isSuccessful());
         assertEquals(RtzFormat.class, result.getFormat().getClass());
         return result.getTheRoute();
@@ -66,7 +66,7 @@ public class RtzFormatTest extends NavigationTestCase {
     private BaseRoute<?, ?> readRtz(String rtz) throws IOException {
         ParserResult result = parser.read(new ByteArrayInputStream(rtz.getBytes(StandardCharsets.UTF_8)),
                 parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(".rtz"));
-        assertNotNull("Cannot read route", result);
+        assertNotNull(result, "Cannot read route");
         assertTrue(result.isSuccessful());
         assertEquals(RtzFormat.class, result.getFormat().getClass());
         return result.getTheRoute();

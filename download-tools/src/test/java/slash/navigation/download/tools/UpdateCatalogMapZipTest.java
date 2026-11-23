@@ -19,7 +19,7 @@
 */
 package slash.navigation.download.tools;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.datasources.binding.BoundingBoxType;
 import slash.navigation.datasources.binding.FragmentType;
@@ -43,11 +43,11 @@ import java.util.zip.ZipOutputStream;
 
 import static java.lang.Math.min;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.createFragmentType;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.createMapType;
 import static slash.navigation.download.tools.UpdateCatalog.describeMapZip;
@@ -258,7 +258,7 @@ public class UpdateCatalogMapZipTest {
         assertEquals(1, mapType.getFragment().size());
         assertFragment(mapType.getFragment().get(0), "Galicia.osm.map", EXTENDED_TIME, map.length);
         assertBoundingBox(mapType.getBoundingBox());
-        assertTrue("must not download the nested zip", reader.bytesRead < zip.length);
+        assertTrue(reader.bytesRead < zip.length, "must not download the nested zip");
     }
 
     @Test

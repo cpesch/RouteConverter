@@ -20,17 +20,17 @@
 
 package slash.navigation.converter.cmdline;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.CmdLineNavigationFormatRegistry;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Verifies the {@code analyze} JSON contract (specs/00055) against small
@@ -79,7 +79,7 @@ public class FileAnalyzerTest {
             fail("expected IOException, got " + json);
         } catch (IOException e) {
             assertNotNull(e.getMessage());
-            assertTrue(e.getMessage(), e.getMessage().contains("No positions"));
+            assertTrue(e.getMessage().contains("No positions"), e.getMessage());
         }
     }
 
@@ -93,8 +93,8 @@ public class FileAnalyzerTest {
 
         File source = resource("analyze-route.gpx");
         String json = brouterAnalyzer.analyze(source);
-        assertTrue(json, json.contains("\"lengthKind\":\"straight-line\""));
-        assertTrue(json, json.contains("\"positionLists\":1"));
+        assertTrue(json.contains("\"lengthKind\":\"straight-line\""), json);
+        assertTrue(json.contains("\"positionLists\":1"), json);
     }
 
     @Test
@@ -113,7 +113,7 @@ public class FileAnalyzerTest {
                 new PointToPointLengthComputer());
 
         // bbox is unioned over the two finite positions only
-        assertTrue(json, json.contains("\"bbox\":{\"north\":52.51,\"south\":52.5,\"east\":13.41,\"west\":13.4}"));
+        assertTrue(json.contains("\"bbox\":{\"north\":52.51,\"south\":52.5,\"east\":13.41,\"west\":13.4}"), json);
         // and the payload is parseable JSON (no NaN/Infinity tokens)
         assertNotNull(new com.fasterxml.jackson.databind.ObjectMapper().readTree(json));
     }
@@ -128,7 +128,7 @@ public class FileAnalyzerTest {
 
         String json = FileAnalyzer.toJson(new java.util.ArrayList<>(java.util.List.of(route)), 0L, "test", ".gpx",
                 new PointToPointLengthComputer());
-        assertTrue(json, json.contains("\"bbox\":null"));
+        assertTrue(json.contains("\"bbox\":null"), json);
         assertNotNull(new com.fasterxml.jackson.databind.ObjectMapper().readTree(json));
     }
 
@@ -143,8 +143,8 @@ public class FileAnalyzerTest {
 
         String json = FileAnalyzer.toJson(new java.util.ArrayList<>(java.util.List.of(route)), 0L, "test", ".gpx",
                 new PointToPointLengthComputer());
-        assertTrue(json, json.contains("\"lengthM\":null"));
-        assertTrue(json, json.contains("\"lengthKind\":null"));
+        assertTrue(json.contains("\"lengthM\":null"), json);
+        assertTrue(json.contains("\"lengthKind\":null"), json);
         assertNotNull(new com.fasterxml.jackson.databind.ObjectMapper().readTree(json));
     }
 

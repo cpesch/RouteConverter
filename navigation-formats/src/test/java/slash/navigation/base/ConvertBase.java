@@ -20,8 +20,8 @@
 
 package slash.navigation.base;
 
-import org.junit.Test;
 import slash.navigation.garmin.GarminMapSource6Format;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.tcx.TcxFormat;
 
@@ -33,7 +33,10 @@ import java.util.List;
 import java.util.Set;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationFormatConverter.asFormat;
 import static slash.navigation.base.NavigationTestCase.comparePositions;
@@ -55,7 +58,7 @@ public abstract class ConvertBase {
 
         File source = new File(testFileName);
         ParserResult result = parser.read(source, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(testFileName)));
-        assertNotNull("Cannot read route from " + source, result);
+        assertNotNull(result, "Cannot read route from " + source);
         assertTrue(result.isSuccessful());
         assertNotNull(result.getFormat());
         assertNotNull(result.getTheRoute());

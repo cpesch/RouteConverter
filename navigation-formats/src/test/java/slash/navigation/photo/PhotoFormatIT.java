@@ -21,7 +21,7 @@
 package slash.navigation.photo;
 
 import org.apache.commons.imaging.common.RationalNumber;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.*;
 
 import java.io.File;
@@ -30,10 +30,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.*;
 import static slash.common.io.InputOutput.copyAndClose;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;

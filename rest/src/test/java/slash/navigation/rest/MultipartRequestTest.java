@@ -22,16 +22,16 @@ package slash.navigation.rest;
 
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.entity.StringEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.hc.core5.http.ContentType.APPLICATION_JSON;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MultipartRequestTest {
     // a multi-byte character proves the body is encoded as UTF-8, not the platform charset
@@ -44,15 +44,15 @@ public class MultipartRequestTest {
         request.prepareEntity();
 
         HttpEntity entity = request.getMethod().getEntity();
-        assertTrue("a raw body must produce a StringEntity", entity instanceof StringEntity);
+        assertTrue(entity instanceof StringEntity, "a raw body must produce a StringEntity");
 
         byte[] expected = BODY.getBytes(UTF_8);
         assertArrayEquals(expected, entity.getContent().readAllBytes());
         assertEquals(expected.length, entity.getContentLength());
-        assertTrue("content type " + entity.getContentType(),
-                entity.getContentType().contains("application/json"));
-        assertTrue("content type " + entity.getContentType(),
-                entity.getContentType().toUpperCase().contains("UTF-8"));
+        assertTrue(entity.getContentType().contains("application/json"),
+                "content type " + entity.getContentType());
+        assertTrue(entity.getContentType().toUpperCase().contains("UTF-8"),
+                "content type " + entity.getContentType());
     }
 
     @Test
@@ -68,8 +68,8 @@ public class MultipartRequestTest {
         assertTrue(entity instanceof StringEntity);
         byte[] actual = entity.getContent().readAllBytes();
         assertArrayEquals(BODY.getBytes(UTF_8), actual);
-        assertFalse("the multipart part must not leak into a raw body request",
-                new String(actual, UTF_8).contains("ignored-multipart-part"));
+        assertFalse(new String(actual, UTF_8).contains("ignored-multipart-part"),
+                "the multipart part must not leak into a raw body request");
     }
 
     @Test
@@ -81,13 +81,13 @@ public class MultipartRequestTest {
         byte[] payload = request.getMethod().getEntity().getContent().readAllBytes();
         String asLatin1 = new String(payload, java.nio.charset.StandardCharsets.ISO_8859_1);
         // the part must be text/plain with a UTF-8 charset, so servers decode umlauts correctly
-        assertTrue("part must be text/plain, was:\n" + asLatin1, asLatin1.contains("text/plain"));
-        assertTrue("part charset must be UTF-8, was:\n" + asLatin1, asLatin1.toUpperCase().contains("UTF-8"));
+        assertTrue(asLatin1.contains("text/plain"), "part must be text/plain, was:\n" + asLatin1);
+        assertTrue(asLatin1.toUpperCase().contains("UTF-8"), "part charset must be UTF-8, was:\n" + asLatin1);
         // "ü" must appear as its UTF-8 bytes (0xC3 0xBC), not a single ISO-8859-1 byte (0xFC)
-        assertTrue("umlaut must be UTF-8 encoded",
-                indexOf(payload, "ü".getBytes(UTF_8)) >= 0);
-        assertFalse("umlaut must not be ISO-8859-1 encoded",
-                indexOf(payload, "ü".getBytes(java.nio.charset.StandardCharsets.ISO_8859_1)) >= 0);
+        assertTrue(indexOf(payload, "ü".getBytes(UTF_8)) >= 0,
+                "umlaut must be UTF-8 encoded");
+        assertFalse(indexOf(payload, "ü".getBytes(java.nio.charset.StandardCharsets.ISO_8859_1)) >= 0,
+                "umlaut must not be ISO-8859-1 encoded");
     }
 
     @Test
@@ -104,10 +104,10 @@ public class MultipartRequestTest {
         request.prepareEntity();
 
         String outerContentType = request.getMethod().getEntity().getContentType();
-        assertTrue("outer multipart Content-Type must declare UTF-8, was: " + outerContentType,
-                outerContentType.toUpperCase().contains("UTF-8"));
-        assertFalse("outer multipart Content-Type must not fall back to ISO-8859-1, was: " + outerContentType,
-                outerContentType.toUpperCase().contains("ISO-8859-1"));
+        assertTrue(outerContentType.toUpperCase().contains("UTF-8"),
+                "outer multipart Content-Type must declare UTF-8, was: " + outerContentType);
+        assertFalse(outerContentType.toUpperCase().contains("ISO-8859-1"),
+                "outer multipart Content-Type must not fall back to ISO-8859-1, was: " + outerContentType);
     }
 
     private static int indexOf(byte[] haystack, byte[] needle) {

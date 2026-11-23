@@ -20,12 +20,12 @@
 
 package slash.navigation.gui;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Verifies the crash dispatch installed by {@link Application#installDefaultUncaughtExceptionHandler}:
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ApplicationCrashDispatchTest {
 
-    @After
+    @AfterEach
     public void tearDown() {
         Application.setCrashHandler(null);
     }
@@ -60,13 +60,13 @@ public class ApplicationCrashDispatchTest {
             // the handler throws, but the dispatch must swallow it: invoked exactly once,
             // no re-entry on the same thread, no infinite recursion
             Thread.getDefaultUncaughtExceptionHandler().uncaughtException(thread, crash);
-            assertEquals("handler must be invoked exactly once, without recursing", 1, calls.get());
+            assertEquals(1, calls.get(), "handler must be invoked exactly once, without recursing");
 
             // the handlingCrash latch must have been cleared in the finally block, so a
             // later crash on the same thread reaches the handler again rather than being
             // permanently suppressed
             Thread.getDefaultUncaughtExceptionHandler().uncaughtException(thread, crash);
-            assertEquals("latch must reset so a subsequent crash is handled", 2, calls.get());
+            assertEquals(2, calls.get(), "latch must reset so a subsequent crash is handled");
         } finally {
             Thread.setDefaultUncaughtExceptionHandler(previous);
         }

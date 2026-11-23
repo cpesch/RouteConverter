@@ -19,16 +19,16 @@
 */
 package slash.navigation.geonames;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.geonames.binding.Geonames;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class GeoNamesUtilTest {
     private static final Path EXAMPLES = Path.of("src/main/examples");

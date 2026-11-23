@@ -20,13 +20,13 @@
 
 package slash.navigation.converter.cmdline;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Covers the {@code --brouter-segments} argument handling of
@@ -41,7 +41,7 @@ public class RouteConverterCmdLineTest {
     public void noBRouterOptionUsesPointToPoint() {
         RouteLengthComputer computer = RouteConverterCmdLine.createLengthComputer(
                 new String[]{"analyze", "route.gpx"});
-        assertTrue(computer.getClass().getName(), computer instanceof PointToPointLengthComputer);
+        assertTrue(computer instanceof PointToPointLengthComputer, computer.getClass().getName());
     }
 
     @Test
@@ -49,7 +49,7 @@ public class RouteConverterCmdLineTest {
         // --brouter-segments given without a directory argument: warn and straight-line
         RouteLengthComputer computer = RouteConverterCmdLine.createLengthComputer(
                 new String[]{"analyze", "route.gpx", "--brouter-segments"});
-        assertTrue(computer.getClass().getName(), computer instanceof PointToPointLengthComputer);
+        assertTrue(computer instanceof PointToPointLengthComputer, computer.getClass().getName());
     }
 
     @Test
@@ -57,7 +57,7 @@ public class RouteConverterCmdLineTest {
         File missing = new File(System.getProperty("java.io.tmpdir"), "no-such-brouter-segments-dir-" + System.nanoTime());
         RouteLengthComputer computer = RouteConverterCmdLine.createLengthComputer(
                 new String[]{"analyze", "route.gpx", "--brouter-segments", missing.getAbsolutePath()});
-        assertTrue(computer.getClass().getName(), computer instanceof PointToPointLengthComputer);
+        assertTrue(computer instanceof PointToPointLengthComputer, computer.getClass().getName());
     }
 
     @Test
@@ -66,6 +66,6 @@ public class RouteConverterCmdLineTest {
         segments.deleteOnExit();
         RouteLengthComputer computer = RouteConverterCmdLine.createLengthComputer(
                 new String[]{"analyze", "route.gpx", "--brouter-segments", segments.getAbsolutePath()});
-        assertTrue(computer.getClass().getName(), computer instanceof BRouterRouteLengthComputer);
+        assertTrue(computer instanceof BRouterRouteLengthComputer, computer.getClass().getName());
     }
 }

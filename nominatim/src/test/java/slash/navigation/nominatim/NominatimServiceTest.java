@@ -1,13 +1,13 @@
 package slash.navigation.nominatim;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.nominatim.search.PlaceType;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class NominatimServiceTest {
     private final NominatimService service = new NominatimService();

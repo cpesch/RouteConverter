@@ -20,11 +20,10 @@
 package slash.navigation.download;
 
 import com.sun.net.httpserver.HttpServer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Timeout;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,13 +31,14 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static slash.common.io.InputOutput.readFileToString;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.State.NotModified;
@@ -56,19 +56,17 @@ import static slash.navigation.download.State.Succeeded;
  *
  * @author Christian Pesch
  */
+@Timeout(value = 30, unit = TimeUnit.SECONDS)
 public class DownloadManager304Test {
     private static final String ETAG = "\"abc123\"";
     private static final String BODY = "Lorem ipsum dolor sit amet";
-
-    @Rule
-    public final Timeout testTimeout = Timeout.seconds(30);
 
     private HttpServer server;
     private final AtomicInteger bodiesServed = new AtomicInteger();
     private DownloadManager manager;
     private File target, queueFile;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/resource", exchange -> {
@@ -98,7 +96,7 @@ public class DownloadManager304Test {
         assertEquals(true, target.delete());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         manager.dispose();
         server.stop(0);

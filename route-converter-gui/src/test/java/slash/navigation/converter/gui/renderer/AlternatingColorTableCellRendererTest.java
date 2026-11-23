@@ -20,12 +20,12 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.navigation.converter.gui.renderer.AlternatingColorTableCellRenderer.getAlternateBackground;
 
 /**

@@ -20,14 +20,16 @@
 
 package slash.navigation.bcr;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static slash.common.TestCase.*;
 import static slash.common.type.CompactCalendar.fromMillis;
 
@@ -56,8 +58,8 @@ public class BcrRouteTest {
         List<BcrPosition> actual = route.getPositions();
         assertEquals(expected.length, actual.size());
         for (int i = 0; i < expected.length; i++)
-            assertEquals("at index:" + i + " expected:" + expected[i].getDescription() +
-                    " but was:" + actual.get(i).getDescription(), expected[i], actual.get(i));
+            assertEquals(expected[i], actual.get(i), "at index:" + i + " expected:" + expected[i].getDescription() +
+                    " but was:" + actual.get(i).getDescription());
     }
 
     @Test

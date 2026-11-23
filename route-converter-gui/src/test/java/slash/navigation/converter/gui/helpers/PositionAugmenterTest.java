@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.models.PositionsModelImpl;
@@ -34,9 +34,9 @@ import slash.navigation.gpx.GpxRoute;
 import java.util.TimeZone;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.calendar;
 
 public class PositionAugmenterTest {
@@ -49,7 +49,7 @@ public class PositionAugmenterTest {
     private final BaseRoute route = new GpxRoute(new Gpx11Format(), null, null, null, asList(a, b, c, d, e));
     private final PositionsModelImpl model = new PositionsModelImpl(null);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         model.setRoute(route);
     }

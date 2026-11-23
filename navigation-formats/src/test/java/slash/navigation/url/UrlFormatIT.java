@@ -20,7 +20,7 @@
 
 package slash.navigation.url;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
@@ -28,8 +28,8 @@ import slash.navigation.gpx.Gpx11Format;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertNotNull;
-import static slash.common.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class UrlFormatIT {

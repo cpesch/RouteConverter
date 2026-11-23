@@ -20,9 +20,11 @@
 
 package slash.navigation.base;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class WaypointTypeTest {
 
@@ -43,7 +45,7 @@ public class WaypointTypeTest {
 
     @Test
     public void testHasMultipleValues() {
-        assertTrue("Should have more than 3 waypoint types", WaypointType.values().length > 3);
+        assertTrue(WaypointType.values().length > 3, "Should have more than 3 waypoint types");
     }
 
     @Test

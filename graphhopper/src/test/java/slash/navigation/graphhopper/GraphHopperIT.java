@@ -19,8 +19,8 @@
 */
 package slash.navigation.graphhopper;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
@@ -39,7 +39,7 @@ import java.io.IOException;
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -53,7 +53,7 @@ public class GraphHopperIT {
 
     private GraphHopper hopper;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         Downloadable downloadable = mock(Downloadable.class);
         when(downloadable.getUri()).thenReturn(URI);

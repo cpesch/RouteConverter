@@ -19,9 +19,9 @@
 */
 package slash.navigation.routes.local;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.routes.Category;
@@ -32,8 +32,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Unit tests for {@link LocalCategory} ? create, delete, update, createRoute, equals/hashCode/toString.
@@ -46,14 +50,14 @@ public class LocalCategoryTest {
     private LocalCatalog catalog;
     private LocalCategory rootCategory;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         tempDir = Files.createTempDirectory("local-category-test").toFile();
         catalog = new LocalCatalog(tempDir.getAbsolutePath());
         rootCategory = (LocalCategory) catalog.getRootCategory();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         deleteRecursive(tempDir);
     }
@@ -97,15 +101,18 @@ public class LocalCategoryTest {
         assertEquals("Alpha", categories.get(0).getName());
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void createWithForwardSlashThrowsForbiddenException() throws IOException {
-        rootCategory.create("A/B");
+        assertThrows(ForbiddenException.class, () ->
+            rootCategory.create("A/B"));
     }
 
-    @Test(expected = DuplicateNameException.class)
+    @Test
     public void createDuplicateThrowsDuplicateNameException() throws IOException {
-        rootCategory.create("Dup");
-        rootCategory.create("Dup");
+        assertThrows(DuplicateNameException.class, () -> {
+            rootCategory.create("Dup");
+            rootCategory.create("Dup");
+        });
     }
 
     // ---- delete ----

@@ -19,12 +19,12 @@
 */
 package slash.navigation.download.tools.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AnchorParserTest {
     private final AnchorParser parser = new AnchorParser();

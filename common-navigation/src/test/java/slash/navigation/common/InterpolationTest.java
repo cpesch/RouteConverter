@@ -20,13 +20,13 @@
 
 package slash.navigation.common;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static java.lang.Math.floor;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class InterpolationTest {
@@ -42,7 +42,7 @@ public class InterpolationTest {
         double interval = 250;
         double distance = legDistance();
         int n = (int) floor(distance / interval);   // ~4 for a ~1105 m leg
-        assertTrue("leg should span at least two intervals", n >= 2);
+        assertTrue(n >= 2, "leg should span at least two intervals");
 
         List<double[]> points = Interpolation.interpolate(LON1, LAT1, LON2, LAT2, interval);
 
@@ -61,8 +61,8 @@ public class InterpolationTest {
         List<double[]> points = Interpolation.interpolate(LON1, LAT1, LON2, LAT2, 250);
         assertTrue(!points.isEmpty());
         double[] first = points.get(0), last = points.get(points.size() - 1);
-        assertTrue("first interior point must not equal a", first[1] != LAT1);
-        assertTrue("last interior point must not equal b", last[1] != LAT2);
+        assertTrue(first[1] != LAT1, "first interior point must not equal a");
+        assertTrue(last[1] != LAT2, "last interior point must not equal b");
     }
 
     @Test
@@ -70,8 +70,8 @@ public class InterpolationTest {
         List<double[]> points = Interpolation.interpolate(LON1, LAT1, LON2, LAT2, 250);
         double previous = LAT1;
         for (double[] p : points) {
-            assertTrue("latitude must increase strictly a -> b", p[1] > previous);
-            assertTrue("latitude must stay below b", p[1] < LAT2);
+            assertTrue(p[1] > previous, "latitude must increase strictly a -> b");
+            assertTrue(p[1] < LAT2, "latitude must stay below b");
             previous = p[1];
         }
     }

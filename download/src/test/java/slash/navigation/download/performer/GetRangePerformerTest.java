@@ -20,11 +20,10 @@
 package slash.navigation.download.performer;
 
 import com.sun.net.httpserver.HttpServer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Timeout;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
@@ -39,13 +38,14 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.download.Action.GetRange;
 
 /**
@@ -54,6 +54,7 @@ import static slash.navigation.download.Action.GetRange;
  *
  * @author Christian Pesch
  */
+@Timeout(value = 30, unit = TimeUnit.SECONDS)
 public class GetRangePerformerTest {
     private static final int RANGE = 16 * 1024;
     private static final byte[] BODY = new byte[40_000];
@@ -63,15 +64,12 @@ public class GetRangePerformerTest {
         new Random(362).nextBytes(BODY);
     }
 
-    @Rule
-    public final Timeout testTimeout = Timeout.seconds(30);
-
     private HttpServer server;
     private final AtomicReference<String> rangeHeader = new AtomicReference<>();
     private DownloadManager manager;
     private File target, queueFile;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/range", exchange -> {
@@ -106,7 +104,7 @@ public class GetRangePerformerTest {
         assertTrue(target.delete());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         manager.dispose();
         server.stop(0);

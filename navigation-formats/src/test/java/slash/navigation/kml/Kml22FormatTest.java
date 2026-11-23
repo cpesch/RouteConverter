@@ -20,7 +20,7 @@
 
 package slash.navigation.kml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 
@@ -29,9 +29,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Kml22FormatTest {
@@ -167,7 +167,7 @@ public class Kml22FormatTest {
         assertEquals(3, first.get(0).getPositionCount());
 
         String written = writeKml(first);
-        assertTrue("writes KML 2.2 namespace", written.contains("http://www.opengis.net/kml/2.2"));
+        assertTrue(written.contains("http://www.opengis.net/kml/2.2"), "writes KML 2.2 namespace");
 
         List<KmlRoute> second = readKml(written);
         assertEquals(1, second.size());
@@ -219,7 +219,7 @@ public class Kml22FormatTest {
                 "</Folder></Folder></Document></kml>";
         List<KmlRoute> routes = readKml(kml);
         assertEquals(1, routes.size());
-        assertTrue("nested folder path must be in the route name", routes.get(0).getName().contains("outer") && routes.get(0).getName().contains("inner"));
+        assertTrue(routes.get(0).getName().contains("outer") && routes.get(0).getName().contains("inner"), "nested folder path must be in the route name");
         assertEquals(2, routes.get(0).getPositionCount());
     }
 
@@ -234,7 +234,7 @@ public class Kml22FormatTest {
                 "<Placemark><LineString><coordinates>11.1,48.1,0\n11.2,48.2,0\n</coordinates></LineString></Placemark>\n" +
                 "</Document></kml>";
         List<KmlRoute> routes = readKml(kml);
-        assertEquals("only the real track, the Speed/Marks folders are ignored", 1, routes.size());
+        assertEquals(1, routes.size(), "only the real track, the Speed/Marks folders are ignored");
         assertEquals(2, routes.get(0).getPositionCount());
     }
 
@@ -289,6 +289,6 @@ public class Kml22FormatTest {
                 "</MultiGeometry></Placemark></Document></kml>";
         List<KmlRoute> routes = readKml(kml);
         assertEquals(1, routes.size());
-        assertEquals("Point + the nested gx:MultiTrack's gx:Track position", 2, routes.get(0).getPositionCount());
+        assertEquals(2, routes.get(0).getPositionCount(), "Point + the nested gx:MultiTrack's gx:Track position");
     }
 }

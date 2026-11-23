@@ -19,7 +19,7 @@
 */
 package slash.navigation.routes.impl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.routes.Category;
 import slash.navigation.routes.Route;
 
@@ -29,9 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
 import static slash.navigation.routes.impl.RoutesTableModel.COLUMN_COUNT;
 import static slash.navigation.routes.impl.RoutesTableModel.CREATOR_COLUMN;
 import static slash.navigation.routes.impl.RoutesTableModel.DURATION_COLUMN;

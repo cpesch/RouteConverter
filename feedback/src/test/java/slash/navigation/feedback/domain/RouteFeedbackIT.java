@@ -19,9 +19,9 @@
 */
 package slash.navigation.feedback.domain;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.rest.exception.ForbiddenException;
 
@@ -31,7 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.io.InputOutput.copyAndClose;
 
 public class RouteFeedbackIT extends RouteFeedbackServiceBase {
@@ -42,12 +43,12 @@ public class RouteFeedbackIT extends RouteFeedbackServiceBase {
     private RouteFeedback routeFeedback;
     private String url;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         routeFeedback = new RouteFeedback(API, new SimpleCredentials("routeconverter", "pmcs123$".toCharArray()));
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         if(url != null)
             deleteAsSuperuser(url);
@@ -64,10 +65,12 @@ public class RouteFeedbackIT extends RouteFeedbackServiceBase {
         url = routeFeedback.addUser(userName, userName, "egal", "egal", "egal@egal.egal");
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotAddUserWithSpecialCharacters() throws IOException {
-        String userName = "Specials" + SPECIAL_CHARACTERS + currentTimeMillis();
-        url = routeFeedback.addUser(userName, userName, "egal", "egal", "egal@egal.egal");
+        assertThrows(ForbiddenException.class, () -> {
+            String userName = "Specials" + SPECIAL_CHARACTERS + currentTimeMillis();
+            url = routeFeedback.addUser(userName, userName, "egal", "egal", "egal@egal.egal");
+        });
     }
 
     @Test
@@ -81,36 +84,46 @@ public class RouteFeedbackIT extends RouteFeedbackServiceBase {
         url = null;
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotAddUserWithShortUserName() throws IOException {
-        url = routeFeedback.addUser("a", "egal", "egal", "egal", "egal@egal.egal");
+        assertThrows(ForbiddenException.class, () -> {
+            url = routeFeedback.addUser("a", "egal", "egal", "egal", "egal@egal.egal");
+        });
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotAddUserWithShortPassword() throws IOException {
-        String userName = "ShortPassword" + currentTimeMillis();
-        url = routeFeedback.addUser(userName, "b", "egal", "egal", "egal@egal.egal");
+        assertThrows(ForbiddenException.class, () -> {
+            String userName = "ShortPassword" + currentTimeMillis();
+            url = routeFeedback.addUser(userName, "b", "egal", "egal", "egal@egal.egal");
+        });
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotAddUserWithWrongEmail() throws IOException {
-        String userName = "WrongEmail" + currentTimeMillis();
-        url = routeFeedback.addUser(userName, userName, "egal", "egal", "egal");
+        assertThrows(ForbiddenException.class, () -> {
+            String userName = "WrongEmail" + currentTimeMillis();
+            url = routeFeedback.addUser(userName, userName, "egal", "egal", "egal");
+        });
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotAddUserWithSameName() throws IOException {
-        String userName = "SameUser" + currentTimeMillis();
-        url = routeFeedback.addUser(userName, userName, "First", "User", "First@User.Mail");
+        assertThrows(ForbiddenException.class, () -> {
+            String userName = "SameUser" + currentTimeMillis();
+            url = routeFeedback.addUser(userName, userName, "First", "User", "First@User.Mail");
 
-        routeFeedback.addUser(userName, userName, "Second", "User", "Second@User.Mail");
+            routeFeedback.addUser(userName, userName, "Second", "User", "Second@User.Mail");
+        });
     }
 
-    @Test(expected = ForbiddenException.class)
+    @Test
     public void testCannotDeleteOtherUser() throws IOException {
-        String userName = "TestUser" + currentTimeMillis();
-        url = routeFeedback.addUser(userName, userName, "Test", "User", "Test@User.Mail");
-        routeFeedback.deleteUser(API + "v1/" + url);
+        assertThrows(ForbiddenException.class, () -> {
+            String userName = "TestUser" + currentTimeMillis();
+            url = routeFeedback.addUser(userName, userName, "Test", "User", "Test@User.Mail");
+            routeFeedback.deleteUser(API + "v1/" + url);
+        });
     }
 
     @Test

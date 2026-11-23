@@ -20,15 +20,15 @@
 
 package slash.navigation.viamichelin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.viamichelin.binding.PoiList;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link ViaMichelinUtil} unmarshal/marshal round-trips.
@@ -74,8 +74,8 @@ public class ViaMichelinUtilTest {
         ViaMichelinUtil.marshal(poiList, out);
         String result = out.toString("ISO-8859-1");
         assertNotNull(result);
-        assertTrue("Marshalled output should contain poi_list", result.contains("poi_list"));
-        assertTrue("Marshalled output should contain version", result.contains("2.0"));
+        assertTrue(result.contains("poi_list"), "Marshalled output should contain poi_list");
+        assertTrue(result.contains("2.0"), "Marshalled output should contain version");
     }
 
     // --- round-trip: unmarshal ? marshal ? unmarshal ---

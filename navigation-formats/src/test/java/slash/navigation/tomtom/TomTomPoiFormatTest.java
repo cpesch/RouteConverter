@@ -20,7 +20,7 @@
 
 package slash.navigation.tomtom;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
@@ -34,7 +34,11 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public class TomTomPoiFormatTest {
@@ -216,7 +220,7 @@ public class TomTomPoiFormatTest {
     public void rejectsTruncatedFile() throws IOException {
         byte[] data = new Bytes().poi(1000000, 5000000, "Kept").poi(1100000, 5100000, "Truncated").get();
         for (int length : new int[]{data.length - 1, data.length - 5, 20 + 1 + 3})
-            assertNull("length " + length, read(java.util.Arrays.copyOf(data, length)));
+            assertNull(read(java.util.Arrays.copyOf(data, length)), "length " + length);
         assertNull(read(new Bytes().header(21, 0, 0, 0, 0).u8(9).u8(10).raw(new byte[5]).get()));
         assertNull(read(new Bytes().u8(0).i32(50).raw(new byte[10]).get()));
     }

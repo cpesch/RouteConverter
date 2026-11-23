@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.undo;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
@@ -33,9 +33,9 @@ import slash.navigation.gui.undo.UndoManager;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 
 public class UndoPositionsModelTest {

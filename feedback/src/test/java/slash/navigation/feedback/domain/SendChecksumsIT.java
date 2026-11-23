@@ -19,7 +19,7 @@
 */
 package slash.navigation.feedback.domain;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -37,8 +37,8 @@ import java.util.Map;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.calendar;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.datasources.DataSourceManager.DATASOURCES_URI;

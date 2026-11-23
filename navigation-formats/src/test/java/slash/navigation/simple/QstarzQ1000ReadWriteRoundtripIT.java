@@ -20,7 +20,7 @@
 
 package slash.navigation.simple;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
 import slash.navigation.base.SimpleRoute;
@@ -28,7 +28,7 @@ import slash.navigation.base.Wgs84Position;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
