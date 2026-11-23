@@ -120,8 +120,12 @@ public class GarminPoiFormatTest {
     }
 
     private static byte[] header1(String version, int obfuscation, byte[] extra) {
+        return header1(version, obfuscation, extra, "my.gpi".getBytes(US_ASCII));
+    }
+
+    private static byte[] header1(String version, int obfuscation, byte[] extra, byte[] name) {
         byte[] main = concat(("GRMREC" + version).getBytes(US_ASCII), int32(0), new byte[]{0, (byte) obfuscation},
-                int16(6), "my.gpi".getBytes(US_ASCII));
+                int16(name.length), name);
         return extra != null ? record(0, main, extra) : record(0, main);
     }
 
@@ -207,6 +211,52 @@ public class GarminPoiFormatTest {
         assertEquals(-33.9, route.getPosition(2).getLatitude(), 1e-7);
         assertEquals(-70.6, route.getPosition(2).getLongitude(), 1e-7);
         assertEquals("South West; far", route.getPosition(2).getDescription());
+    }
+
+    @Test
+    public void readsTheHeaderNameAsTheListName() throws IOException {
+        byte[] bytes = concat(header1("00", 0, null, "BMW_Motorrad_v18".getBytes(US_ASCII)), header2("00", 1252, null),
+                group("Dealers", waypoint(48.1, 11.5, "Munich")), end());
+        assertEquals("BMW_Motorrad_v18", read(bytes).get(0).getName());
+    }
+
+    @Test
+    public void readsTheHeaderNameInTheCodePageOfTheFile() throws IOException {
+        byte[] bytes = concat(header1("00", 0, null, " H\u00e4ndler ".getBytes(WINDOWS_1252)), header2("00", 1252, null),
+                group("Dealers", waypoint(48.1, 11.5, "Munich")), end());
+        assertEquals("H\u00e4ndler", read(bytes).get(0).getName());
+    }
+
+    @Test
+    public void ignoresAnEmptyOrPlaceholderHeaderName() throws IOException {
+        for (byte[] name : List.of(new byte[0], "   ".getBytes(US_ASCII), "my.gpi".getBytes(US_ASCII))) {
+            byte[] bytes = concat(header1("00", 0, null, name), header2("00", 1252, null),
+                    group("Dealers", waypoint(48.1, 11.5, "Munich")), end());
+            assertNull(read(bytes).get(0).getName());
+        }
+    }
+
+    @Test
+    public void readsTheHeaderNameOfAnObfuscatedFile() throws IOException {
+        byte[] headers = concat(header1("01", GarminPoiFormat.OBFUSCATION_UNTIL_END_OF_FILE, productInfo(),
+                "Collection".getBytes(US_ASCII)), header2("01", 1252, copyright()));
+        byte[] plain = concat(headers, poiGroups(), end());
+        byte[] obfuscated = obfuscate(plain, headers.length, plain.length);
+        assertEquals("Collection", read(obfuscated).get(0).getName());
+    }
+
+    @Test
+    public void writesMyGpiForARouteWithoutName() throws IOException {
+        byte[] actual = write(route(null, position(11.5, 48.1, "A")), 0x12345678L);
+        byte[] header = concat(int32(0), int32(0x16), "GRMREC00".getBytes(US_ASCII), int32(0x12345678), int16(0),
+                int16(6), "my.gpi".getBytes(US_ASCII));
+        assertArrayEquals(header, Arrays.copyOf(actual, header.length));
+    }
+
+    @Test
+    public void roundTripsTheListNameThroughTheHeader() throws IOException {
+        byte[] bytes = write(route("H\u00e4ndler S\u00fcd", position(11.5, 48.1, "A"), position(11.6, 48.2, "B")), 0x12345678L);
+        assertEquals("H\u00e4ndler S\u00fcd", read(bytes).get(0).getName());
     }
 
     @Test
@@ -458,12 +508,13 @@ public class GarminPoiFormatTest {
     }
 
     @Test
-    public void writesTheExactBytesGpsBabelWrites() throws IOException {
+    public void writesTheExactBytesGpsBabelWritesExceptTheHeaderName() throws IOException {
         GpxRoute route = route("Test", position(11.5, 48.1, "B; second"), position(11.6, 48.2, "A"));
         byte[] actual = write(route, 0x12345678L);
 
-        byte[] header = concat(int32(0), int32(0x16), "GRMREC00".getBytes(US_ASCII), int32(0x12345678), int16(0),
-                int16(6), "my.gpi".getBytes(US_ASCII), int32(1), int32(0xc), "POI".getBytes(US_ASCII), new byte[3],
+        // the route name instead of GPSBabel's "my.gpi" (decision D16.3)
+        byte[] header = concat(int32(0), int32(0x14), "GRMREC00".getBytes(US_ASCII), int32(0x12345678), int16(0),
+                int16(4), "Test".getBytes(US_ASCII), int32(1), int32(0xc), "POI".getBytes(US_ASCII), new byte[3],
                 "00".getBytes(US_ASCII), int16(1252), int16(0));
         // sorted by shortname; GPSBabel copies the shortname into the empty description of "A"
         byte[] poiA = concat(int32(0x80002), int32(20 + 10 + 17), int32(20),
