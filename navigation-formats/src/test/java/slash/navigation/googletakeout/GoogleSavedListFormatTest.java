@@ -19,8 +19,8 @@
 */
 package slash.navigation.googletakeout;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserContext;
@@ -38,7 +38,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -54,7 +58,7 @@ public class GoogleSavedListFormatTest {
     private final GoogleSavedListFormat format = new GoogleSavedListFormat();
     private final List<File> temporaryFiles = new ArrayList<>();
 
-    @After
+    @AfterEach
     public void tearDown() {
         for (File file : temporaryFiles)
             //noinspection ResultOfMethodCallIgnored

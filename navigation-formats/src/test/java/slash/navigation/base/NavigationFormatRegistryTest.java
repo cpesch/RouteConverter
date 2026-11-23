@@ -19,8 +19,8 @@
 */
 package slash.navigation.base;
 
-import org.junit.Test;
 import slash.navigation.tomtom.TomTomPoiFormat;
+import org.junit.jupiter.api.Test;
 import slash.navigation.columbus.ColumbusFusionFormat;
 import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.columbus.ColumbusGpsType2Format;
@@ -40,8 +40,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.io.Files.getExtension;
 
 public class NavigationFormatRegistryTest {

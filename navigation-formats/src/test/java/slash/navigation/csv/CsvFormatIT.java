@@ -19,7 +19,7 @@
 */
 package slash.navigation.csv;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.*;
 
 import java.io.File;
@@ -28,8 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.TestCase.calendar;
 import static slash.navigation.common.UnitConversion.kiloMeterToNauticMiles;

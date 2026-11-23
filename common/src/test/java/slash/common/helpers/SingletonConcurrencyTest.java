@@ -20,7 +20,7 @@
 
 package slash.common.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.log.LoggingHelper;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class SingletonConcurrencyTest {
     private static final int THREADS = 16;

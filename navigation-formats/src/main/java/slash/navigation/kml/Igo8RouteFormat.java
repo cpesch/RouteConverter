@@ -25,6 +25,7 @@ import slash.navigation.kml.binding22.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
@@ -60,11 +61,18 @@ public class Igo8RouteFormat extends Kml22Format {
     protected void process(KmlType kmlType, ParserContext<KmlRoute> context) throws IOException {
         if (kmlType == null || kmlType.getAbstractFeatureGroup() == null)
             return;
+        // the context may already hold the routes of earlier entries of the same ZIP archive:
+        // only judge and drop the routes read here, keep the others
+        List<KmlRoute> before = context.getRoutes();
         extractTracks(kmlType, context);
 
-        List<KmlRoute> routes = context.getRoutes();
+        List<KmlRoute> routes = new ArrayList<>();
+        for (KmlRoute route : context.getRoutes())
+            if (before.stream().noneMatch(earlier -> earlier == route))
+                routes.add(route);
         context.removeRoutes();
-        if (routes != null && routes.size() == 1) {
+        context.appendRoutes(before);
+        if (routes.size() == 1) {
             KmlRoute route = routes.get(0);
             if (route.getName().equals(IGO_ROUTE + "/" + route.getName())) {
                 route.setName(IGO_ROUTE);
