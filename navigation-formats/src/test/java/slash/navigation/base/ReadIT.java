@@ -40,7 +40,7 @@ import static java.util.Arrays.sort;
 import static java.util.Collections.singletonList;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static slash.common.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationTestCase.*;

@@ -29,7 +29,7 @@ import slash.navigation.gpx.Gpx11Format;
 import java.io.IOException;
 
 import static org.junit.Assert.assertNotNull;
-import static slash.common.TestCase.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class UrlFormatIT {
