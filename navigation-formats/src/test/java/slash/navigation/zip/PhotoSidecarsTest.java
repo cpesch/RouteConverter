@@ -19,7 +19,12 @@
 */
 package slash.navigation.zip;
 
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.common.RationalNumber;
+import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
+import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants;
+import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
@@ -165,12 +170,119 @@ public class PhotoSidecarsTest {
         assertEquals(52.5, photos.get(0).getLatitude(), 0.0001);
     }
 
+    private byte[] jpegWithExifButNoGps() throws IOException {
+        // like the photos Google leaves in Takeout: an EXIF block without GPS, description, make or model
+        TiffOutputSet outputSet = new TiffOutputSet();
+        try {
+            outputSet.getOrCreateExifDirectory().add(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL, "2024:01:09 09:14:11");
+            ByteArrayOutputStream target = new ByteArrayOutputStream();
+            new ExifRewriter().updateExifMetadataLossless(jpegWithoutExif(), target, outputSet);
+            return target.toByteArray();
+        } catch (ImageReadException | ImageWriteException e) {
+            throw new IOException(e);
+        }
+    }
+
+    private static String sidecarJson(String title, String geoKey, double latitude, double longitude) {
+        return "{\"title\": \"" + title + "\", \"photoTakenTime\": {\"timestamp\": \"1704791651\"}, " +
+                "\"" + geoKey + "\": {\"latitude\": " + latitude + ", \"longitude\": " + longitude + ", \"altitude\": 0.0}}";
+    }
+
+    private NavigationPosition onlyPhoto(ParserResult result) {
+        assertTrue(result.isSuccessful());
+        List<NavigationPosition> photos = photoPositions(result);
+        assertEquals(1, photos.size());
+        return photos.get(0);
+    }
+
     @Test
-    public void sidecarNames() {
-        assertEquals("a/IMG_1.jpg", PhotoSidecars.photoNameOfSidecar("a/IMG_1.jpg.json"));
-        assertEquals("a/IMG_1.JPG", PhotoSidecars.photoNameOfSidecar("a/IMG_1.JPG.json"));
-        assertEquals("a/IMG_1.jpg", PhotoSidecars.photoNameOfSidecar("a/IMG_1.jpg.supplemental-metadata.json"));
-        assertNull(PhotoSidecars.photoNameOfSidecar("a/Settings.json"));
-        assertNull(PhotoSidecars.photoNameOfSidecar("a/IMG_1.jpg"));
+    public void sidecarTitleReplacesTheGpsFallbackDescription() throws IOException {
+        NavigationPosition photo = onlyPhoto(parser.read(zip("Fotos/IMG_5.jpg", jpegWithExifButNoGps(),
+                "Fotos/IMG_5.jpg.json", sidecar("IMG_5.jpg", 50.2, 8.4))));
+        assertEquals(8.4, photo.getLongitude(), DELTA);
+        assertEquals("IMG_5.jpg", photo.getDescription());
+    }
+
+    @Test
+    public void pairsTruncatedSupplementalMetadata() throws IOException {
+        NavigationPosition photo = onlyPhoto(parser.read(zip("Fotos/IMG_6.jpg", jpegWithoutExif(),
+                "Fotos/IMG_6.jpg.supplemental-metad.json", sidecar("IMG_6.jpg", 50.2, 8.4))));
+        assertEquals(50.2, photo.getLatitude(), DELTA);
+    }
+
+    @Test
+    public void pairsDuplicates() throws IOException {
+        ParserResult result = parser.read(zip("Fotos/IMG_7.jpg", jpegWithoutExif(),
+                "Fotos/IMG_7.jpg.json", sidecar("IMG_7.jpg", 50.2, 8.4),
+                "Fotos/IMG_7(1).jpg", jpegWithoutExif(),
+                "Fotos/IMG_7.jpg(1).json", sidecar("IMG_7(1).jpg", 48.1, 11.6)));
+        assertTrue(result.isSuccessful());
+        List<Double> latitudes = new ArrayList<>();
+        for (NavigationPosition photo : photoPositions(result))
+            latitudes.add(photo.getLatitude());
+        latitudes.sort(null);
+        assertEquals(List.of(48.1, 50.2), latitudes);
+    }
+
+    @Test
+    public void pairsNamesTruncatedTo47Characters() throws IOException {
+        String photoName = "PXL_20240109_091411123.MP.PORTRAIT.ORIGINAL-COVER.jpg";
+        assertTrue(photoName.length() > 47);
+        NavigationPosition photo = onlyPhoto(parser.read(zip("Fotos/" + photoName, jpegWithoutExif(),
+                "Fotos/" + photoName.substring(0, 47) + ".json", sidecar(photoName, 50.2, 8.4))));
+        assertEquals(50.2, photo.getLatitude(), DELTA);
+    }
+
+    @Test
+    public void editedPhotoUsesTheOriginalsSidecar() throws IOException {
+        NavigationPosition photo = onlyPhoto(parser.read(zip("Fotos/IMG_8-edited.jpg", jpegWithoutExif(),
+                "Fotos/IMG_8.jpg.json", sidecar("IMG_8.jpg", 50.2, 8.4))));
+        assertEquals(50.2, photo.getLatitude(), DELTA);
+    }
+
+    @Test
+    public void fallsBackToGeoData() throws IOException {
+        NavigationPosition photo = onlyPhoto(parser.read(zip("Fotos/IMG_9.jpg", jpegWithoutExif(),
+                "Fotos/IMG_9.jpg.json", sidecarJson("IMG_9.jpg", "geoData", 47.3, 9.1))));
+        assertEquals(47.3, photo.getLatitude(), DELTA);
+    }
+
+    @Test
+    public void laterSidecarWithoutLocationKeepsTheLocatedOne() throws IOException {
+        NavigationPosition photo = onlyPhoto(parser.read(zip(
+                "Fotos/IMG_10.jpg.json", sidecar("IMG_10.jpg", 50.2, 8.4),
+                "Fotos/IMG_10.jpg.supplemental-metadata.json", sidecar("IMG_10.jpg", 0.0, 0.0),
+                "Fotos/IMG_10.jpg", jpegWithoutExif())));
+        assertEquals(50.2, photo.getLatitude(), DELTA);
+    }
+
+    @Test
+    public void sidecarAtZeroZeroDoesNotPlaceThePhoto() throws IOException {
+        ParserResult result = parser.read(zip("Fotos/IMG_11.jpg", jpegWithoutExif(),
+                "Fotos/IMG_11.jpg.json", sidecar("IMG_11.jpg", 0.0, 0.0), "places.kml", KML22));
+        assertTrue(result.isSuccessful());
+        assertEquals(0, photoPositions(result).size());
+    }
+
+    @Test
+    public void malformedJsonAndSidecarsOfOtherFilesAreHarmless() throws IOException {
+        ParserResult result = parser.read(zip("Fotos/IMG_12.jpg.json", "{\"title\": \"IMG_12.jpg\", \"geoDataExif\": {",
+                "Fotos/clip.mp4.json", sidecarJson("clip.mp4", "geoDataExif", 50.2, 8.4), "places.kml", KML22));
+        assertTrue(result.isSuccessful());
+        assertEquals(1, result.getAllRoutes().size());
+        assertEquals(0, photoPositions(result).size());
+    }
+
+    @Test
+    public void sidecarKeys() {
+        assertEquals("a/IMG_1.jpg", PhotoSidecars.sidecarKey("a/IMG_1.jpg.json"));
+        assertEquals("a/IMG_1.jpg", PhotoSidecars.sidecarKey("a/IMG_1.jpg.supplemental-metadata.json"));
+        assertEquals("a/IMG_1.jpg", PhotoSidecars.sidecarKey("a/IMG_1.jpg.supplemental-me.json"));
+        assertEquals("a/IMG_1.jpg(1)", PhotoSidecars.sidecarKey("a/IMG_1.jpg(1).json"));
+        assertEquals("a/IMG_1.jpg(1)", PhotoSidecars.sidecarKey("a/IMG_1.jpg.supplemental-metadata(1).json"));
+        assertTrue(PhotoSidecars.candidateKeys("a/IMG_1(1).jpg").contains("a/IMG_1.jpg(1)"));
+        assertTrue(PhotoSidecars.candidateKeys("a/IMG_1-edited.jpg").contains("a/IMG_1.jpg"));
+        assertNull(PhotoSidecars.parseSidecar("a/Settings.json", "{\"createdTime\": \"x\"}".getBytes(UTF_8)));
+        assertNull(PhotoSidecars.parseSidecar("a/IMG_1.jpg", sidecar("IMG_1.jpg", 1, 1)));
     }
 }
