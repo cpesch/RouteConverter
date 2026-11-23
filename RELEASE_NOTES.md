@@ -5,7 +5,7 @@
 ### New features
 
 - Garmin POI (.gpi) files: the position list now takes the name of the POI collection stored in the file, for example BMW_Motorrad_v18, and saving a position list as .gpi stores its name there
-- Google Maps saved lists (Favorites, Want to go, own lists) exported by Google Takeout as CSV can now be opened; they carry no coordinates, so add them with Position > Complete… > Coordinates (places whose link has coordinates get them right away)
+- Google Maps saved lists (Favorites, Want to go, own lists) exported by Google Takeout as CSV can now be opened, also from Takeout exports in German and other languages, as can the nearby places you follow (with their address, which helps when adding coordinates); they carry no coordinates, so add them with Position > Complete… > Coordinates (places whose link has coordinates get them right away)
 - The offline map themes Biker, Dark, Indigo and Motorider that come with the map renderer can now be chosen next to Default and Osmarender
 - Google Maps commute routes exported by Google Takeout (Commute routes.json, Routen für Pendelstrecke.json) can now be opened: their start and destination places become a waypoint list
 - Offline MBTiles maps whose tiles are stored as WebP images can now be displayed; before, only PNG and JPEG MBTiles opened
