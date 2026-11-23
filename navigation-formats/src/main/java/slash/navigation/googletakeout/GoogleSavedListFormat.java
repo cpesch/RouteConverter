@@ -52,8 +52,11 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  */
 
 public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
-    private static final Set<String> TITLE_COLUMNS = new HashSet<>(Arrays.asList("title", "titel"));
+    // "ort" and "adresse" head the German followed places file (Orte in der Nähe, denen Sie folgen.csv);
+    // "place" and "address" are the assumed English names, not seen in an export yet
+    private static final Set<String> TITLE_COLUMNS = new HashSet<>(Arrays.asList("title", "titel", "place", "ort"));
     private static final Set<String> NOTE_COLUMNS = new HashSet<>(Arrays.asList("note", "notiz"));
+    private static final Set<String> ADDRESS_COLUMNS = new HashSet<>(Arrays.asList("address", "adresse"));
     private static final String URL = "url";
     private static final int URL_COLUMN_INDEX = 2;
     private static final int MAXIMUM_COLUMN_COUNT = 5;
@@ -141,7 +144,8 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
                 String url = trim(row.get(URL));
                 if (url != null && GOOGLE_MAPS_URL_PATTERN.matcher(url).find())
                     linksToGoogleMaps = true;
-                Wgs84Position position = createPosition(trim(row.get(columns.title)), trim(row.get(columns.note)), url);
+                Wgs84Position position = createPosition(trim(row.get(columns.title)), trim(row.get(columns.note)),
+                        columns.address != null ? trim(row.get(columns.address)) : null, url);
                 if (position != null)
                     positions.add(position);
             }
@@ -158,11 +162,13 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
     private static class Columns {
         final String title;
         final String note;
+        final String address;
         final boolean byName;
 
-        Columns(String title, String note, boolean byName) {
+        Columns(String title, String note, String address, boolean byName) {
             this.title = title;
             this.note = note;
+            this.address = address;
             this.byName = byName;
         }
     }
@@ -183,13 +189,13 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
 
         String title = firstOf(cells, TITLE_COLUMNS);
         if (title != null) {
-            return new Columns(title, firstOf(cells, NOTE_COLUMNS), true);
+            return new Columns(title, firstOf(cells, NOTE_COLUMNS), firstOf(cells, ADDRESS_COLUMNS), true);
         }
 
         // a language whose column names are not known: Takeout writes title, note, URL, tags, comment
         if (cells.indexOf(URL) == URL_COLUMN_INDEX && cells.size() <= MAXIMUM_COLUMN_COUNT &&
                 !cells.get(0).isEmpty() && !cells.get(1).isEmpty())
-            return new Columns(cells.get(0), cells.get(1), false);
+            return new Columns(cells.get(0), cells.get(1), null, false);
         return null;
     }
 
@@ -214,7 +220,7 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
         return result;
     }
 
-    private Wgs84Position createPosition(String title, String note, String url) {
+    private Wgs84Position createPosition(String title, String note, String address, String url) {
         double[] coordinates = parseUrlCoordinates(url);
         if (coordinates == null)
             coordinates = parseNoteCoordinates(note);
@@ -222,7 +228,10 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
         if (title == null && coordinates == null)
             return null;
 
-        String description = coordinates != null ? asDescription(title, note) : title;
+        // an address helps the geocoder of Complete > Coordinates, which tries the whole
+        // description first and then the name before the first ';'
+        String description = address != null ? asDescription(title, address) :
+                coordinates != null ? asDescription(title, note) : title;
         return new Wgs84Position(coordinates != null ? coordinates[0] : null,
                 coordinates != null ? coordinates[1] : null, null, null, null, description);
     }

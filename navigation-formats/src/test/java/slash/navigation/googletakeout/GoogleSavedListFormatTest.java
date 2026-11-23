@@ -223,6 +223,35 @@ public class GoogleSavedListFormatTest {
     }
 
     @Test
+    public void testReadGermanFollowedPlaces() throws IOException {
+        List<Wgs84Route> routes = read("\uFEFFOrt,Adresse,URL\n" +
+                "Cafe Alpha,\"Hauptstraße 1, 10115 Berlin\"," + PLACE_URL_1 + "\n" +
+                "Bistro Beta,," + PLACE_URL_2 + "\n", new File("Orte in der Nähe, denen Sie folgen.csv"));
+
+        assertEquals(1, routes.size());
+        Wgs84Route route = routes.get(0);
+        assertEquals("Orte in der Nähe, denen Sie folgen", route.getName());
+        assertEquals(2, route.getPositionCount());
+        assertNoCoordinates(route.getPosition(0), "Cafe Alpha; Hauptstraße 1, 10115 Berlin");
+        assertNoCoordinates(route.getPosition(1), "Bistro Beta");
+    }
+
+    @Test
+    public void testReadEnglishFollowedPlaces() throws IOException {
+        // assumed English header, not confirmed from an export
+        List<Wgs84Route> routes = read("Place,Address,URL\n" +
+                "Cafe Alpha,\"1 Main Street, Springfield\"," + PLACE_URL_1 + "\n");
+
+        assertEquals(1, routes.size());
+        assertNoCoordinates(routes.get(0).getPosition(0), "Cafe Alpha; 1 Main Street, Springfield");
+    }
+
+    @Test
+    public void testFollowedPlacesHeaderOnlyGivesNoRoute() throws IOException {
+        assertEquals(0, read("\uFEFFOrt,Adresse,URL\n").size());
+    }
+
+    @Test
     public void testParseUrlCoordinates() {
         assertNull(GoogleSavedListFormat.parseUrlCoordinates(null));
         assertNull(GoogleSavedListFormat.parseUrlCoordinates(PLACE_URL_1));
