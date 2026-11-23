@@ -23,6 +23,7 @@ package slash.navigation.zip;
 
 import org.junit.After;
 import org.junit.Test;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserResult;
@@ -41,6 +42,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -143,6 +146,16 @@ public class ZipFormatTest {
         assertTrue(result.isSuccessful());
         assertEquals(Kml22Format.class, result.getFormat().getClass());
         assertEquals(2, result.getAllRoutes().size());
+    }
+
+    @Test
+    public void keepsTheRoutesOfEarlierEntries() throws IOException {
+        ParserResult result = parser.read(zip("a.kml", GARBLE_KML, "b.kml", KML22));
+        assertTrue(result.isSuccessful());
+        assertEquals(Kml22Format.class, result.getFormat().getClass());
+        assertEquals(2, result.getAllRoutes().size());
+        // one route per entry: the earlier entry's single position is kept, not replaced by the later entry
+        assertEquals(asList(1, 2), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
     }
 
     @Test
