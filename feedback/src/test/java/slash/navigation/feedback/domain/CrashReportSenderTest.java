@@ -20,23 +20,23 @@
 
 package slash.navigation.feedback.domain;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.feedback.domain.CrashReportSender.MAXIMUM_BYTES;
 import static slash.navigation.feedback.domain.CrashReportSender.SECRET_PROPERTY;
 import static slash.navigation.feedback.domain.CrashReportSender.warnIfDefaultSecret;
 
 public class CrashReportSenderTest {
 
-    @After
+    @AfterEach
     public void tearDown() {
         System.clearProperty(SECRET_PROPERTY);
         CrashReportSender.resetDefaultSecretWarningForTesting();
@@ -65,7 +65,7 @@ public class CrashReportSenderTest {
             builder.append("x");
 
         assertFalse(sender.send("https://api.routeconverter.com/", builder.toString()));
-        assertFalse("an oversized payload must not be posted", posted[0]);
+        assertFalse(posted[0], "an oversized payload must not be posted");
     }
 
     @Test
@@ -87,7 +87,7 @@ public class CrashReportSenderTest {
 
         // the committed placeholder is still in effect: warn exactly once
         assertTrue(warnIfDefaultSecret());
-        assertFalse("the placeholder warning must not repeat", warnIfDefaultSecret());
+        assertFalse(warnIfDefaultSecret(), "the placeholder warning must not repeat");
         assertFalse(warnIfDefaultSecret());
     }
 
@@ -132,7 +132,7 @@ public class CrashReportSenderTest {
         };
 
         assertFalse(sender.send("https://api.routeconverter.com/", "{\"schema_version\":1}"));
-        assertFalse("a placeholder-signed report must not be posted", posted[0]);
+        assertFalse(posted[0], "a placeholder-signed report must not be posted");
     }
 
     @Test
@@ -149,7 +149,7 @@ public class CrashReportSenderTest {
         };
 
         assertTrue(sender.send("https://api.routeconverter.com/", "{\"schema_version\":1}"));
-        assertTrue("a real secret must produce a non-empty signature",
-                signatureSeen[0] != null && !signatureSeen[0].isEmpty());
+        assertTrue(signatureSeen[0] != null && !signatureSeen[0].isEmpty(),
+                "a real secret must produce a non-empty signature");
     }
 }

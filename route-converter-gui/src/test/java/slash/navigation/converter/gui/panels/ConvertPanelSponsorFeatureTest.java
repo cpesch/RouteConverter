@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.panels;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.SponsorGatedFormats;
 
 import java.util.HashSet;
@@ -30,8 +30,8 @@ import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Locale.ENGLISH;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static slash.navigation.converter.gui.panels.ConvertPanel.SPONSOR_FEATURES;
 
 /**

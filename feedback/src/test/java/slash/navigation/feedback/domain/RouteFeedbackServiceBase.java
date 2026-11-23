@@ -19,7 +19,7 @@
 */
 package slash.navigation.feedback.domain;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import slash.navigation.rest.SimpleCredentials;
 
 public abstract class RouteFeedbackServiceBase {
@@ -30,7 +30,7 @@ public abstract class RouteFeedbackServiceBase {
 
     protected RouteFeedback routeFeedback;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         routeFeedback = new RouteFeedback(API, new SimpleCredentials(USERNAME, PASSWORD));
     }

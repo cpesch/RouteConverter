@@ -19,7 +19,7 @@
 */
 package slash.navigation.maps.mapsforge.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.maps.item.ItemModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.LocalMap;
@@ -37,7 +37,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.UUID;
 import java.util.prefs.Preferences;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -88,7 +88,7 @@ public class ThemeForMapMediatorTest {
             ThemeForMapMediator mediator = new ThemeForMapMediator(manager);
             try {
                 displayedMapModel.fireChangedExternally();
-                assertEquals("Switching maps should not reapply an identical theme", 0, appliedThemeModel.getSetInvocations());
+                assertEquals(0, appliedThemeModel.getSetInvocations(), "Switching maps should not reapply an identical theme");
             } finally {
                 mediator.dispose();
             }

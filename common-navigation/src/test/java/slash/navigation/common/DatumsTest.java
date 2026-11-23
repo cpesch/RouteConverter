@@ -20,9 +20,9 @@
 
 package slash.navigation.common;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.navigation.common.Datums.lookupIndex;
 import static slash.navigation.common.Datums.toWgs84;
 
@@ -33,8 +33,8 @@ public class DatumsTest {
                                 double expectedLatitude, double expectedLongitude) {
         int index = lookupIndex(datum);
         double[] result = toWgs84(latitude, longitude, 0.0, index);
-        assertEquals(datum + " latitude", expectedLatitude, result[0], TOLERANCE);
-        assertEquals(datum + " longitude", expectedLongitude, result[1], TOLERANCE);
+        assertEquals(expectedLatitude, result[0], TOLERANCE, datum + " latitude");
+        assertEquals(expectedLongitude, result[1], TOLERANCE, datum + " longitude");
     }
 
     @Test

@@ -20,9 +20,9 @@
 
 package slash.navigation.routes.remote;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +30,7 @@ import java.nio.file.Files;
 import java.util.Comparator;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CatalogDiskCacheTest {
     private static final String URL = "https://api.routeconverter.com/v1/categories/1/";
@@ -41,13 +41,13 @@ public class CatalogDiskCacheTest {
     private File directory;
     private CatalogDiskCache cache;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         directory = Files.createTempDirectory("catalog-cache-test").toFile();
         cache = new CatalogDiskCache(directory);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         if (directory != null && directory.exists())
             Files.walk(directory.toPath())

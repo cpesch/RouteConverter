@@ -19,8 +19,8 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
 import slash.navigation.mapview.MapView;
@@ -36,7 +36,9 @@ import java.util.prefs.Preferences;
 
 import static java.awt.EventQueue.invokeAndWait;
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anySet;
@@ -54,7 +56,7 @@ public class PoiOverlayControllerTest {
     private final MapsforgePoiOverlayService service = mock(MapsforgePoiOverlayService.class);
     private final MapView mapView = mock(MapView.class);
 
-    @After
+    @AfterEach
     public void removePreferences() throws Exception {
         preferences.removeNode();
     }

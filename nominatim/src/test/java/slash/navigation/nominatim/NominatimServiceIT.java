@@ -19,7 +19,7 @@
 */
 package slash.navigation.nominatim;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NominatimServiceIT {
     private final NominatimService service = new NominatimService();

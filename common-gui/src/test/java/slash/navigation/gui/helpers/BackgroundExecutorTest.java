@@ -19,7 +19,7 @@
 */
 package slash.navigation.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -29,9 +29,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Exercises {@link BackgroundExecutor} against an isolated pool (via the package-private
@@ -50,7 +50,7 @@ public class BackgroundExecutorTest {
         BackgroundExecutor executor = newExecutor();
         CountDownLatch ran = new CountDownLatch(1);
         executor.submitTask("test-task", ran::countDown);
-        assertTrue("task did not run within timeout", ran.await(5, TimeUnit.SECONDS));
+        assertTrue(ran.await(5, TimeUnit.SECONDS), "task did not run within timeout");
     }
 
     @Test
@@ -104,7 +104,7 @@ public class BackgroundExecutorTest {
 
         CountDownLatch nextRan = new CountDownLatch(1);
         executor.submitTask("next-task", nextRan::countDown);
-        assertTrue("pool must keep accepting work after a task throws", nextRan.await(5, TimeUnit.SECONDS));
+        assertTrue(nextRan.await(5, TimeUnit.SECONDS), "pool must keep accepting work after a task throws");
     }
 
     @Test
@@ -117,7 +117,7 @@ public class BackgroundExecutorTest {
         // listener still firing during BaseRouteConverter.shutdown()'s teardown tail must not
         // see an uncaught RuntimeException from a routine, expected-to-be-ignored submission
         executor.submitTask("late-task", () -> ranAfterShutdown.set(true));
-        assertTrue("submission was rejected, so the task must not have run", !ranAfterShutdown.get());
+        assertTrue(!ranAfterShutdown.get(), "submission was rejected, so the task must not have run");
     }
 
     @Test
@@ -139,9 +139,9 @@ public class BackgroundExecutorTest {
         secondName.set(second.getName());
         secondDaemon.set(second.isDaemon());
 
-        assertTrue("thread name must carry the rc-worker- prefix", firstName.get().startsWith("rc-worker-"));
-        assertNotEquals("successive threads must get distinct, incrementing names", firstName.get(), secondName.get());
-        assertTrue("pool threads must be daemon threads so they never keep the JVM alive", firstDaemon.get());
-        assertTrue("pool threads must be daemon threads so they never keep the JVM alive", secondDaemon.get());
+        assertTrue(firstName.get().startsWith("rc-worker-"), "thread name must carry the rc-worker- prefix");
+        assertNotEquals(firstName.get(), secondName.get(), "successive threads must get distinct, incrementing names");
+        assertTrue(firstDaemon.get(), "pool threads must be daemon threads so they never keep the JVM alive");
+        assertTrue(secondDaemon.get(), "pool threads must be daemon threads so they never keep the JVM alive");
     }
 }

@@ -19,9 +19,12 @@
 */
 package slash.navigation.common;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Tests for {@link TransformUtil} ? WGS-84 ? GCJ-02 coordinate transform helpers.
@@ -97,16 +100,16 @@ public class TransformUtilTest {
     public void testDeltaForBeijingIsNonZero() {
         double[] d = TransformUtil.delta(39.9, 116.4);
         // Both delta values should be non-zero for a location inside China
-        assertFalse("delta[0] should be non-zero", d[0] == 0.0);
-        assertFalse("delta[1] should be non-zero", d[1] == 0.0);
+        assertFalse(d[0] == 0.0, "delta[0] should be non-zero");
+        assertFalse(d[1] == 0.0, "delta[1] should be non-zero");
     }
 
     @Test
     public void testDeltaValuesAreSmall() {
         // WGS-84 to GCJ-02 delta is typically less than 0.01 degrees
         double[] d = TransformUtil.delta(39.9, 116.4);
-        assertTrue("delta[0] should be small", Math.abs(d[0]) < 0.1);
-        assertTrue("delta[1] should be small", Math.abs(d[1]) < 0.1);
+        assertTrue(Math.abs(d[0]) < 0.1, "delta[0] should be small");
+        assertTrue(Math.abs(d[1]) < 0.1, "delta[1] should be small");
     }
 }
 

@@ -19,9 +19,10 @@
 */
 package slash.navigation.download.queue;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,8 +36,8 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests that {@link QueuePersister} logs a failure to unmarshall a queue file with the
@@ -65,13 +66,13 @@ public class QueuePersisterTest {
 
     private File queueFile;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         LOG.addHandler(handler);
         queueFile = createTempFile("queueFile", ".xml");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         LOG.removeHandler(handler);
         if (queueFile.exists())
@@ -86,14 +87,14 @@ public class QueuePersisterTest {
 
         try {
             persister.load(queueFile);
-            org.junit.Assert.fail("expected an IOException wrapping the unmarshall failure");
+            Assertions.fail("expected an IOException wrapping the unmarshall failure");
         } catch (IOException expected) {
             // wrapping and rethrowing is the existing, unchanged behavior
         }
 
         LogRecord record = findRecord(Level.WARNING);
-        assertNotNull("expected a WARNING log record for the failed unmarshall", record);
-        assertNotNull("the throwable must be attached to the log record, not just its text", record.getThrown());
+        assertNotNull(record, "expected a WARNING log record for the failed unmarshall");
+        assertNotNull(record.getThrown(), "the throwable must be attached to the log record, not just its text");
     }
 
     private LogRecord findRecord(Level level) {

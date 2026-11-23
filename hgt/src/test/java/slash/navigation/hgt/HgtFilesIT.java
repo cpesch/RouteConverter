@@ -19,7 +19,7 @@
 */
 package slash.navigation.hgt;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.binding.ActionType;
@@ -34,7 +34,9 @@ import java.io.IOException;
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.TestCase.calendar;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.createChecksumType;
 

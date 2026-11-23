@@ -1,8 +1,7 @@
 package slash.navigation.maps.tileserver;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,10 +11,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import static javax.swing.SwingUtilities.invokeAndWait;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.maps.tileserver.TileServerMapManager.extractCopyrightHref;
 import static slash.navigation.maps.tileserver.TileServerMapManager.resolveCopyrightText;
 import static slash.navigation.maps.tileserver.TileServerMapManager.retrieveCopyrightText;
@@ -24,8 +23,8 @@ public class TileServerMapManagerTest {
     private static final String OVERLAY_NS = "http://api.routeconverter.com/v1/schemas/overlayserver-catalog";
     private static final String MAP_NS = "http://api.routeconverter.com/v1/schemas/mapserver-catalog";
 
-    @Rule
-    public TemporaryFolder tmp = new TemporaryFolder();
+    @TempDir
+    public File tmp;
 
     private static String entry(String element, String id, String activeAttribute) {
         return entry(element, id, activeAttribute, null);
@@ -43,12 +42,12 @@ public class TileServerMapManagerTest {
     private void writeCatalog(String name, String namespace, String... entries) throws IOException {
         String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<catalog xmlns=\"" + namespace + "\">\n" +
                 String.join("", entries) + "</catalog>\n";
-        File file = tmp.newFile(name);
+        File file = newFile(tmp, name);
         Files.writeString(file.toPath(), xml, StandardCharsets.UTF_8);
     }
 
     private TileServerMapManager scan() throws InvocationTargetException, InterruptedException {
-        TileServerMapManager manager = new TileServerMapManager(tmp.getRoot());
+        TileServerMapManager manager = new TileServerMapManager(tmp);
         manager.scanTileServers();
         // scanTileServers() fills the models on the event dispatch thread; wait for it
         invokeAndWait(() -> {
@@ -163,5 +162,11 @@ public class TileServerMapManagerTest {
         } finally {
             manager.dispose();
         }
+    }
+
+    private static File newFile(File parent, String child) throws IOException {
+        File result = new File(parent, child);
+        result.createNewFile();
+        return result;
     }
 }

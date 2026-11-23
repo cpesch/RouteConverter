@@ -20,9 +20,9 @@
 package slash.navigation.brouter;
 
 import com.sun.net.httpserver.HttpServer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Action;
@@ -38,7 +38,7 @@ import java.nio.file.Files;
 
 import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -64,7 +64,7 @@ public class BRouterRefreshStaleLookupsTest {
     private DownloadManager downloadManager;
     private File directory, lookups, segment, queueFile;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         directory = getApplicationDirectory(DIRECTORY);
 
@@ -87,7 +87,7 @@ public class BRouterRefreshStaleLookupsTest {
         downloadManager = new DownloadManager(queueFile);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         downloadManager.dispose();
         server.stop(0);
@@ -143,9 +143,9 @@ public class BRouterRefreshStaleLookupsTest {
         BRouter router = new BRouter(downloadManager);
         router.setProfilesAndSegments(profiles, segments);
 
-        assertTrue("segment matching the refreshed lookup version must be kept", segment.exists());
+        assertTrue(segment.exists(), "segment matching the refreshed lookup version must be kept");
         String refreshed = readFileToString(lookups);
-        assertTrue("lookups.dat must be refreshed to the latest version before segments are checked",
-                refreshed.contains("---lookupversion:" + CURRENT_VERSION));
+        assertTrue(refreshed.contains("---lookupversion:" + CURRENT_VERSION),
+                "lookups.dat must be refreshed to the latest version before segments are checked");
     }
 }

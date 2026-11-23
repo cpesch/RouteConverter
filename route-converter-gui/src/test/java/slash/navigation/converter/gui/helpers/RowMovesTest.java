@@ -20,12 +20,13 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.converter.gui.helpers.RowMoves.*;
 
 public class RowMovesTest {
@@ -131,28 +132,33 @@ public class RowMovesTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRowBelowZero() {
-        up(rows(-1), 1);
+        assertThrows(IllegalArgumentException.class, () ->
+            up(rows(-1), 1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRowPastTheEnd() {
-        down(rows(5), 1, ROW_COUNT);
+        assertThrows(IllegalArgumentException.class, () ->
+            down(rows(5), 1, ROW_COUNT));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testDuplicateRow() {
-        top(rows(1, 1));
+        assertThrows(IllegalArgumentException.class, () ->
+            top(rows(1, 1)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testOrderWithDifferentLengths() {
-        order(ROW_COUNT, rows(1, 2), rows(0));
+        assertThrows(IllegalArgumentException.class, () ->
+            order(ROW_COUNT, rows(1, 2), rows(0)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testInverseOfNoPermutation() {
-        inverse(rows(0, 0, 1));
+        assertThrows(IllegalArgumentException.class, () ->
+            inverse(rows(0, 0, 1)));
     }
 }
