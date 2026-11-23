@@ -124,8 +124,13 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
             while ((entry = zip.getNextEntry()) != null) {
                 if (entry.isDirectory())
                     continue;
-                readEntry(entry.getName(), zip, context);
-                zip.closeEntry();
+                try {
+                    readEntry(entry.getName(), zip, context);
+                    zip.closeEntry();
+                } catch (IOException e) {
+                    // a corrupted entry (e.g. invalid DEFLATE data) must not end reading the archive
+                    log.warning("Cannot read zip entry " + entry.getName() + " from " + source + ": " + e);
+                }
             }
         } catch (IOException e) {
             // a stream cannot skip a corrupt entry: the entries after it are lost
