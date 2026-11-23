@@ -20,8 +20,8 @@
 
 package slash.navigation.kml;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserContextImpl;
@@ -38,9 +38,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static slash.navigation.kml.KmzFormat.MAX_UNCOMPRESSED_BYTES_PROPERTY;
 
 /**
@@ -51,7 +51,7 @@ public class KmzZipBombTest {
             "<Point><coordinates>2,1,0</coordinates></Point></Placemark>";
     private static final String KML_END = "</Document></kml>";
 
-    @After
+    @AfterEach
     public void clearProperty() {
         System.clearProperty(MAX_UNCOMPRESSED_BYTES_PROPERTY);
     }
@@ -91,13 +91,13 @@ public class KmzZipBombTest {
     public void inflatedSizeAboveTheCapIsRefused() throws IOException {
         // 8 MB of spaces deflates to a few KB
         byte[] bomb = kmz("doc.kml", padding(8));
-        assertTrue("fixture is not compressed enough: " + bomb.length, bomb.length < 100_000);
+        assertTrue(bomb.length < 100_000, "fixture is not compressed enough: " + bomb.length);
         System.setProperty(MAX_UNCOMPRESSED_BYTES_PROPERTY, String.valueOf(1024 * 1024));
         try {
             new Kmz22Format().read(new ByteArrayInputStream(bomb), new ParserContextImpl<>());
             fail("expected the zip bomb to be refused");
         } catch (IOException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("refusing"));
+            assertTrue(e.getMessage().contains("refusing"), e.getMessage());
         }
     }
 
@@ -117,7 +117,7 @@ public class KmzZipBombTest {
             new Kmz22Format().read(new ByteArrayInputStream(baos.toByteArray()), new ParserContextImpl<>());
             fail("expected the zip bomb to be refused");
         } catch (IOException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("refusing"));
+            assertTrue(e.getMessage().contains("refusing"), e.getMessage());
         }
     }
 
@@ -134,7 +134,7 @@ public class KmzZipBombTest {
             new Kmz22Format().read(new ByteArrayInputStream(baos.toByteArray()), new ParserContextImpl<>());
             fail("expected too many entries to be refused");
         } catch (IOException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("entries"));
+            assertTrue(e.getMessage().contains("entries"), e.getMessage());
         }
     }
 }

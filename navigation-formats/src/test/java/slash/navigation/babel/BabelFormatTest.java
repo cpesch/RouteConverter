@@ -20,15 +20,14 @@
 
 package slash.navigation.babel;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static slash.navigation.babel.BabelFormat.checkIfBabelExists;
 
 /**
@@ -36,8 +35,8 @@ import static slash.navigation.babel.BabelFormat.checkIfBabelExists;
  * without needing GPSBabel installed.
  */
 public class BabelFormatTest {
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public File folder;
 
     @Test
     public void emptyPathIsNotTheExecutable() {
@@ -54,18 +53,33 @@ public class BabelFormatTest {
 
     @Test
     public void directoryIsNotTheExecutable() throws IOException {
-        assertNull(checkIfBabelExists(folder.newFolder("GPSBabel").getPath()));
+        assertNull(checkIfBabelExists(newFolder(folder, "GPSBabel").getPath()));
         assertNull(checkIfBabelExists("."));
     }
 
     @Test
     public void missingFileIsNotTheExecutable() {
-        assertNull(checkIfBabelExists(new File(folder.getRoot(), "gpsbabel").getPath()));
+        assertNull(checkIfBabelExists(new File(folder, "gpsbabel").getPath()));
     }
 
     @Test
     public void regularFileIsTheExecutable() throws IOException {
-        File gpsbabel = folder.newFile("gpsbabel");
+        File gpsbabel = newFile(folder, "gpsbabel");
         assertEquals(gpsbabel, checkIfBabelExists(gpsbabel.getPath()));
+    }
+
+    private static File newFolder(File root, String... subDirs) throws IOException {
+        String subFolder = String.join("/", subDirs);
+        File result = new File(root, subFolder);
+        if (!result.mkdirs()) {
+            throw new IOException("Couldn't create folders " + root);
+        }
+        return result;
+    }
+
+    private static File newFile(File parent, String child) throws IOException {
+        File result = new File(parent, child);
+        result.createNewFile();
+        return result;
     }
 }

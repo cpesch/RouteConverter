@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.dnd;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
 
@@ -28,7 +28,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static slash.navigation.converter.gui.dnd.PositionSelection.POSITION_FLAVOR;
 import static slash.navigation.converter.gui.dnd.PositionSelection.STRING_FLAVOR;
 

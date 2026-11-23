@@ -20,7 +20,7 @@
 
 package slash.navigation.common;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.io.Transfer.roundMeterToMillimeterPrecision;

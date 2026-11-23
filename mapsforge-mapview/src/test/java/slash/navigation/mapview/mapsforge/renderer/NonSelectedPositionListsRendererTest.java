@@ -19,7 +19,7 @@
 */
 package slash.navigation.mapview.mapsforge.renderer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.graphics.GraphicFactory;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.awt.EventQueue.invokeAndWait;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -74,13 +74,13 @@ public class NonSelectedPositionListsRendererTest {
         // so no read has happened yet by the time the event returns
         invokeAndWait(() -> {
             renderer.update();
-            assertEquals("rebuild must be deferred, not run inline during the change event",
-                    0, model.reads.get());
+            assertEquals(0,
+                    model.reads.get(), "rebuild must be deferred, not run inline during the change event");
         });
 
         invokeAndWait(() -> { });   // drain the EDT so the deferred rebuild runs
-        assertEquals("deferred rebuild runs exactly once after the event returns",
-                1, model.reads.get());
+        assertEquals(1,
+                model.reads.get(), "deferred rebuild runs exactly once after the event returns");
     }
 
     @Test
@@ -95,7 +95,7 @@ public class NonSelectedPositionListsRendererTest {
         });
 
         invokeAndWait(() -> { });   // drain the EDT
-        assertEquals("50 rapid updates must coalesce into a single rebuild", 1, model.reads.get());
+        assertEquals(1, model.reads.get(), "50 rapid updates must coalesce into a single rebuild");
     }
 
     /**

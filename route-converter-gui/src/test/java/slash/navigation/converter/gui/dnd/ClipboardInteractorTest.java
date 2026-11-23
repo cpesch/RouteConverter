@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.dnd;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
 
@@ -31,9 +31,9 @@ import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.converter.gui.dnd.ClipboardInteractor.isSupportedFlavor;
 import static slash.navigation.converter.gui.dnd.PositionSelection.POSITION_FLAVOR;
 import static slash.navigation.converter.gui.dnd.PositionSelection.STRING_FLAVOR;

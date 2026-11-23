@@ -20,16 +20,16 @@
 
 package slash.navigation.gui;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static javax.swing.SwingUtilities.invokeLater;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Verifies the finding recorded in {@link Application#launch}: on Java 17+ an
@@ -54,8 +54,8 @@ public class EventDispatchThreadExceptionTest {
             invokeLater(() -> {
                 throw new RuntimeException("boom on EDT");
             });
-            assertTrue("EDT exception did not reach the default handler within timeout",
-                    latch.await(10, SECONDS));
+            assertTrue(latch.await(10, SECONDS),
+                    "EDT exception did not reach the default handler within timeout");
             assertNotNull(captured.get());
             assertEquals("boom on EDT", captured.get().getMessage());
         } finally {

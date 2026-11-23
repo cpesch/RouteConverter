@@ -19,12 +19,18 @@
 */
 package slash.navigation.simple;
 
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.Wgs84Position;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Route66FormatTest extends NavigationTestCase {
     Route66Format format = new Route66Format();
 
+    @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("11.107167,49.375783,\"HOLSTEINBRUCH BEI WORZELDORF B - GC13VV5\""));
 
@@ -32,6 +38,7 @@ public class Route66FormatTest extends NavigationTestCase {
         assertFalse(format.isPosition(" 9.3900000 , 51.5037800 , \"[34369] Donig; Max-Eyth-Str. [Hofgeismar]\" "));
     }
 
+    @Test
     public void testParsePosition() {
         Wgs84Position position = format.parsePosition("11.107167,49.375783,\"HOLSTEINBRUCH BEI WORZELDORF B - GC13VV5\"", null);
         assertEquals(11.107167, position.getLongitude());
@@ -39,6 +46,7 @@ public class Route66FormatTest extends NavigationTestCase {
         assertEquals("Holsteinbruch Bei Worzeldorf B - Gc13vv5", position.getDescription());
     }
 
+    @Test
     public void testParseNegativePosition() {
         Wgs84Position position = format.parsePosition("-8.6180900,-50.2175100,\"ABC\"", null);
         assertEquals(-8.618090, position.getLongitude());

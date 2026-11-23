@@ -1,13 +1,13 @@
 package slash.navigation.googlemaps;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class GoogleGeocodingServiceTest {
     private final GoogleGeocodingService service = new GoogleGeocodingService();

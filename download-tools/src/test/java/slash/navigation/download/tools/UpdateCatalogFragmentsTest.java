@@ -19,9 +19,9 @@
 */
 package slash.navigation.download.tools;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.datasources.binding.ChecksumType;
 import slash.navigation.datasources.binding.FragmentType;
 
@@ -36,10 +36,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.download.tools.UpdateCatalog.extractHgtFragments;
 
 /**
@@ -60,12 +60,12 @@ public class UpdateCatalogFragmentsTest {
 
     private File zip;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         zip = createTempFile("tile", ".zip");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (zip.exists())
             zip.delete();
@@ -118,7 +118,7 @@ public class UpdateCatalogFragmentsTest {
         ChecksumType checksum = fragment.getChecksum().get(0);
         assertEquals(contentLength, checksum.getContentLength());
         assertNotNull(checksum.getLastModified());
-        assertNull("partial data must never be hashed", checksum.getSha1());
+        assertNull(checksum.getSha1(), "partial data must never be hashed");
     }
 
     @Test

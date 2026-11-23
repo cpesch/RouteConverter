@@ -19,7 +19,7 @@
 */
 package slash.navigation.gpx;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
 
@@ -34,7 +34,11 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.gpx.GpxUtil.*;
 
 /**
@@ -86,13 +90,14 @@ public class GpxUtilTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal10(gpx, out);
         String xml = out.toString(StandardCharsets.UTF_8);
-        assertTrue("marshalled XML should contain gpx element", xml.contains("gpx"));
-        assertTrue("marshalled XML should contain GPX 1.0 namespace", xml.contains(GPX_10_NAMESPACE_URI));
+        assertTrue(xml.contains("gpx"), "marshalled XML should contain gpx element");
+        assertTrue(xml.contains(GPX_10_NAMESPACE_URI), "marshalled XML should contain GPX 1.0 namespace");
     }
 
-    @Test(expected = IOException.class)
-    public void testUnmarshal10BadXml() throws IOException {
-        unmarshal10(new StringReader("<notvalid/>"));
+    @Test
+    public void testUnmarshal10BadXml() {
+        assertThrows(IOException.class, () ->
+            unmarshal10(new StringReader("<notvalid/>")));
     }
 
     // ---- GPX 1.1 ----
@@ -130,7 +135,7 @@ public class GpxUtilTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal11(gpx, out);
         String xml = out.toString(StandardCharsets.UTF_8);
-        assertTrue("marshalled XML should contain gpx element", xml.contains("gpx"));
+        assertTrue(xml.contains("gpx"), "marshalled XML should contain gpx element");
     }
 
     @Test
@@ -139,13 +144,14 @@ public class GpxUtilTest {
         assertNotNull(gpx);
         String xml = toXml(gpx);
         assertNotNull(xml);
-        assertTrue("toXml result should contain gpx element", xml.contains("gpx"));
-        assertTrue("toXml result should contain version", xml.contains("1.1"));
+        assertTrue(xml.contains("gpx"), "toXml result should contain gpx element");
+        assertTrue(xml.contains("1.1"), "toXml result should contain version");
     }
 
-    @Test(expected = IOException.class)
-    public void testUnmarshal11BadXml() throws IOException {
-        unmarshal11("<notvalid/>");
+    @Test
+    public void testUnmarshal11BadXml() {
+        assertThrows(IOException.class, () ->
+            unmarshal11("<notvalid/>"));
     }
 
     // ---- written GPX must use the default namespace, not a generated prefix ----
@@ -163,10 +169,10 @@ public class GpxUtilTest {
         StringWriter writer = new StringWriter();
         marshal11(gpxType, writer);
         String xml = writer.toString();
-        assertTrue("marshalled GPX 1.1 must declare the GPX namespace as default namespace",
-                xml.contains("xmlns=\"" + GPX_11_NAMESPACE_URI + "\""));
-        assertFalse("marshalled GPX 1.1 must not use a generated namespace prefix",
-                xml.contains("ns1:") || xml.contains("ns2:"));
+        assertTrue(xml.contains("xmlns=\"" + GPX_11_NAMESPACE_URI + "\""),
+                "marshalled GPX 1.1 must declare the GPX namespace as default namespace");
+        assertFalse(xml.contains("ns1:") || xml.contains("ns2:"),
+                "marshalled GPX 1.1 must not use a generated namespace prefix");
     }
 
     @Test
@@ -177,10 +183,10 @@ public class GpxUtilTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal10(gpx, out);
         String xml = out.toString(StandardCharsets.UTF_8);
-        assertTrue("marshalled GPX 1.0 must declare the GPX namespace as default namespace",
-                xml.contains("xmlns=\"" + GPX_10_NAMESPACE_URI + "\""));
-        assertFalse("marshalled GPX 1.0 must not use a generated namespace prefix",
-                xml.contains("ns1:") || xml.contains("ns2:"));
+        assertTrue(xml.contains("xmlns=\"" + GPX_10_NAMESPACE_URI + "\""),
+                "marshalled GPX 1.0 must declare the GPX namespace as default namespace");
+        assertFalse(xml.contains("ns1:") || xml.contains("ns2:"),
+                "marshalled GPX 1.0 must not use a generated namespace prefix");
     }
 
     // ---- trekbuddy nmea extensions (binding must be registered in newContext11) ----
@@ -216,8 +222,8 @@ public class GpxUtilTest {
                     course = (BigDecimal) element.getValue();
             }
         }
-        assertEquals("nmea:speed should bind to a JAXBElement<BigDecimal>", new BigDecimal("12.5"), speed);
-        assertEquals("nmea:course should bind to a JAXBElement<BigDecimal>", new BigDecimal("270.0"), course);
+        assertEquals(new BigDecimal("12.5"), speed, "nmea:speed should bind to a JAXBElement<BigDecimal>");
+        assertEquals(new BigDecimal("270.0"), course, "nmea:course should bind to a JAXBElement<BigDecimal>");
     }
 
     // ---- every registered extension ObjectFactory must produce a live binding ----
@@ -258,8 +264,8 @@ public class GpxUtilTest {
             String namespace = c[0], prefix = c[1], elementXml = c[2], localName = c[3];
             GpxType type = unmarshal11(gpx11WithTrkptExtension(prefix, namespace, elementXml));
             assertNotNull(type);
-            assertTrue(localName + " in " + namespace + " must bind to a JAXBElement (ObjectFactory registered in newContext11), not fall back to a DOM Element",
-                    trkptExtensionBindsTo(type, namespace, localName));
+            assertTrue(trkptExtensionBindsTo(type, namespace, localName),
+                    localName + " in " + namespace + " must bind to a JAXBElement (ObjectFactory registered in newContext11), not fall back to a DOM Element");
         }
     }
 
@@ -285,7 +291,7 @@ public class GpxUtilTest {
     public void testUnmarshal11BindsOsmandTrackAppearanceExtensions() throws IOException {
         GpxType type = unmarshal11(GPX_11_OSMAND);
         assertNotNull(type);
-        assertNotNull("gpx <extensions> should be present", type.getExtensions());
+        assertNotNull(type.getExtensions(), "gpx <extensions> should be present");
 
         // osmand writes its appearance elements directly in <extensions> (no wrapper). With the
         // global element decls (un-scoped in newContext11's osmand.ObjectFactory), they bind to
@@ -304,7 +310,7 @@ public class GpxUtilTest {
                     showArrows = (Boolean) element.getValue();
             }
         }
-        assertEquals("osmand:color must bind to JAXBElement<String>, not a DOM Element", "#4e4eff", color);
+        assertEquals("#4e4eff", color, "osmand:color must bind to JAXBElement<String>, not a DOM Element");
         assertEquals("bold", width);
         assertEquals(Boolean.TRUE, showArrows);
     }
@@ -315,10 +321,10 @@ public class GpxUtilTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal11(type, out);
         String xml = out.toString(StandardCharsets.UTF_8);
-        assertTrue("round-trip should preserve the osmand namespace", xml.contains(OSMAND_EXTENSIONS_NAMESPACE_URI));
-        assertTrue("round-trip should preserve osmand:color value", xml.contains("#4e4eff"));
-        assertTrue("round-trip should preserve osmand:width value", xml.contains("bold"));
-        assertTrue("round-trip should preserve osmand:split_interval value", xml.contains("2000.0"));
+        assertTrue(xml.contains(OSMAND_EXTENSIONS_NAMESPACE_URI), "round-trip should preserve the osmand namespace");
+        assertTrue(xml.contains("#4e4eff"), "round-trip should preserve osmand:color value");
+        assertTrue(xml.contains("bold"), "round-trip should preserve osmand:width value");
+        assertTrue(xml.contains("2000.0"), "round-trip should preserve osmand:split_interval value");
     }
 
     @Test
@@ -326,11 +332,11 @@ public class GpxUtilTest {
         // from-osmand.gpx is taken verbatim from a real OsmAnd~ 5.1.9 export.
         GpxType type;
         try (java.io.InputStream in = getClass().getResourceAsStream("/from-osmand.gpx")) {
-            assertNotNull("from-osmand.gpx fixture must be on the test classpath", in);
+            assertNotNull(in, "from-osmand.gpx fixture must be on the test classpath");
             type = unmarshal11(in);
         }
         assertNotNull(type);
-        assertNotNull("real osmand export has a top-level <extensions>", type.getExtensions());
+        assertNotNull(type.getExtensions(), "real osmand export has a top-level <extensions>");
 
         String color = null, width = null;
         Boolean showArrows = null;
@@ -349,13 +355,13 @@ public class GpxUtilTest {
                 }
             }
         }
-        assertEquals("osmand:color binds typed", "#4e4eff", color);
+        assertEquals("#4e4eff", color, "osmand:color binds typed");
         assertEquals(Boolean.FALSE, showArrows);
-        assertTrue("empty <osmand:width/> still binds (no parse failure)", sawWidthElement);
-        assertTrue("empty width value is null or blank", width == null || width.isEmpty());
-        assertNotNull("coloring_type binds to its enum", coloringType);
+        assertTrue(sawWidthElement, "empty <osmand:width/> still binds (no parse failure)");
+        assertTrue(width == null || width.isEmpty(), "empty width value is null or blank");
+        assertNotNull(coloringType, "coloring_type binds to its enum");
         assertEquals("solid", String.valueOf(coloringType).toLowerCase());
-        assertNotNull("split_type binds to its enum", splitType);
+        assertNotNull(splitType, "split_type binds to its enum");
     }
 
     // ---- garmin TripExtensions v1 (trip1) ----
@@ -380,13 +386,13 @@ public class GpxUtilTest {
                     mode = trip.getTransportationMode();
             }
         }
-        assertEquals("trp:Trip must bind to TripExtensionT (trip1 registered)", "Automotive", mode);
+        assertEquals("Automotive", mode, "trp:Trip must bind to TripExtensionT (trip1 registered)");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal11(type, out);
         String xml = out.toString(StandardCharsets.UTF_8);
-        assertTrue("round-trip preserves the TripExtensions namespace", xml.contains(GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI));
-        assertTrue("round-trip preserves TransportationMode", xml.contains("Automotive"));
+        assertTrue(xml.contains(GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI), "round-trip preserves the TripExtensions namespace");
+        assertTrue(xml.contains("Automotive"), "round-trip preserves TransportationMode");
     }
 
     @Test
@@ -394,7 +400,7 @@ public class GpxUtilTest {
         // from-garmin-basecamp.gpx is a real "Garmin Desktop App" export (GPSBabel reference).
         GpxType type;
         try (java.io.InputStream in = getClass().getResourceAsStream("/from-garmin-basecamp.gpx")) {
-            assertNotNull("from-garmin-basecamp.gpx must be on the test classpath", in);
+            assertNotNull(in, "from-garmin-basecamp.gpx must be on the test classpath");
             type = unmarshal11(in);
         }
         String calcMode = null;
@@ -410,15 +416,15 @@ public class GpxUtilTest {
                 }
             }
         }
-        assertEquals("trp:ViaPoint binds to ViaPointExtensionT (trip1)", "FasterTime", calcMode);
-        assertTrue("gpxx:RoutePointExtension binds to RoutePointExtensionT (garmin3)", routePointExtension);
+        assertEquals("FasterTime", calcMode, "trp:ViaPoint binds to ViaPointExtensionT (trip1)");
+        assertTrue(routePointExtension, "gpxx:RoutePointExtension binds to RoutePointExtensionT (garmin3)");
     }
 
     @Test
     public void testRealGarminTrackPointExtensionV2Binds() throws IOException {
         GpxType type;
         try (java.io.InputStream in = getClass().getResourceAsStream("/from-garmin-trackpoint.gpx")) {
-            assertNotNull("from-garmin-trackpoint.gpx must be on the test classpath", in);
+            assertNotNull(in, "from-garmin-trackpoint.gpx must be on the test classpath");
             type = unmarshal11(in);
         }
         Short hr = null, cad = null;
@@ -435,9 +441,9 @@ public class GpxUtilTest {
                 }
             }
         }
-        assertEquals("gpxtpx:hr binds", Short.valueOf((short) 118), hr);
-        assertEquals("gpxtpx:cad binds", Short.valueOf((short) 84), cad);
-        assertEquals("gpxtpx:atemp binds", Double.valueOf(21.0), atemp);
+        assertEquals(Short.valueOf((short) 118), hr, "gpxtpx:hr binds");
+        assertEquals(Short.valueOf((short) 84), cad, "gpxtpx:cad binds");
+        assertEquals(Double.valueOf(21.0), atemp, "gpxtpx:atemp binds");
     }
 
     @Test
@@ -457,8 +463,8 @@ public class GpxUtilTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal11(type, out);
         String xml = out.toString(StandardCharsets.UTF_8);
-        assertTrue("round-trip should preserve the trekbuddy nmea namespace", xml.contains(TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI));
-        assertTrue("round-trip should preserve the nmea:speed value", xml.contains("12.5"));
+        assertTrue(xml.contains(TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI), "round-trip should preserve the trekbuddy nmea namespace");
+        assertTrue(xml.contains("12.5"), "round-trip should preserve the nmea:speed value");
     }
 
     // ---- NamespaceFilter ----

@@ -20,7 +20,7 @@
 
 package slash.navigation.columbus;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
 import slash.navigation.base.SimpleRoute;
@@ -28,9 +28,9 @@ import slash.navigation.base.Wgs84Position;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
@@ -39,9 +39,9 @@ public class ColumbusFusionReadWriteRoundtripIT {
 
     private void roundtrip(String testFileName, boolean expectSatellitesAndHdop, boolean expectFixQuality) throws Exception {
         File file = new File(TEST_PATH + testFileName);
-        assumeTrue("Sample file not found: " + file.getAbsolutePath(), file.exists());
+        assumeTrue(file.exists(), "Sample file not found: " + file.getAbsolutePath());
 
-        ignoreLocalTimeZone(() -> {
+        ignoreLocalTimeZone(() ->
             readWriteRoundtrip(TEST_PATH + testFileName, new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
                     SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
@@ -73,8 +73,7 @@ public class ColumbusFusionReadWriteRoundtripIT {
                             assertNull(targetPosition.getFixQuality());
                     }
                 }
-            });
-        });
+            }));
     }
 
     @Test

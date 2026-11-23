@@ -20,14 +20,14 @@
 
 package slash.navigation.babel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static java.util.List.of;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BabelGoldenComparatorTest {
     private static String route(String longitude) {
@@ -51,7 +51,7 @@ public class BabelGoldenComparatorTest {
         String actual = route("\"11.5000020\"");
         List<String> differences = BabelGoldenComparator.compare(expected, actual, emptyList());
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0), differences.get(0).startsWith("route[0].position[0].longitude:"));
+        assertTrue(differences.get(0).startsWith("route[0].position[0].longitude:"), differences.get(0));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class BabelGoldenComparatorTest {
         List<String> allowlistForLongitude = of("sample route[*].position[*].longitude accepted test-only");
         List<String> differences = BabelGoldenComparator.compare(expected, actual, allowlistForLongitude);
         assertEquals(1, differences.size());
-        assertTrue(differences.get(0), differences.get(0).startsWith("route[0].position[0].description:"));
+        assertTrue(differences.get(0).startsWith("route[0].position[0].description:"), differences.get(0));
     }
 
     @Test

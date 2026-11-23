@@ -19,7 +19,7 @@
 */
 package slash.navigation.pois.mapsforge;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.map.reader.MapFile;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.maps.item.ItemModel;
@@ -32,7 +32,9 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;

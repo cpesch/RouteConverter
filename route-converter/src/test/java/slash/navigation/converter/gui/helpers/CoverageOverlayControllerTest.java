@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
@@ -39,9 +39,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -149,7 +149,7 @@ public class CoverageOverlayControllerTest {
 
         assertEquals(1, covered.size());
         assertEquals(availableBox, covered.get(0).boundingBox());
-        assertNull("without a routing polygon the map's bounding box is used", covered.get(0).polygon());
+        assertNull(covered.get(0).polygon(), "without a routing polygon the map's bounding box is used");
     }
 
     @Test

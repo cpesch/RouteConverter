@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
@@ -30,8 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,8 +60,8 @@ public class GeoTaggerTest {
         // called off the EDT, like from the GeoTagger background executor
         notifyPositionUpdatedOnEventDispatchThread(positionsModel, position);
 
-        assertTrue("fireTableRowsUpdated was not invoked", fired.await(5, TimeUnit.SECONDS));
-        assertTrue("update was not fired on the EDT", firedOnEventDispatchThread.get());
+        assertTrue(fired.await(5, TimeUnit.SECONDS), "fireTableRowsUpdated was not invoked");
+        assertTrue(firedOnEventDispatchThread.get(), "update was not fired on the EDT");
         assertEquals(3, firedFirstIndex.get());
         assertEquals(3, firedLastIndex.get());
     }

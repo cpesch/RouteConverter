@@ -19,7 +19,7 @@
 */
 package slash.navigation.maps.mapsforge.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 import slash.navigation.maps.tileserver.TileServer;
@@ -28,7 +28,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TileServerToTileDownloadMapMediatorTest {
 

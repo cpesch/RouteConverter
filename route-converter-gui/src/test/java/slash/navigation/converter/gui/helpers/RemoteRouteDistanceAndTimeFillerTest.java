@@ -19,15 +19,15 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.CompositeRouteMetadataSource;
 import slash.navigation.converter.gui.models.RouteDistanceAndTimeCache;
 import slash.navigation.routes.remote.RemoteCategory;
 import slash.navigation.routes.remote.RemoteRoute;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for {@link RemoteRouteDistanceAndTimeFiller} and its priority relative

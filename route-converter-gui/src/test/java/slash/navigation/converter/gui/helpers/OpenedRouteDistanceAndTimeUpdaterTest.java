@@ -19,8 +19,8 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.DistanceAndTimeAggregator;
 import slash.navigation.converter.gui.models.RouteDistanceAndTimeCache;
@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unit tests for {@link OpenedRouteDistanceAndTimeUpdater}.
@@ -50,7 +50,7 @@ public class OpenedRouteDistanceAndTimeUpdaterTest {
     private final List<String> updatedUrls = new ArrayList<>();
     private OpenedRouteDistanceAndTimeUpdater updater;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         updater = new OpenedRouteDistanceAndTimeUpdater(aggregator, cache, currentPath::get, updatedUrls::add);
     }

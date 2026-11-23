@@ -19,7 +19,7 @@
 */
 package slash.navigation.csv;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserContextImpl;
 
 import java.io.IOException;
@@ -27,7 +27,9 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.TestCase.calendar;
 
 /**
@@ -43,7 +45,7 @@ public class CsvFormatTest {
         ParserContextImpl<CsvRoute> context = new ParserContextImpl<>();
 
         try (InputStream in = getClass().getResourceAsStream("title-row-combined-coordinates.csv")) {
-            assertNotNull("title-row-combined-coordinates.csv fixture must be on the test classpath", in);
+            assertNotNull(in, "title-row-combined-coordinates.csv fixture must be on the test classpath");
             format.read(in, context);
         }
 

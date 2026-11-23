@@ -20,7 +20,7 @@
 
 package slash.navigation.gpx;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatParser;
@@ -35,10 +35,10 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.readGpxFile;
@@ -54,7 +54,7 @@ public class ColumbusGnssGpxReadIT {
 
     private GpxRoute readColumbusGpxTrack(String fileName) throws Exception {
         File file = new File(TEST_PATH + fileName);
-        assumeTrue("Sample file not found: " + file.getAbsolutePath(), file.exists());
+        assumeTrue(file.exists(), "Sample file not found: " + file.getAbsolutePath());
 
         List<GpxRoute> routes = readGpxFile(new Gpx11Format(), TEST_PATH + fileName);
         assertNotNull(routes);
@@ -91,11 +91,11 @@ public class ColumbusGnssGpxReadIT {
     @Test
     public void testNmeaLog() throws IOException {
         File file = new File(TEST_PATH + "from-columbusgnss-nmea.log");
-        assumeTrue("Sample file not found: " + file.getAbsolutePath(), file.exists());
+        assumeTrue(file.exists(), "Sample file not found: " + file.getAbsolutePath());
 
         NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
         ParserResult result = parser.read(file, Collections.<NavigationFormat<?>>singletonList(new NmeaFormat()));
-        assertTrue("Could not read from-columbusgnss-nmea.log", result.isSuccessful());
+        assertTrue(result.isSuccessful(), "Could not read from-columbusgnss-nmea.log");
         NmeaRoute route = (NmeaRoute) result.getAllRoutes().get(0);
         assertEquals(550, route.getPositionCount());
 
@@ -112,6 +112,6 @@ public class ColumbusGnssGpxReadIT {
                 break;
             }
         }
-        assertTrue("Expected at least one position with non-null hdop and fixQuality in 0..7", foundHdopAndFixQuality);
+        assertTrue(foundHdopAndFixQuality, "Expected at least one position with non-null hdop and fixQuality in 0..7");
     }
 }

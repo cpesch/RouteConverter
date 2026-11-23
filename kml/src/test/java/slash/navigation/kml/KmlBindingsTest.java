@@ -21,14 +21,19 @@ package slash.navigation.kml;
 
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import slash.navigation.kml.binding22.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static slash.navigation.kml.KmlUtil.*;
 
 /**
@@ -46,7 +51,7 @@ public class KmlBindingsTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         marshal22(kml, out);
         String xml = out.toString("UTF-8");
-        assertFalse("XML must not be empty", xml.isEmpty());
+        assertFalse(xml.isEmpty(), "XML must not be empty");
         return unmarshal22(new ByteArrayInputStream(xml.getBytes("UTF-8")));
     }
 
@@ -75,9 +80,9 @@ public class KmlBindingsTest {
     @Test
     public void kmlTypeDefaultValues() {
         KmlType kml = FACTORY.createKmlType();
-        assertNull("hint should be null", kml.getHint());
-        assertNull("networkLinkControl should be null", kml.getNetworkLinkControl());
-        assertNull("abstractFeatureGroup should be null", kml.getAbstractFeatureGroup());
+        assertNull(kml.getHint(), "hint should be null");
+        assertNull(kml.getNetworkLinkControl(), "networkLinkControl should be null");
+        assertNull(kml.getAbstractFeatureGroup(), "abstractFeatureGroup should be null");
     }
 
     @Test
@@ -99,7 +104,7 @@ public class KmlBindingsTest {
     @Test
     public void pointTypeAltitudeModeGroupNullByDefault() {
         PointType pt = FACTORY.createPointType();
-        assertNull("default altitudeModeGroup should be null", pt.getAltitudeModeGroup());
+        assertNull(pt.getAltitudeModeGroup(), "default altitudeModeGroup should be null");
     }
 
     @Test
@@ -301,7 +306,7 @@ public class KmlBindingsTest {
     @Test
     public void iconStyleTypeScaleElementNullByDefault() {
         IconStyleType icon = FACTORY.createIconStyleType();
-        assertNull("default scaleElement should be null", icon.getScaleElement());
+        assertNull(icon.getScaleElement(), "default scaleElement should be null");
     }
 
     @Test

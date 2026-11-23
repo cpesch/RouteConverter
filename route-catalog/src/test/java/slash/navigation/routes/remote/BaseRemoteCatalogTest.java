@@ -19,8 +19,8 @@
 */
 package slash.navigation.routes.remote;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.routes.Category;
@@ -30,7 +30,7 @@ import java.io.*;
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
 import static org.apache.commons.io.IOUtils.copyLarge;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class BaseRemoteCatalogTest {
     protected static final String API = System.getProperty("api", "http://localhost:8000/");
@@ -49,7 +49,7 @@ public abstract class BaseRemoteCatalogTest {
     protected static RemoteCatalog catalog;
     protected static Category test;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         catalog = new RemoteCatalog(API, new SimpleCredentials(USERNAME, PASSWORD));
         Category root = catalog.getRootCategory();
@@ -57,7 +57,7 @@ public abstract class BaseRemoteCatalogTest {
         test = catalog.getCategory(url);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         if (catalog != null && test != null)
             catalog.deleteCategory(test.getHref());

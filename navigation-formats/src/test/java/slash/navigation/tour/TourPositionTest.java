@@ -19,12 +19,15 @@
 */
 package slash.navigation.tour;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.gopal.GoPalPosition;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 /**
  * Tests description reconstruction and conversions of {@link TourPosition}.

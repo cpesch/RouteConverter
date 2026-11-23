@@ -21,13 +21,16 @@
 package slash.navigation.download.queue;
 
 import jakarta.xml.bind.JAXBException;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import slash.navigation.download.queue.binding.QueueType;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link QueueUtil} marshal/unmarshal round-trips.
@@ -39,7 +42,7 @@ public class QueueUtilTest {
         QueueType queue = new QueueType();
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         QueueUtil.marshal(queue, out);
-        assertTrue("Marshalled output should be non-empty", out.size() > 0);
+        assertTrue(out.size() > 0, "Marshalled output should be non-empty");
     }
 
     @Test
@@ -48,7 +51,7 @@ public class QueueUtilTest {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         QueueUtil.marshal(queue, out);
         String xml = out.toString();
-        assertTrue("Output should contain queue element", xml.contains("queue"));
+        assertTrue(xml.contains("queue"), "Output should contain queue element");
     }
 
     @Test

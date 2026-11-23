@@ -20,7 +20,7 @@
 
 package slash.navigation.nmn;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.nmn.bindingcruiser.Root;
 import slash.navigation.nmn.bindingcruiser.Route;
 
@@ -30,8 +30,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Tests for {@link NavigonCruiserUtil} JSON unmarshal/marshal round-trips.

@@ -20,15 +20,15 @@
 
 package slash.navigation.download.tools;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.download.Checksum;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.tools.UpdateCatalog.dropSha1;
 import static slash.navigation.download.tools.UpdateCatalog.mergeChecksums;

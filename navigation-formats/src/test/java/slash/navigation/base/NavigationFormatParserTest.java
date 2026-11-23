@@ -21,8 +21,8 @@
 package slash.navigation.base;
 
 import com.sun.net.httpserver.HttpServer;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.gpx.Gpx11Format;
@@ -42,11 +42,11 @@ import java.util.List;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static slash.common.system.Platform.isWindows;
 
 /**
@@ -75,7 +75,7 @@ public class NavigationFormatParserTest {
             "<trk><name>t</name><trkseg><trkpt lat=\"3.0\" lon=\"4.0\"/><trkpt lat=\"3.1\" lon=\"4.1\"/></trkseg></trk>" +
             "</gpx>";
 
-    @After
+    @AfterEach
     public void tearDown() {
         for (File file : temporaryFiles)
             //noinspection ResultOfMethodCallIgnored
@@ -322,7 +322,7 @@ public class NavigationFormatParserTest {
         // delete() is a no-op there: the reopen succeeds, probing reaches ColumbusGpsType1Format and
         // the parse is successful. The scenario under test - the source vanishing between probes -
         // cannot be provoked this way on Windows, so skip rather than assert POSIX semantics.
-        assumeFalse("a file cannot be unlinked while open on Windows", isWindows());
+        assumeFalse(isWindows(), "a file cannot be unlinked while open on Windows");
 
         byte[] body = columbusBody(60000);
         assertTrue(body.length > NavigationFormatParser.TOTAL_BUFFER_SIZE);

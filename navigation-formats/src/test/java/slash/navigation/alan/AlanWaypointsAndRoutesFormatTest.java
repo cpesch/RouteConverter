@@ -20,7 +20,7 @@
 
 package slash.navigation.alan;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.gpx.Gpx10Format;
@@ -44,12 +44,12 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -508,7 +508,7 @@ public class AlanWaypointsAndRoutesFormatTest {
             write.run();
             fail("IOException expected");
         } catch (IOException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains(message));
+            assertTrue(e.getMessage().contains(message), e.getMessage());
         }
     }
 

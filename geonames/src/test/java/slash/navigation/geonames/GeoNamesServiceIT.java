@@ -19,25 +19,28 @@
 */
 package slash.navigation.geonames;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.common.SimpleNavigationPosition;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GeoNamesServiceIT {
     private final GeoNamesService service = new GeoNamesService();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         APIKeyRegistry.getInstance().setAPIKeyPreference("geonames", "routeconverter");
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         APIKeyRegistry.getInstance().setAPIKeyPreference("geonames", "");
     }

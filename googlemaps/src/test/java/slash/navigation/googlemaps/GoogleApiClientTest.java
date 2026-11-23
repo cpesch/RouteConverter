@@ -20,7 +20,7 @@
 
 package slash.navigation.googlemaps;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.rest.exception.ServiceUnavailableException;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GoogleApiClientTest {
     private static final String URL_WITHOUT_KEY = "https://maps.googleapis.com/maps/api/geocode/xml?address=Mundsburg&sensor=false&language=de";
@@ -57,7 +57,7 @@ public class GoogleApiClientTest {
                     fail("Expected ServiceUnavailableException for " + status);
                 } catch (ServiceUnavailableException e) {
                     assertEquals(URL_WITHOUT_KEY, e.getServiceUrl());
-                    assertFalse(e.toString(), e.toString().contains("secret-api-key"));
+                    assertFalse(e.toString().contains("secret-api-key"), e.toString());
                 }
             }
         } finally {
@@ -66,7 +66,7 @@ public class GoogleApiClientTest {
 
         assertEquals(2, messages.size());
         for (String message : messages)
-            assertFalse(message, message.contains("secret-api-key"));
+            assertFalse(message.contains("secret-api-key"), message);
     }
 
     @Test

@@ -1,8 +1,8 @@
 package slash.navigation.msfs;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MSFSFlightPlanFormatTest {
     private final MSFSFlightPlanFormat format = new MSFSFlightPlanFormat();

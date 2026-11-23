@@ -20,13 +20,14 @@
 
 package slash.navigation.gui.events;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link ContinousRange}.
@@ -251,14 +252,16 @@ public class ContinousRangeTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAllButEveryNthThrowsForZeroNth() {
-        Range.allButEveryNthAndFirstAndLast(5, 0);
+        assertThrows(IllegalArgumentException.class, () ->
+            Range.allButEveryNthAndFirstAndLast(5, 0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAllButEveryNthThrowsForNegativeNth() {
-        Range.allButEveryNthAndFirstAndLast(5, -1);
+        assertThrows(IllegalArgumentException.class, () ->
+            Range.allButEveryNthAndFirstAndLast(5, -1));
     }
 }
 

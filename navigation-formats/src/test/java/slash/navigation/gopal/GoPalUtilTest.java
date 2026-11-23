@@ -20,7 +20,7 @@
 
 package slash.navigation.gopal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.gopal.binding3.ObjectFactory;
 
 import java.io.ByteArrayInputStream;
@@ -28,8 +28,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Tests for {@link GoPalUtil} binding3 (GoPal v3) unmarshal/marshal round-trips.

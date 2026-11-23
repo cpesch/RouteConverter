@@ -19,9 +19,9 @@
 */
 package slash.navigation.download.tools;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.datasources.binding.FragmentType;
 import slash.navigation.datasources.binding.ThemeType;
 
@@ -34,10 +34,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.datasources.DataSourceManager.DOT_MAP;
 import static slash.navigation.datasources.DataSourceManager.DOT_ZIP;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.createThemeType;
@@ -56,7 +56,7 @@ public class UpdateCatalogExtensionTest {
 
     private File zip;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         zip = createTempFile("theme", ".zip");
         try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zip))) {
@@ -71,7 +71,7 @@ public class UpdateCatalogExtensionTest {
         }
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (zip.exists())
             zip.delete();
@@ -94,7 +94,7 @@ public class UpdateCatalogExtensionTest {
         assertEquals("TOTM/totm.xml", fragments.get(0).getKey());
         assertEquals("TOTM/patterns/forest.svg", fragments.get(1).getKey());
         for (FragmentType fragment : fragments)
-            assertNotNull("theme files are hashed", fragment.getChecksum().get(0).getSha1());
+            assertNotNull(fragment.getChecksum().get(0).getSha1(), "theme files are hashed");
     }
 
     @Test

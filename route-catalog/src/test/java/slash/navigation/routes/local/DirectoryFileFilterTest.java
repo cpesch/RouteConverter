@@ -20,15 +20,15 @@
 
 package slash.navigation.routes.local;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link DirectoryFileFilter}.
@@ -44,7 +44,7 @@ public class DirectoryFileFilterTest {
     private File regularFile;
     private File lnkFile;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         File base = new File(System.getProperty("java.io.tmpdir"), "dff-test-" + System.currentTimeMillis());
         assertTrue(base.mkdir());
@@ -63,7 +63,7 @@ public class DirectoryFileFilterTest {
         java.nio.file.Files.write(lnkFile.toPath(), header);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         deleteRecursively(tempDir);
     }
