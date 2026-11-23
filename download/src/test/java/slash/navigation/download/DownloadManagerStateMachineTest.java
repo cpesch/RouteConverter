@@ -20,11 +20,10 @@
 package slash.navigation.download;
 
 import com.sun.net.httpserver.HttpServer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Timeout;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,17 +35,18 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.io.Files.generateChecksum;
 import static slash.common.io.InputOutput.readFileToString;
 import static slash.navigation.download.Action.Copy;
@@ -62,14 +62,12 @@ import static slash.navigation.download.State.Succeeded;
  *
  * @author Christian Pesch
  */
+@Timeout(value = 30, unit = TimeUnit.SECONDS)
 public class DownloadManagerStateMachineTest {
     private static final String ENTRY_NAME = "first/second/447bytes.txt";
     private static final String ENTRY_BODY = "Lorem ipsum dolor sit amet, consectetur adipisicing elit";
     private static final String PLAIN_BODY = "0123456789ABCDEFGHIJ0123456789ABCDEFGHIJ"; // 40 bytes
     private static final String ETAG = "\"state-machine\"";
-
-    @Rule
-    public final Timeout testTimeout = Timeout.seconds(30);
 
     private HttpServer server;
     private final AtomicInteger bodiesServed = new AtomicInteger();
@@ -80,7 +78,7 @@ public class DownloadManagerStateMachineTest {
     private DownloadManager manager;
     private File queueFile, target, targetDirectory;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         zipBytes = buildZip(ENTRY_NAME, ENTRY_BODY.getBytes(StandardCharsets.UTF_8));
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
@@ -149,7 +147,7 @@ public class DownloadManagerStateMachineTest {
         assertTrue(targetDirectory.mkdirs());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         manager.dispose();
         server.stop(0);
@@ -214,8 +212,8 @@ public class DownloadManagerStateMachineTest {
         manager.waitForCompletion(singletonList(download));
 
         Set<State> terminal = EnumSet.of(Succeeded, Outdated, State.Failed, State.NoFileError, State.ChecksumError);
-        assertTrue("expected a terminal state but was " + download.getState(),
-                terminal.contains(download.getState()));
+        assertTrue(terminal.contains(download.getState()),
+                "expected a terminal state but was " + download.getState());
         assertEquals(1, bodiesServed.get());
     }
 

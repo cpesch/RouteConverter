@@ -19,9 +19,8 @@
 */
 package slash.navigation.maps.tileserver.helpers;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import slash.navigation.maps.tileserver.bindingmap.MapServerType;
 import slash.navigation.maps.tileserver.bindingoverlay.OverlayServerType;
 
@@ -31,11 +30,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TileServerServiceTest {
-    @Rule
-    public TemporaryFolder tmp = new TemporaryFolder();
+    @TempDir
+    public File tmp;
 
     private static String mapServerEntry(String id, String host) {
         return "    <mapServer id=\"" + id + "\" name=\"" + id + "\" minZoom=\"1\" maxZoom=\"18\" active=\"true\">\n" +
@@ -74,7 +73,7 @@ public class TileServerServiceTest {
     }
 
     private void writeFile(String name, String content) throws IOException {
-        File file = tmp.newFile(name);
+        File file = newFile(tmp, name);
         Files.writeString(file.toPath(), content, StandardCharsets.UTF_8);
     }
 
@@ -91,7 +90,7 @@ public class TileServerServiceTest {
                 mapServerEntry("A", "user.example"),
                 mapServerEntry("C", "user.example")));
 
-        TileServerService service = new TileServerService(tmp.getRoot());
+        TileServerService service = new TileServerService(tmp);
         service.initialize();
 
         assertEquals(List.of("A", "B", "C"), ids(service.getMaps()));
@@ -104,7 +103,7 @@ public class TileServerServiceTest {
         writeFile("a.xml", mapCatalogXml(mapServerEntry("X", "a.example")));
         writeFile("b.xml", mapCatalogXml(mapServerEntry("X", "b.example")));
 
-        TileServerService service = new TileServerService(tmp.getRoot());
+        TileServerService service = new TileServerService(tmp);
         service.initialize();
 
         assertEquals(List.of("X"), ids(service.getMaps()));
@@ -116,7 +115,7 @@ public class TileServerServiceTest {
         writeFile("mapservers.xml", mapCatalogXml(mapServerEntry("4UMaps", "catalog.example")));
         writeFile("user.xml", mapCatalogXml(mapServerEntry("4umaps", "user.example")));
 
-        TileServerService service = new TileServerService(tmp.getRoot());
+        TileServerService service = new TileServerService(tmp);
         service.initialize();
 
         assertEquals(List.of("4UMaps", "4umaps"), ids(service.getMaps()));
@@ -127,7 +126,7 @@ public class TileServerServiceTest {
         writeFile("overlayservers.xml", overlayCatalogXml(overlayServerEntry("O", "catalog.example")));
         writeFile("user-overlays.xml", overlayCatalogXml(overlayServerEntry("O", "user.example")));
 
-        TileServerService service = new TileServerService(tmp.getRoot());
+        TileServerService service = new TileServerService(tmp);
         service.initialize();
 
         List<OverlayServerType> overlays = service.getOverlays();
@@ -145,7 +144,7 @@ public class TileServerServiceTest {
                 mapServerEntry("A", "user.example"),
                 mapServerEntry("C", "user.example")));
 
-        TileServerService service = new TileServerService(tmp.getRoot());
+        TileServerService service = new TileServerService(tmp);
         service.initialize();
 
         assertEquals(List.of("A", "C"), ids(service.getMaps()));
@@ -158,7 +157,7 @@ public class TileServerServiceTest {
         writeFile("overlayservers.xml", overlayCatalogXml(overlayServerEntry("O", "catalog.example")));
         writeFile("aaa.xml", overlayCatalogXml(overlayServerEntry("O", "user.example")));
 
-        TileServerService service = new TileServerService(tmp.getRoot());
+        TileServerService service = new TileServerService(tmp);
         service.initialize();
 
         List<OverlayServerType> overlays = service.getOverlays();
@@ -171,11 +170,17 @@ public class TileServerServiceTest {
         writeFile("mapservers.xml", mapCatalogXml(mapServerEntry("A", "catalog.example")));
         writeFile("overlayservers.xml", overlayCatalogXml(overlayServerEntry("O", "catalog.example")));
 
-        TileServerService service = new TileServerService(tmp.getRoot());
+        TileServerService service = new TileServerService(tmp);
         service.initialize();
         service.initialize();
 
         assertEquals(1, service.getMaps().size());
         assertEquals(1, service.getOverlays().size());
+    }
+
+    private static File newFile(File parent, String child) throws IOException {
+        File result = new File(parent, child);
+        result.createNewFile();
+        return result;
     }
 }

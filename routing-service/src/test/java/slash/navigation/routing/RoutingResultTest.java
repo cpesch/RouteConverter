@@ -20,15 +20,15 @@
 
 package slash.navigation.routing;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.SimpleNavigationPosition;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static slash.navigation.routing.RoutingResult.Validity.Invalid;
 import static slash.navigation.routing.RoutingResult.Validity.PointNotFound;
 import static slash.navigation.routing.RoutingResult.Validity.Valid;

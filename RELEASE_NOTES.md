@@ -4,6 +4,7 @@
 
 ### New features
 
+- Garmin POI (.gpi) files: the position list now takes the name of the POI collection stored in the file, for example BMW_Motorrad_v18, and saving a position list as .gpi stores its name there
 - Google Maps saved lists (Favorites, Want to go, own lists) exported by Google Takeout as CSV can now be opened, also from Takeout exports in German and other languages, as can the nearby places you follow (with their address, which helps when adding coordinates); they carry no coordinates, so add them with Position > Complete… > Coordinates (places whose link has coordinates get them right away)
 - The offline map themes Biker, Dark, Indigo and Motorider that come with the map renderer can now be chosen next to Default and Osmarender
 - Offline MBTiles maps whose tiles are stored as WebP images can now be displayed; before, only PNG and JPEG MBTiles opened
@@ -44,6 +45,8 @@
 
 ### Fixes
 
+- A ZIP archive with several KML files no longer loses the positions of the first file and shows those of a later file twice
+- A ZIP archive whose files all have the same format is now shown and saved in that format, for example Garmin POI (.gpi) or KML, instead of always as GPX 1.1; archives with mixed formats still use GPX 1.1
 - An offline MBTiles map that RouteConverter cannot display, such as one with vector tiles, no longer stays locked on Windows until RouteConverter exits
 - Google Takeout saved places and reviews without location information no longer show up as positions at 0°/0° in the Atlantic when opened as GeoJSON; they come in as positions without coordinates (#440)
 - Google Takeout reviews (Reviews.json / Bewertungen.json) now show their star rating and review text in the description when opened as GeoJSON (#440)

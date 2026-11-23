@@ -20,11 +20,10 @@
 package slash.navigation.download.performer;
 
 import com.sun.net.httpserver.HttpServer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.Timeout;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
@@ -45,14 +44,15 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.ChecksumReportPolicy.isReportableChecksum;
 
@@ -64,20 +64,18 @@ import static slash.navigation.download.ChecksumReportPolicy.isReportableChecksu
  *
  * @author Christian Pesch
  */
+@Timeout(value = 30, unit = TimeUnit.SECONDS)
 public class GetPerformerTest {
     private static final String BODY = "Lorem ipsum dolor sit amet";
     // second precision: HTTP dates carry no milliseconds, so this round-trips through RFC 1123
     private static final long LAST_MODIFIED = 1_700_000_123_000L;
-
-    @Rule
-    public final Timeout testTimeout = Timeout.seconds(30);
 
     private HttpServer server;
     private final AtomicInteger bodiesServed = new AtomicInteger();
     private DownloadManager manager;
     private File target, queueFile;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/ok", exchange -> {
@@ -111,7 +109,7 @@ public class GetPerformerTest {
         assertTrue(target.delete());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         manager.dispose();
         server.stop(0);
@@ -136,7 +134,7 @@ public class GetPerformerTest {
 
         assertEquals(State.ChecksumError, download.getState());
         assertEquals(1, bodiesServed.get());
-        assertFalse("temp file must be deleted after a failed validation", download.getTempFile().exists());
+        assertFalse(download.getTempFile().exists(), "temp file must be deleted after a failed validation");
     }
 
     @Test
@@ -216,7 +214,7 @@ public class GetPerformerTest {
         performer.run();
 
         assertEquals(State.Failed, download.getState());
-        assertFalse("stale temp file must be deleted after a failed download", download.getTempFile().exists());
+        assertFalse(download.getTempFile().exists(), "stale temp file must be deleted after a failed download");
     }
 
     @Test
@@ -253,7 +251,7 @@ public class GetPerformerTest {
 
         assertEquals(State.Succeeded, download.getState());
         assertEquals(fullBody.length, target.length());
-        assertFalse("temp file must be deleted after a successful resume", download.getTempFile().exists());
+        assertFalse(download.getTempFile().exists(), "temp file must be deleted after a successful resume");
     }
 
     @Test
@@ -273,11 +271,11 @@ public class GetPerformerTest {
         manager.waitForCompletion(singletonList(download));
 
         assertEquals(State.Failed, download.getState());
-        assertFalse("target must not be created from a truncated transfer", target.exists());
-        assertTrue("temp file must survive a truncated transfer for a later resume", download.getTempFile().exists());
+        assertFalse(target.exists(), "target must not be created from a truncated transfer");
+        assertTrue(download.getTempFile().exists(), "temp file must survive a truncated transfer for a later resume");
         // the partial body itself is what a resume continues from, so assert it arrived rather
         // than letting a platform that drops it pass this test with an empty temp file
-        assertEquals("temp file must hold the bytes that did arrive", 60, download.getTempFile().length());
+        assertEquals(60, download.getTempFile().length(), "temp file must hold the bytes that did arrive");
     }
 
     // a raw socket server that sends only `actualBodyBytes` of a `declaredContentLength`

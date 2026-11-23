@@ -1,12 +1,14 @@
 package slash.navigation.pois.mapsforge;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.model.LatLong;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MapsforgeGeocodingHelperTest {
     @Test

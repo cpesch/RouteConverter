@@ -19,16 +19,16 @@
 */
 package slash.navigation.maps.tileserver.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.maps.tileserver.bindingmap.CatalogType;
 import slash.navigation.maps.tileserver.bindingmap.MapServerType;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MapServerUtilTest {
     private static final String XML = """

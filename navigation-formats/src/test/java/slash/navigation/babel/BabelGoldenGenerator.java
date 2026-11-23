@@ -20,7 +20,7 @@
 
 package slash.navigation.babel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
@@ -49,7 +49,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.NavigationTestCase.ROUTE_PATH;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;

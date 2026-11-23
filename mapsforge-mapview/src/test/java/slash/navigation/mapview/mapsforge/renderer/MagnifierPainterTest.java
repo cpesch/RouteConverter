@@ -19,8 +19,8 @@
 */
 package slash.navigation.mapview.mapsforge.renderer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
@@ -31,7 +31,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -42,7 +42,7 @@ public class MagnifierPainterTest {
     private MapViewLayerOperations operations;
     private MagnifierPainter painter;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         operations = mock(MapViewLayerOperations.class);
         when(operations.asLatLong(any(NavigationPosition.class))).thenReturn(new LatLong(1.0, 2.0));

@@ -20,7 +20,7 @@
 
 package slash.navigation.routes.impl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.routes.Category;
 import slash.navigation.routes.Route;
 
@@ -28,8 +28,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link RouteComparator}.

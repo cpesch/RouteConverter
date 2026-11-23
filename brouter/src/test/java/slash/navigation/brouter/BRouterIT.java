@@ -19,8 +19,8 @@
 */
 package slash.navigation.brouter;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -37,7 +37,7 @@ import java.io.IOException;
 
 import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -54,7 +54,7 @@ public class BRouterIT {
 
     private BRouter router;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         Downloadable car = mock(Downloadable.class);
         when(car.getUri()).thenReturn(CAR_PROFILE_URI);

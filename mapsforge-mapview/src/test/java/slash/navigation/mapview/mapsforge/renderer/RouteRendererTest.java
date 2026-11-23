@@ -19,8 +19,9 @@
 */
 package slash.navigation.mapview.mapsforge.renderer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
@@ -37,14 +38,14 @@ import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -65,7 +66,7 @@ public class RouteRendererTest {
     private RouteRenderer renderer;
     private GroupLayer trackLayer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         graphicFactory = mock(GraphicFactory.class);
         when(graphicFactory.createPaint()).thenReturn(mock(Paint.class));
@@ -135,7 +136,8 @@ public class RouteRendererTest {
         return new PairWithLayer(createPosition(), createPosition(), row);
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void cancelRenderingStopsRoutingTheRemainingLegs() {
         RoutingService routingService = mock(RoutingService.class);
         when(routingService.isInitialized()).thenReturn(true);
@@ -156,7 +158,8 @@ public class RouteRendererTest {
         assertEquals(3, trackLayer.layers.size());
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void cancelRenderingAbortsWaitingForRoutingServiceInitialization() throws InterruptedException {
         RoutingService routingService = mock(RoutingService.class);
         when(routingService.isInitialized()).thenReturn(false);
@@ -179,7 +182,8 @@ public class RouteRendererTest {
         verify(routingService, times(0)).getRouteBetween(any(), any(), any(), any());
     }
 
-    @Test(timeout = 5000)
+    @Test
+    @Timeout(value = 5000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     public void routedLegSwapsStraightLineWithPolyline() {
         RoutingService routingService = mock(RoutingService.class);
         when(routingService.isInitialized()).thenReturn(true);

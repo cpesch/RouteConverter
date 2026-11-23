@@ -93,6 +93,12 @@ import static java.io.File.separator;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
 import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.*;
@@ -215,7 +221,7 @@ public abstract class NavigationTestCase extends TestCase {
             runner.run();
             fail("Worked?");
         } catch (Throwable throwable) {
-            assertTrue("Wrong exception: " + throwable.getClass().getName(), exceptionClass.isInstance(throwable));
+            assertTrue(exceptionClass.isInstance(throwable), "Wrong exception: " + throwable.getClass().getName());
         }
     }
 
@@ -361,10 +367,10 @@ public abstract class NavigationTestCase extends TestCase {
             assertNull(targetPosition.getLongitude());
             assertNull(targetPosition.getLatitude());
         } else {
-            assertNotNull("Source longitude " + index + " does not exist", sourcePosition.getLongitude());
-            assertNotNull("Source latitude " + index + " does not exist", sourcePosition.getLatitude());
-            assertNotNull("Target longitude " + index + " does not exist", targetPosition.getLongitude());
-            assertNotNull("Target latitude " + index + " does not exist", targetPosition.getLatitude());
+            assertNotNull(sourcePosition.getLongitude(), "Source longitude " + index + " does not exist");
+            assertNotNull(sourcePosition.getLatitude(), "Source latitude " + index + " does not exist");
+            assertNotNull(targetPosition.getLongitude(), "Target longitude " + index + " does not exist");
+            assertNotNull(targetPosition.getLatitude(), "Target latitude " + index + " does not exist");
             compareLongitudeAndLatitude(sourceFormat, targetFormat, index, sourcePosition, targetPosition);
         }
         compareElevation(sourceFormat, targetFormat, sourcePosition, targetPosition, targetCharacteristics);
@@ -380,8 +386,8 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static void compareLongitudeAndLatitude(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition) {
         if (isBidirectionalCoordinates(sourceFormat, targetFormat, sourcePosition, targetPosition)) {
-            assertEquals("Longitude " + index + " does not match", roundFraction(sourcePosition.getLongitude(), 7), roundFraction(targetPosition.getLongitude(), 7));
-            assertEquals("Latitude " + index + " does not match", roundFraction(sourcePosition.getLatitude(), 7), roundFraction(targetPosition.getLatitude(), 7));
+            assertEquals(roundFraction(sourcePosition.getLongitude(), 7), roundFraction(targetPosition.getLongitude(), 7), "Longitude " + index + " does not match");
+            assertEquals(roundFraction(sourcePosition.getLatitude(), 7), roundFraction(targetPosition.getLatitude(), 7), "Latitude " + index + " does not match");
         } else if (isReallyUnpreciseCoordinates(sourceFormat) || isReallyUnpreciseCoordinates(targetFormat)) {
             // skip silly from.ov2 in tt poi coordinate
             if (targetPosition.getLongitude() != 10.032 && targetPosition.getLongitude() != 11.0206) {
@@ -462,7 +468,7 @@ public abstract class NavigationTestCase extends TestCase {
                     sourceFormat instanceof Iblue747Format) {
                 assertNotNull(sourceHeading);
                 assertNotNull(targetHeading);
-                assertEquals("Heading " + index + " does not match", targetHeading.intValue(), sourceHeading.intValue());
+                assertEquals(targetHeading.intValue(), sourceHeading.intValue(), "Heading " + index + " does not match");
             } else {
                 assertNull(sourceHeading);
                 assertNotNull(targetHeading);
@@ -474,7 +480,7 @@ public abstract class NavigationTestCase extends TestCase {
                 (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof NmeaFormat) ||
                 (sourceFormat instanceof GpxFormat && targetFormat instanceof NmeaFormat) ||
                 (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof GoPalTrackFormat))) {
-            assertEquals("Heading " + index + " does not match", roundFraction(sourceHeading, 0), roundFraction(targetHeading, 0));
+            assertEquals(roundFraction(sourceHeading, 0), roundFraction(targetHeading, 0), "Heading " + index + " does not match");
 
             // both formats support heading with 1 fraction digit
         } else if ((sourceHeading != null && targetHeading != null) &&
@@ -487,7 +493,7 @@ public abstract class NavigationTestCase extends TestCase {
                         targetFormat instanceof GpxFormat || sourceFormat instanceof HaicomLoggerFormat ||
                         targetFormat instanceof Iblue747Format || targetFormat instanceof NmeaFormat ||
                         targetFormat instanceof TomTomRouteFormat)) {
-            assertEquals("Heading " + index + " does not match", roundFraction(targetHeading, 1), roundFraction(sourceHeading, 1));
+            assertEquals(roundFraction(targetHeading, 1), roundFraction(sourceHeading, 1), "Heading " + index + " does not match");
         } else if (targetFormat instanceof GoPalTrackFormat || targetFormat instanceof  HaicomLoggerFormat ||
                 (sourceFormat instanceof GpxFormat && targetFormat instanceof CsvFormat) ||
                 (sourceFormat instanceof GpxFormat && targetFormat instanceof ExcelFormat) ||
@@ -495,7 +501,7 @@ public abstract class NavigationTestCase extends TestCase {
             assertNull(sourceHeading);
             assertNotNull(targetHeading);
         } else
-            assertNull("Heading " + index + " is not null: " + targetHeading, targetHeading);
+            assertNull(targetHeading, "Heading " + index + " is not null: " + targetHeading);
     }
 
     private static void compareHdop(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition) {
@@ -523,12 +529,12 @@ public abstract class NavigationTestCase extends TestCase {
                         targetFormat instanceof GoPalTrackFormat ||
                         targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format ||
                         targetFormat instanceof NmeaFormat || targetFormat instanceof QstarzQ1000Format)) {
-            assertEquals("Hdop " + index + " does not match", targetHdop, sourceHdop);
+            assertEquals(targetHdop, sourceHdop, "Hdop " + index + " does not match");
         } else if (targetFormat instanceof GoPalTrackFormat ||
                 (sourceFormat instanceof Iblue747Format && targetFormat instanceof QstarzQ1000Format)) {
-            assertNotNull("Hdop " + index + " is not null: " + targetHdop, targetHdop);
+            assertNotNull(targetHdop, "Hdop " + index + " is not null: " + targetHdop);
         } else
-            assertNull("Hdop " + index + " is not null: " + targetHdop, targetHdop);
+            assertNull(targetHdop, "Hdop " + index + " is not null: " + targetHdop);
     }
 
     private static void comparePdop(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition) {
@@ -551,11 +557,11 @@ public abstract class NavigationTestCase extends TestCase {
         if ((sourceFormat instanceof ColumbusGpsType1Format || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
                 (targetFormat instanceof ColumbusGpsType1Format || targetFormat instanceof Gpx10Format ||
                         targetFormat instanceof Gpx11Format || targetFormat instanceof NmeaFormat)) {
-            assertEquals("Pdop " + index + " does not match", targetPdop, sourcePdop);
+            assertEquals(targetPdop, sourcePdop, "Pdop " + index + " does not match");
         } else if (sourceFormat instanceof GoPalTrackFormat || targetFormat instanceof ColumbusGpsType1Format) {
-            assertNull("Pdop " + index + " is not null: " + sourcePdop, sourcePdop);
+            assertNull(sourcePdop, "Pdop " + index + " is not null: " + sourcePdop);
         } else
-            assertNull("Pdop " + index + " is not null: " + targetPdop, targetPdop);
+            assertNull(targetPdop, "Pdop " + index + " is not null: " + targetPdop);
     }
 
     private static void compareVdop(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition) {
@@ -578,11 +584,11 @@ public abstract class NavigationTestCase extends TestCase {
         if ((sourceFormat instanceof ColumbusGpsType1Format || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
                 (targetFormat instanceof ColumbusGpsType1Format || targetFormat instanceof Gpx10Format ||
                         targetFormat instanceof Gpx11Format || targetFormat instanceof NmeaFormat)) {
-            assertEquals("Vdop " + index + " does not match", targetVdop, sourceVdop);
+            assertEquals(targetVdop, sourceVdop, "Vdop " + index + " does not match");
         } else if (sourceFormat instanceof GoPalTrackFormat) {
-            assertNull("Vdop " + index + " is not null: " + sourceVdop, sourceVdop);
+            assertNull(sourceVdop, "Vdop " + index + " is not null: " + sourceVdop);
         } else
-            assertNull("Vdop " + index + " is not null: " + targetVdop, targetVdop);
+            assertNull(targetVdop, "Vdop " + index + " is not null: " + targetVdop);
     }
 
     private static void compareSatellites(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition) {
@@ -609,11 +615,11 @@ public abstract class NavigationTestCase extends TestCase {
                         targetFormat instanceof Gpx11Format ||
                         targetFormat instanceof GoPalTrackFormat || targetFormat instanceof NmeaFormat ||
                         targetFormat instanceof QstarzQ1000Format)) {
-            assertEquals("Satellites " + index + " does not match", targetSatellites, sourceSatellites);
+            assertEquals(targetSatellites, sourceSatellites, "Satellites " + index + " does not match");
         } else if (targetFormat instanceof GoPalTrackFormat || targetFormat instanceof QstarzQ1000Format) {
-            assertNotNull("Satellites " + index + " is null", targetSatellites);
+            assertNotNull(targetSatellites, "Satellites " + index + " is null");
         } else
-            assertNull("Satellites " + index + " is not null: " + targetSatellites, targetSatellites);
+            assertNull(targetSatellites, "Satellites " + index + " is not null: " + targetSatellites);
     }
 
     private static String getAlanWaypointsAndRoutesPositionDescription(NavigationPosition position) {
@@ -736,38 +742,38 @@ public abstract class NavigationTestCase extends TestCase {
                     targetFormat instanceof OvlFormat ||
                     (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Track)) ||
                     ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(Waypoints) && !descriptionPositionNames))
-                assertTrue("Description " + index + " does not match: " + description, description.startsWith("Position"));
+                assertTrue(description.startsWith("Position"), "Description " + index + " does not match: " + description);
             else if (targetFormat instanceof TcxFormat) {
-                assertTrue("Description " + index + " does not match: " + description,
-                        description.startsWith("Position") || description.endsWith("seconds"));
+                assertTrue(description.startsWith("Position") || description.endsWith("seconds"),
+                        "Description " + index + " does not match: " + description);
             }
             else if (sourceFormat instanceof AlanTrackLogFormat)
-                assertEquals("Description " + index + " does not match", sourcePosition.getDescription(), description);
+                assertEquals(sourcePosition.getDescription(), description, "Description " + index + " does not match");
             else if (sourceFormat instanceof ExcelFormat) {
                 // could define a pattern to recognize when a KML target contains synthetic descriptions
                 if (!description.startsWith("Position"))
-                    assertEquals("Description " + index + " does not match", sourcePosition.getDescription(), description);
+                    assertEquals(sourcePosition.getDescription(), description, "Description " + index + " does not match");
             } else if (targetFormat instanceof AlanWaypointsAndRoutesFormat)
-                assertEquals("Description " + index + " does not match", getAlanWaypointsAndRoutesPositionDescription(sourcePosition), getAlanWaypointsAndRoutesPositionDescription(targetPosition));
+                assertEquals(getAlanWaypointsAndRoutesPositionDescription(sourcePosition), getAlanWaypointsAndRoutesPositionDescription(targetPosition), "Description " + index + " does not match");
             else if (sourceFormat instanceof BcrFormat && targetFormat instanceof TomTomRouteFormat) {
                 BcrPosition bcrPosition = (BcrPosition) sourcePosition;
-                assertEquals("Description " + index + " does not match", escapeBcr(bcrPosition.getCity() + (bcrPosition.getStreet() != null ? "," + bcrPosition.getStreet() : "")), description);
+                assertEquals(escapeBcr(bcrPosition.getCity() + (bcrPosition.getStreet() != null ? "," + bcrPosition.getStreet() : "")), description, "Description " + index + " does not match");
             } else if (sourceFormat instanceof GarminPoiFormat && targetFormat instanceof GarminPoiDbFormat) {
                 String sourceName = getGarminPoiDbPositionDescription(sourcePosition);
                 String targetName = getGarminPoiDbPositionDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (targetFormat instanceof GarminPoiDbFormat) {
                 String sourceName = getGarminPoiDbPositionDescription(sourcePosition);
                 String targetName = getGarminPoiDbPositionDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (targetFormat instanceof GarminPoiFormat) {
                 String sourceName = getGarminPoiPositionDescription(sourcePosition);
                 String targetName = getGarminPoiPositionDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Waypoints))
-                assertEquals("Description " + index + " does not match", garminUmlauts(trim(sourcePosition.getDescription().replace(",", ""), 50)), garminUmlauts(trim(trimSpeedDescription(description), 50)));
+                assertEquals(garminUmlauts(trim(sourcePosition.getDescription().replace(",", ""), 50)), garminUmlauts(trim(trimSpeedDescription(description), 50)), "Description " + index + " does not match");
             else if (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Route))
-                assertEquals("Description " + index + " does not match", garminUmlauts(trim(sourcePosition.getDescription().replace(",", ""), 8)), trim(trimSpeedDescription(description), 8));
+                assertEquals(garminUmlauts(trim(sourcePosition.getDescription().replace(",", ""), 8)), trim(trimSpeedDescription(description), 8), "Description " + index + " does not match");
             else if (targetFormat instanceof TomTomRouteFormat) {
                 String targetDescription = description;
                 // strip tripmaster prefix if required
@@ -776,67 +782,67 @@ public abstract class NavigationTestCase extends TestCase {
                     colonIndex = targetDescription.lastIndexOf(" - ");
                 if (colonIndex != -1)
                     targetDescription = targetDescription.substring(colonIndex + 3);
-                assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll("\\|", ";"), targetDescription);
+                assertEquals(sourcePosition.getDescription().replaceAll("\\|", ";"), targetDescription, "Description " + index + " does not match");
             } else if (targetFormat instanceof ColumbusGpsFormat) {
                 String sourceName = getColumbusGpsDescription(sourcePosition);
                 String targetName = getColumbusGpsDescription(targetPosition);
-                assertTrue("Description " + index + " does not match", sourceName.startsWith(targetName));
+                assertTrue(sourceName.startsWith(targetName), "Description " + index + " does not match");
             } else if (targetFormat instanceof MagellanExploristFormat || targetFormat instanceof MagellanRouteFormat || targetFormat instanceof NmeaFormat)
-                assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll(",", ";"), description);
+                assertEquals(sourcePosition.getDescription().replaceAll(",", ";"), description, "Description " + index + " does not match");
             else if (targetFormat instanceof Nmn4Format || targetFormat instanceof Nmn5Format)
-                assertEquals("Description " + index + " does not match", escapeNmn4and5(sourcePosition.getDescription()), description);
+                assertEquals(escapeNmn4and5(sourcePosition.getDescription()), description, "Description " + index + " does not match");
             else if (targetFormat instanceof Nmn6Format)
-                assertEquals("Description " + index + " does not match", escapeNmn6(sourcePosition.getDescription()), description);
+                assertEquals(escapeNmn6(sourcePosition.getDescription()), description, "Description " + index + " does not match");
             else if (targetFormat instanceof Nmn6FavoritesFormat)
-                assertEquals("Description " + index + " does not match", escapeNmn6Favorites(sourcePosition.getDescription().toUpperCase()), description);
+                assertEquals(escapeNmn6Favorites(sourcePosition.getDescription().toUpperCase()), description, "Description " + index + " does not match");
             else if (targetFormat instanceof Nmn7Format)
-                assertEquals("Description " + index + " does not match", trimSpaces(sourcePosition.getDescription()), trimSpaces(description));
+                assertEquals(trimSpaces(sourcePosition.getDescription()), trimSpaces(description), "Description " + index + " does not match");
             else if (sourceFormat instanceof GarminPcx5Format && targetFormat instanceof MagellanMapSendFormat) {
                 // makes no sense, as the result is "WPT001" from a "D22081..." source
                 assertTrue(true);
             } else if (targetFormat instanceof MagellanMapSendFormat) {
                 String sourceName = getMagellanMapSendPositionDescription(sourcePosition);
                 String targetName = getMagellanMapSendPositionDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (targetFormat instanceof GarminPcx5Format) {
                 String sourceName = getGarminPcx5PositionDescription(sourcePosition);
                 String targetName = getGarminPcx5PositionDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (targetFormat instanceof Route66Format)
-                assertEquals("Description " + index + " does not match", toMixedCase(sourcePosition.getDescription()), description);
+                assertEquals(toMixedCase(sourcePosition.getDescription()), description, "Description " + index + " does not match");
             else if (sourceFormat instanceof GarminMapSource5Format || sourceFormat instanceof GarminMapSource6Format ||
                     targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminMapSource6Format) {
                 String sourceName = getGarminMapSource6PositionDescription(sourcePosition);
                 String targetName = getGarminMapSource6PositionDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (sourceFormat instanceof NavigatingPoiWarnerFormat || targetFormat instanceof NavigatingPoiWarnerFormat) {
                 String sourceName = getNavigatingPoiWarnerDescription(sourcePosition);
                 String targetName = getNavigatingPoiWarnerDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (targetFormat instanceof GlopusFormat) {
                 String sourceName = getNavigatingPoiWarnerDescription(sourcePosition);
                 String targetName = getNavigatingPoiWarnerDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (targetFormat instanceof GoRiderGpsFormat) {
                 String sourceName = getGoRiderGpsDescription(sourcePosition);
                 String targetName = getGoRiderGpsDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (sourceFormat instanceof TourExchangeFormat) {
                 String sourceName = getTourExchangePositionDescription(sourcePosition);
                 String targetName = getTourExchangePositionDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (sourceFormat instanceof GpxFormat) {
-                assertEquals("Description " + index + " does not match", sourcePosition.getDescription().trim(), trimSpeedDescription(description));
+                assertEquals(sourcePosition.getDescription().trim(), trimSpeedDescription(description), "Description " + index + " does not match");
             } else if (sourceFormat instanceof OpelNaviFormat) {
                 String sourceName = getTourExchangePositionDescription(sourcePosition);
                 String targetName = getTourExchangePositionDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (targetFormat instanceof GarminFlightPlanFormat) {
                 String sourceName = getFlightPlanPositionDescription(sourcePosition);
                 String targetName = getFlightPlanPositionDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else
-                assertEquals("Description " + index + " does not match", sourcePosition.getDescription(), description);
+                assertEquals(sourcePosition.getDescription(), description, "Description " + index + " does not match");
         }
     }
 
@@ -849,7 +855,7 @@ public abstract class NavigationTestCase extends TestCase {
             } else if ((sourceFormat instanceof ColumbusGpsFormat || sourceFormat instanceof GoPalTrackFormat ||
                     sourceFormat instanceof GpsTunerFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat) &&
                     targetFormat instanceof ColumbusGpsFormat) {
-                assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
+                assertEquals(sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue(), "Speed " + index + " does not match");
             } else if (sourceFormat instanceof ColumbusGpsFormat && targetFormat instanceof NmeaFormat) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.1);
             } else if (sourceFormat instanceof NmeaFormat || targetFormat instanceof NmeaFormat ||
@@ -860,9 +866,9 @@ public abstract class NavigationTestCase extends TestCase {
                     targetFormat instanceof GoPalTrackFormat) {
                 assertNearBy(sourcePosition.getSpeed(), targetPosition.getSpeed(), 0.1);
             } else if (sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof ColumbusGpsFormat) {
-                assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
+                assertEquals(sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue(), "Speed " + index + " does not match");
             } else if (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusGpsFormat) {
-                assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
+                assertEquals(sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue(), "Speed " + index + " does not match");
             } else if (sourceFormat instanceof Iblue747Format || sourceFormat instanceof Flightradar24Format || targetFormat instanceof Flightradar24Format ||
                     sourceFormat instanceof FitFormat && targetFormat instanceof GpxFormat) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
@@ -871,7 +877,7 @@ public abstract class NavigationTestCase extends TestCase {
             } else if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof GpxFormat) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
             } else {
-                assertEquals("Speed " + index + " does not match", roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1));
+                assertEquals(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), "Speed " + index + " does not match");
             }
         }
     }
@@ -890,19 +896,19 @@ public abstract class NavigationTestCase extends TestCase {
                 format.setTimeZone(UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
                 String targetTime = format.format(targetPosition.getTime().getTime());
-                assertEquals("Time " + index + " does not match", sourceTime, targetTime);
+                assertEquals(sourceTime, targetTime, "Time " + index + " does not match");
             } else if (targetFormat instanceof OziExplorerFormat) {
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm");
                 format.setTimeZone(UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
                 String targetTime = format.format(targetPosition.getTime().getTime());
-                assertEquals("Time " + index + " does not match", sourceTime, targetTime);
+                assertEquals(sourceTime, targetTime, "Time " + index + " does not match");
             } else {
                 SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.SSS");
                 format.setTimeZone(UTC);
                 String sourceTime = format.format(sourcePosition.getTime().getTime());
                 String targetTime = format.format(targetPosition.getTime().getTime());
-                assertEquals("Time " + index + " does not match", sourceTime, targetTime);
+                assertEquals(sourceTime, targetTime, "Time " + index + " does not match");
             }
         } else if ((sourceFormat instanceof Gpx11Format || sourceFormat instanceof TcxFormat) && targetFormat instanceof TcxFormat) {
             assertNull(sourcePosition.getTime());
@@ -936,9 +942,9 @@ public abstract class NavigationTestCase extends TestCase {
             if (sourcePosition.getTime() == null)
                 assertCalendarEquals(calendar(1899, 12, 30, 23, 0, 0), targetPosition.getTime());
             else
-                assertEquals("Time " + index + " does not match", sourcePosition.getTime(), targetPosition.getTime());
+                assertEquals(sourcePosition.getTime(), targetPosition.getTime(), "Time " + index + " does not match");
         } else
-            assertEquals("Time " + index + " does not match", sourcePosition.getTime(), targetPosition.getTime());
+            assertEquals(sourcePosition.getTime(), targetPosition.getTime(), "Time " + index + " does not match");
     }
 
     private static String trimSuffix(String str, String suffix) {
@@ -1036,7 +1042,7 @@ public abstract class NavigationTestCase extends TestCase {
             if (sourcePosition.getDescription() == null)
                 sourcePosition.setDescription("Position " + (i + 1));
             NavigationPosition targetPosition = targetPositions.get(i);
-            assertEquals("Position " + i + " is not equal", sourcePosition, targetPosition);
+            assertEquals(sourcePosition, targetPosition, "Position " + i + " is not equal");
             assertEquals(sourcePositions, targetPositions);
         }
     }
@@ -1078,8 +1084,8 @@ public abstract class NavigationTestCase extends TestCase {
         for (int i = 0; i < result.getAllRoutes().size(); i++) {
             BaseRoute route = result.getAllRoutes().get(i);
             assertNotNull(route);
-            assertEquals("Route " + i + " from " + source + " is not " + characteristics[i],
-                    characteristics[i], route.getCharacteristics());
+            assertEquals(characteristics[i],
+                    route.getCharacteristics(), "Route " + i + " from " + source + " is not " + characteristics[i]);
             assertTrue(route.getPositionCount() > 0);
             List<NavigationPosition> positions = route.getPositions();
             NavigationPosition previous = null;
@@ -1089,9 +1095,9 @@ public abstract class NavigationTestCase extends TestCase {
                 assertNotNull(position.getLongitude());
                 assertNotNull(position.getLatitude());
                 if (expectElevation)
-                    assertNotNull("Position " + j + " has no elevation", position.getElevation());
+                    assertNotNull(position.getElevation(), "Position " + j + " has no elevation");
                 if (expectTime) {
-                    assertTrue("Position " + j + " has no time", position.hasTime());
+                    assertTrue(position.hasTime(), "Position " + j + " has no time");
                     if (previous != null)
                         assertFalse(position.getTime().getCalendar().before(previous.getTime().getCalendar()));
                 }

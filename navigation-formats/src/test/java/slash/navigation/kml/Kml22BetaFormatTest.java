@@ -19,7 +19,7 @@
 */
 package slash.navigation.kml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 
@@ -27,9 +27,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Kml22BetaFormatTest {
@@ -75,7 +75,7 @@ public class Kml22BetaFormatTest {
         assertEquals(3, first.get(0).getPositionCount());
 
         String written = writeKml(first);
-        assertTrue("writes KML 2.2-beta namespace", written.contains("earth.google.com/kml/2.2"));
+        assertTrue(written.contains("earth.google.com/kml/2.2"), "writes KML 2.2-beta namespace");
 
         List<KmlRoute> second = readKml(written);
         assertEquals(1, second.size());

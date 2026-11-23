@@ -21,7 +21,7 @@
 package slash.navigation.base;
 
 import org.hamcrest.MatcherAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.gpx.GpxPosition;
@@ -37,8 +37,8 @@ import java.util.TimeZone;
 
 import static com.jcabi.matchers.RegexMatchers.matchesPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static slash.common.TestCase.*;
 import static slash.common.io.Transfer.parseXMLTime;
 import static slash.common.type.CompactCalendar.fromCalendar;

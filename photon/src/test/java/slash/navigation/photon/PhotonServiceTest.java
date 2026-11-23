@@ -26,14 +26,18 @@ import org.geojson.FeatureCollection;
 import org.geojson.LngLatAlt;
 import org.geojson.Point;
 import org.geojson.Polygon;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link PhotonService}: extractPosition, getDisplayName, getProperty branches.
@@ -126,9 +130,9 @@ public class PhotonServiceTest {
         f.setProperty("type", "city");
         CategorizedNavigationPosition pos = service.extractPosition(f);
         String desc = pos.getDescription();
-        assertTrue("should contain name", desc.contains("Berlin"));
-        assertTrue("should contain postcode", desc.contains("10115"));
-        assertTrue("should contain country", desc.contains("Deutschland"));
+        assertTrue(desc.contains("Berlin"), "should contain name");
+        assertTrue(desc.contains("10115"), "should contain postcode");
+        assertTrue(desc.contains("Deutschland"), "should contain country");
     }
 
     @Test
@@ -155,8 +159,8 @@ public class PhotonServiceTest {
         f.setProperty("city", "Berlin");
         f.setProperty("country", "Germany");
         String desc = service.extractPosition(f).getDescription();
-        assertTrue("should contain city", desc.contains("Berlin"));
-        assertTrue("should contain country", desc.contains("Germany"));
+        assertTrue(desc.contains("Berlin"), "should contain city");
+        assertTrue(desc.contains("Germany"), "should contain country");
     }
 
     @Test
@@ -166,8 +170,8 @@ public class PhotonServiceTest {
         f.setProperty("name", "Town");
         f.setProperty("state", "Bavaria");
         String desc = service.extractPosition(f).getDescription();
-        assertTrue("should contain name", desc.contains("Town"));
-        assertTrue("should contain state", desc.contains("Bavaria"));
+        assertTrue(desc.contains("Town"), "should contain name");
+        assertTrue(desc.contains("Bavaria"), "should contain state");
     }
 
     @Test
@@ -177,7 +181,7 @@ public class PhotonServiceTest {
         f.setProperty("name", "A");
         f.setProperty("city", "B");
         String desc = service.extractPosition(f).getDescription();
-        assertFalse("double space should be collapsed", desc.contains("  "));
+        assertFalse(desc.contains("  "), "double space should be collapsed");
         assertEquals("A, B", desc);
     }
 
@@ -192,7 +196,7 @@ public class PhotonServiceTest {
         Feature f = pointFeature(1.0, 2.0);
         f.setProperty("country", "France");
         String desc = service.extractPosition(f).getDescription();
-        assertTrue("should contain country", desc.contains("France"));
+        assertTrue(desc.contains("France"), "should contain country");
     }
 
     // ---- original tests (preserved) ----

@@ -19,7 +19,7 @@
 */
 package slash.navigation.photon;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
@@ -29,22 +29,24 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PhotonServiceIT {
     private final PhotonService service = new PhotonService();
 
     private void assertPositionsAlmostEqual(List<SimpleCategorizedNavigationPosition> expected, List<GeocodingResult> actual, double tolerance) {
-        assertEquals("List sizes differ", expected.size(), actual.size());
+        assertEquals(expected.size(), actual.size(), "List sizes differ");
         for (int i = 0; i < expected.size(); i++) {
             SimpleCategorizedNavigationPosition exp = expected.get(i);
             GeocodingResult result = actual.get(i);
-            assertEquals("Service name differs at index " + i, service.getName(), result.getGeocodingServiceName());
+            assertEquals(service.getName(), result.getGeocodingServiceName(), "Service name differs at index " + i);
             CategorizedNavigationPosition act = result.getPosition();
-            assertEquals("Latitude differs at index " + i, exp.getLatitude(), act.getLatitude(), tolerance);
-            assertEquals("Longitude differs at index " + i, exp.getLongitude(), act.getLongitude(), tolerance);
-            assertEquals("Description differs at index " + i, exp.getDescription(), act.getDescription());
-            assertEquals("Category differs at index " + i, exp.getCategory(), act.getCategory());
+            assertEquals(exp.getLatitude(), act.getLatitude(), tolerance, "Latitude differs at index " + i);
+            assertEquals(exp.getLongitude(), act.getLongitude(), tolerance, "Longitude differs at index " + i);
+            assertEquals(exp.getDescription(), act.getDescription(), "Description differs at index " + i);
+            assertEquals(exp.getCategory(), act.getCategory(), "Category differs at index " + i);
         }
     }
 

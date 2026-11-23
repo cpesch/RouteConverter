@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.log.CrashReportSpool;
 import slash.navigation.feedback.domain.CrashReportSender;
 
@@ -38,8 +38,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.nio.file.Files.createTempDirectory;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CrashReporterTest {
 
@@ -157,8 +157,8 @@ public class CrashReporterTest {
         // opted out: the backlog is neither sent nor offered in a dialog -- it just stays spooled
         reporter.offerSpooledReports();
 
-        assertEquals("opted out sends nothing", 0, sender.sent.size());
-        assertEquals("opted out keeps the whole backlog spooled", 3, spool.list().size());
+        assertEquals(0, sender.sent.size(), "opted out sends nothing");
+        assertEquals(3, spool.list().size(), "opted out keeps the whole backlog spooled");
     }
 
     @Test
@@ -182,7 +182,7 @@ public class CrashReporterTest {
         reporter.flushSpooledReports();
 
         assertEquals(2, sender.sent.size());
-        assertEquals("a failed send must leave the report for the next launch", 2, spool.list().size());
+        assertEquals(2, spool.list().size(), "a failed send must leave the report for the next launch");
     }
 
     @Test
@@ -249,7 +249,7 @@ public class CrashReporterTest {
         releaseFirstSend.countDown();
         executor.awaitIdle();
 
-        assertTrue("spool.list() must be called at most twice by the flushes", spool.listCalls.get() <= 2);
+        assertTrue(spool.listCalls.get() <= 2, "spool.list() must be called at most twice by the flushes");
     }
 
     @Test

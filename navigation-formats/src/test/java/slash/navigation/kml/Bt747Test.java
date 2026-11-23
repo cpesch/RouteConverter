@@ -20,13 +20,13 @@
 
 package slash.navigation.kml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 
 import java.util.Locale;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
@@ -45,7 +45,7 @@ public class Bt747Test {
             format.parseTime(position, BT747_NAME, null);
 
             CompactCalendar actualCal = position.getTime();
-            assertNotNull("BT747 timestamps should parse independently of the default locale", actualCal);
+            assertNotNull(actualCal, "BT747 timestamps should parse independently of the default locale");
             assertEquals(expectedCal, actualCal);
         } finally {
             Locale.setDefault(Locale.Category.FORMAT, defaultFormatLocale);

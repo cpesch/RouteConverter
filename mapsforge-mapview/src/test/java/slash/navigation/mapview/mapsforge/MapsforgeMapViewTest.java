@@ -19,8 +19,8 @@
 */
 package slash.navigation.mapview.mapsforge;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.reader.MapFile;
@@ -61,10 +61,10 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.awt.EventQueue.invokeAndWait;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -74,7 +74,7 @@ public class MapsforgeMapViewTest {
     private final MapsforgeMapView mapView = new MapsforgeMapView();
     private MapsforgeMapManager mapManager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         TileServerMapManager tileServerMapManager = mock(TileServerMapManager.class);
         when(tileServerMapManager.getAvailableMapsModel()).thenReturn(new ItemTableModel<>(1));
@@ -179,8 +179,8 @@ public class MapsforgeMapViewTest {
 
         createMenuCallback().getCategories(renderThemeStyleMenu);
 
-        assertEquals("Equivalent styles should only appear once after a map/theme switch", 2,
-                mapManager.getAvailableThemeStylesModel().getRowCount());
+        assertEquals(2, mapManager.getAvailableThemeStylesModel().getRowCount(),
+                "Equivalent styles should only appear once after a map/theme switch");
     }
 
     @Test
@@ -202,10 +202,10 @@ public class MapsforgeMapViewTest {
 
         createMenuCallback().getCategories(renderThemeStyleMenu);
 
-        assertEquals("Only visible styles should be exposed in the theme style selector", 2,
-                mapManager.getAvailableThemeStylesModel().getRowCount());
-        assertNull("Hidden layers must stay internal and not become selectable styles",
-                mapManager.getAvailableThemeStylesModel().getItemByUrl("totm-base"));
+        assertEquals(2, mapManager.getAvailableThemeStylesModel().getRowCount(),
+                "Only visible styles should be exposed in the theme style selector");
+        assertNull(mapManager.getAvailableThemeStylesModel().getItemByUrl("totm-base"),
+                "Hidden layers must stay internal and not become selectable styles");
     }
 
     @Test
@@ -227,8 +227,8 @@ public class MapsforgeMapViewTest {
 
         createMenuCallback().getCategories(renderThemeStyleMenu);
 
-        assertEquals("The visible default style from the theme menu should stay selected", "totm-hiking",
-                mapManager.getAppliedThemeStyleModel().getItem().getUrl());
+        assertEquals("totm-hiking", mapManager.getAppliedThemeStyleModel().getItem().getUrl(),
+                "The visible default style from the theme menu should stay selected");
     }
 
     private XmlRenderThemeMenuCallback createMenuCallback() throws Exception {
@@ -332,8 +332,8 @@ public class MapsforgeMapViewTest {
 
         invokeAndWait(() -> { });   // drain the EDT so the deferred rebuild runs
 
-        assertEquals("multiple color/line-width change events must coalesce into a single non-selected rebuild",
-                1, positionListsModel.rebuilds.get());
+        assertEquals(1,
+                positionListsModel.rebuilds.get(), "multiple color/line-width change events must coalesce into a single non-selected rebuild");
     }
 
     private static void setField(Object target, String fieldName, Object value) throws Exception {

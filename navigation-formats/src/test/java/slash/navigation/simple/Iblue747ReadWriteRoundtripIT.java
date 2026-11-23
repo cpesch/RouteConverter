@@ -20,7 +20,7 @@
 
 package slash.navigation.simple;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
 import slash.navigation.base.SimpleRoute;

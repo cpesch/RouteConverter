@@ -44,6 +44,7 @@ import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
@@ -84,6 +85,9 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
 
     static final int WAYPOINTS_PER_BLOCK = 128;
     static final String DEFAULT_CATEGORY = "My points";
+    // GPSBabel's fixed Header1 name, read as "no name" and written for a route without a name
+    static final String GPSBABEL_HEADER_NAME = "my.gpi";
+    private static final int MAXIMUM_HEADER_NAME_LENGTH = 0xFFFF;
     private static final String DEFAULT_NAME = "POI";
     private static final int WRITE_CODEPAGE = 1252;
     private static final Charset WRITE_CHARSET = Charset.forName("windows-1252");
@@ -143,15 +147,18 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         buffer.write(readFully(source));
 
         List<GpxPosition> positions;
+        String name;
         try {
-            positions = new Reader(buffer.toByteArray()).read();
+            Reader reader = new Reader(buffer.toByteArray());
+            positions = reader.read();
+            name = reader.headerName();
         } catch (GpiException | EOFException | RuntimeException e) {
             // GPSBabel stops with a fatal error and delivers no waypoints
             return null;
         }
         if (positions.isEmpty())
             return null;
-        return singletonList(new GpxRoute(new Gpx10Format(), Waypoints, null, null, positions));
+        return singletonList(new GpxRoute(new Gpx10Format(), Waypoints, name, null, positions));
     }
 
     /**
@@ -264,6 +271,7 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         private final LittleEndianInput input;
         private final List<GpxPosition> positions = new ArrayList<>();
         private Charset charset;
+        private byte[] headerNameBytes;
 
         Reader(byte[] data) {
             this.data = data;
@@ -293,6 +301,13 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             input.skip(2 + 4);                              // format version, creation date
             input.readUInt8();                              // flags
             int obfuscation = input.readUInt8();
+            // the name of the POI collection (GPSBabel skips it and writes "my.gpi"); decoded once
+            // Header2 has named the code page
+            if (input.position() + 2 <= header1.mainEnd) {
+                int nameLength = input.readUInt16();
+                if (nameLength > 0 && input.position() + nameLength <= header1.mainEnd)
+                    headerNameBytes = input.readBytes(nameLength);
+            }
             input.seek(header1.end);
 
             Record header2 = readRecord(data.length);
@@ -327,6 +342,20 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
                 input.seek(record.end);
             }
             return positions;
+        }
+
+        /**
+         * The name of the POI collection from Header1, or null when it is empty or GPSBabel's
+         * placeholder "my.gpi" (decision D16.3).
+         */
+        String headerName() {
+            if (headerNameBytes == null || charset == null)
+                return null;
+            int end = 0;
+            while (end < headerNameBytes.length && headerNameBytes[end] != 0)
+                end++;
+            String name = new String(headerNameBytes, 0, end, charset).trim();
+            return name.isEmpty() || GPSBABEL_HEADER_NAME.equals(name) ? null : name;
         }
 
         // the loops of read_poi(), read_poi_list() and read_poi_group() over the subordinated records
@@ -810,15 +839,19 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
                     writeBlock(child);
         }
 
-        // GarminGPIFormat::write_header() with codepage 1252
-        private void writeHeader(long garminTime) {
+        // GarminGPIFormat::write_header() with codepage 1252 and the POI collection name in place of
+        // GPSBabel's "my.gpi" (decision D16.3)
+        private void writeHeader(String headerName, long garminTime) {
+            byte[] name = encode(headerName);
+            if (name.length > MAXIMUM_HEADER_NAME_LENGTH)
+                name = Arrays.copyOf(name, MAXIMUM_HEADER_NAME_LENGTH);
             output.writeInt32(HEADER1);
-            output.writeInt32(0x16);
+            output.writeInt32(16 + name.length);
             output.writeBytes("GRMREC00".getBytes(US_ASCII));
             output.writeInt32((int) garminTime);
             output.writeInt16(0);
-            output.writeInt16(6);
-            output.writeBytes("my.gpi".getBytes(US_ASCII));
+            output.writeInt16(name.length);
+            output.writeBytes(name);
             output.writeInt32(HEADER2);
             output.writeInt32(0xc);
             output.writeBytes("POI".getBytes(US_ASCII));
@@ -845,7 +878,7 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         }
 
         // GarminGPIFormat::write() with the options unique, no alerts, no address fields, default bitmap
-        byte[] write(String category, List<Wpt> wpts, long garminTime) {
+        byte[] write(String headerName, String category, List<Wpt> wpts, long garminTime) {
             Block root = new Block();
             ShortNames shortNames = new ShortNames();
             for (Wpt wpt : wpts) {
@@ -857,7 +890,7 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             }
             root.check();
 
-            writeHeader(garminTime);
+            writeHeader(headerName, garminTime);
             writeCategory(category, root);
             output.writeInt32(END);                         // final tag
             output.writeInt32(0);                           // dummy size
@@ -912,6 +945,12 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         return System.currentTimeMillis() / 1000 - GARMIN_EPOCH_OFFSET;
     }
 
+    // the POI collection name in Header1: the route name, GPSBabel's "my.gpi" for a route without a name
+    String asHeaderName(String routeName) {
+        String name = asRouteName(routeName);
+        return name == null || name.trim().isEmpty() ? GPSBABEL_HEADER_NAME : name;
+    }
+
     // the category option of the GPSBabel call; GPSBabel's default category for a route without a name
     String asCategory(String routeName) {
         String category = asRouteName(routeName);
@@ -943,7 +982,8 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
     }
 
     byte[] write(GpxRoute route, int startIndex, int endIndex, long garminTime) throws IOException {
-        return new Writer().write(asCategory(route.getName()), asWpts(route, startIndex, endIndex), garminTime);
+        return new Writer().write(asHeaderName(route.getName()), asCategory(route.getName()),
+                asWpts(route, startIndex, endIndex), garminTime);
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {

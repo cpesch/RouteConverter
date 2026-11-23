@@ -19,13 +19,15 @@
 */
 package slash.navigation.download.tools;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class SnapshotCatalogIT {
     private static final String API = System.getProperty("api", "https://api.routeconverter.com/");

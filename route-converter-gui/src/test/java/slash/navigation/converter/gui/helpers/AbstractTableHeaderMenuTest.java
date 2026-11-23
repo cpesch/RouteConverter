@@ -19,9 +19,9 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.models.AbstractTableColumnModel;
@@ -35,9 +35,9 @@ import java.lang.reflect.Field;
 import java.util.ListResourceBundle;
 import java.util.ResourceBundle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mockStatic;
 
 /**
@@ -62,7 +62,7 @@ public class AbstractTableHeaderMenuTest {
     private Application previousApplication;
     private MockedStatic<BaseRouteConverter> mockedBaseRouteConverter;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         previousApplication = getApplication();
         TestApplication application = new TestApplication();
@@ -76,7 +76,7 @@ public class AbstractTableHeaderMenuTest {
         mockedBaseRouteConverter.when(BaseRouteConverter::getBundle).thenReturn(BUNDLE);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws Exception {
         mockedBaseRouteConverter.close();
         setApplication(previousApplication);

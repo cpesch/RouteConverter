@@ -19,8 +19,8 @@
 */
 package slash.navigation.datasources;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.helpers.DataSourceService;
@@ -29,15 +29,15 @@ import slash.navigation.download.Checksum;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static slash.common.TestCase.calendar;
 
 public class DataSourceServiceTest {
     private DataSourceService service;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         service = new DataSourceService();
         service.load(getClass().getResourceAsStream("testdatasources.xml"));

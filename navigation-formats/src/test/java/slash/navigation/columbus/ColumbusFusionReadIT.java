@@ -20,7 +20,7 @@
 
 package slash.navigation.columbus;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatParser;
@@ -36,11 +36,11 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
@@ -56,11 +56,11 @@ public class ColumbusFusionReadIT {
     @SuppressWarnings("unchecked")
     private SimpleRoute readColumbusFusion(String fileName) throws IOException {
         File file = new File(TEST_PATH + fileName);
-        assumeTrue("Sample file not found: " + file.getAbsolutePath(), file.exists());
+        assumeTrue(file.exists(), "Sample file not found: " + file.getAbsolutePath());
 
         NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
         ParserResult result = parser.read(file, Collections.<NavigationFormat<?>>singletonList(new ColumbusFusionFormat()));
-        assertTrue("Could not read " + fileName, result.isSuccessful());
+        assertTrue(result.isSuccessful(), "Could not read " + fileName);
         return (SimpleRoute) result.getAllRoutes().get(0);
     }
 

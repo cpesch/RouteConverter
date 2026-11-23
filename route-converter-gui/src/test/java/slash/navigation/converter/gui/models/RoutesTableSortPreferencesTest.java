@@ -19,8 +19,8 @@
 */
 package slash.navigation.converter.gui.models;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 
 import javax.swing.RowSorter.SortKey;
@@ -30,8 +30,8 @@ import java.util.prefs.Preferences;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.routes.impl.RoutesTableModel.DURATION_COLUMN;
 import static slash.navigation.routes.impl.RoutesTableModel.LENGTH_COLUMN;
 
@@ -46,7 +46,7 @@ public class RoutesTableSortPreferencesTest {
     private Preferences node;
     private RoutesTableSortPreferences preferences;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         node = new InMemoryPreferences();
         preferences = new RoutesTableSortPreferences(node, "routes");

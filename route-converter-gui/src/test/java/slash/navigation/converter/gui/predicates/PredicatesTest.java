@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.predicates;
 
-import org.junit.Test;
 import slash.navigation.base.Wgs84Position;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.WaypointType;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.photo.PhotoPosition;
@@ -29,9 +29,9 @@ import slash.navigation.photo.TagState;
 
 import java.io.File;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.base.WaypointType.PointOfInterestC;
 import static slash.navigation.base.WaypointType.PointOfInterestD;

@@ -22,11 +22,12 @@
 
 package slash.navigation.common;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static slash.common.TestCase.assertDoubleEquals;
-import static slash.common.TestCase.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.navigation.common.Orientation.*;
 import static slash.navigation.common.UnitConversion.*;
 

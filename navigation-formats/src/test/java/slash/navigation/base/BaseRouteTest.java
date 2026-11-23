@@ -19,7 +19,7 @@
 */
 package slash.navigation.base;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.BoundingBox;
 
@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
