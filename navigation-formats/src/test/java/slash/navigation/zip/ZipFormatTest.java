@@ -221,13 +221,17 @@ public class ZipFormatTest {
     @Test
     public void doesNotThrowForATopLevelFileWithoutAnEndOfCentralDirectoryRecord() throws IOException {
         // an incomplete or oddly-produced download: ZipFile's constructor throws ZipException,
-        // which must not propagate out of read() and fail format auto-detection
+        // which must not propagate out of read() and fail format auto-detection; probe with
+        // ZipFormat alone, not the full registry, since several garble-tolerant text formats
+        // (e.g. NmnFormat subclasses) also read a single bogus line without throwing and would
+        // otherwise claim this content themselves, which is a pre-existing, unrelated quirk of
+        // the registry-wide fallback and not what this test is about
         File file = File.createTempFile("zipformattest", ".zip");
         files.add(file);
         try (FileOutputStream out = new FileOutputStream(file)) {
             out.write("not a zip archive".getBytes(UTF_8));
         }
-        ParserResult result = parser.read(file);
+        ParserResult result = parser.read(file, List.of(new ZipFormat()));
         assertFalse(result.isSuccessful());
     }
 
