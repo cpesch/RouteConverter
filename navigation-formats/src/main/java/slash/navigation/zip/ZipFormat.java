@@ -117,7 +117,10 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
                 }
             }
         } catch (ZipException e) {
-            throw new IllegalArgumentException("Not a ZIP archive " + file + ": " + e, e);
+            // a missing/corrupt end-of-central-directory record (an incomplete or oddly-produced
+            // download) must not fail format auto-detection; readStream() takes the same
+            // log-and-return path for a corrupt nested archive
+            log.warning("Cannot read " + file + " as a ZIP archive: " + e);
         }
     }
 

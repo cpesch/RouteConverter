@@ -45,6 +45,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ZipFormatTest {
@@ -215,6 +216,19 @@ public class ZipFormatTest {
         ParserResult result = parser.read(corruptSecondEntry(zip("a.gpx", GPX10, "b.gpx", largeGpx(200), "c.kml", KML22)));
         assertTrue(result.isSuccessful());
         assertEquals(asList(2, 2), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+    }
+
+    @Test
+    public void doesNotThrowForATopLevelFileWithoutAnEndOfCentralDirectoryRecord() throws IOException {
+        // an incomplete or oddly-produced download: ZipFile's constructor throws ZipException,
+        // which must not propagate out of read() and fail format auto-detection
+        File file = File.createTempFile("zipformattest", ".zip");
+        files.add(file);
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            out.write("not a zip archive".getBytes(UTF_8));
+        }
+        ParserResult result = parser.read(file);
+        assertFalse(result.isSuccessful());
     }
 
     @Test
