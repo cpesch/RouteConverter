@@ -19,8 +19,8 @@
 */
 package slash.navigation.columbus;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.prefs.InMemoryPreferences;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.WaypointType;
@@ -33,10 +33,10 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
 import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
 import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
@@ -46,7 +46,7 @@ import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
 public class ColumbusFusionFormatTest {
     private final ColumbusFusionFormat format = new ColumbusFusionFormat();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ColumbusV1000Device.setPreferences(new InMemoryPreferences());
     }

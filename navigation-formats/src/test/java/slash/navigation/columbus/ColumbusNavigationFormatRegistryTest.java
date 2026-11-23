@@ -19,7 +19,7 @@
 */
 package slash.navigation.columbus;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
@@ -33,7 +33,9 @@ import slash.navigation.nmea.NmeaFormat;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ColumbusNavigationFormatRegistryTest {
     private final NavigationFormatRegistry registry = new ColumbusNavigationFormatRegistry();

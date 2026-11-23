@@ -20,14 +20,18 @@
 
 package slash.navigation.gpx;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
 
 import jakarta.xml.bind.JAXBException;
 import java.io.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class GpxFormatIT {
@@ -71,10 +75,12 @@ public class GpxFormatIT {
         assertEquals(3, gpx.getRte().size());
     }
 
-    @Test(expected = IOException.class)
-    public void testUnmarshal10TypeError() throws IOException {
-        Reader reader = new FileReader(TEST_PATH + "from10.gpx");
-        GpxUtil.unmarshal11(reader);
+    @Test
+    public void testUnmarshal10TypeError() {
+        assertThrows(IOException.class, () -> {
+            Reader reader = new FileReader(TEST_PATH + "from10.gpx");
+            GpxUtil.unmarshal11(reader);
+        });
     }
 
     @Test
@@ -86,10 +92,12 @@ public class GpxFormatIT {
         assertEquals(3, gpx.getWpt().size());
     }
 
-    @Test(expected = IOException.class)
-    public void testUnmarshal11TypeError() throws IOException {
-        Reader reader = new FileReader(TEST_PATH + "from11.gpx");
-        GpxUtil.unmarshal10(reader);
+    @Test
+    public void testUnmarshal11TypeError() {
+        assertThrows(IOException.class, () -> {
+            Reader reader = new FileReader(TEST_PATH + "from11.gpx");
+            GpxUtil.unmarshal10(reader);
+        });
     }
 
     @Test

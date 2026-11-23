@@ -20,7 +20,7 @@
 
 package slash.navigation.babel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.Gpx10Format;
@@ -31,7 +31,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 public class BabelGoldenDumpTest {

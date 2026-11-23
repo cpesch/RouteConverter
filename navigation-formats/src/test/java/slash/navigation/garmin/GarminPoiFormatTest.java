@@ -20,7 +20,7 @@
 
 package slash.navigation.garmin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserContextImpl;
@@ -42,11 +42,11 @@ import java.util.Random;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -615,7 +615,7 @@ public class GarminPoiFormatTest {
         for (int i = 0; i + 4 <= bytes.length; i++)
             if (Arrays.equals(Arrays.copyOfRange(bytes, i, i + 4), int32(0x80008)))
                 areas++;
-        assertTrue("areas: " + areas, areas >= 900 / 128 + 1);
+        assertTrue(areas >= 900 / 128 + 1, "areas: " + areas);
         assertEquals(900, read(bytes).get(0).getPositionCount());
     }
 

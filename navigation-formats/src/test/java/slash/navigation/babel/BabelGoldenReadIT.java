@@ -20,7 +20,7 @@
 
 package slash.navigation.babel;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatParser;
@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static slash.navigation.base.NavigationTestCase.ROUTE_PATH;
 
 /**
@@ -101,6 +101,6 @@ public class BabelGoldenReadIT {
                 allDifferences.add(sample.className() + " " + sample.path() + " " + difference);
         }
 
-        assertTrue("Differences from golden read files:\n" + String.join("\n", allDifferences), allDifferences.isEmpty());
+        assertTrue(allDifferences.isEmpty(), "Differences from golden read files:\n" + String.join("\n", allDifferences));
     }
 }

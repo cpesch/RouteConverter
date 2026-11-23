@@ -20,11 +20,15 @@
 
 package slash.navigation.itn;
 
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.NavigationTestCase;
 import slash.navigation.gpx.GpxPosition;
 
 import java.text.DateFormat;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class TripmasterTest extends NavigationTestCase {
 
@@ -36,16 +40,19 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(1970, 1, 1, 11, 32, 26).getTime(), position.getTime().getTime());
     }
 
+    @Test
     public void testTripmaster14Position() {
         TomTomPosition position = new TomTomPosition(0, 0, "Richtung 316 - 11:32:26 - 34 m - Bahrenfeld");
         checkTripmaster14Position(position);
     }
 
+    @Test
     public void testTripmaster14PositionByConvertingFromOtherFormat() {
         TomTomPosition position = new TomTomPosition(null, null, null, null, null, "Richtung 316 - 11:32:26 - 34 m - Bahrenfeld");
         checkTripmaster14Position(position);
     }
 
+    @Test
     public void testTripmaster18ShortPosition() {
         TomTomPosition position = new TomTomPosition(0, 0, "09:02:43 - 47.5 m");
         assertEquals("Waypoint", position.getReason());
@@ -53,6 +60,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(1970, 1, 1, 9, 2, 43), position.getTime());
     }
 
+    @Test
     public void testTripmaster25ShortStartPosition() {
         TomTomPosition position = new TomTomPosition(0, 0, "15:01:20 - Start : 26/02/2010 15:01:20 - 10.2 m");
         assertEquals("Start : 26/02/2010 15:01:20", position.getReason());
@@ -60,6 +68,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(2010, 2, 26, 15, 1, 20), position.getTime());
     }
 
+    @Test
     public void testTripmaster25ShortIntermediatePosition() {
         TomTomPosition position1 = new TomTomPosition(0, 0, "15:05:00 - Kurs 173 - 10.4 m");
         assertEquals("Kurs 173", position1.getReason());
@@ -78,6 +87,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(1970, 1, 1, 15, 8, 43), position3.getTime());
     }
 
+    @Test
     public void testTripmaster25ShortEndPosition() {
         TomTomPosition position = new TomTomPosition(0, 0, "16:22:22 - Ende : 26/02/2010 16:22:22 - 9.8 m");
         assertEquals("Ende : 26/02/2010 16:22:22", position.getReason());
@@ -85,6 +95,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(2010, 2, 26, 16, 22, 22), position.getTime());
     }
 
+    @Test
     public void testTripmasterMiddlePosition() {
         TomTomPosition position1 = new TomTomPosition(0, 0, "Start : Noyal-Sur-Vilaine - 23/11/2006 - 08:50:26 - 37.2 m - 0.4 Km");
         assertEquals("Start : 23/11/2006 - 08:50:26", position1.getReason());
@@ -137,6 +148,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(1970, 1, 1, 18, 51, 45), position5.getTime());
     }
 
+    @Test
     public void testTripmasterLongIntermediatePosition() {
         TomTomPosition position1 = new TomTomPosition(0, 0, "18:51:59 - Dur. 0:05:55 : Hohenfelde (Hamburg) - 41.0 m - 0.2 Km - 5 Km/h - 6");
         assertEquals("Dur. 0:05:55", position1.getReason());
@@ -153,6 +165,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(1970, 1, 1, 8, 51, 25), position2.getTime());
     }
 
+    @Test
     public void testTripmaster18LongStartPosition() {
         TomTomPosition position = new TomTomPosition(0, 0, "18:51:36 - Start : 21/07/2007 18:51:36 : Hohenfelde (Hamburg) - 1241.231 m - 0.2 Km - 12 Km/h - 6");
         assertEquals("Start : 21/07/2007 18:51:36", position.getReason());
@@ -162,6 +175,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(2007, 7, 21, 18, 51, 36), position.getTime());
     }
 
+    @Test
     public void testTripmaster22LongStartPosition() {
         TomTomPosition position = new TomTomPosition(0, 0, "08:45:54 - Start : 04/04/2009 08:45:54 - 12.7 m - 0.0 Km - 5 Km/h - 11");
         assertEquals("Start : 04/04/2009 08:45:54", position.getReason());
@@ -171,6 +185,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(2009, 4, 4, 8, 45, 54), position.getTime());
     }
 
+    @Test
     public void testTripmaster31StartPosition() {
         TomTomPosition position1 = new TomTomPosition(0, 0, "10:05:16 - Start : 24/03/2012 10:05:16 - 19.3 m - 0.1 km");
         assertEquals("Start : 24/03/2012 10:05:16", position1.getReason());
@@ -187,6 +202,7 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(calendar(2012, 3, 25, 8, 41, 40), position2.getTime());
     }
 
+    @Test
     public void testTripmaster31EndPosition() {
         TomTomPosition position = new TomTomPosition(0, 0, "18:30:48 - Ende : 24/03/2012 18:30:48 - 25.0 m - 275.5 km");
         assertEquals("Ende : 24/03/2012 18:30:48", position.getReason());
@@ -203,11 +219,13 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(expectedDescription, position.getDescription());
     }
 
+    @Test
     public void testTripmasterShortDescriptions() {
         checkTripmasterDescription(null, "Waypoint", "13:35:13 - 430.5 m");
         checkTripmasterDescription(null, "Waypoint", "23:33:44 - -2.5 m");
     }
 
+    @Test
     public void testTripmasterMiddleDescriptions() {
         checkTripmasterDescription("Weil Der Stadt", "Start : 27/12/2006 - 13:35:13", "Start : Weil Der Stadt - 27/12/2006 - 13:35:13 - 430.5 m - 0.0 km");
         checkTripmasterDescription("Weil Der Stadt", "Kurs 83", "13:35:50 - Kurs 83 : Weil Der Stadt - 411.4 m - 0.0 km");
@@ -215,6 +233,7 @@ public class TripmasterTest extends NavigationTestCase {
         checkTripmasterDescription("Herrenberg", "Ende : 14:03:45", "Ende : Herrenberg - 14:03:45 - 437.4 m - 25.5 km");
     }
 
+    @Test
     public void testTripmasterLongDescriptions() {
         checkTripmasterDescription("Altona-Altstadt", "Start : 31/08/2007 19:57:24", "19:57:24 - Start : 31/08/2007 19:57:24 : Altona-Altstadt - 18.2 m - 0.0 Km - 0 Km/h - 9");
         checkTripmasterDescription("Altona-Altstadt", "Dist. 8", "19:57:24 - Dist. 8 : Altona-Altstadt - 25.5 m - 8.0 Km - 50 Km/h - 9");
@@ -238,12 +257,14 @@ public class TripmasterTest extends NavigationTestCase {
         assertEquals(expectedDescription, position.getDescription());
     }
 
+    @Test
     public void testTripmaster14GpxDescriptions() {
         checkTripmasterGpxDescription("Deven (Gross Plasten)", "Richtung 358", "Richtung 358 - Deven (Gross Plasten)");
         checkTripmasterGpxDescription("Gross Gievitz", "Abstand 10", "Abstand 10 - Gross Gievitz");
         checkTripmasterGpxDescription("Malchin", "Punkt", "Punkt - Malchin");
     }
 
+    @Test
     public void testTripmasterGpxDescriptions() {
         checkTripmasterGpxDescription("Blunk", "Dur. 2:11:13", "Dur. 2:11:13 : Blunk");
         checkTripmasterGpxDescription("Blunk", "Dist. 107", "Dist. 107 : Blunk");

@@ -19,7 +19,7 @@
 */
 package slash.navigation.gpx;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -35,9 +35,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.gpx.GpxUtil.GPX_10_NAMESPACE_URI;
 
 /**
@@ -69,7 +69,7 @@ public class Gpx10FormatTest {
                 .parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)))
                 .getDocumentElement();
         NodeList trks = gpx.getElementsByTagNameNS(GPX_10_NAMESPACE_URI, "trk");
-        assertTrue("expected at least one <trk>", trks.getLength() > 0);
+        assertTrue(trks.getLength() > 0, "expected at least one <trk>");
         Element trk = (Element) trks.item(0);
         int count = 0;
         for (Node child = trk.getFirstChild(); child != null; child = child.getNextSibling())
@@ -96,7 +96,7 @@ public class Gpx10FormatTest {
                 "</trkseg></trk></gpx>";
 
         List<GpxRoute> routes = readGpx(source);
-        assertEquals("all positions of all segments end up in one route", 1, routes.size());
+        assertEquals(1, routes.size(), "all positions of all segments end up in one route");
         GpxRoute route = routes.get(0);
         assertEquals(5, route.getPositionCount());
 
@@ -108,7 +108,7 @@ public class Gpx10FormatTest {
         assertTrue(route.getPosition(4).isStartsNewSegment());
 
         String after = writeGpx(routes);
-        assertEquals("the three original <trkseg> boundaries must survive the write", 3, writtenTrkSegCount(after));
+        assertEquals(3, writtenTrkSegCount(after), "the three original <trkseg> boundaries must survive the write");
 
         // and again after a second roundtrip
         List<GpxRoute> routes2 = readGpx(after);
@@ -147,7 +147,7 @@ public class Gpx10FormatTest {
                 "test", null, Arrays.asList(first, boundaryWithoutCoordinates, third));
 
         String after = writeGpx(Collections.singletonList(route));
-        assertEquals("the boundary carried past the skipped position must still start a new <trkseg>",
-                2, writtenTrkSegCount(after));
+        assertEquals(2,
+                writtenTrkSegCount(after), "the boundary carried past the skipped position must still start a new <trkseg>");
     }
 }

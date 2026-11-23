@@ -20,21 +20,21 @@
 
 package slash.navigation.tour;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
 
 public class TourReadWriteRoundtripIT {
     private void checkUnprocessedValue(TourPosition position, String name, String value) {
         assertNotNull(position);
-        assertEquals(name + " does not contain expected value", value, position.get(name));
+        assertEquals(value, position.get(name), name + " does not contain expected value");
     }
 
     @Test

@@ -21,8 +21,8 @@
 
 package slash.navigation.zip;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatRegistry;
@@ -44,8 +44,8 @@ import java.util.zip.ZipOutputStream;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ZipFormatTest {
     private static final String GPX10 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -74,7 +74,7 @@ public class ZipFormatTest {
     private final NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
     private final List<File> files = new ArrayList<>();
 
-    @After
+    @AfterEach
     public void tearDown() {
         for (File file : files)
             assertTrue(file.delete());

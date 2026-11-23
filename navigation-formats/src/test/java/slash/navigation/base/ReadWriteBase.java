@@ -30,7 +30,10 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationTestCase.comparePositions;
 import static slash.navigation.base.NavigationTestCase.compareRouteMetaData;
@@ -42,7 +45,7 @@ public abstract class ReadWriteBase {
 
         File source = new File(testFileName);
         ParserResult result = parser.read(source);
-        assertNotNull("Could not read " + testFileName, result);
+        assertNotNull(result, "Could not read " + testFileName);
         assertNotNull(result);
         assertNotNull(result.getFormat());
         assertNotNull(result.getAllRoutes());

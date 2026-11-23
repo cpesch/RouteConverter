@@ -20,15 +20,15 @@
 
 package slash.navigation.compegps;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.RouteCharacteristics.*;

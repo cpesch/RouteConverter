@@ -20,7 +20,7 @@
 
 package slash.navigation.kml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 
@@ -29,7 +29,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Guards that a Placemark name with umlauts survives reading a garbled KML that has no encoding
