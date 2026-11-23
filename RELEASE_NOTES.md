@@ -45,6 +45,7 @@
 
 ### Fixes
 
+- CSV files whose column names are written in lower case, such as timestamp, latitude, longitude and altitude in the GPS location files of Fitbit and Google Health in Google Takeout, are now read with their coordinates, elevation and time; times like 2024-01-09T09:14:11Z are understood
 - A ZIP archive with several KML files no longer loses the positions of the first file and shows those of a later file twice
 - A ZIP archive whose files all have the same format is now shown and saved in that format, for example Garmin POI (.gpi) or KML, instead of always as GPX 1.1; archives with mixed formats still use GPX 1.1
 - An offline MBTiles map that RouteConverter cannot display, such as one with vector tiles, no longer stays locked on Windows until RouteConverter exits

@@ -71,6 +71,10 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
             if (value != null)
                 return value;
         }
+
+        for (Map.Entry<String, String> entry : rowAsMap.entrySet())
+            if (entry.getValue() != null && type.matches(entry.getKey()))
+                return entry.getValue();
         return null;
     }
 
@@ -96,13 +100,9 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
     private void setValueAsString(ColumnType type, String value) {
         // Identify the existing columns of this column type.
         Collection<String> existingColumns = new HashSet<>();
-        if (rowAsMap.containsKey(type.name())) {
-            existingColumns.add(type.name());
-        }
-
-        for (String alternativeName : type.getAlternativeNames()) {
-            if (rowAsMap.containsKey(alternativeName)) {
-                existingColumns.add(alternativeName);
+        for (String columnName : rowAsMap.keySet()) {
+            if (type.matches(columnName)) {
+                existingColumns.add(columnName);
             }
         }
 

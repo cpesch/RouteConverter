@@ -53,14 +53,24 @@ enum ColumnType {
         return alternativeNames;
     }
 
+    /**
+     * Column names match case-insensitively: Google Takeout writes
+     * {@code timestamp,latitude,longitude,altitude}.
+     */
+    boolean matches(String columnName) {
+        if (name().equalsIgnoreCase(columnName))
+            return true;
+        for (String alternativeName : getAlternativeNames())
+            if (alternativeName.equalsIgnoreCase(columnName))
+                return true;
+        return false;
+    }
+
     static ColumnType classify(String value) {
         if (value != null) {
             for (ColumnType columnType : values()) {
-                if (columnType.name().equals(value))
+                if (columnType.matches(value))
                     return columnType;
-                for (String alternativeName : columnType.getAlternativeNames())
-                    if (alternativeName.equals(value))
-                        return columnType;
             }
         }
         return Unsupported;
