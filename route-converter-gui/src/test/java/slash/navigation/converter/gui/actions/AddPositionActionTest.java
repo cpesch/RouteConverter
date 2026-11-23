@@ -20,10 +20,10 @@
 
 package slash.navigation.converter.gui.actions;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.converter.gui.actions.AddPositionAction.segmentRowToBisect;
 
 /**
@@ -71,8 +71,8 @@ public class AddPositionActionTest {
         for (int rowCount = 2; rowCount <= 100; rowCount++)
             for (int row = 0; row < rowCount; row++) {
                 int segmentRow = segmentRowToBisect(row, rowCount);
-                assertTrue("row=" + row + " rowCount=" + rowCount + " -> " + segmentRow,
-                        segmentRow >= 0 && segmentRow <= rowCount - 2);
+                assertTrue(segmentRow >= 0 && segmentRow <= rowCount - 2,
+                        "row=" + row + " rowCount=" + rowCount + " -> " + segmentRow);
             }
     }
 }

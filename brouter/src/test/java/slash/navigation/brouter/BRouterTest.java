@@ -20,8 +20,8 @@
 package slash.navigation.brouter;
 
 import btools.router.OsmNodeNamed;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
@@ -37,10 +37,9 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doReturn;
@@ -55,7 +54,7 @@ import static slash.navigation.routing.RoutingResult.Validity.Valid;
 public class BRouterTest {
     private final BRouter router = new BRouter(null);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         DataSource profiles = mock(DataSource.class);
         when(profiles.getDirectory()).thenReturn("brouter-profiles-test");

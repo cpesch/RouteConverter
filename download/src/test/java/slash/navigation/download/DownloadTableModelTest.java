@@ -20,7 +20,7 @@
 
 package slash.navigation.download;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.State.Queued;
@@ -87,9 +87,9 @@ public class DownloadTableModelTest {
             try {
                 while (writing.get()) {
                     List<Download> snapshot = model.getDownloads();
-                    assertTrue("Snapshot too large: " + snapshot.size(), snapshot.size() <= DOWNLOADS_PER_ITERATION);
+                    assertTrue(snapshot.size() <= DOWNLOADS_PER_ITERATION, "Snapshot too large: " + snapshot.size());
                     for (Download download : snapshot)
-                        assertNotNull("Snapshot contains partially published element: " + snapshot, download);
+                        assertNotNull(download, "Snapshot contains partially published element: " + snapshot);
                 }
             } catch (Throwable t) {
                 failure.compareAndSet(null, t);
@@ -136,15 +136,15 @@ public class DownloadTableModelTest {
             Thread.setDefaultUncaughtExceptionHandler(previousHandler);
         }
 
-        assertNull("Queued update must not throw once the download is gone", edtFailure.get());
+        assertNull(edtFailure.get(), "Queued update must not throw once the download is gone");
         assertTrue(model.getDownloads().isEmpty());
 
         List<Integer> staleUpdates = events.stream()
                 .filter(event -> event.getType() == TableModelEvent.UPDATE)
                 .map(TableModelEvent::getFirstRow)
                 .collect(Collectors.toList());
-        assertTrue("A stale update for a removed download must not fire a row event: " + staleUpdates,
-                staleUpdates.isEmpty());
+        assertTrue(staleUpdates.isEmpty(),
+                "A stale update for a removed download must not fire a row event: " + staleUpdates);
     }
 
     @Test

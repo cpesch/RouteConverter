@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.FileAndChecksum;
@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.ListResourceBundle;
 import java.util.ResourceBundle;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DownloadNotifierTest {
     private static final String URL = "https://download.geofabrik.de/europe/germany/hamburg-latest.osm.pbf";

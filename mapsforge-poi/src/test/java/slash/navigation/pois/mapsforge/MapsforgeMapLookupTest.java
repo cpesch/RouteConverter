@@ -1,6 +1,6 @@
 package slash.navigation.pois.mapsforge;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tag;
 import org.mapsforge.core.model.Tile;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static slash.navigation.pois.mapsforge.MapsforgeGeocodingHelper.normalize;

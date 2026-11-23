@@ -19,7 +19,7 @@
 */
 package slash.navigation.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +29,9 @@ import java.util.MissingResourceException;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.list;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests for {@link CombinedResourceBundle}.

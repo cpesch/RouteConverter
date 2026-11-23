@@ -19,11 +19,12 @@
 */
 package slash.navigation.common;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
@@ -77,9 +78,10 @@ public class ArrivalTimeCalculatorTest {
         assertFalse(arrivalTimes[0].sameDay(arrivalTimes[1]));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void nullDepartureThrowsIllegalArgumentException() {
-        ArrivalTimeCalculator.calculateArrivalTimes(null, new long[]{0});
+        assertThrows(IllegalArgumentException.class, () ->
+            ArrivalTimeCalculator.calculateArrivalTimes(null, new long[]{0}));
     }
 }
 

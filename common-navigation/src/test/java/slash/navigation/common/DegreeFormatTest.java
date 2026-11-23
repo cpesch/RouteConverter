@@ -22,9 +22,10 @@
 
 package slash.navigation.common;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static slash.navigation.common.DegreeFormat.*;
 
 public class DegreeFormatTest {
@@ -63,9 +64,10 @@ public class DegreeFormatTest {
 
     private static final String LONGITUDE_DD_MM = "E 007\u00B0 11.455'";
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void testDegreesParseLongitudeFails() {
-        Degrees.parseLongitude(LONGITUDE_DD_MM);
+        assertThrows(NumberFormatException.class, () ->
+            Degrees.parseLongitude(LONGITUDE_DD_MM));
     }
 
     @Test
@@ -73,16 +75,18 @@ public class DegreeFormatTest {
         assertEquals(7.1909167, Degrees_Minutes.parseLongitude(LONGITUDE_DD_MM), 0.0);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void testDegreesMinutesSecoondsParseLongitudeFails() {
-        Degrees_Minutes_Seconds.parseLongitude(LONGITUDE_DD_MM);
+        assertThrows(NumberFormatException.class, () ->
+            Degrees_Minutes_Seconds.parseLongitude(LONGITUDE_DD_MM));
     }
 
     private static final String LATITUDE_DD_MM = "N 51\u00B0 22.478'";
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void testDegreesParseLatitudeFails() {
-        Degrees.parseLatitude(LATITUDE_DD_MM);
+        assertThrows(NumberFormatException.class, () ->
+            Degrees.parseLatitude(LATITUDE_DD_MM));
     }
 
     @Test
@@ -90,8 +94,9 @@ public class DegreeFormatTest {
         assertEquals(51.3746333, Degrees_Minutes.parseLatitude(LATITUDE_DD_MM), 0.0);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void testDegreesMinutesSecoondsParseLatitudeFails() {
-        Degrees_Minutes_Seconds.parseLatitude(LATITUDE_DD_MM);
+        assertThrows(NumberFormatException.class, () ->
+            Degrees_Minutes_Seconds.parseLatitude(LATITUDE_DD_MM));
     }
 }

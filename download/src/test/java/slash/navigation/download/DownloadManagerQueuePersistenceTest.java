@@ -19,9 +19,9 @@
 */
 package slash.navigation.download;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.download.queue.QueuePersister;
 
 import java.io.File;
@@ -30,10 +30,10 @@ import java.util.List;
 
 import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.State.Succeeded;
 
@@ -51,7 +51,7 @@ public class DownloadManagerQueuePersistenceTest {
     private File queueFile, storedTarget, earlyTarget;
     private DownloadManager manager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         queueFile = createTempFile("queueFile", ".xml");
         storedTarget = createTempFile("stored", ".txt");
@@ -64,7 +64,7 @@ public class DownloadManagerQueuePersistenceTest {
         manager = new DownloadManager(queueFile);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         manager.dispose();
         for (File file : new File[]{queueFile, storedTarget, earlyTarget})
@@ -97,7 +97,7 @@ public class DownloadManagerQueuePersistenceTest {
         List<Download> downloads = persisted();
         assertEquals(1, downloads.size());
         Download stored = find(downloads, STORED_URL);
-        assertNotNull("persisted entry must survive a save before load", stored);
+        assertNotNull(stored, "persisted entry must survive a save before load");
         assertEquals("\"stored-etag\"", stored.getETag());
     }
 

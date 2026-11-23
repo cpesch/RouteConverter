@@ -20,15 +20,15 @@
 
 package slash.navigation.routes.local;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for {@link RouteFileFilter}, which lists local routes while hiding
@@ -40,13 +40,13 @@ public class RouteFileFilterTest {
     private final RouteFileFilter filter = new RouteFileFilter();
     private File tempDir;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         tempDir = new File(System.getProperty("java.io.tmpdir"), "rff-test-" + System.currentTimeMillis());
         assertTrue(tempDir.mkdir());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         File[] children = tempDir.listFiles();
         if (children != null)

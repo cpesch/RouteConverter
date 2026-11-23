@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.routes.Route;
 import slash.navigation.routes.impl.RouteModel;
 
@@ -31,7 +31,9 @@ import javax.swing.table.TableRowSorter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedRouteModel;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedRouteModels;

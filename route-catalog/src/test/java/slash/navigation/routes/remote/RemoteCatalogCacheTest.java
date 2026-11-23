@@ -20,9 +20,9 @@
 
 package slash.navigation.routes.remote;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.navigation.rest.Get;
 import slash.navigation.routes.remote.binding.CatalogType;
 
@@ -32,8 +32,10 @@ import java.nio.file.Files;
 import java.util.ArrayDeque;
 import java.util.Comparator;
 import java.util.Deque;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Exercises the conditional GET / disk cache logic in {@link RemoteCatalog#fetch} without a
@@ -55,14 +57,14 @@ public class RemoteCatalogCacheTest {
                 "</catalog>";
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         directory = Files.createTempDirectory("catalog-fetch-test").toFile();
         cache = new CatalogDiskCache(directory);
         catalog = new ScriptedCatalog(cache);
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         if (directory != null && directory.exists())
             Files.walk(directory.toPath())

@@ -19,9 +19,9 @@
 */
 package slash.navigation.download;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,8 +30,8 @@ import java.nio.file.Files;
 
 import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.State.Queued;
 
@@ -46,7 +46,7 @@ public class DownloadManagerTest {
     private File queueFile, target, tempFile;
     private DownloadManager manager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         queueFile = createTempFile("queueFile", ".xml");
         manager = new DownloadManager(queueFile);
@@ -55,7 +55,7 @@ public class DownloadManagerTest {
         Files.write(tempFile.toPath(), "partial content".getBytes(StandardCharsets.UTF_8));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         manager.dispose();
         if (target.exists())
@@ -80,7 +80,7 @@ public class DownloadManagerTest {
 
         manager.removeDownloads(singletonList(download));
 
-        assertFalse("temp file must be deleted when a download is removed", download.getTempFile().exists());
+        assertFalse(download.getTempFile().exists(), "temp file must be deleted when a download is removed");
     }
 
     @Test
@@ -90,6 +90,6 @@ public class DownloadManagerTest {
 
         manager.stopDownloads(singletonList(download));
 
-        assertTrue("temp file must survive a stop so a restart can resume from it", download.getTempFile().exists());
+        assertTrue(download.getTempFile().exists(), "temp file must survive a stop so a restart can resume from it");
     }
 }

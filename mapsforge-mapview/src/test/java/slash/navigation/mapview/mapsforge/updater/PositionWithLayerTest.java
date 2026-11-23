@@ -19,13 +19,13 @@
 */
 package slash.navigation.mapview.mapsforge.updater;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -68,7 +68,7 @@ public class PositionWithLayerTest {
         PositionWithLayer same = new PositionWithLayer(position);
         same.setLayer(mock(Layer.class));
 
-        assertEquals("the layer is a rendering handle, not part of the identity", one, same);
+        assertEquals(one, same, "the layer is a rendering handle, not part of the identity");
         assertEquals(one.hashCode(), same.hashCode());
     }
 

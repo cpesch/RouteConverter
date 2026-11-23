@@ -19,20 +19,19 @@
 */
 package slash.navigation.mapview.mapsforge;
 
-import org.junit.Test;
-
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.mapview.mapsforge.MapSelector.DescriptionKeySelectionManager;
 import static slash.navigation.mapview.mapsforge.MapSelector.clampZoom;
 import static slash.navigation.mapview.mapsforge.MapSelector.combineCopyrightTexts;

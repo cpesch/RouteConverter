@@ -19,8 +19,8 @@
 */
 package slash.navigation.mapview.mapsforge.overlays;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.core.model.Rotation;
@@ -34,8 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.INSTANCE;
 
@@ -48,7 +47,7 @@ public class CoverageOverlayTest {
     private Map<BoundingBox, Boolean> coverageTiles;
     private BoundingBox testBoundingBox;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         coverageTiles = new HashMap<>();
         testBoundingBox = createBoundingBox(0.0, 0.0, 10.0, 10.0);

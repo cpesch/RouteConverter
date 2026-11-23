@@ -19,11 +19,11 @@
 */
 package slash.navigation.mapview.mapsforge.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.type.HexadecimalNumber.decodeInt;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asAlpha;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;

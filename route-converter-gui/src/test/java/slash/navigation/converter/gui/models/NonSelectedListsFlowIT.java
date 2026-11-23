@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.navigation.base.*;
 
 import javax.swing.event.ListDataEvent;
@@ -29,7 +29,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Guards the {@link PositionListsModel} contract that MapsforgeMapView's gray
@@ -67,15 +69,15 @@ public class NonSelectedListsFlowIT {
 
         NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
         ParserResult result = parser.read(new File("../navigation-formats-samples/src/test/from.gpx"));
-        assertTrue("parse failed", result.isSuccessful());
+        assertTrue(result.isSuccessful(), "parse failed");
 
         List<BaseRoute<?, ?>> all = result.getAllRoutes();
-        assertTrue("expected a multi-list file with at least 3 lists, got " + all.size(), all.size() >= 3);
+        assertTrue(all.size() >= 3, "expected a multi-list file with at least 3 lists, got " + all.size());
 
         model.setRoutes(new FormatAndRoutes(result.getFormat(), all));
 
         // load fired an interval-added event (map rebuilds the gray set from it)
-        assertTrue("load did not fire a list event", intervalAdded[0] >= 1);
+        assertTrue(intervalAdded[0] >= 1, "load did not fire a list event");
 
         // first list is selected; every other list is the gray set
         assertEquals(all.get(0), model.getSelectedRoute());
@@ -86,11 +88,11 @@ public class NonSelectedListsFlowIT {
         // switch selection -> previously selected joins gray, newly selected leaves it
         contentsChanged[0] = 0;
         model.setSelectedRoute(all.get(2));
-        assertTrue("switch did not fire contentsChanged", contentsChanged[0] >= 1);
+        assertTrue(contentsChanged[0] >= 1, "switch did not fire contentsChanged");
         assertEquals(all.get(2), model.getSelectedRoute());
         gray = graySet(model);
         assertEquals(all.size() - 1, gray.size());
-        assertTrue("previously selected list must now be gray", gray.contains(all.get(0)));
-        assertFalse("newly selected list must not be gray", gray.contains(all.get(2)));
+        assertTrue(gray.contains(all.get(0)), "previously selected list must now be gray");
+        assertFalse(gray.contains(all.get(2)), "newly selected list must not be gray");
     }
 }

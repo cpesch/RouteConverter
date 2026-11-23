@@ -1,9 +1,8 @@
 package slash.navigation.pois.mapsforge;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -18,6 +17,7 @@ import slash.navigation.maps.mapsforge.MapType;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,9 @@ import java.util.UUID;
 
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.recursiveDelete;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static java.util.Collections.emptyList;
 import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
@@ -35,11 +37,11 @@ public class MapsforgePoiGeocodingServiceTest {
 	private static final BoundingBox VISIBLE_BOUNDS = new BoundingBox(13.60, 52.60, 13.30, 52.30);
 	private static final NavigationPosition CENTER = MAP_BOUNDS.getCenter();
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	public File temporaryFolder;
 	private final List<File> directoriesToDelete = new ArrayList<>();
 
-	@After
+	@AfterEach
 	public void deletePoiDirectories() throws Exception {
 		for (File directory : directoriesToDelete)
 			recursiveDelete(directory);
@@ -136,7 +138,7 @@ public class MapsforgePoiGeocodingServiceTest {
 	}
 
 	private MapsforgePoiGeocodingService serviceFor(String dataSourceDirectory, BoundingBox visibleBounds) throws Exception {
-		File mapFile = temporaryFolder.newFile("test.map");
+		File mapFile = newFile(temporaryFolder, "test.map");
 		return new MapsforgePoiGeocodingService(new MapsforgePoiLookup(mockDataSourceManager(dataSourceDirectory)), mockMapManager(new TestLocalMap(MAP_BOUNDS, mapFile.toURI().toString())), () -> visibleBounds);
 	}
 
@@ -244,5 +246,11 @@ public class MapsforgePoiGeocodingServiceTest {
 		public String description() { return "test"; }
 		public String getUrl() { return url; }
 	}
+
+    private static File newFile(File parent, String child) throws IOException {
+        File result = new File(parent, child);
+        result.createNewFile();
+        return result;
+    }
 }
 
