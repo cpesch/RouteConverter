@@ -139,6 +139,7 @@ public class NavigationFormatParser {
 
         log.fine(format("Trying to read with %s", format));
         boolean declined = false;
+        long startNanos = System.nanoTime();
         try {
             format.read(buffer, context);
         } catch (ContainerWithoutRoutesException e) {
@@ -150,6 +151,8 @@ public class NavigationFormatParser {
             // control flow, not an error - keep it at fine so it does not raise a false alarm
             log.fine(format("Cannot read with %s, trying next format: %s", format, e));
             declined = true;
+        } finally {
+            ProbeTimings.recordProbe(format, System.nanoTime() - startNanos);
         }
 
         if (context.getRoutes().size() > routeCountBefore) {

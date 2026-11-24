@@ -26,6 +26,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.ContainerWithoutRoutesException;
 import slash.navigation.base.ParserContext;
+import slash.navigation.base.ProbeTimings;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 
@@ -93,6 +94,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
         int level = depth.get();
         depth.set(level + 1);
         int archiveRouteCountBefore = context.getRoutes().size();
+        boolean measuring = ProbeTimings.start(context.getFile() != null ? context.getFile().getName() : "ZIP archive");
         try {
             // a ZIP file of its own is read through its central directory: entry sizes are known
             // even for streamed archives, and a corrupt entry does not end reading the others;
@@ -113,6 +115,8 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
                 throw new IllegalArgumentException("Not a ZIP archive " + source);
             }
         } finally {
+            if (measuring)
+                ProbeTimings.finish();
             depth.set(level);
         }
     }
@@ -191,6 +195,8 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
             return;
         }
 
+        ProbeTimings.startEntry(entryName);
+        long entryStartNanos = System.nanoTime();
         try {
             int routeCountBefore = context.getRoutes().size();
             context.parse(new ByteArrayInputStream(bytes), context.getStartDate(), Files.getExtension(entryName));
@@ -202,6 +208,8 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
         } catch (Exception | OutOfMemoryError e) {
             // one entry that no format can read must not end reading the archive
             log.info("Cannot read zip entry " + entryName + ": " + e);
+        } finally {
+            ProbeTimings.endEntry(System.nanoTime() - entryStartNanos);
         }
     }
 
