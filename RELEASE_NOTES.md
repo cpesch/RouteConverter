@@ -20,6 +20,7 @@
 
 ### Changes
 
+- Position lists read from a file inside a ZIP archive are named after that file when it has no name of its own, for example gps_location_2024-01-09 in a Google Takeout export
 - RouteConverter now runs on Java 25: the Windows, macOS, Debian and Flatpak downloads bundle it; the Linux jar needs Java 25 or later installed and says so on an older Java (#167)
 - Geocaching.com/EasyGPS (.loc) files are read and written by RouteConverter itself and no longer need GPSBabel (#384)
 - Garmin POI Database (.xcsv) files are read and written by RouteConverter itself and no longer need GPSBabel (#385)
@@ -50,6 +51,7 @@
 - Photos in a Google Takeout ZIP archive are now placed from the JSON file Google writes next to each photo (IMG_1.jpg.json), since Google removes the GPS data from most photos; photos without any location no longer show up as position lists without coordinates
 - A ZIP archive with several KML files no longer loses the positions of the first file and shows those of a later file twice
 - A ZIP archive whose files all have the same format is now shown and saved in that format, for example Garmin POI (.gpi) or KML, instead of always as GPX 1.1; archives with mixed formats still use GPX 1.1
+- A ZIP archive whose settings or README files carry no positions, such as a Google Takeout export, is now shown in the format of the files that do, instead of as GPX 1.1; a ZIP archive without any positions is reported as not readable instead of opening as an empty position list in a random format
 - An offline MBTiles map that RouteConverter cannot display, such as one with vector tiles, no longer stays locked on Windows until RouteConverter exits
 - Google Takeout saved places and reviews without location information no longer show up as positions at 0°/0° in the Atlantic when opened as GeoJSON; they come in as positions without coordinates (#440)
 - CSV files whose column names are written in lower case, such as timestamp, latitude, longitude and altitude in the GPS location files of Fitbit and Google Health in Google Takeout, are now read with their coordinates, elevation and time; times like 2024-01-09T09:14:11Z are understood

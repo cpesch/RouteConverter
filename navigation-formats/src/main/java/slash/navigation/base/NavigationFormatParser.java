@@ -130,7 +130,8 @@ public class NavigationFormatParser {
     // outcome of trying a single candidate format against the shared buffer, shared by both
     // probe loops below (internalRead and bufferedInternalRead) since only what happens after
     // a MATCHED/DECLINED-with-reset-failure result differs between them (rc/RouteConverter#194)
-    private enum ProbeOutcome { MATCHED, READ, DECLINED }
+    // EMPTY_CONTAINER: a container format such as ZIP recognized the file, but no entry had routes
+    private enum ProbeOutcome { MATCHED, READ, DECLINED, EMPTY_CONTAINER }
 
     private ProbeOutcome probeFormat(NavigationFormat<BaseRoute<?, ?>> format, InputStream buffer,
                                      ParserContext<BaseRoute<?, ?>> context, int routeCountBefore) {
@@ -140,6 +141,9 @@ public class NavigationFormatParser {
         boolean declined = false;
         try {
             format.read(buffer, context);
+        } catch (ContainerWithoutRoutesException e) {
+            log.fine(format("Container without routes for %s: %s", format, e.getMessage()));
+            return ProbeOutcome.EMPTY_CONTAINER;
         } catch (Exception e) {
             // probing tries every candidate format in turn, so a format declining a file it does
             // not handle (e.g. Gpx11Format on a GPX 1.0 file, before Gpx10Format reads it) is normal
@@ -155,21 +159,17 @@ public class NavigationFormatParser {
         return declined ? ProbeOutcome.DECLINED : ProbeOutcome.READ;
     }
 
+    // reads an entry of a container such as a ZIP archive: unlike a file of its own, an entry no
+    // format reads routes from names no format, so the settings and README files of a Google
+    // Takeout archive do not turn the archive's format into a mix reported as GPX 1.1
     private void internalRead(InputStream buffer, List<NavigationFormat<BaseRoute<?, ?>>> formats, ParserContext<BaseRoute<?, ?>> context) throws IOException {
         int routeCountBefore = context.getRoutes().size();
-        NavigationFormat<BaseRoute<?, ?>> firstSuccessfulFormat = null;
 
         try {
             for (NavigationFormat<BaseRoute<?, ?>> format : formats) {
                 ProbeOutcome outcome = probeFormat(format, buffer, context, routeCountBefore);
-                if (outcome == ProbeOutcome.MATCHED)
+                if (outcome == ProbeOutcome.MATCHED || outcome == ProbeOutcome.EMPTY_CONTAINER)
                     break;
-                // if no route has been read, take the first that didn't throw an exception - but
-                // never ZipFormat: it is a container, not a route format, and createRoute() always
-                // throws, so falling back to an empty-result ZIP would crash createResult() instead
-                // of correctly reporting "nothing detected"
-                if (outcome == ProbeOutcome.READ && firstSuccessfulFormat == null && !(((NavigationFormat<?>) format) instanceof ZipFormat))
-                    firstSuccessfulFormat = format;
 
                 try {
                     buffer.reset();
@@ -181,9 +181,6 @@ public class NavigationFormatParser {
         } finally {
             buffer.close();
         }
-
-        if (context.getRoutes().isEmpty() && context.getFormats().isEmpty() && firstSuccessfulFormat != null)
-            context.addFormat(firstSuccessfulFormat);
     }
 
     public ParserResult read(File source, List<? extends NavigationFormat<?>> formats) throws IOException {
@@ -341,6 +338,11 @@ public class NavigationFormatParser {
                 ProbeOutcome outcome = probeFormat(format, buffer, context, routeCountBefore);
                 if (outcome == ProbeOutcome.MATCHED)
                     break;
+                // a ZIP archive without routes is no file of another format: report it as unrecognized
+                if (outcome == ProbeOutcome.EMPTY_CONTAINER) {
+                    firstSuccessfulFormat = null;
+                    break;
+                }
                 // if no route has been read, take the first that didn't throw an exception - but
                 // never ZipFormat: it is a container, not a route format, and createRoute() always
                 // throws, so falling back to an empty-result ZIP would crash createResult() instead

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import slash.common.io.Files;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.ContainerWithoutRoutesException;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
@@ -40,6 +41,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+
+import static slash.navigation.base.RouteComments.createRouteName;
 
 /**
  * Reads routes from ZIP Archive (.zip) files.
@@ -89,18 +92,26 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
     public void read(InputStream source, ParserContext<BaseRoute<?, ?>> context) throws IOException {
         int level = depth.get();
         depth.set(level + 1);
+        int archiveRouteCountBefore = context.getRoutes().size();
         try {
             // a ZIP file of its own is read through its central directory: entry sizes are known
             // even for streamed archives, and a corrupt entry does not end reading the others;
             // nested archives and other sources are read as a stream
             File file = context.getFile();
             PhotoSidecars photoSidecars = new PhotoSidecars();
-            if (level == 0 && file != null && file.isFile() && getExtension().equals(Files.getExtension(file))) {
-                if (!readFile(file, photoSidecars, context))
-                    readStream(source, photoSidecars, context);
-            } else
-                readStream(source, photoSidecars, context);
+            boolean archive;
+            if (level == 0 && file != null && file.isFile() && getExtension().equals(Files.getExtension(file)))
+                archive = readFile(file, photoSidecars, context) || readStream(source, photoSidecars, context);
+            else
+                archive = readStream(source, photoSidecars, context);
             photoSidecars.removePhotosWithoutCoordinates(context);
+
+            if (context.getRoutes().size() == archiveRouteCountBefore) {
+                // a ZIP archive without routes is reported as unrecognized instead of an empty list
+                if (archive)
+                    throw new ContainerWithoutRoutesException("No routes in ZIP archive " + source);
+                throw new IllegalArgumentException("Not a ZIP archive " + source);
+            }
         } finally {
             depth.set(level);
         }
@@ -131,10 +142,13 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
         return true;
     }
 
-    private void readStream(InputStream source, PhotoSidecars photoSidecars, ParserContext<BaseRoute<?, ?>> context) {
+    // @return true if the stream had at least one ZIP entry
+    private boolean readStream(InputStream source, PhotoSidecars photoSidecars, ParserContext<BaseRoute<?, ?>> context) {
+        boolean entries = false;
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
+                entries = true;
                 if (entry.isDirectory())
                     continue;
                 try {
@@ -150,6 +164,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
             // a stream cannot skip a corrupt entry: the entries after it are lost
             log.warning("Cannot read further zip entries from " + source + ": " + e);
         }
+        return entries;
     }
 
     // reads the whole entry so that every format probe can reset() to its start: streamed archives
@@ -179,14 +194,37 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
         try {
             int routeCountBefore = context.getRoutes().size();
             context.parse(new ByteArrayInputStream(bytes), context.getStartDate(), Files.getExtension(entryName));
-            if (PhotoSidecars.isPhoto(entryName)) {
-                List<BaseRoute<?, ?>> routes = context.getRoutes();
-                photoSidecars.addPhotoRoutes(entryName, routes.subList(routeCountBefore, routes.size()));
-            }
+            List<BaseRoute<?, ?>> routes = context.getRoutes();
+            List<BaseRoute<?, ?>> entryRoutes = routes.subList(routeCountBefore, routes.size());
+            nameAfterEntry(entryRoutes, entryName, context);
+            if (PhotoSidecars.isPhoto(entryName))
+                photoSidecars.addPhotoRoutes(entryName, entryRoutes);
         } catch (Exception | OutOfMemoryError e) {
             // one entry that no format can read must not end reading the archive
             log.info("Cannot read zip entry " + entryName + ": " + e);
         }
+    }
+
+    /**
+     * Names the position lists of an entry after the entry when the format found no name or,
+     * reading from the archive's file, took the archive's name: the daily GPS files of a Google
+     * Takeout archive become gps_location_2024-01-09 instead of an unnamed list
+     */
+    static void nameAfterEntry(List<BaseRoute<?, ?>> routes, String entryName, ParserContext<BaseRoute<?, ?>> context) {
+        String archiveName = context.getFile() != null ? removeExtension(context.getFile().getName()) : null;
+        String name = removeExtension(entryName.substring(Math.max(entryName.lastIndexOf('/'), entryName.lastIndexOf('\\')) + 1));
+        for (BaseRoute<?, ?> route : routes) {
+            String routeName = route.getName();
+            // CSV and other formats derive "first to last" from the descriptions when they have no name
+            if (routeName == null || routeName.isBlank() || routeName.equals(archiveName) ||
+                    routeName.equals(createRouteName(route.getPositions())))
+                route.setName(name);
+        }
+    }
+
+    private static String removeExtension(String name) {
+        int dot = name.lastIndexOf('.');
+        return dot > 0 ? name.substring(0, dot) : name;
     }
 
     public void write(BaseRoute<?, ?> route, OutputStream target, int startIndex, int endIndex) throws IOException {
