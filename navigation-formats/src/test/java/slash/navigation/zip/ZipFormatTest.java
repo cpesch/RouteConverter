@@ -158,6 +158,116 @@ public class ZipFormatTest {
         assertEquals(asList(1, 2), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
     }
 
+    private static String largeGpx(int waypoints) {
+        StringBuilder buffer = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<gpx version=\"1.0\" creator=\"test\" xmlns=\"http://www.topografix.com/GPX/1/0\">\n");
+        for (int i = 0; i < waypoints; i++)
+            buffer.append("<wpt lat=\"50.").append(1000 + i).append("\" lon=\"10.").append(1000 + i)
+                    .append("\"><name>Waypoint ").append(i).append("</name></wpt>\n");
+        return buffer.append("</gpx>\n").toString();
+    }
+
+    @Test
+    public void readsStreamedEntriesLargerThanTheReadBuffer() throws IOException {
+        // ZipOutputStream writes data descriptors, so ZipInputStream knows no entry size up front,
+        // like Google Takeout archives; the first entry is far larger than BufferedInputStream's 8 KB
+        String large = largeGpx(1000);
+        assertTrue(large.length() > 4 * 8192);
+        ParserResult result = parser.read(zip("Takeout/a.gpx", large, "Takeout/b.kml", KML22, "Takeout/c.gpx", GPX10));
+        assertTrue(result.isSuccessful());
+        assertEquals(asList(2, 2, 1000), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+    }
+
+    private File corruptSecondEntry(File file) throws IOException {
+        byte[] bytes = java.nio.file.Files.readAllBytes(file.toPath());
+        int count = 0;
+        for (int i = 0; i < bytes.length - 4; i++) {
+            if (bytes[i] == 'P' && bytes[i + 1] == 'K' && bytes[i + 2] == 3 && bytes[i + 3] == 4 && ++count == 2) {
+                // garble the deflated data behind the second local file header (30 bytes + name)
+                for (int j = i + 60; j < i + 120; j++)
+                    bytes[j] = (byte) 0xff;
+                java.nio.file.Files.write(file.toPath(), bytes);
+                return file;
+            }
+        }
+        throw new IllegalStateException("no second entry in " + file);
+    }
+
+    @Test
+    public void readsLargeStreamedEntriesOfAnArchiveInAnArchive() throws IOException {
+        // a nested archive is read as a stream, where ZipInputStream knows no entry size up front
+        File inner = zip("a.gpx", largeGpx(1000), "b.kml", KML22);
+        byte[] innerBytes = java.nio.file.Files.readAllBytes(inner.toPath());
+        File outer = File.createTempFile("zipformattest", ".zip");
+        files.add(outer);
+        try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(outer))) {
+            zip.putNextEntry(new ZipEntry("inner.zip"));
+            zip.write(innerBytes);
+            zip.closeEntry();
+        }
+        ParserResult result = parser.read(outer);
+        assertTrue(result.isSuccessful());
+        assertEquals(asList(2, 1000), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+    }
+
+    private File withoutCentralDirectory(File file) throws IOException {
+        byte[] bytes = java.nio.file.Files.readAllBytes(file.toPath());
+        for (int i = 0; i < bytes.length - 4; i++) {
+            if (bytes[i] == 'P' && bytes[i + 1] == 'K' && bytes[i + 2] == 1 && bytes[i + 3] == 2) {
+                // cut at the first central directory header, like an interrupted download
+                java.nio.file.Files.write(file.toPath(), java.util.Arrays.copyOf(bytes, i));
+                return file;
+            }
+        }
+        throw new IllegalStateException("no central directory in " + file);
+    }
+
+    @Test
+    public void readsTheEntriesOfAnArchiveWithoutCentralDirectory() throws IOException {
+        ParserResult result = parser.read(withoutCentralDirectory(zip("a.gpx", GPX10, "b.gpx", largeGpx(200), "c.kml", KML22)));
+        assertTrue(result.isSuccessful());
+        assertEquals(asList(2, 2, 200), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+    }
+
+    @Test
+    public void skipsEntriesLargerThanTheCap() throws IOException {
+        int before = ZipFormat.maximumEntrySize;
+        ZipFormat.maximumEntrySize = 4096;
+        try {
+            String large = largeGpx(200);
+            assertTrue(large.length() > 4096);
+            ParserResult result = parser.read(zip("a.gpx", large, "b.kml", KML22));
+            assertTrue(result.isSuccessful());
+            assertEquals(asList(2), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+        } finally {
+            ZipFormat.maximumEntrySize = before;
+        }
+    }
+
+    @Test
+    public void aCorruptEntryEndsReadingANestedArchive() throws IOException {
+        // documents a limit: a stream cannot skip a damaged deflated entry, so the entries after it are lost
+        File inner = corruptSecondEntry(zip("a.gpx", GPX10, "b.gpx", largeGpx(200), "c.kml", KML22));
+        byte[] innerBytes = java.nio.file.Files.readAllBytes(inner.toPath());
+        File outer = File.createTempFile("zipformattest", ".zip");
+        files.add(outer);
+        try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(outer))) {
+            zip.putNextEntry(new ZipEntry("inner.zip"));
+            zip.write(innerBytes);
+            zip.closeEntry();
+        }
+        ParserResult result = parser.read(outer);
+        assertTrue(result.isSuccessful());
+        assertEquals(asList(2), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+    }
+
+    @Test
+    public void readsTheEntriesAroundACorruptEntry() throws IOException {
+        ParserResult result = parser.read(corruptSecondEntry(zip("a.gpx", GPX10, "b.gpx", largeGpx(200), "c.kml", KML22)));
+        assertTrue(result.isSuccessful());
+        assertEquals(asList(2, 2), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+    }
+
     @Test
     public void reportsTheEntryFormatOfAnArchiveInAnArchive() throws IOException {
         File inner = zip("a.gpx", GPX10);

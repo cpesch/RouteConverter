@@ -21,20 +21,23 @@
 package slash.navigation.zip;
 
 import slash.common.io.Files;
-import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 
-import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 /**
@@ -45,6 +48,11 @@ import java.util.zip.ZipInputStream;
 
 public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
     private static final Logger log = Logger.getLogger(ZipFormat.class.getName());
+    // readNBytes() needs about twice the entry size while it collects the bytes
+    static final int MAXIMUM_ENTRY_SIZE = 64 * 1024 * 1024;
+    // tests lower it to check the cap without allocating 64 MB
+    static volatile int maximumEntrySize = MAXIMUM_ENTRY_SIZE;
+    private static final ThreadLocal<Integer> depth = ThreadLocal.withInitial(() -> 0);
     static {
         System.setProperty("sun.zip.encoding", "default");
     }
@@ -78,20 +86,90 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
     }
 
     public void read(InputStream source, ParserContext<BaseRoute<?, ?>> context) throws IOException {
+        int level = depth.get();
+        depth.set(level + 1);
+        try {
+            // a ZIP file of its own is read through its central directory: entry sizes are known
+            // even for streamed archives, and a corrupt entry does not end reading the others;
+            // nested archives and other sources are read as a stream
+            File file = context.getFile();
+            if (level == 0 && file != null && file.isFile() && getExtension().equals(Files.getExtension(file))) {
+                if (!readFile(file, context))
+                    readStream(source, context);
+            } else
+                readStream(source, context);
+        } finally {
+            depth.set(level);
+        }
+    }
+
+    // @return false if the file has no readable central directory, e.g. a partial download
+    private boolean readFile(File file, ParserContext<BaseRoute<?, ?>> context) throws IOException {
+        ZipFile opened;
+        try {
+            opened = new ZipFile(file);
+        } catch (ZipException e) {
+            log.info("Reading " + file + " as a stream, it has no readable central directory: " + e);
+            return false;
+        }
+        try (ZipFile zipFile = opened) {
+            Enumeration<? extends ZipEntry> entries = zipFile.entries();
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                if (entry.isDirectory())
+                    continue;
+                try (InputStream inputStream = zipFile.getInputStream(entry)) {
+                    readEntry(entry.getName(), inputStream, context);
+                } catch (IOException e) {
+                    log.warning("Cannot read zip entry " + entry.getName() + " from " + file + ": " + e);
+                }
+            }
+        }
+        return true;
+    }
+
+    private void readStream(InputStream source, ParserContext<BaseRoute<?, ?>> context) {
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
-                if(entry.isDirectory())
+                if (entry.isDirectory())
                     continue;
-
-                NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(zip));
-                int size = (int) entry.getSize() + 1;
-                buffer.mark(size);
-                context.parse(buffer, context.getStartDate(), Files.getExtension(entry.getName()));
-                zip.closeEntry();
+                try {
+                    readEntry(entry.getName(), zip, context);
+                    zip.closeEntry();
+                } catch (IOException e) {
+                    // log the damaged entry; after invalid DEFLATE data the stream usually cannot find
+                    // the next entry either, which the catch below reports
+                    log.warning("Cannot read zip entry " + entry.getName() + " from " + source + ": " + e);
+                }
             }
         } catch (IOException e) {
-            log.fine("Error reading invalid zip entry from " + source + ": " + e);
+            // a stream cannot skip a corrupt entry: the entries after it are lost
+            log.warning("Cannot read further zip entries from " + source + ": " + e);
+        }
+    }
+
+    // reads the whole entry so that every format probe can reset() to its start: streamed archives
+    // like Google Takeout carry the size in a data descriptor after the data, so ZipInputStream
+    // reports -1 and a mark() derived from it broke reset() after 8 KB
+    private void readEntry(String entryName, InputStream inputStream, ParserContext<BaseRoute<?, ?>> context) throws IOException {
+        byte[] bytes;
+        try {
+            bytes = inputStream.readNBytes(maximumEntrySize + 1);
+        } catch (OutOfMemoryError e) {
+            log.warning("Skipping zip entry " + entryName + ": not enough memory to read it");
+            return;
+        }
+        if (bytes.length > maximumEntrySize) {
+            log.warning("Skipping zip entry " + entryName + " larger than " + maximumEntrySize + " bytes");
+            return;
+        }
+
+        try {
+            context.parse(new ByteArrayInputStream(bytes), context.getStartDate(), Files.getExtension(entryName));
+        } catch (Exception | OutOfMemoryError e) {
+            // one entry that no format can read must not end reading the archive
+            log.info("Cannot read zip entry " + entryName + ": " + e);
         }
     }
 
