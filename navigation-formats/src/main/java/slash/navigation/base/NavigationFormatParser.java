@@ -343,8 +343,11 @@ public class NavigationFormatParser {
                     firstSuccessfulFormat = null;
                     break;
                 }
-                // if no route has been read, take the first that didn't throw an exception
-                if (outcome == ProbeOutcome.READ && firstSuccessfulFormat == null)
+                // if no route has been read, take the first that didn't throw an exception - but
+                // never ZipFormat: it is a container, not a route format, and createRoute() always
+                // throws, so falling back to an empty-result ZIP would crash createResult() instead
+                // of correctly reporting "nothing detected"
+                if (outcome == ProbeOutcome.READ && firstSuccessfulFormat == null && !(((NavigationFormat<?>) format) instanceof ZipFormat))
                     firstSuccessfulFormat = format;
 
                 try {
