@@ -193,7 +193,7 @@ public class GoogleSavedListFormatTest {
 
     @Test
     public void testReadGermanList() throws IOException {
-        List<Wgs84Route> routes = read("\uFEFFTitel,Notiz,URL,Tags\n" +
+        List<Wgs84Route> routes = read("\uFEFFTitel,Notiz,URL,Tags,Kommentar\n" +
                 "Cafe Alpha,,"+ PLACE_URL_1 + ",\n" +
                 "Bistro Beta,Suppe probieren," + PLACE_URL_2 + ",Essen\n" +
                 "Stecknadel,,\"https://www.google.com/maps/search/52.520008,13.404954\",\n", new File("Favoriten.csv"));
@@ -317,7 +317,7 @@ public class GoogleSavedListFormatTest {
         assertFalse(GoogleSavedListFormat.isHeader("Title,Note"));
         assertFalse(GoogleSavedListFormat.isHeader("Title,URL,Lat,Lng"));
         assertFalse(GoogleSavedListFormat.isHeader("Places for the summer trip"));
-        assertTrue(GoogleSavedListFormat.isHeader("Titel,Notiz,URL,Tags"));
+        assertTrue(GoogleSavedListFormat.isHeader("Titel,Notiz,URL,Tags,Kommentar"));
         assertTrue(GoogleSavedListFormat.isHeader("Titre,Note,URL,Tags,Commentaire"));
         assertFalse(GoogleSavedListFormat.isHeader("Name,URL"));
         assertFalse(GoogleSavedListFormat.isHeader("A,B,C,URL"));
@@ -340,7 +340,7 @@ public class GoogleSavedListFormatTest {
 
     @Test
     public void testParserDetectsGermanSavedList() throws IOException {
-        File file = temporaryFile("\uFEFFTitel,Notiz,URL,Tags\n" +
+        File file = temporaryFile("\uFEFFTitel,Notiz,URL,Tags,Kommentar\n" +
                 "Cafe Alpha,," + PLACE_URL_1 + ",\n" +
                 "Bistro Beta,Suppe probieren," + PLACE_URL_2 + ",\n");
 
@@ -360,5 +360,13 @@ public class GoogleSavedListFormatTest {
         assertTrue(result.isSuccessful());
         assertEquals(CsvCommaFormat.class, result.getFormat().getClass());
         assertEquals(2, result.getTheRoute().getPositionCount());
+    }
+
+    @Test
+    public void testPlaceHeadersNeedGoogleMapsLinks() throws IOException {
+        assertEquals(0, read("Ort,PLZ,URL\nBerlin,10115,https://example.com/berlin\n").size());
+        assertEquals(0, read("Place,Url\nBerlin,https://example.com/berlin\n").size());
+        assertEquals(0, read("Title,URL\nBerlin,https://example.com/berlin\n").size());
+        assertEquals(1, read("Titel,Notiz,URL\nBerlin,,https://example.com/berlin\n").size());
     }
 }

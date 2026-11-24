@@ -439,8 +439,9 @@ public class ReadIT {
                     assertNotNull(result);
                     // a ZIP archive without routes is reported as unrecognized, the others still
                     // fall back to the first format that read them without an error
-                    if (result.isSuccessful())
-                        assertNotEquals(0, result.getAllRoutes().size(), "Can read route from " + file);
+                    if (file.getName().toLowerCase().endsWith(".zip") && !result.isSuccessful())
+                        return;
+                    assertNotEquals(0, result.getAllRoutes().size(), "Can read route from " + file);
                 } catch (NumberFormatException e) {
                     // intentionally left empty
                 }
