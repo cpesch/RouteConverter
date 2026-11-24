@@ -52,6 +52,10 @@ public class Flightradar24Format extends CsvFormat {
         return ',';
     }
 
+    protected boolean isPositionColumn(String columnName) {
+        return POSITION_COLUMN.equals(columnName) || CALLSIGN_COLUMN.equals(columnName) || super.isPositionColumn(columnName);
+    }
+
     protected LinkedHashMap<String, String> transformRead(LinkedHashMap<String, String> rowAsMap) {
         LinkedHashMap<String, String> result = new LinkedHashMap<>(rowAsMap);
 
