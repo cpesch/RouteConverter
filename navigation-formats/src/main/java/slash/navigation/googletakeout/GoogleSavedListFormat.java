@@ -43,9 +43,10 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  * user adds coordinates with Position &gt; Complete&hellip; &gt; Coordinates.
  * <p>
  * Takeout localizes the folder ({@code Saved}, {@code Gespeichert}, ...) and the column names
- * ({@code Title,Note,URL} in English, {@code Titel,Notiz,URL} in German). Column names known
- * from real exports are matched by name; for other languages the columns are taken by their
- * position, title first, note second and {@code URL} third, as long as a row links to Google Maps.
+ * ({@code Title,Note,URL,Tags,Comment} in English, {@code Titel,Notiz,URL,Tags,Kommentar} in
+ * German). Column names known from real exports are matched by name; for other languages the
+ * columns are taken by their position, title first, note second and {@code URL} third. Unless the
+ * header names both a title and a note column, a list is read only if a row links to Google Maps.
  *
  * @see <a href="https://developers.google.com/data-portability/schema-reference/save">Google's schema</a>
  * @author Christian Pesch
@@ -151,8 +152,8 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
             }
         }
 
-        // columns taken by position could belong to any CSV with a URL column: insist on Google Maps
-        if (!columns.byName && !linksToGoogleMaps)
+        // other headers could belong to any CSV with a URL column: insist on Google Maps
+        if (columns.requiresMapsLink && !linksToGoogleMaps)
             return;
 
         if (!positions.isEmpty())
@@ -163,13 +164,13 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
         final String title;
         final String note;
         final String address;
-        final boolean byName;
+        final boolean requiresMapsLink;
 
-        Columns(String title, String note, String address, boolean byName) {
+        Columns(String title, String note, String address, boolean requiresMapsLink) {
             this.title = title;
             this.note = note;
             this.address = address;
-            this.byName = byName;
+            this.requiresMapsLink = requiresMapsLink;
         }
     }
 
@@ -189,13 +190,16 @@ public class GoogleSavedListFormat extends SimpleFormat<Wgs84Route> {
 
         String title = firstOf(cells, TITLE_COLUMNS);
         if (title != null) {
-            return new Columns(title, firstOf(cells, NOTE_COLUMNS), firstOf(cells, ADDRESS_COLUMNS), true);
+            String note = firstOf(cells, NOTE_COLUMNS);
+            // only Title/Titel with Note/Notiz is the saved-list header; Place/Ort,...,URL is too common
+            boolean savedListHeader = note != null && !title.equals("place") && !title.equals("ort");
+            return new Columns(title, note, firstOf(cells, ADDRESS_COLUMNS), !savedListHeader);
         }
 
         // a language whose column names are not known: Takeout writes title, note, URL, tags, comment
         if (cells.indexOf(URL) == URL_COLUMN_INDEX && cells.size() <= MAXIMUM_COLUMN_COUNT &&
                 !cells.get(0).isEmpty() && !cells.get(1).isEmpty())
-            return new Columns(cells.get(0), cells.get(1), null, false);
+            return new Columns(cells.get(0), cells.get(1), null, true);
         return null;
     }
 
