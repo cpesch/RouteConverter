@@ -59,6 +59,23 @@ public class ProbeTimingsTest {
     }
 
     @Test
+    public void restoresTheOuterEntryWhenANestedEntryFinishes() {
+        assertTrue(ProbeTimings.start("takeout.zip"));
+
+        ProbeTimings.startEntry("inner.zip");
+        ProbeTimings.startEntry("inner.zip/a.gpx");
+        ProbeTimings.recordProbe(new Gpx10Format(), 4_000_000);
+        ProbeTimings.endEntry(4_000_000);
+        // control returns here from the nested archive's own read(): the outer entry's
+        // time must be attributed to "inner.zip", not to the last nested entry it processed
+        ProbeTimings.endEntry(10_000_000);
+
+        String summary = summary();
+        assertTrue(summary.contains("10 ms  inner.zip"), summary);
+        assertTrue(summary.contains("4 ms  inner.zip/a.gpx"), summary);
+    }
+
+    @Test
     public void recordsNothingOutsideAContainer() {
         ProbeTimings.recordProbe(new Gpx10Format(), 3_000_000);
         ProbeTimings.startEntry("a.gpx");

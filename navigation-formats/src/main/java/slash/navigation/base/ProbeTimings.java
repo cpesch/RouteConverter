@@ -19,7 +19,9 @@
 */
 package slash.navigation.base;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,7 @@ public class ProbeTimings {
     // the TOP slowest single probes: an entry is probed once per format, so a probe is an
     // entry | format pair; bounded, since a large archive has hundreds of thousands of them
     private final PriorityQueue<Map.Entry<String, Long>> slowestPairs = new PriorityQueue<>(comparingLong(Map.Entry::getValue));
+    private final Deque<String> entryStack = new ArrayDeque<>();
     private String currentEntry;
     private int entryCount;
 
@@ -71,9 +74,15 @@ public class ProbeTimings {
         return true;
     }
 
+    /**
+     * Pushes the entry onto a stack so a nested container's own entries (an archive within
+     * this entry) can push and pop their own names without losing this entry's name once
+     * control returns here for {@link #endEntry(long)}.
+     */
     public static void startEntry(String entryName) {
         ProbeTimings timings = current.get();
         if (timings != null) {
+            timings.entryStack.push(entryName);
             timings.currentEntry = entryName;
             timings.entryCount++;
         }
@@ -81,8 +90,11 @@ public class ProbeTimings {
 
     public static void endEntry(long nanos) {
         ProbeTimings timings = current.get();
-        if (timings != null && timings.currentEntry != null)
-            timings.entryNanos.merge(timings.currentEntry, nanos, Long::sum);
+        if (timings != null && !timings.entryStack.isEmpty()) {
+            String entryName = timings.entryStack.pop();
+            timings.entryNanos.merge(entryName, nanos, Long::sum);
+            timings.currentEntry = timings.entryStack.peek();
+        }
     }
 
     static void recordProbe(NavigationFormat<?> format, long nanos) {
