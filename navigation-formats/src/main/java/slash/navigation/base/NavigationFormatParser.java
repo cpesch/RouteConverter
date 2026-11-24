@@ -164,8 +164,11 @@ public class NavigationFormatParser {
                 ProbeOutcome outcome = probeFormat(format, buffer, context, routeCountBefore);
                 if (outcome == ProbeOutcome.MATCHED)
                     break;
-                // if no route has been read, take the first that didn't throw an exception
-                if (outcome == ProbeOutcome.READ && firstSuccessfulFormat == null)
+                // if no route has been read, take the first that didn't throw an exception - but
+                // never ZipFormat: it is a container, not a route format, and createRoute() always
+                // throws, so falling back to an empty-result ZIP would crash createResult() instead
+                // of correctly reporting "nothing detected"
+                if (outcome == ProbeOutcome.READ && firstSuccessfulFormat == null && !(((NavigationFormat<?>) format) instanceof ZipFormat))
                     firstSuccessfulFormat = format;
 
                 try {
@@ -338,8 +341,11 @@ public class NavigationFormatParser {
                 ProbeOutcome outcome = probeFormat(format, buffer, context, routeCountBefore);
                 if (outcome == ProbeOutcome.MATCHED)
                     break;
-                // if no route has been read, take the first that didn't throw an exception
-                if (outcome == ProbeOutcome.READ && firstSuccessfulFormat == null)
+                // if no route has been read, take the first that didn't throw an exception - but
+                // never ZipFormat: it is a container, not a route format, and createRoute() always
+                // throws, so falling back to an empty-result ZIP would crash createResult() instead
+                // of correctly reporting "nothing detected"
+                if (outcome == ProbeOutcome.READ && firstSuccessfulFormat == null && !(((NavigationFormat<?>) format) instanceof ZipFormat))
                     firstSuccessfulFormat = format;
 
                 try {

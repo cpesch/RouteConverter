@@ -20,6 +20,7 @@
 
 package slash.navigation.zip;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import slash.common.io.Files;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseRoute;
@@ -93,18 +94,20 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
             // even for streamed archives, and a corrupt entry does not end reading the others;
             // nested archives and other sources are read as a stream
             File file = context.getFile();
+            PhotoSidecars photoSidecars = new PhotoSidecars();
             if (level == 0 && file != null && file.isFile() && getExtension().equals(Files.getExtension(file))) {
-                if (!readFile(file, context))
-                    readStream(source, context);
+                if (!readFile(file, photoSidecars, context))
+                    readStream(source, photoSidecars, context);
             } else
-                readStream(source, context);
+                readStream(source, photoSidecars, context);
+            photoSidecars.removePhotosWithoutCoordinates(context);
         } finally {
             depth.set(level);
         }
     }
 
     // @return false if the file has no readable central directory, e.g. a partial download
-    private boolean readFile(File file, ParserContext<BaseRoute<?, ?>> context) throws IOException {
+    private boolean readFile(File file, PhotoSidecars photoSidecars, ParserContext<BaseRoute<?, ?>> context) throws IOException {
         ZipFile opened;
         try {
             opened = new ZipFile(file);
@@ -119,7 +122,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
                 if (entry.isDirectory())
                     continue;
                 try (InputStream inputStream = zipFile.getInputStream(entry)) {
-                    readEntry(entry.getName(), inputStream, context);
+                    readEntry(entry.getName(), inputStream, photoSidecars, context);
                 } catch (IOException e) {
                     log.warning("Cannot read zip entry " + entry.getName() + " from " + file + ": " + e);
                 }
@@ -128,14 +131,14 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
         return true;
     }
 
-    private void readStream(InputStream source, ParserContext<BaseRoute<?, ?>> context) {
+    private void readStream(InputStream source, PhotoSidecars photoSidecars, ParserContext<BaseRoute<?, ?>> context) {
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
                 if (entry.isDirectory())
                     continue;
                 try {
-                    readEntry(entry.getName(), zip, context);
+                    readEntry(entry.getName(), zip, photoSidecars, context);
                     zip.closeEntry();
                 } catch (IOException e) {
                     // log the damaged entry; after invalid DEFLATE data the stream usually cannot find
@@ -152,7 +155,8 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
     // reads the whole entry so that every format probe can reset() to its start: streamed archives
     // like Google Takeout carry the size in a data descriptor after the data, so ZipInputStream
     // reports -1 and a mark() derived from it broke reset() after 8 KB
-    private void readEntry(String entryName, InputStream inputStream, ParserContext<BaseRoute<?, ?>> context) throws IOException {
+    private void readEntry(String entryName, InputStream inputStream, PhotoSidecars photoSidecars,
+                           ParserContext<BaseRoute<?, ?>> context) throws IOException {
         byte[] bytes;
         try {
             bytes = inputStream.readNBytes(maximumEntrySize + 1);
@@ -165,8 +169,20 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
             return;
         }
 
+        // photo sidecars are recognized by their content and never probed as navigation files
+        JsonNode sidecar = PhotoSidecars.parseSidecar(entryName, bytes);
+        if (sidecar != null) {
+            photoSidecars.addSidecar(entryName, sidecar);
+            return;
+        }
+
         try {
+            int routeCountBefore = context.getRoutes().size();
             context.parse(new ByteArrayInputStream(bytes), context.getStartDate(), Files.getExtension(entryName));
+            if (PhotoSidecars.isPhoto(entryName)) {
+                List<BaseRoute<?, ?>> routes = context.getRoutes();
+                photoSidecars.addPhotoRoutes(entryName, routes.subList(routeCountBefore, routes.size()));
+            }
         } catch (Exception | OutOfMemoryError e) {
             // one entry that no format can read must not end reading the archive
             log.info("Cannot read zip entry " + entryName + ": " + e);
