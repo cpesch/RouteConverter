@@ -46,6 +46,7 @@ import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.geojson.GeoJsonFormat;
+import slash.navigation.googletakeout.GoogleCommuteRoutesFormat;
 import slash.navigation.googletakeout.GoogleSavedListFormat;
 import slash.navigation.googletimeline.GoogleTimelineFormat;
 import slash.navigation.gopal.*;
@@ -754,6 +755,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof GoogleTimelineFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new GoogleTimelineFormat());
+    }
+
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
+    public SimpleRoute asGoogleCommuteRoutesFormat() {
+        if (getFormat() instanceof GoogleCommuteRoutesFormat)
+            return (SimpleRoute) this;
+        return asSimpleFormat(new GoogleCommuteRoutesFormat());
     }
 
     @SuppressWarnings({"UnusedDeclaration", "rawtypes"})

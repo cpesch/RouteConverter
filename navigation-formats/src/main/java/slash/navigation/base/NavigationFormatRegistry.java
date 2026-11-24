@@ -48,6 +48,7 @@ import slash.navigation.garmin.GarminPcx5Format;
 import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.garmin.GarminPoiFormat;
 import slash.navigation.geojson.GeoJsonFormat;
+import slash.navigation.googletakeout.GoogleCommuteRoutesFormat;
 import slash.navigation.googletakeout.GoogleSavedListFormat;
 import slash.navigation.googletimeline.GoogleTimelineFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
@@ -195,6 +196,8 @@ public class NavigationFormatRegistry {
         addFormat(MicrosoftExcel2008Format.class);
         addFormat(FitFormat.class);
         addFormat(GoogleTimelineFormat.class);
+        // after Google Timeline, which reads the big Records.json files first
+        addFormat(GoogleCommuteRoutesFormat.class);
         addFormat(GeoJsonFormat.class);
         addFormat(GoogleSavedListFormat.class);
         addFormat(MSFSFlightPlanFormat.class);
