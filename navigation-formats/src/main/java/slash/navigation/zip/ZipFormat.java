@@ -50,6 +50,8 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
     private static final Logger log = Logger.getLogger(ZipFormat.class.getName());
     // readNBytes() needs about twice the entry size while it collects the bytes
     static final int MAXIMUM_ENTRY_SIZE = 64 * 1024 * 1024;
+    // tests lower it to check the cap without allocating 64 MB
+    static volatile int maximumEntrySize = MAXIMUM_ENTRY_SIZE;
     private static final ThreadLocal<Integer> depth = ThreadLocal.withInitial(() -> 0);
     static {
         System.setProperty("sun.zip.encoding", "default");
@@ -91,17 +93,26 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
             // even for streamed archives, and a corrupt entry does not end reading the others;
             // nested archives and other sources are read as a stream
             File file = context.getFile();
-            if (level == 0 && file != null && file.isFile() && getExtension().equals(Files.getExtension(file)))
-                readFile(file, context);
-            else
+            if (level == 0 && file != null && file.isFile() && getExtension().equals(Files.getExtension(file))) {
+                if (!readFile(file, context))
+                    readStream(source, context);
+            } else
                 readStream(source, context);
         } finally {
             depth.set(level);
         }
     }
 
-    private void readFile(File file, ParserContext<BaseRoute<?, ?>> context) throws IOException {
-        try (ZipFile zipFile = new ZipFile(file)) {
+    // @return false if the file has no readable central directory, e.g. a partial download
+    private boolean readFile(File file, ParserContext<BaseRoute<?, ?>> context) throws IOException {
+        ZipFile opened;
+        try {
+            opened = new ZipFile(file);
+        } catch (ZipException e) {
+            log.info("Reading " + file + " as a stream, it has no readable central directory: " + e);
+            return false;
+        }
+        try (ZipFile zipFile = opened) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
@@ -113,9 +124,8 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
                     log.warning("Cannot read zip entry " + entry.getName() + " from " + file + ": " + e);
                 }
             }
-        } catch (ZipException e) {
-            throw new IllegalArgumentException("Not a ZIP archive " + file + ": " + e, e);
         }
+        return true;
     }
 
     private void readStream(InputStream source, ParserContext<BaseRoute<?, ?>> context) {
@@ -139,13 +149,13 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
     private void readEntry(String entryName, InputStream inputStream, ParserContext<BaseRoute<?, ?>> context) throws IOException {
         byte[] bytes;
         try {
-            bytes = inputStream.readNBytes(MAXIMUM_ENTRY_SIZE + 1);
+            bytes = inputStream.readNBytes(maximumEntrySize + 1);
         } catch (OutOfMemoryError e) {
             log.warning("Skipping zip entry " + entryName + ": not enough memory to read it");
             return;
         }
-        if (bytes.length > MAXIMUM_ENTRY_SIZE) {
-            log.warning("Skipping zip entry " + entryName + " larger than " + MAXIMUM_ENTRY_SIZE + " bytes");
+        if (bytes.length > maximumEntrySize) {
+            log.warning("Skipping zip entry " + entryName + " larger than " + maximumEntrySize + " bytes");
             return;
         }
 
