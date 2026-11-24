@@ -210,6 +210,57 @@ public class ZipFormatTest {
         assertEquals(asList(2, 1000), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
     }
 
+    private File withoutCentralDirectory(File file) throws IOException {
+        byte[] bytes = java.nio.file.Files.readAllBytes(file.toPath());
+        for (int i = 0; i < bytes.length - 4; i++) {
+            if (bytes[i] == 'P' && bytes[i + 1] == 'K' && bytes[i + 2] == 1 && bytes[i + 3] == 2) {
+                // cut at the first central directory header, like an interrupted download
+                java.nio.file.Files.write(file.toPath(), java.util.Arrays.copyOf(bytes, i));
+                return file;
+            }
+        }
+        throw new IllegalStateException("no central directory in " + file);
+    }
+
+    @Test
+    public void readsTheEntriesOfAnArchiveWithoutCentralDirectory() throws IOException {
+        ParserResult result = parser.read(withoutCentralDirectory(zip("a.gpx", GPX10, "b.gpx", largeGpx(200), "c.kml", KML22)));
+        assertTrue(result.isSuccessful());
+        assertEquals(asList(2, 2, 200), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+    }
+
+    @Test
+    public void skipsEntriesLargerThanTheCap() throws IOException {
+        int before = ZipFormat.maximumEntrySize;
+        ZipFormat.maximumEntrySize = 4096;
+        try {
+            String large = largeGpx(200);
+            assertTrue(large.length() > 4096);
+            ParserResult result = parser.read(zip("a.gpx", large, "b.kml", KML22));
+            assertTrue(result.isSuccessful());
+            assertEquals(asList(2), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+        } finally {
+            ZipFormat.maximumEntrySize = before;
+        }
+    }
+
+    @Test
+    public void aCorruptEntryEndsReadingANestedArchive() throws IOException {
+        // documents a limit: a stream cannot skip a damaged deflated entry, so the entries after it are lost
+        File inner = corruptSecondEntry(zip("a.gpx", GPX10, "b.gpx", largeGpx(200), "c.kml", KML22));
+        byte[] innerBytes = java.nio.file.Files.readAllBytes(inner.toPath());
+        File outer = File.createTempFile("zipformattest", ".zip");
+        files.add(outer);
+        try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(outer))) {
+            zip.putNextEntry(new ZipEntry("inner.zip"));
+            zip.write(innerBytes);
+            zip.closeEntry();
+        }
+        ParserResult result = parser.read(outer);
+        assertTrue(result.isSuccessful());
+        assertEquals(asList(2), result.getAllRoutes().stream().map(BaseRoute::getPositionCount).sorted().collect(toList()));
+    }
+
     @Test
     public void readsTheEntriesAroundACorruptEntry() throws IOException {
         ParserResult result = parser.read(corruptSecondEntry(zip("a.gpx", GPX10, "b.gpx", largeGpx(200), "c.kml", KML22)));

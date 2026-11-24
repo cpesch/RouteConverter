@@ -65,7 +65,8 @@ class PhotoSidecars {
     static final int MAXIMUM_SIDECAR_SIZE = 64 * 1024;
     private static final int[] TRUNCATED_NAME_LENGTHS = {46, 47};
     private static final Pattern DUPLICATE_PATTERN = Pattern.compile("^(.*)(\\(\\d+\\))$");
-    private static final Pattern SUPPLEMENTAL_PATTERN = Pattern.compile("(?i)\\.supp[a-z-]*$");
+    // Google cuts sidecar names to 51 characters, which leaves any prefix of this suffix, down to "."
+    private static final String SUPPLEMENTAL_METADATA = "supplemental-metadata";
     private static final Pattern PHOTO_DUPLICATE_PATTERN = Pattern.compile("^(.*)(\\(\\d+\\))(\\.[^.]+)$");
     private static final Pattern EDITED_PATTERN = Pattern.compile("(?i)^(.*)-(edited|bearbeitet)(\\.[^.]+)$");
 
@@ -129,9 +130,13 @@ class PhotoSidecars {
             name = matcher.group(1);
             duplicate = matcher.group(2);
         }
-        String withoutSupplemental = SUPPLEMENTAL_PATTERN.matcher(name).replaceFirst("");
-        if (!withoutSupplemental.equals(name) && isPhoto(withoutSupplemental))
-            name = withoutSupplemental;
+        int dot = name.lastIndexOf('.');
+        if (dot > 0) {
+            String suffix = name.substring(dot + 1).toLowerCase(Locale.ROOT);
+            String withoutSupplemental = name.substring(0, dot);
+            if (SUPPLEMENTAL_METADATA.startsWith(suffix) && isPhoto(withoutSupplemental))
+                name = withoutSupplemental;
+        }
         return name + duplicate;
     }
 

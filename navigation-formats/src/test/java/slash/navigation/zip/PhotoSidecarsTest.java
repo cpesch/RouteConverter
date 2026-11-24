@@ -278,6 +278,11 @@ public class PhotoSidecarsTest {
         assertEquals("a/IMG_1.jpg", PhotoSidecars.sidecarKey("a/IMG_1.jpg.json"));
         assertEquals("a/IMG_1.jpg", PhotoSidecars.sidecarKey("a/IMG_1.jpg.supplemental-metadata.json"));
         assertEquals("a/IMG_1.jpg", PhotoSidecars.sidecarKey("a/IMG_1.jpg.supplemental-me.json"));
+        String supplementalMetadata = "supplemental-metadata";
+        for (int length = 0; length <= supplementalMetadata.length(); length++)
+            assertEquals("a/IMG_1.jpg", PhotoSidecars.sidecarKey("a/IMG_1.jpg." + supplementalMetadata.substring(0, length) + ".json"),
+                    "suffix of length " + length);
+        assertEquals("a/IMG_1.jpg.x", PhotoSidecars.sidecarKey("a/IMG_1.jpg.x.json"));
         assertEquals("a/IMG_1.jpg(1)", PhotoSidecars.sidecarKey("a/IMG_1.jpg(1).json"));
         assertEquals("a/IMG_1.jpg(1)", PhotoSidecars.sidecarKey("a/IMG_1.jpg.supplemental-metadata(1).json"));
         assertTrue(PhotoSidecars.candidateKeys("a/IMG_1(1).jpg").contains("a/IMG_1.jpg(1)"));

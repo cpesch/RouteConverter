@@ -5,7 +5,7 @@
 ### New features
 
 - Garmin POI (.gpi) files: the position list now takes the name of the POI collection stored in the file, for example BMW_Motorrad_v18, and saving a position list as .gpi stores its name there
-- Google Maps saved lists (Favorites, Want to go, own lists) exported by Google Takeout as CSV can now be opened, also from Takeout exports in German and other languages, as can the nearby places you follow (with their address, which helps when adding coordinates); they carry no coordinates, so add them with Position > Complete… > Coordinates (places whose link has coordinates get them right away)
+- Google Maps saved lists (Favorites, Want to go, own lists) exported by Google Takeout as CSV can now be opened, also from German Takeout exports, as can the nearby places you follow (with their address, which helps when adding coordinates); they carry no coordinates, so add them with Position > Complete… > Coordinates (places whose link has coordinates get them right away)
 - The offline map themes Biker, Dark, Indigo and Motorider that come with the map renderer can now be chosen next to Default and Osmarender
 - Offline MBTiles maps whose tiles are stored as WebP images can now be displayed; before, only PNG and JPEG MBTiles opened
 - Position list > Manage… reorders, creates, renames, deletes and changes the type of the position lists of a file, for example the routes and tracks of a GPX file; it replaces the New, Rename and Delete buttons below the position list; the position list, its type and the Manage button now share one row, the map toggle moved to the Format row, and the Content line moved into the tool tip of the position list (#400)
@@ -46,13 +46,14 @@
 
 ### Fixes
 
-- ZIP archives written as a stream, such as Google Takeout exports, now open completely: files larger than 8 KB inside them were skipped; a damaged file inside a ZIP archive no longer ends reading the others, and files larger than 64 MB inside are skipped
+- ZIP archives written as a stream, such as Google Takeout exports, now open completely: files larger than 8 KB inside them were skipped; a damaged file inside a ZIP archive no longer ends reading the others, a partly downloaded archive is read up to where it breaks off, and files larger than 64 MB inside are skipped
 - Photos in a Google Takeout ZIP archive are now placed from the JSON file Google writes next to each photo (IMG_1.jpg.json), since Google removes the GPS data from most photos; photos without any location no longer show up as position lists without coordinates
 - A ZIP archive with several KML files no longer loses the positions of the first file and shows those of a later file twice
 - A ZIP archive whose files all have the same format is now shown and saved in that format, for example Garmin POI (.gpi) or KML, instead of always as GPX 1.1; archives with mixed formats still use GPX 1.1
 - A ZIP archive whose settings or README files carry no positions, such as a Google Takeout export, is now shown in the format of the files that do, instead of as GPX 1.1; a ZIP archive without any positions is reported as not readable instead of opening as an empty position list in a random format
 - An offline MBTiles map that RouteConverter cannot display, such as one with vector tiles, no longer stays locked on Windows until RouteConverter exits
 - Google Takeout saved places and reviews without location information no longer show up as positions at 0°/0° in the Atlantic when opened as GeoJSON; they come in as positions without coordinates (#440)
+- CSV files whose column names are written in lower case, such as timestamp, latitude, longitude and altitude in the GPS location files of Fitbit and Google Health in Google Takeout, are now read with their coordinates, elevation and time; times like 2024-01-09T09:14:11Z are understood
 - Google Takeout reviews (Reviews.json / Bewertungen.json) now show their star rating and review text in the description when opened as GeoJSON (#440)
 - Formats read and written with GPSBabel work again when no GPSBabel path is set under Extras > Options: on Java 25 RouteConverter took its working directory for the GPSBabel program. (#419)
 - OziExplorer route and waypoint files whose lines are padded with commas, as spreadsheet exports write them, and OziExplorer CE Route2 (.rt2) files are read again
