@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import slash.navigation.garmin.GarminPoiDbFormat;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.igo.Igo8TrackFormat;
+import slash.navigation.url.UrlFormat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -74,6 +75,9 @@ public class ReadIT {
             "Maps_save_Outlook_Nachrichtenformat.msg.url", "Maps_save_Outlook_Text.txt.url",
             "Maps_save_Thunderbird.txt.url", "ak-gartrip.txt");
 
+    // a bare file: URL is no Internet Shortcut: Internet Shortcuts are followed for http and https only
+    private static final List<String> NOT_FOLLOWED_ANY_MORE = asList("from-gpx.url");
+
     private void readFiles(String extension) throws IOException {
         readFiles(extension, new TestFileCallback() {
             @SuppressWarnings({"unchecked"})
@@ -99,7 +103,9 @@ public class ReadIT {
                     assertNotNull(result.getTheRoute().getName(), "Route has no name");
                 // a GoPal 3 track without positions which is not rejected because the following Nmn4Format would try to readGpxFile if forever
                 // a OziExplorer Route has a first route without a single position
-                if (ONLY_READ_BY_GPSBABEL_XCSV.contains(file.getName()))
+                if (NOT_FOLLOWED_ANY_MORE.contains(file.getName()))
+                    assertNotEquals(UrlFormat.class, result.getFormat().getClass(), "URL Reference must not follow " + file);
+                else if (ONLY_READ_BY_GPSBABEL_XCSV.contains(file.getName()))
                     assertNotEquals(GarminPoiDbFormat.class, result.getFormat().getClass(), "Garmin POI Database must not claim " + file);
                 else if (!file.getName().equals("dieter3-GoPal3Track.trk") && !file.getName().equals("ozi-condecourt.rte"))
                     assertTrue(result.getTheRoute().getPositionCount() > 0, "Route " + file + " has no positions");

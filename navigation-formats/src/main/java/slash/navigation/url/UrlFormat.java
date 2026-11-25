@@ -26,24 +26,32 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Route;
 import slash.navigation.common.NavigationPosition;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.regex.Pattern.MULTILINE;
+import static java.lang.String.format;
 import static slash.common.io.Transfer.trim;
 
 /**
- * Reads routes from URL Reference (.url) files.
+ * Reads routes from Internet Shortcuts (.url files) by following the URL of the shortcut.
+ *
+ * Only a file with an <code>[InternetShortcut]</code> section and a <code>URL=</code> line is a shortcut,
+ * only <code>http</code> and <code>https</code> are followed. Other text containing URLs, e.g. mails or
+ * READMEs, is declined without any network or file access.
  *
  * @author Christian Pesch
  */
 
 public class UrlFormat extends BaseUrlFormat {
-    private static final Pattern URL_PATTERN = Pattern.
-            compile(".*?((file|mailto|(news|(ht|f)tp(s?))\\://){1}\\S+).*?", MULTILINE);
+    // a shortcut has a handful of lines: do not scan arbitrary data any further
+    static final int MAXIMUM_SHORTCUT_SIZE = 16 * 1024;
+    private static final String SHORTCUT_SECTION = "[InternetShortcut]";
+    private static final Pattern URL_LINE_PATTERN = Pattern.compile("URL\\s*=\\s*(.*)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern FOLLOWED_URL_PATTERN = Pattern.compile("https?://\\S+", Pattern.CASE_INSENSITIVE);
 
     public String getExtension() {
         return ".url";
@@ -69,12 +77,38 @@ public class UrlFormat extends BaseUrlFormat {
         throw new UnsupportedOperationException();
     }
 
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+        StringBuilder buffer = new StringBuilder();
+        char[] chunk = new char[2048];
+        int count;
+        while (buffer.length() < MAXIMUM_SHORTCUT_SIZE && (count = reader.read(chunk)) != -1)
+            buffer.append(chunk, 0, count);
+
+        String url = findURL(buffer.toString());
+        if (url == null)
+            throw new IOException(format("Cannot find %s URL in %s", getName(), context.getFile()));
+        processURL(url, encoding, context);
+    }
+
     protected String findURL(String text) {
-        text = replaceLineFeeds(text, " ");
-        Matcher urlMatcher = URL_PATTERN.matcher(text);
-        if (!urlMatcher.matches())
-            return null;
-        return trim(urlMatcher.group(1));
+        boolean inShortcutSection = false;
+        for (String line : text.split("\\R")) {
+            line = trim(line.replace("\uFEFF", ""));
+            if (line == null)
+                continue;
+            if (line.startsWith("[")) {
+                inShortcutSection = line.equalsIgnoreCase(SHORTCUT_SECTION);
+                continue;
+            }
+            if (!inShortcutSection)
+                continue;
+            Matcher urlMatcher = URL_LINE_PATTERN.matcher(line);
+            if (urlMatcher.matches()) {
+                String url = trim(urlMatcher.group(1));
+                return url != null && FOLLOWED_URL_PATTERN.matcher(url).matches() ? url : null;
+            }
+        }
+        return null;
     }
 
     protected void processURL(String url, String encoding, ParserContext<Wgs84Route> context) throws IOException {

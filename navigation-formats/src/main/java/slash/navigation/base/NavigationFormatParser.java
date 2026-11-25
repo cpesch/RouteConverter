@@ -36,6 +36,7 @@ import slash.navigation.zip.ZipFormat;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -70,11 +71,29 @@ public class NavigationFormatParser {
     private static final Logger log = Logger.getLogger(NavigationFormatParser.class.getName());
     public static final int TOTAL_BUFFER_SIZE = 1024 * 1024;
     private static final int CHUNK_BUFFER_SIZE = 8 * 1024;
+
+    /** Limits for URLs followed while reading, i.e. Internet Shortcuts and KML network links. */
+    public static final int FOLLOWED_URL_CONNECT_TIMEOUT_MILLIS = 10 * 1000;
+    public static final int FOLLOWED_URL_READ_TIMEOUT_MILLIS = 30 * 1000;
+    public static final int FOLLOWED_URL_MAXIMUM_SIZE = 64 * 1024 * 1024;
+
     private final NavigationFormatRegistry navigationFormatRegistry;
+    private final int followedUrlConnectTimeoutMillis;
+    private final int followedUrlReadTimeoutMillis;
+    private final int followedUrlMaximumSize;
     private final List<NavigationFormatParserListener> listeners = new CopyOnWriteArrayList<>();
 
     public NavigationFormatParser(NavigationFormatRegistry navigationFormatRegistry) {
+        this(navigationFormatRegistry, FOLLOWED_URL_CONNECT_TIMEOUT_MILLIS, FOLLOWED_URL_READ_TIMEOUT_MILLIS, FOLLOWED_URL_MAXIMUM_SIZE);
+    }
+
+    public NavigationFormatParser(NavigationFormatRegistry navigationFormatRegistry,
+                                  int followedUrlConnectTimeoutMillis, int followedUrlReadTimeoutMillis,
+                                  int followedUrlMaximumSize) {
         this.navigationFormatRegistry = navigationFormatRegistry;
+        this.followedUrlConnectTimeoutMillis = followedUrlConnectTimeoutMillis;
+        this.followedUrlReadTimeoutMillis = followedUrlReadTimeoutMillis;
+        this.followedUrlMaximumSize = followedUrlMaximumSize;
     }
 
     public NavigationFormatRegistry getNavigationFormatRegistry() {
@@ -290,15 +309,29 @@ public class NavigationFormatParser {
 
         public void parse(String urlString) throws IOException {
             // replace CWD with current working directory for easier testing
-            urlString = urlString.replace("CWD", new File(".").getCanonicalPath()).replace(separatorChar, '/');
+            if (urlString.startsWith("file:"))
+                urlString = urlString.replace("CWD", new File(".").getCanonicalPath()).replace(separatorChar, '/');
             URL url = toUrl(urlString);
-            byte[] bytes;
-            try (InputStream inputStream = url.openStream()) {
-                bytes = inputStream.readAllBytes();
-            }
+            byte[] bytes = readFollowedUrl(url);
             log.info("Reading '" + url + "' with " + bytes.length + " bytes");
             internalSetStartDate(extractStartDate(url));
             bufferedInternalRead(() -> new ByteArrayInputStream(bytes), markSizeFor(bytes.length), getNavigationFormatRegistry().getReadFormats(), this);
+        }
+    }
+
+    // a followed URL is not chosen by the user, so it must neither hang nor fill the memory
+    private byte[] readFollowedUrl(URL url) throws IOException {
+        URLConnection connection = url.openConnection();
+        connection.setConnectTimeout(followedUrlConnectTimeoutMillis);
+        connection.setReadTimeout(followedUrlReadTimeoutMillis);
+        try (InputStream inputStream = connection.getInputStream()) {
+            long declared = connection.getContentLengthLong();
+            if (declared > followedUrlMaximumSize)
+                throw new IOException(format("Cannot read '%s': %d bytes exceed the limit of %d bytes", url, declared, followedUrlMaximumSize));
+            byte[] bytes = inputStream.readNBytes(followedUrlMaximumSize + 1);
+            if (bytes.length > followedUrlMaximumSize)
+                throw new IOException(format("Cannot read '%s': more than %d bytes", url, followedUrlMaximumSize));
+            return bytes;
         }
     }
 

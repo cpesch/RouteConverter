@@ -20,6 +20,7 @@
 
 ### Changes
 
+- Only Internet Shortcuts (.url files with an [InternetShortcut] section) are followed to the web address they point to, and only http and https ones; links in emails, README files and other texts are no longer followed, so reading or probing a file does not access the network any more. Followed addresses, as in KML network links, time out after 10 s to connect and 30 s without data, and are not read beyond 64 MB
 - After reading a ZIP archive, the log lists the files and formats that took longest to read, to find out what makes large archives such as Google Takeout exports slow
 - Reading a large ZIP archive such as a Google Takeout export is faster: the CSV formats give up after the header line when it names no position columns, instead of parsing every row of every health-data CSV
 - Position lists read from a file inside a ZIP archive are named after that file when it has no name of its own, for example gps_location_2024-01-09 in a Google Takeout export
