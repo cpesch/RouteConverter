@@ -55,6 +55,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     private static final Logger log = Logger.getLogger(GoogleMapsUrlFormat.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsUrlFormat.class);
     private static final Pattern URL_PATTERN = Pattern.compile(".*http[s]?://.+\\.google\\..+/maps([^\\s]+).*");
+    private static final LinearUrlFinder URL_FINDER = new LinearUrlFinder(URL_PATTERN, ".google.", 1, "/maps");
     private static final Pattern BOOKMARK_PATTERN = Pattern.compile(".*InternetShortcut(.+)IconFile.*");
     private static final Pattern PLAIN_POSITION_PATTERN = Pattern.compile("(\\s*[-|\\d|\\.]+\\s*),(\\s*[-|\\d|\\.]+\\s*)");
     private static final Pattern COMMENT_POSITION_PATTERN = Pattern.
@@ -121,10 +122,8 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
         Matcher bookmarkMatcher = BOOKMARK_PATTERN.matcher(text);
         if (bookmarkMatcher.matches())
             text = bookmarkMatcher.group(1);
-        Matcher urlMatcher = URL_PATTERN.matcher(text);
-        if (!urlMatcher.matches())
-            return null;
-        return trim(urlMatcher.group(1));
+        String path = URL_FINDER.find(text);
+        return path == null ? null : trim(path);
     }
 
     protected void processURL(String url, String encoding, ParserContext<Wgs84Route> context) {
