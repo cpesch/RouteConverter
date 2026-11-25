@@ -106,7 +106,24 @@ public class UrlFormatTest {
                 out.write(new byte[10_000]);
             }
         });
+        server.createContext("/self", exchange -> respond(exchange, shortcut(url("/self"))));
+        server.createContext("/loop-a", exchange -> respond(exchange, shortcut(url("/loop-b"))));
+        server.createContext("/loop-b", exchange -> respond(exchange, shortcut(url("/loop-a"))));
+        server.createContext("/kml-self", exchange -> respond(exchange, String.format(KML, url("/kml-self"))));
+        server.createContext("/chain-1", exchange -> respond(exchange, shortcut(url("/chain-2"))));
+        server.createContext("/chain-2", exchange -> respond(exchange, shortcut(url("/chain-3"))));
+        server.createContext("/chain-3", exchange -> respond(exchange, shortcut(url("/chain-4"))));
+        server.createContext("/chain-4", exchange -> respond(exchange, shortcut(url("/route.gpx"))));
         server.start();
+    }
+
+    private void respond(com.sun.net.httpserver.HttpExchange exchange, String body) throws IOException {
+        requests.incrementAndGet();
+        byte[] bytes = body.getBytes(UTF_8);
+        exchange.sendResponseHeaders(200, bytes.length);
+        try (OutputStream out = exchange.getResponseBody()) {
+            out.write(bytes);
+        }
     }
 
     @AfterEach
@@ -128,6 +145,7 @@ public class UrlFormatTest {
             assertNotEquals(UrlFormat.class, result.getFormat().getClass());
             assertNotEquals(Gpx11Format.class, result.getFormat().getClass());
             assertEquals(0, result.getTheRoute().getPositionCount());
+            assertFalse(result.getFormat().getClass().getSimpleName().startsWith("Kml"));
         }
     }
 
@@ -263,13 +281,41 @@ public class UrlFormatTest {
     @Test
     public void kmlNetworkLinkIsLimitedToo() throws IOException {
         NavigationFormatParser small = new NavigationFormatParser(new AllNavigationFormatRegistry(), 1000, 1000, 1000);
-        try {
-            ParserResult result = small.read(String.format(KML, url("/big-chunked")));
-            assertEquals(0, result.isSuccessful() ? result.getAllRoutes().stream().mapToInt(r -> r.getPositionCount()).sum() : 0);
-        } catch (IOException e) {
-            // declined as well
-        }
+        assertNotRead(small.read(String.format(KML, url("/big-chunked"))));
         // every KML flavour tried follows the link on its own
-        assertTrue(requests.get() >= 1);
+        assertTrue(requests.get() >= 1 && requests.get() <= 10, "requests " + requests.get());
+    }
+
+    @Test
+    public void selfReferencingShortcutIsDeclined() throws IOException {
+        assertNotRead(parser.read(shortcut(url("/self"))));
+        assertEquals(1, requests.get());
+    }
+
+    @Test
+    public void shortcutLoopIsDeclined() throws IOException {
+        assertNotRead(parser.read(shortcut(url("/loop-a"))));
+        assertEquals(2, requests.get());
+    }
+
+    @Test
+    public void tooLongChainOfShortcutsIsDeclined() throws IOException {
+        // chain-1 -> chain-2 -> chain-3 -> chain-4 -> route.gpx: the third hop is the last one followed
+        assertNotRead(parser.read(shortcut(url("/chain-1"))));
+        assertEquals(3, requests.get());
+    }
+
+    @Test
+    public void chainOfShortcutsWithinTheLimitIsFollowed() throws IOException {
+        ParserResult result = parser.read(shortcut(url("/chain-3")));
+        assertEquals(Gpx11Format.class, result.getFormat().getClass());
+        assertEquals(2, result.getTheRoute().getPositionCount());
+        assertEquals(3, requests.get());
+    }
+
+    @Test
+    public void kmlNetworkLinkToItselfIsDeclined() throws IOException {
+        assertNotRead(parser.read(String.format(KML, url("/kml-self"))));
+        assertTrue(requests.get() >= 1 && requests.get() <= 10, "requests " + requests.get());
     }
 }
