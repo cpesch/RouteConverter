@@ -19,6 +19,7 @@
 */
 package slash.navigation.csv;
 
+import com.fasterxml.jackson.core.FormatSchema;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SequenceWriter;
@@ -37,8 +38,7 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static slash.common.io.InputOutput.readAsReaderPreferringUtf8;
 import static slash.common.io.Transfer.*;
-import static slash.navigation.csv.ColumnType.Coordinates;
-import static slash.navigation.csv.ColumnType.Unsupported;
+import static slash.navigation.csv.ColumnType.*;
 
 /**
  * The base of all CSV formats.
@@ -99,6 +99,12 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
         CsvSchema schema = CsvSchema.emptySchema().withHeader().withColumnSeparator(getColumnSeparator());
         ObjectReader objectReader = new CsvMapper().readerFor(LinkedHashMap.class).with(schema);
         MappingIterator<LinkedHashMap<String, String>> iterator = objectReader.readValues(bufferedReader);
+
+        // decline early: a header without position columns cannot yield a position, so skip the rows
+        // (health data CSVs of Google Takeout take hundreds of MB, parsed once per CSV format)
+        if (!iterator.hasNext() || !hasPositionColumn(iterator.getParserSchema()))
+            return false;
+
         while (iterator.hasNext()) {
             LinkedHashMap<String, String> rowAsMap = iterator.next();
             CsvPosition position = new CsvPosition(transformRead(rowAsMap));
@@ -115,6 +121,24 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
             return true;
         } else
             return false;
+    }
+
+    /**
+     * Whether a column can contribute to a position: the position, the description of {@link CsvPosition}
+     * read the column types below, {@link Flightradar24Format} reads more. When in doubt, accept.
+     */
+    protected boolean isPositionColumn(String columnName) {
+        return Latitude.matches(columnName) || Longitude.matches(columnName) ||
+                Coordinates.matches(columnName) || Description.matches(columnName);
+    }
+
+    private boolean hasPositionColumn(FormatSchema schema) {
+        if (!(schema instanceof CsvSchema csvSchema))
+            return true;
+        for (String columnName : csvSchema.getColumnNames())
+            if (isPositionColumn(columnName) || isPositionColumn(trim(columnName)))
+                return true;
+        return false;
     }
 
     // finds the header line among the first lines, skipping an optional title row above it, then

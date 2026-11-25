@@ -263,4 +263,121 @@ public class CsvFormatTest {
         ParserContextImpl<CsvRoute> context = new ParserContextImpl<>();
         assertFalse(format.read(new StringReader(content), context));
     }
+    // a reader that counts the characters the CSV parser asked for
+    private static class CountingReader extends StringReader {
+        int charsRead;
+
+        CountingReader(String content) {
+            super(content);
+        }
+
+        public int read(char[] buffer, int offset, int length) throws IOException {
+            int count = super.read(buffer, offset, length);
+            if (count > 0)
+                charsRead += count;
+            return count;
+        }
+    }
+
+    private static String healthDataCsv(String header, int rows) {
+        StringBuilder builder = new StringBuilder(header).append('\n');
+        for (int i = 0; i < rows; i++)
+            builder.append("2024-01-09T09:14:11Z,").append(i).append(",72,Tracker\n");
+        return builder.toString();
+    }
+
+    @Test
+    public void declinesAHeaderWithoutPositionColumnsWithoutParsingTheRows() throws IOException {
+        String content = healthDataCsv("timestamp,sample,bpm,data source", 400_000);
+        assertTrue(content.length() > 15_000_000);
+
+        CountingReader reader = new CountingReader(content);
+        ParserContextImpl<CsvRoute> context = new ParserContextImpl<>();
+        assertFalse(new CsvCommaFormat().read(reader, context));
+
+        assertTrue(context.getRoutes().isEmpty());
+        // the header search buffers up to its 1 MB mark limit, nothing more
+        assertTrue(reader.charsRead <= (1 << 20) + 8192, "read " + reader.charsRead + " of " + content.length() + " characters");
+    }
+
+    @Test
+    public void declinesTheSemicolonAndFlightradarFormatsEarlyToo() throws IOException {
+        String content = healthDataCsv("timestamp;sample;bpm;data source", 400_000).replace(',', ';');
+
+        CountingReader semicolonReader = new CountingReader(content);
+        assertFalse(new CsvSemicolonFormat().read(semicolonReader, new ParserContextImpl<>()));
+        assertTrue(semicolonReader.charsRead <= (1 << 20) + 8192);
+
+        CountingReader flightradarReader = new CountingReader(healthDataCsv("timestamp,sample,bpm,data source", 400_000));
+        assertFalse(new Flightradar24Format().read(flightradarReader, new ParserContextImpl<>()));
+        assertTrue(flightradarReader.charsRead <= (1 << 20) + 8192);
+    }
+
+    @Test
+    public void declinesAHeaderOnlyFile() throws IOException {
+        assertFalse(new CsvCommaFormat().read(new StringReader("Longitude,Latitude\n"), new ParserContextImpl<>()));
+    }
+
+    @Test
+    public void stillReadsDescriptionOnlyFiles() throws IOException {
+        String content = """
+                Description;X
+                Berlin;5
+                """;
+        ParserContextImpl<CsvRoute> context = new ParserContextImpl<>();
+        assertTrue(new CsvSemicolonFormat().read(new StringReader(content), context));
+        assertEquals("Berlin", context.getRoutes().get(0).getPositions().get(0).getDescription());
+
+        ParserContextImpl<CsvRoute> german = new ParserContextImpl<>();
+        assertTrue(new CsvCommaFormat().read(new StringReader("id,Beschreibung\n1,Berlin\n"), german));
+        assertEquals("Berlin", german.getRoutes().get(0).getPositions().get(0).getDescription());
+    }
+
+    @Test
+    public void stillReadsALonelyLatitudeColumn() throws IOException {
+        ParserContextImpl<CsvRoute> context = new ParserContextImpl<>();
+        assertTrue(new CsvCommaFormat().read(new StringReader("id,LATITUDE\n1,50.2\n"), context));
+        assertEquals(50.2, context.getRoutes().get(0).getPositions().get(0).getLatitude(), 0.0);
+    }
+
+    @Test
+    public void stillReadsTheCombinedCoordinatesColumn() throws IOException {
+        String content = """
+                Nr;Koordinaten;Zeit
+                1;"52.5,13.4";14.12.17 19:38:00
+                """;
+        ParserContextImpl<CsvRoute> german = new ParserContextImpl<>();
+        assertTrue(new CsvSemicolonFormat().read(new StringReader(content), german));
+        assertEquals(52.5, german.getRoutes().get(0).getPositions().get(0).getLatitude(), 0.0);
+        assertEquals(13.4, german.getRoutes().get(0).getPositions().get(0).getLongitude(), 0.0);
+
+        ParserContextImpl<CsvRoute> english = new ParserContextImpl<>();
+        assertTrue(new CsvSemicolonFormat().read(new StringReader(content.replace("Koordinaten", "coordinates")), english));
+        assertEquals(52.5, english.getRoutes().get(0).getPositions().get(0).getLatitude(), 0.0);
+    }
+
+    @Test
+    public void stillReadsACaseInsensitiveAndPaddedHeader() throws IOException {
+        ParserContextImpl<CsvRoute> context = new ParserContextImpl<>();
+        assertTrue(new CsvCommaFormat().read(new StringReader("Id, LONGITUDE ,laTitude\n1,8.4,50.2\n"), context));
+        assertEquals(50.2, context.getRoutes().get(0).getPositions().get(0).getLatitude(), 0.0);
+        assertEquals(8.4, context.getRoutes().get(0).getPositions().get(0).getLongitude(), 0.0);
+    }
+
+    @Test
+    public void flightradarStillReadsItsPositionAndCallsignColumns() throws IOException {
+        String content = """
+                Timestamp,UTC,Callsign,Position,Altitude,Speed,Direction
+                1700000000,2023-11-14T22:13:20Z,DLH123,"50.2,8.4",35000,450,90
+                """;
+        ParserContextImpl<CsvRoute> context = new ParserContextImpl<>();
+        assertTrue(new Flightradar24Format().read(new StringReader(content), context));
+        CsvPosition position = context.getRoutes().get(0).getPositions().get(0);
+        assertEquals(50.2, position.getLatitude(), 0.0);
+        assertEquals(8.4, position.getLongitude(), 0.0);
+        assertEquals("DLH123", position.getDescription());
+
+        ParserContextImpl<CsvRoute> callsignOnly = new ParserContextImpl<>();
+        assertTrue(new Flightradar24Format().read(new StringReader("UTC,Callsign\n2023-11-14T22:13:20Z,DLH123\n"), callsignOnly));
+    }
 }
