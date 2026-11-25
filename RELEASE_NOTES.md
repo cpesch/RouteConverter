@@ -69,6 +69,7 @@
 - Show Map Overlays no longer offers overlays that the map catalog marks as inactive, such as the discontinued OpenStreetMap Hillshading (#426)
 - Google Timeline (.json) files are read again when the Android export's first segment is a trip memory, when the file starts with a byte-order mark, and Google Takeout "Location History" exports (Records.json and Semantic Location History) are now read as well (#429)
 - Updates of the offline maps from alternativaslibres.org and osm.paws.cz are recognized: the nightly map catalog update now finds a map that is not the first file in its zip and reads map headers larger than 16 KB
+- Opening a text or web page file that contains many web links no longer makes the Google Maps URL and GeoHack URL readers take minutes: their link search ran in time cubic to the text length. This sped up reading ZIP archives such as Google Takeout exports, where a README with a link to a web page took the readers seconds
 
 ## 3.8 — 2026-11-15
 
