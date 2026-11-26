@@ -87,6 +87,20 @@ public class FileAnalyzerTest {
     }
 
     @Test
+    public void garbageFileWithStrictExtensionIsNotRecognized() throws URISyntaxException {
+        // .gpx is a strict extension: only the GPX formats are asked and there is no fallback to a
+        // permissive text format, so the garbage is not recognized at all
+        File source = resource("analyze-broken.gpx");
+        try {
+            String json = analyzer().analyze(source);
+            fail("expected IOException, got " + json);
+        } catch (IOException e) {
+            assertNotNull(e.getMessage());
+            assertTrue(e.getMessage().contains("Could not read") || e.getMessage().contains("No positions"), e.getMessage());
+        }
+    }
+
+    @Test
     public void routeFileWithBRouterButNoSegmentsStillEmitsStraightLineJson() throws IOException, URISyntaxException {
         // wiring the BRouter computer at a non-existent segments directory must
         // never crash the analyze run: JSON is still produced, kind is straight-line
