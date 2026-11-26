@@ -102,6 +102,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static java.util.Locale.ROOT;
@@ -113,6 +114,37 @@ import static java.util.Locale.ROOT;
  */
 
 public class NavigationFormatRegistry {
+    /**
+     * Extensions that clearly name their content, mapped to the extension the formats that read that content
+     * declare: photos are read by the one {@link PhotoFormat} that declares ".jpg". A file with such an
+     * extension is only probed by the formats of its group, see {@link #getReadFormatsForExtension(String)}.
+     */
+    private static final Map<String, String> STRICT_EXTENSIONS = Map.ofEntries(
+            Map.entry(".csv", ".csv"),
+            Map.entry(".json", ".json"),
+            Map.entry(".gpx", ".gpx"),
+            Map.entry(".kml", ".kml"),
+            Map.entry(".kmz", ".kmz"),
+            Map.entry(".tcx", ".tcx"),
+            Map.entry(".fit", ".fit"),
+            Map.entry(".jpg", ".jpg"),
+            Map.entry(".jpeg", ".jpg"),
+            Map.entry(".png", ".jpg"),
+            Map.entry(".heic", ".jpg")
+    );
+
+    /**
+     * Formats that declare another extension but read the content of a strict extension as well:
+     * the POI, Kompass, Glopus, GPS Tuner and Kienzle formats read comma or semicolon separated lists of
+     * coordinates that are often saved as .csv, the Navigon Cruiser route is a JSON document. The added
+     * formats follow the declared ones in registry order, as they do in getReadFormatsPreferredByExtension.
+     */
+    private static final Map<String, List<Class<? extends NavigationFormat<?>>>> ADDED_TO_GROUP = Map.of(
+            ".csv", List.of(NavigatingPoiWarnerFormat.class, OpelNaviFormat.class, GarminPoiDbFormat.class,
+                    KompassFormat.class, GlopusFormat.class, GpsTunerFormat.class, KienzleGpsFormat.class),
+            ".json", List.of(NavigonCruiserFormat.class)
+    );
+
     private final List<Class<? extends NavigationFormat<?>>> formats = new ArrayList<>();
 
     public NavigationFormatRegistry() {
@@ -351,6 +383,32 @@ public class NavigationFormatRegistry {
         result.removeAll(preferredFormats);
         result.addAll(0, preferredFormats);
         return result;
+    }
+
+    /**
+     * Returns the read formats to probe for a file with the given extension. For the extensions in
+     * {@link #STRICT_EXTENSIONS} (compared case-insensitively) these are only the formats of that
+     * extension's group - the formats that declare the extension plus {@link #ADDED_TO_GROUP} - without
+     * any fallback to the other formats. For all other extensions these are the formats of that
+     * extension first, followed by all others as in {@link #getReadFormatsPreferredByExtension(String)}.
+     */
+    public List<NavigationFormat<BaseRoute<?, ?>>> getReadFormatsForExtension(String extension) {
+        String declared = extension == null ? null : STRICT_EXTENSIONS.get(extension.toLowerCase(ROOT));
+        if (declared != null) {
+            List<Class<? extends NavigationFormat<?>>> added = ADDED_TO_GROUP.getOrDefault(declared, List.of());
+            List<NavigationFormat<BaseRoute<?, ?>>> group = new ArrayList<>();
+            List<NavigationFormat<BaseRoute<?, ?>>> addedFormats = new ArrayList<>();
+            for (NavigationFormat<BaseRoute<?, ?>> format : getReadFormats()) {
+                if (format.getExtension().equals(declared))
+                    group.add(format);
+                else if (added.contains(format.getClass()))
+                    addedFormats.add(format);
+            }
+            group.addAll(addedFormats);
+            if (!group.isEmpty())
+                return group;
+        }
+        return getReadFormatsPreferredByExtension(extension);
     }
 
     /**
