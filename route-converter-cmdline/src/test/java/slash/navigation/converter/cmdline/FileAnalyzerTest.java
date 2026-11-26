@@ -72,8 +72,11 @@ public class FileAnalyzerTest {
 
     @Test
     public void garbageFileWithoutPositionsThrows() throws URISyntaxException {
-        // sniffed as a permissive text format but carries no positions
-        File source = resource("analyze-broken.gpx");
+        // .txt isn't one of the strict extensions (NavigationFormatRegistry#getReadFormatsForExtension),
+        // so it still falls through to every format and gets sniffed as a permissive text format
+        // that carries no positions; a strict extension like .gpx would instead be rejected outright
+        // by none of the GPX-only candidates recognizing the content
+        File source = resource("analyze-broken.txt");
         try {
             String json = analyzer().analyze(source);
             fail("expected IOException, got " + json);
