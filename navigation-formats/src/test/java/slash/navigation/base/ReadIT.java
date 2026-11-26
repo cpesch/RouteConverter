@@ -436,6 +436,9 @@ public class ReadIT {
     public static final String FALSE_DETECTS_PATH = ROUTE_PATH + "falsedetects";
     public static final String FALSE_XCSVS_PATH = ROUTE_PATH + "falsexcsvs";
 
+    private static final Set<String> STRICT_EXTENSIONS = Set.of(".csv", ".json", ".gpx", ".kml", ".kmz", ".tcx", ".fit",
+            ".jpg", ".jpeg", ".png", ".heic");
+
     @Test
     public void testDontReadUnrecognizedFiles() throws IOException {
         dontReadFiles(UNRECOGNIZED_PATH, new TestFileCallback() {
@@ -446,6 +449,9 @@ public class ReadIT {
                     // a ZIP archive without routes is reported as unrecognized, the others still
                     // fall back to the first format that read them without an error
                     if (file.getName().toLowerCase().endsWith(".zip") && !result.isSuccessful())
+                        return;
+                    // strict extension routing has no fallback to a quiet format
+                    if (!result.isSuccessful() && STRICT_EXTENSIONS.contains(getExtension(file)))
                         return;
                     assertNotEquals(0, result.getAllRoutes().size(), "Can read route from " + file);
                 } catch (NumberFormatException e) {

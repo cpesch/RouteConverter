@@ -28,10 +28,17 @@ import slash.navigation.columbus.GarbleColumbusGpsType1Format;
 import slash.navigation.csv.CsvCommaFormat;
 import slash.navigation.csv.CsvSemicolonFormat;
 import slash.navigation.csv.Flightradar24Format;
+import slash.navigation.geojson.GeoJsonFormat;
+import slash.navigation.googletakeout.GoogleCommuteRoutesFormat;
 import slash.navigation.googletakeout.GoogleSavedListFormat;
+import slash.navigation.googletimeline.GoogleTimelineFormat;
 import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomRouteFormat;
+import slash.navigation.garmin.GarminPoiDbFormat;
+import slash.navigation.nmn.NavigatingPoiWarnerFormat;
+import slash.navigation.nmn.NavigonCruiserFormat;
 import slash.navigation.nmn.NmnUrlFormat;
+import slash.navigation.photo.PhotoFormat;
 import slash.navigation.simple.*;
 import slash.navigation.url.GoogleMapsUrlFormat;
 
@@ -41,6 +48,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.io.Files.getExtension;
 
@@ -145,5 +153,88 @@ public class NavigationFormatRegistryTest {
                 continue;
             assertTrue(readFormatClasses.contains(writeFormat.getClass()));
         }
+    }
+
+    private static final List<String> STRICT_EXTENSIONS = List.of(".csv", ".json", ".gpx", ".kml", ".kmz", ".tcx", ".fit",
+            ".jpg", ".jpeg", ".png", ".heic");
+
+    private static Set<Class<?>> classesOf(List<NavigationFormat<BaseRoute<?, ?>>> formats) {
+        Set<Class<?>> result = new HashSet<>();
+        for (NavigationFormat<?> format : formats)
+            result.add(format.getClass());
+        return result;
+    }
+
+    @Test
+    public void testReadFormatsForStrictExtensionHaveNoFallback() {
+        for (String extension : STRICT_EXTENSIONS) {
+            List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsForExtension(extension);
+            assertFalse(formats.isEmpty(), extension);
+            assertTrue(formats.size() < registry.getReadFormats().size() / 2, extension);
+            assertFalse(classesOf(formats).contains(NmnUrlFormat.class), extension);
+        }
+    }
+
+    @Test
+    public void testReadFormatsForCsvAreTheCsvFormatsInRegistryOrderAndThePoiFormats() {
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsForExtension(".csv");
+        List<NavigationFormat<BaseRoute<?, ?>>> expected = registry.getReadFormatsPreferredByExtension(".csv");
+        assertEquals(16, formats.size());
+        assertEquals(expected.subList(0, 13).stream().map(Object::getClass).toList(),
+                formats.subList(0, 13).stream().map(Object::getClass).toList());
+        for (NavigationFormat<?> format : formats.subList(0, 13))
+            assertEquals(".csv", format.getExtension());
+        assertEquals(Set.of(NavigatingPoiWarnerFormat.class, OpelNaviFormat.class, GarminPoiDbFormat.class),
+                classesOf(formats.subList(13, 16)));
+    }
+
+    @Test
+    public void testReadFormatsForJsonContainAllFormatsReadingJson() {
+        Set<Class<?>> classes = classesOf(registry.getReadFormatsForExtension(".json"));
+        assertEquals(Set.of(GoogleTimelineFormat.class, GoogleCommuteRoutesFormat.class, GeoJsonFormat.class,
+                NavigonCruiserFormat.class), classes);
+    }
+
+    @Test
+    public void testReadFormatsForStrictExtensionIsCaseInsensitive() {
+        for (String extension : List.of(".CSV", ".Json", ".GPX", ".Kml", ".KMZ", ".TCX", ".FIT", ".JPG", ".JPEG", ".PNG", ".HEIC")) {
+            assertEquals(classesOf(registry.getReadFormatsForExtension(extension.toLowerCase(Locale.ROOT))),
+                    classesOf(registry.getReadFormatsForExtension(extension)), extension);
+            assertTrue(registry.getReadFormatsForExtension(extension).size() < registry.getReadFormats().size() / 2, extension);
+        }
+    }
+
+    @Test
+    public void testReadFormatsForPhotoExtensionsAreThePhotoFormat() {
+        for (String extension : List.of(".jpg", ".jpeg", ".png", ".heic")) {
+            List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsForExtension(extension);
+            assertEquals(1, formats.size(), extension);
+            assertEquals(PhotoFormat.class, formats.get(0).getClass(), extension);
+        }
+    }
+
+    @Test
+    public void testReadFormatsForOtherExtensionsAreUnchanged() {
+        for (String extension : List.of(".txt", ".log", ".xml", ".nmea", ".ov2", ".OV2", ".zip", ".zzz", "")) {
+            List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsForExtension(extension);
+            assertEquals(registry.getReadFormats().size(), formats.size(), extension);
+            assertEquals(registry.getReadFormatsPreferredByExtension(extension).stream().map(Object::getClass).toList(),
+                    formats.stream().map(Object::getClass).toList(), extension);
+        }
+    }
+
+    @Test
+    public void testReadFormatsForNullExtensionAreAllFormats() {
+        assertEquals(registry.getReadFormats().size(), registry.getReadFormatsForExtension(null).size());
+    }
+
+    @Test
+    public void testReadFormatsForStrictExtensionWithoutFormatsFallBackToAllFormats() {
+        NavigationFormatRegistry withoutFit = new NavigationFormatRegistry() {
+            protected boolean includeReadFormat(NavigationFormat<?> format) {
+                return !".fit".equals(format.getExtension());
+            }
+        };
+        assertEquals(withoutFit.getReadFormats().size(), withoutFit.getReadFormatsForExtension(".fit").size());
     }
 }

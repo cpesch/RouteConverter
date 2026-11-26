@@ -224,7 +224,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(File source) throws IOException {
-        return read(source, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source)));
+        return read(source, getNavigationFormatRegistry().getReadFormatsForExtension(getExtension(source)));
     }
 
     private NavigationFormat<BaseRoute<?, ?>> determineFormat(List<BaseRoute<?, ?>> routes, NavigationFormat<BaseRoute<?, ?>> preferredFormat) {
@@ -312,7 +312,7 @@ public class NavigationFormatParser {
 
         public void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException {
             internalSetStartDate(startDate);
-            internalRead(inputStream, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(preferredExtension), this);
+            internalRead(inputStream, getNavigationFormatRegistry().getReadFormatsForExtension(preferredExtension), this);
         }
 
         public void parse(String urlString) throws IOException {
@@ -540,7 +540,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(URL url) throws IOException {
-        return read(url, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(url)));
+        return read(url, getNavigationFormatRegistry().getReadFormatsForExtension(getExtension(url)));
     }
 
 
