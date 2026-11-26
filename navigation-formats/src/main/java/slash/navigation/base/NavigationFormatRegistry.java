@@ -135,11 +135,13 @@ public class NavigationFormatRegistry {
 
     /**
      * Formats that declare another extension but read the content of a strict extension as well:
-     * the POI formats read comma separated lists of coordinates and names that are often saved as .csv,
-     * the Navigon Cruiser route is a JSON document.
+     * the POI, Kompass, Glopus, GPS Tuner and Kienzle formats read comma or semicolon separated lists of
+     * coordinates that are often saved as .csv, the Navigon Cruiser route is a JSON document. The added
+     * formats follow the declared ones in registry order, as they do in getReadFormatsPreferredByExtension.
      */
     private static final Map<String, List<Class<? extends NavigationFormat<?>>>> ADDED_TO_GROUP = Map.of(
-            ".csv", List.of(NavigatingPoiWarnerFormat.class, OpelNaviFormat.class, GarminPoiDbFormat.class),
+            ".csv", List.of(NavigatingPoiWarnerFormat.class, OpelNaviFormat.class, GarminPoiDbFormat.class,
+                    KompassFormat.class, GlopusFormat.class, GpsTunerFormat.class, KienzleGpsFormat.class),
             ".json", List.of(NavigonCruiserFormat.class)
     );
 

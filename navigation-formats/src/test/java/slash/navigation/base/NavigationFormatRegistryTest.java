@@ -175,17 +175,41 @@ public class NavigationFormatRegistryTest {
         }
     }
 
+    private List<String> groupMembers(String extension) {
+        return registry.getReadFormatsForExtension(extension).stream().map(format -> format.getClass().getSimpleName()).toList();
+    }
+
+    // pins the members of every strict group: a format added to the registry that reads one of these
+    // extensions has to show up here and in ADDED_TO_GROUP, instead of silently not being probed
     @Test
-    public void testReadFormatsForCsvAreTheCsvFormatsInRegistryOrderAndThePoiFormats() {
-        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsForExtension(".csv");
-        List<NavigationFormat<BaseRoute<?, ?>>> expected = registry.getReadFormatsPreferredByExtension(".csv");
-        assertEquals(16, formats.size());
-        assertEquals(expected.subList(0, 13).stream().map(Object::getClass).toList(),
-                formats.subList(0, 13).stream().map(Object::getClass).toList());
-        for (NavigationFormat<?> format : formats.subList(0, 13))
-            assertEquals(".csv", format.getExtension());
-        assertEquals(Set.of(NavigatingPoiWarnerFormat.class, OpelNaviFormat.class, GarminPoiDbFormat.class),
-                classesOf(formats.subList(13, 16)));
+    public void testStrictGroupMembersArePinned() {
+        assertEquals(List.of("HaicomLoggerFormat", "Route66Format", "ColumbusGpsType1Format", "ColumbusGpsType2Format",
+                "ColumbusFusionFormat", "QstarzQ1000Format", "Iblue747Format", "GoogleSavedListFormat", "CsvCommaFormat",
+                "CsvSemicolonFormat", "Flightradar24Format", "GarbleColumbusGpsType1Format", "GarbleHaicomLoggerFormat",
+                "GpsTunerFormat", "KompassFormat", "GlopusFormat", "KienzleGpsFormat", "OpelNaviFormat",
+                "NavigatingPoiWarnerFormat", "GarminPoiDbFormat"), groupMembers(".csv"));
+        assertEquals(List.of("GoogleTimelineFormat", "GoogleCommuteRoutesFormat", "GeoJsonFormat", "NavigonCruiserFormat"),
+                groupMembers(".json"));
+        assertEquals(List.of("Gpx11Format", "Gpx10Format", "GarbleGpx10Format", "GarbleGpx11Format"), groupMembers(".gpx"));
+        assertEquals(List.of("Igo8RouteFormat", "Kml22Format", "Kml22BetaFormat", "Kml21Format", "Kml20Format",
+                "GarbleKml21Format", "GarbleKml21LittleEndianFormat", "GarbleKml22BetaFormat", "GarbleKml22Format"),
+                groupMembers(".kml"));
+        assertEquals(List.of("Kmz22Format", "Kmz22BetaFormat", "Kmz21Format", "Kmz20Format", "GarbleKmz21Format",
+                "GarbleKmz21LittleEndianFormat"), groupMembers(".kmz"));
+        assertEquals(List.of("Tcx2Format", "Tcx1Format"), groupMembers(".tcx"));
+        assertEquals(List.of("FitFormat"), groupMembers(".fit"));
+        for (String extension : List.of(".jpg", ".jpeg", ".png", ".heic"))
+            assertEquals(List.of("PhotoFormat"), groupMembers(extension), extension);
+    }
+
+    @Test
+    public void testReadFormatsForCsvKeepRegistryOrderOfTheAddedFormats() {
+        List<String> members = groupMembers(".csv");
+        assertTrue(members.indexOf("KompassFormat") < members.indexOf("GarminPoiDbFormat"));
+        assertTrue(members.indexOf("GlopusFormat") < members.indexOf("GarminPoiDbFormat"));
+        List<String> preferred = registry.getReadFormatsPreferredByExtension(".csv").stream()
+                .map(format -> format.getClass().getSimpleName()).filter(members::contains).toList();
+        assertEquals(preferred, members);
     }
 
     @Test
