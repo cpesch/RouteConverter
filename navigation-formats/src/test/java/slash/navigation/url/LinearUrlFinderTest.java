@@ -78,18 +78,18 @@ public class LinearUrlFinderTest {
 
     @Test
     public void testLineTerminatorsAreHandledLikeThePattern() {
-        assertSame("http://a.google.b/maps?x  tail");
-        assertSame("http://a.google.b/maps?x tail");
+        assertSame("http://a.google.b/maps?x\u2028 tail");
+        assertSame("http://a.google.b/maps?x\u2028tail");
         assertSame("head\u0085 http://a.google.b/maps?x");
         assertSame("http://a.google.b/maps\n?x");
-        assertSame("http://a.google.b /maps?x");
+        assertSame("http://a.google.b\u2029/maps?x");
         assertSame("http://x.org/geohack?a\u0085b");
     }
 
     @Test
     public void testSameAsPatternOnRandomTexts() {
         String[] tokens = {"http://", "https://", "http", "://", ".google.", "google", ".org/geohack", "/maps", "maps", "?", "x",
-                "a", ".", "/", " ", "\t", "\u000B", "\f", "\u0085", " ", " ", "\n", "\r", "ftp://", "%", "&"};
+                "a", ".", "/", " ", "\t", "\u000B", "\f", "\u0085", "\u2028", "\u2029", "\n", "\r", "ftp://", "%", "&"};
         Random random = new Random(20261124L);
         for (int i = 0; i < 20000; i++) {
             StringBuilder buffer = new StringBuilder();
@@ -98,6 +98,44 @@ public class LinearUrlFinderTest {
                 buffer.append(tokens[random.nextInt(tokens.length)]);
             assertSame(buffer.toString());
         }
+    }
+
+    // valid parts appear more often, so that many texts match each pattern
+    private static final String[] SCHEMES = {"http://", "https://", "http://", "https://", "http:/", "ftp://"};
+    private static final String[] HOSTS = {"", "a", "www", "x.y", "www"};
+    private static final String[] MIDDLES = {".google.", ".org/geohack", ".google.", ".org/geohack", ".google", ".org/geo"};
+    private static final String[] GAPS = {"", "c", "com", "de/x", " ", "\t"};
+    private static final String[] MARKERS = {"/maps", "?", "/maps", "?", "/map", "/maps?", "?a=?b"};
+    private static final String[] TAILS = {"", "x", "?q=1,2", "/dir/a/b/", "params=1_N", "x", "?q=1,2", " ", "\u2028"};
+    private static final String[] NOISE = {"", " ", "see ", "<a href=\"", "\"> and ", "\t", " ", "", "/maps", "?", ".google.", "\n"};
+
+    private static String pick(Random random, String[] values) {
+        return values[random.nextInt(values.length)];
+    }
+
+    // texts made of one to four URL-like runs (scheme, host, middle, gap, marker, tail) between noise,
+    // so that many of them match the patterns, often with several candidates for the scheme and marker
+    @Test
+    public void testSameAsPatternOnUrlLikeTexts() {
+        Random random = new Random(20261126L);
+        int texts = 20000, googleMapsMatches = 0, geoHackMatches = 0;
+        for (int i = 0; i < texts; i++) {
+            StringBuilder buffer = new StringBuilder(pick(random, NOISE));
+            int urls = 1 + random.nextInt(4);
+            for (int j = 0; j < urls; j++)
+                buffer.append(pick(random, SCHEMES)).append(pick(random, HOSTS)).append(pick(random, MIDDLES)).
+                        append(pick(random, GAPS)).append(pick(random, MARKERS)).append(pick(random, TAILS)).
+                        append(pick(random, NOISE));
+            String text = buffer.toString();
+            assertSame(text);
+            if (reference(GOOGLE_MAPS, text) != null)
+                googleMapsMatches++;
+            if (reference(GEO_HACK, text) != null)
+                geoHackMatches++;
+        }
+        // guard against a generator that only produces texts no pattern matches
+        assertTrue(googleMapsMatches > texts / 10, "Google Maps matches: " + googleMapsMatches);
+        assertTrue(geoHackMatches > texts / 10, "GeoHack matches: " + geoHackMatches);
     }
 
     // a text like an HTML page: many URLs, and google hosts and /maps references that do not complete a match

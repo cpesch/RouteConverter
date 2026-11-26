@@ -128,7 +128,7 @@ class LinearUrlFinder {
     private static boolean hasLineTerminator(String text) {
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
-            if (c == '\n' || c == '\r' || c == '\u0085' || c == ' ' || c == ' ')
+            if (c == '\n' || c == '\r' || c == '\u0085' || c == '\u2028' || c == '\u2029')
                 return true;
         }
         return false;
