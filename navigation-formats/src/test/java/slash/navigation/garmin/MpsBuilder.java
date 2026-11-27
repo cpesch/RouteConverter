@@ -27,13 +27,14 @@ import java.util.Arrays;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
- * Builds synthetic Garmin MapSource (.mps) files of the versions 3, 4 and 5 for tests,
- * after the record layouts {@code mapsource.cc} reads.
+ * Builds synthetic Garmin MapSource (.mps) files of the versions 3, 4 and 5 for tests, after the record
+ * layouts of Herbert Oppmann's description of the formats 1.0 ({@code 'd'}) to 1.5 ({@code 'i'}).
  */
 class MpsBuilder {
     static final double SEMICIRCLES_PER_DEGREE = (double) (1L << 31) / 180.0;
 
-    private final int version;
+    // the format: 100 for 1.0 ('d') to 105 for 1.5 ('i')
+    private final int format;
     private final LittleEndianOutput output = new LittleEndianOutput();
 
     MpsBuilder(int version) {
@@ -41,7 +42,7 @@ class MpsBuilder {
     }
 
     MpsBuilder(int version, char flag) {
-        this.version = version;
+        this.format = 100 + flag - 'd';
         output.writeBytes(new byte[]{'M', 's', 'R', 'c', 'd', 0});
         output.writeInt32(2);
         output.writeBytes(new byte[]{'D', (byte) flag, 0});
@@ -96,15 +97,27 @@ class MpsBuilder {
         return this;
     }
 
+    // 4 + 4 + 8 bytes, a byte in 1.0 and a short later, 4 more bytes from 1.3
+    private void subclass(LittleEndianOutput record) {
+        record.writeBytes(new byte[4]);
+        record.writeBytes(filled(12));
+        record.writeBytes(new byte[format == 100 ? 1 : 2]);
+        if (format > 102)
+            record.writeBytes(filled(4));
+    }
+
     byte[] waypointPayload(byte[] name, int waypointClass, double latitude, double longitude, Double altitude,
                            byte[] description, byte[] notes) {
+        return waypointPayload(name, waypointClass, latitude, longitude, altitude, description, notes, null, null);
+    }
+
+    byte[] waypointPayload(byte[] name, int waypointClass, double latitude, double longitude, Double altitude,
+                           byte[] description, byte[] notes, byte[] street, byte[] unknown1) {
         LittleEndianOutput record = new LittleEndianOutput();
         string(record, name);
         record.writeInt32(waypointClass);
         string(record, null);                               // country
-        record.writeBytes(new byte[17]);                    // subclass
-        if (version >= 4)
-            record.writeBytes(new byte[5]);
+        subclass(record);
         record.writeInt32(semicircles(latitude));
         record.writeInt32(semicircles(longitude));
         altitude(record, altitude);
@@ -116,11 +129,16 @@ class MpsBuilder {
         record.writeBytes(new byte[3]);                     // city, state, facility
         record.writeUInt8(0);
         altitude(record, null);                             // depth
-        if (version >= 4) {
-            record.writeBytes(new byte[6]);
-            string(record, notes);
+        string(record, street);                             // street address
+        if (unknown1 != null) {
+            record.writeUInt8(1);
+            string(record, unknown1);
         } else
-            record.writeBytes(new byte[2]);
+            record.writeUInt8(0);
+        if (format >= 102) {
+            record.writeInt32(0);                           // predicted leg time
+            string(record, notes);                          // directions
+        }
         return record.toByteArray();
     }
 
@@ -139,22 +157,10 @@ class MpsBuilder {
     }
 
     private void routePointData(LittleEndianOutput record) {
-        if (version >= 4) {
-            record.writeBytes(new byte[4]);
-            record.writeBytes(filled(12));
-            record.writeBytes(new byte[2]);
-            record.writeBytes(filled(4));
-            record.writeUInt8(0);                           // terminates the variable length data
-            record.writeUInt8(3);
-            record.writeBytes(new byte[17]);
-        } else {
-            record.writeBytes(new byte[8]);
-            record.writeBytes(filled(8));
-            record.writeUInt8(0);
-            record.writeUInt8(0);
-            record.writeUInt8(3);
-            record.writeBytes(new byte[16]);
-        }
+        subclass(record);
+        record.writeUInt8(0);                               // no unknown 1 string
+        record.writeInt32(3);                               // unknown 2 to 6
+        record.writeBytes(new byte[8 + (format == 100 ? 1 : 2) + 4]);
     }
 
     private static void position(LittleEndianOutput record, Point point) {
