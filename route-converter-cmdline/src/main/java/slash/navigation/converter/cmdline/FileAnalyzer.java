@@ -68,7 +68,8 @@ public class FileAnalyzer {
         NavigationFormatParser parser = new NavigationFormatParser(registry);
         ParserResult result = parser.read(source);
         if (!result.isSuccessful())
-            throw new IOException("Could not read '" + source.getAbsolutePath() + "'");
+            throw new IOException("Could not read '" + source.getAbsolutePath() + "'" +
+                    (result.getFailure() != null ? ": " + result.getFailure().getMessage() : ""));
 
         List<BaseRoute<?, ?>> routes = result.getAllRoutes();
 

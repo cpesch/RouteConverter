@@ -24,12 +24,14 @@
 package slash.navigation.igo;
 
 import slash.navigation.base.GpxBackedNavigationFormat;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpsbabel.LittleEndianInput;
 import slash.navigation.gpsbabel.LittleEndianOutput;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -83,8 +85,9 @@ public class Igo8TrackFormat extends GpxBackedNavigationFormat {
         return false;
     }
 
-    protected boolean isValidRoute(GpxRoute route) {
-        // is really greedy in parsing the data of NetS files
+    // a file without the ID block of iGO8 is only taken if its points are not too far apart: without
+    // the magic the reader is really greedy in parsing the data of NetS files
+    private static boolean isPlausibleWithoutMagic(GpxRoute route) {
         double length = route.getDistance();
         double distancePerPosition = length / route.getPositionCount();
         return distancePerPosition < 1000000.0;
@@ -92,17 +95,41 @@ public class Igo8TrackFormat extends GpxBackedNavigationFormat {
 
     // reading
 
+    /**
+     * The ID block of every known iGO8 track starts with these two words; files without them are still
+     * read if their points pass {@link #isPlausibleWithoutMagic(GpxRoute)}, in case other iGO versions
+     * write other constants.
+     */
+    static boolean hasMagic(byte[] data) {
+        if (data.length < 8)
+            return false;
+        LittleEndianInput input = new LittleEndianInput(data);
+        try {
+            return input.readInt32() == UNKNOWN_1 && input.readInt32() == UNKNOWN_2;
+        } catch (EOFException e) {
+            return false;
+        }
+    }
+
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
         byte[] data = source.readAllBytes();
-        if (data.length < POINTS_OFFSET)
+        boolean magic = hasMagic(data);
+        if (data.length < POINTS_OFFSET) {
+            if (magic)
+                throw new UnreadableFileException("iGO8 track ends in its header after " + data.length + " bytes");
             return emptyList();
+        }
 
         LittleEndianInput input = new LittleEndianInput(data);
         input.seek(TOTAL_FILE_SIZE_OFFSET);
         long totalFileSize = input.readUInt32();
         if (totalFileSize < POINTS_OFFSET || totalFileSize > data.length ||
-                (totalFileSize - POINTS_OFFSET) % POINT_SIZE != 0)
+                (totalFileSize - POINTS_OFFSET) % POINT_SIZE != 0) {
+            if (magic)
+                throw new UnreadableFileException("iGO8 track is damaged: its size field says " + totalFileSize +
+                        " bytes, the file has " + data.length);
             return emptyList();
+        }
 
         int count = (int) ((totalFileSize - POINTS_OFFSET) / POINT_SIZE);
         List<GpxPosition> positions = new ArrayList<>(count);
@@ -110,8 +137,11 @@ public class Igo8TrackFormat extends GpxBackedNavigationFormat {
             long unixTime = input.readUInt32();
             double longitude = input.readInt32() / COORDINATE_FACTOR;
             double latitude = input.readInt32() / COORDINATE_FACTOR;
-            if (abs(longitude) > 180.0 || abs(latitude) > 90.0)
+            if (abs(longitude) > 180.0 || abs(latitude) > 90.0) {
+                if (magic)
+                    throw new UnreadableFileException("iGO8 track is damaged: point " + (i + 1) + " is out of range");
                 return emptyList();
+            }
             // GPSBabel 1.5.4 writes the creation time into GPX only if it is not zero
             positions.add(new GpxPosition(asGpxCoordinate(longitude), asGpxCoordinate(latitude), null, null,
                     unixTime != 0 ? fromMillis(unixTime * 1000) : null, null));
@@ -120,7 +150,10 @@ public class Igo8TrackFormat extends GpxBackedNavigationFormat {
         // an empty track is dropped by the GPX reader
         if (positions.isEmpty())
             return emptyList();
-        return singletonList(new GpxRoute(new Gpx10Format(), Track, null, null, positions));
+        GpxRoute route = new GpxRoute(new Gpx10Format(), Track, null, null, positions);
+        if (!magic && !isPlausibleWithoutMagic(route))
+            return emptyList();
+        return singletonList(route);
     }
 
     // GPSBabel writes coordinates to GPX with %0.9f

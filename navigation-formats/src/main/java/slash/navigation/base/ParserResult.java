@@ -30,13 +30,35 @@ import java.util.List;
 
 public class ParserResult {
     private final FormatAndRoutes<?, ?, ?> formatAndRoutes;
+    private final UnreadableFileException failure;
 
     public ParserResult(FormatAndRoutes<?, ?, ?> formatAndRoutes) {
+        this(formatAndRoutes, null);
+    }
+
+    private ParserResult(FormatAndRoutes<?, ?, ?> formatAndRoutes, UnreadableFileException failure) {
         this.formatAndRoutes = formatAndRoutes;
+        this.failure = failure;
+    }
+
+    /**
+     * @param failure why a format that recognized the source could not read it
+     * @return an unsuccessful result that carries the reason
+     */
+    public static ParserResult failed(UnreadableFileException failure) {
+        return new ParserResult(null, failure);
     }
 
     public boolean isSuccessful() {
         return formatAndRoutes != null;
+    }
+
+    /**
+     * @return for an unsuccessful result: why a format that recognized the source could not
+     * read it, or {@code null} if no format recognized the source
+     */
+    public UnreadableFileException getFailure() {
+        return failure;
     }
 
     // Callers (NavigationFormatParser.write, getNumberOfFilesToWriteFor) need this format

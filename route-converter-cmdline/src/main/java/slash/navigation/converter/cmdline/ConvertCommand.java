@@ -141,6 +141,8 @@ public class ConvertCommand {
             return SOURCE_NOT_READABLE;
         }
         if (result == null || !result.isSuccessful()) {
+            if (result != null && result.getFailure() != null)
+                log.severe("Cannot read source: " + result.getFailure().getMessage());
             log.severe("Cannot read source; stopping.");
             return SOURCE_NOT_READABLE;
         }
