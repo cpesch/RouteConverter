@@ -52,6 +52,7 @@
 
 ### Fixes
 
+- Garmin MapSource 6.x (.gdb) files: a damaged record no longer makes the whole file unreadable, the other records are read. Waypoints of older MapSource 6 files keep their time when they have a street address or a leg time, routes with avoided areas or roads keep their notes, and umlauts and the euro sign of older files are read correctly. Saving a route with two points of the same name now writes a file that can be read back; positions are rounded to the nearest unit instead of cut off, so +180° stays +180°, and no longer depend on the display precision; large files are read and written much faster. Garmin MapSource 5.x (.mps) files are saved with the same rounding
 - A damaged or truncated National Geographic TOPO! (.tpo), Magellan MapSend (.wpt) or iGO8 (.trk) file now opens with an error that says what is wrong, instead of as an empty position list; MapSend track files report that they cannot be read yet
 - Random data, Magellan MapSend tracks and other binary files are no longer read as dozens of garbage tracks of a Wintec WBT-202 (.tes) file, and OziExplorer Event and Point files are no longer read as waypoints with mixed-up coordinates
 - TOPO! files whose compass style "Red Without Arrow" was renamed, MapSend files with other version signatures and iGO8 tracks with points far apart are now read

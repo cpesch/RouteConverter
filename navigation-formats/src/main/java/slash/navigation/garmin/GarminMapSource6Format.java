@@ -40,11 +40,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -52,43 +55,49 @@ import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.common.NavigationConversion.formatElevation;
-import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.garmin.GarminDefaults.UNKNOWN_COLOR;
 import static slash.navigation.garmin.GarminDefaults.gdbRouteColorIndex;
 import static slash.navigation.garmin.GarminDefaults.gdbTrackColorIndex;
 import static slash.navigation.garmin.GarminDefaults.gdbWaypointClass;
 import static slash.navigation.garmin.GarminDefaults.gdbWaypointDisplayMode;
 import static slash.navigation.garmin.GarminDefaults.gdbWaypointIconNumber;
+import static slash.navigation.garmin.GarminMapSource5Format.decode;
+import static slash.navigation.gpsbabel.GpsBabelMath.degreesToSemicircles;
 import static slash.navigation.gpsbabel.GpsBabelMath.semicirclesToDegrees;
 
 /**
  * Reads and writes Garmin MapSource 6.x (.gdb) files, the Garmin GPS Database versions 1 to 3.
  * <p>
  * Reading delivers what GPSBabel 1.5.4 delivered through its GPX 1.0 exchange file: every waypoint
- * record as a waypoint, the routes with their via points and the tracks. Writing produces version 3
- * files the way GPSBabel's {@code ver=3} did, with RouteConverter's watermark in the header (D15.1).
+ * record as a waypoint, the routes with their via points and the tracks. The records are read with the
+ * layouts of Herbert Oppmann's format description, the text as UTF-8 or else Windows-1252, and a damaged
+ * record costs only that record (D19). Writing produces version 3 files the way GPSBabel's {@code ver=3}
+ * did, with RouteConverter's watermark in the header (D15.1), rounded semicircles (D18) and the unique
+ * waypoint names in the route records (D21).
  *
  * @author Christian Pesch
  */
 
 public class GarminMapSource6Format extends GpxBackedNavigationFormat implements MultipleRoutesFormat<GpxRoute> {
+    private static final Logger log = Logger.getLogger(GarminMapSource6Format.class.getName());
     static final byte[] SIGNATURE = {'M', 's', 'R', 'c', 'f', 0};
+    // the application field of the header; Oppmann lists HomePort, too
+    private static final Set<String> APPLICATIONS = Set.of("MapSource", "BaseCamp", "HomePort");
     static final String WATERMARK = "RouteConverter";
     // the date of the native port, written like GPSBabel's gdb_release_dt
     static final String WATERMARK_DATE = "Nov 22 2026";
     static final String WATERMARK_TIME = "00:00:00";
     static final int WRITE_VERSION = 3;
-    static final int UTF8_VERSION = 3;
     static final int PROGRAM_VERSION = 605;
     private static final int FMT_USE_MASK = 3;
     static final double UNKNOWN_ALTITUDE = -99999999.0;
     private static final double ALTITUDE_LIMIT = 1.0e24;
     private static final int NAME_LENGTH = 1024;
     private static final int MAXIMUM_HEADER_RECORD_LENGTH = 128;
+    private static final int RECORD_HEADER_LENGTH = 5;
+    private static final int SUBCLASS_LENGTH = 4 + 4 + 8 + 2 + 4;
     private static final int GPX_COORDINATE_DIGITS = 9;
     private static final int GPX_ELEVATION_DIGITS = 6;
-    private static final double SEMICIRCLES_PER_DEGREE = (double) (1L << 31) / 180.0;
     private static final double EARTH_RADIUS = 6378137.0;
     private static final double MAXIMUM_ROUTE_POINT_DISTANCE = 100.0;
 
@@ -126,6 +135,8 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
         // seconds since 1970 as GPSBabel's SetCreationTime(int32) keeps them, 0 = none
         long time;
         int waypointClass;
+        // the name mkshort() made unique when the waypoint was written, GPSBabel master's extra_data
+        String writtenName;
 
         Wpt copy() {
             Wpt result = new Wpt();
@@ -145,6 +156,16 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
         String name;
         String description;
         final List<Wpt> points = new ArrayList<>();
+        int declaredPoints = -1;
+        boolean pointsComplete;
+    }
+
+    /** the key of a waypoint by its name, ignoring case like QString::compare(..., Qt::CaseInsensitive), and position */
+    record NameAndPosition(String name, double latitude, double longitude) {
+        static NameAndPosition of(Wpt wpt) {
+            // + 0.0 turns -0.0 into 0.0, which C's == compares as equal
+            return new NameAndPosition(foldCase(wpt.shortName), wpt.latitude + 0.0, wpt.longitude + 0.0);
+        }
     }
 
     // reading
@@ -154,7 +175,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
         try {
             return new Reader(bytes).read();
         } catch (GdbException | EOFException e) {
-            // GPSBabel stops with a fatal error: no route
+            // not a GDB file the reader knows: no route
             return null;
         }
     }
@@ -168,13 +189,22 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
         return true;
     }
 
-    /** {@code GdbFormat::read_file_header()}, {@code read_waypoint()}, {@code read_route()}, {@code read_track()} */
+    /**
+     * {@code GdbFormat::read_file_header()}, {@code read_waypoint()}, {@code read_route()}, {@code read_track()}
+     * with the record layouts of Herbert Oppmann's description for file formats before 1.46.
+     * <p>
+     * Every record is read on its own: a record that cannot be read is skipped, a route point that does not
+     * match its waypoint is dropped, and a file that ends early keeps the records read before (D19).
+     */
     class Reader {
         private final byte[] bytes;
         private int version;
         private final List<Wpt> waypoints = new ArrayList<>();
-        // the copies in wayptq_in/wayptq_in_hidden; GPSBabel 1.5.4 searches them first match first
-        private final List<Wpt> waypointQueue = new ArrayList<>();
+        // find_waypt_by_name(): the first waypoint of a name, case-sensitive
+        private final Map<String, Wpt> waypointsByName = new HashMap<>();
+        // the copies in wayptq_in/wayptq_in_hidden; GPSBabel searches them first match first
+        private final Map<String, Wpt> queueByName = new HashMap<>();
+        private final Map<NameAndPosition, Wpt> queueByNameAndPosition = new HashMap<>();
         private final List<Rte> routes = new ArrayList<>();
         private final List<Rte> tracks = new ArrayList<>();
         private int routePointCount;
@@ -183,23 +213,37 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
             this.bytes = bytes;
         }
 
-        private Charset charset() {
-            return version >= UTF8_VERSION ? UTF_8 : ISO_8859_1;
+        // MapSource writes Windows-1252 into versions 1 and 2 and UTF-8 into version 3
+        private String readText(LittleEndianInput input) throws EOFException {
+            return decode(input.readCString(ISO_8859_1).getBytes(ISO_8859_1));
         }
 
         // fread_cstr(): an empty string becomes a null string
         private String readString(LittleEndianInput input) throws EOFException {
-            String result = input.readCString(charset());
+            String result = readText(input);
             return result.isEmpty() ? null : result;
-        }
-
-        // FREAD_CSTR_AS_QSTR: gbfgetcstr() decodes UTF-8 in every version and never returns a null string
-        private String readQString(LittleEndianInput input) throws EOFException {
-            return input.readCString(UTF_8);
         }
 
         private void skipString(LittleEndianInput input) throws EOFException {
             input.readCString(ISO_8859_1);
+        }
+
+        // fstring: a flag and the string if the flag is set
+        private void skipFString(LittleEndianInput input) throws EOFException {
+            if (input.readUInt8() != 0)
+                skipString(input);
+        }
+
+        // fdouble: a flag and the value if the flag is set
+        private void skipFDouble(LittleEndianInput input) throws EOFException {
+            if (input.readUInt8() == 1)
+                input.readDouble();
+        }
+
+        // fint: a flag and the value if the flag is set
+        private void skipFInt(LittleEndianInput input) throws EOFException {
+            if (input.readUInt8() == 1)
+                input.readInt32();
         }
 
         private double readLatLon(LittleEndianInput input) throws EOFException {
@@ -222,7 +266,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
                 throw new GdbException("Invalid record length");
             input.skip(length + 1);
             String application = input.readCString(ISO_8859_1);
-            if (!("MapSource".equals(application) || "BaseCamp".equals(application)))
+            if (!APPLICATIONS.contains(application))
                 throw new GdbException("Not a recognized signature in header");
         }
 
@@ -230,24 +274,53 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
             LittleEndianInput input = new LittleEndianInput(bytes);
             readHeader(input);
 
-            while (true) {
+            // a file without the end record ends after its last complete record
+            while (input.remaining() >= RECORD_HEADER_LENGTH) {
                 int length = input.readInt32();
                 char type = (char) input.readUInt8();
                 if (type == 'V')
                     break;
-                // gbfcopyfrom() caches the record; the reader resyncs on the declared length
-                if (length < 0 || length > input.remaining())
-                    throw new GdbException("Attempt to read past EOF");
-                LittleEndianInput record = new LittleEndianInput(input.readBytes(length));
-                switch (type) {
-                    case 'W' -> addWaypoint(readWaypoint(record));
-                    case 'R' -> routes.add(readRoute(record));
-                    case 'T' -> tracks.add(readTrack(record));
-                    default -> {
-                    }
+                if (length < 0) {
+                    log.warning("Stopped reading at record with negative length " + length);
+                    break;
                 }
+                // gbfcopyfrom() caches the record; the reader resyncs on the declared length
+                boolean truncated = length > input.remaining();
+                LittleEndianInput record = new LittleEndianInput(input.readBytes(truncated ? input.remaining() : length));
+                readRecord(type, record, truncated);
+                if (truncated)
+                    break;
             }
             return toRoutes();
+        }
+
+        private void readRecord(char type, LittleEndianInput record, boolean truncated) {
+            switch (type) {
+                case 'W' -> {
+                    Wpt wpt = readWaypoint(record);
+                    if (wpt != null)
+                        addWaypoint(wpt);
+                }
+                case 'R', 'T' -> {
+                    Rte rte = new Rte();
+                    try {
+                        if (type == 'R')
+                            readRoute(record, rte);
+                        else
+                            readTrack(record, rte);
+                    } catch (EOFException e) {
+                        // the points before a cut keep their values; a record that is longer than its
+                        // points is not understood: its points may be garbage
+                        if (!rte.pointsComplete && !truncated) {
+                            log.warning("Skipped unreadable " + type + " record: " + e.getMessage());
+                            return;
+                        }
+                    }
+                    (type == 'R' ? routes : tracks).add(rte);
+                }
+                default -> {
+                }
+            }
         }
 
         // waypt_add(): normalizes the position and fills missing names
@@ -269,91 +342,97 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
                 else
                     wpt.description = wpt.shortName;
             }
+            waypointsByName.putIfAbsent(wpt.shortName, wpt);
+
             // GPSBabel 1.5.4 never hides a waypoint without the via/roadbook options
-            waypointQueue.add(wpt.copy());
+            Wpt copy = wpt.copy();
+            queueByName.putIfAbsent(foldCase(copy.shortName), copy);
+            queueByNameAndPosition.putIfAbsent(NameAndPosition.of(copy), copy);
         }
 
-        private Wpt readWaypoint(LittleEndianInput input) throws EOFException {
+        private Wpt readWaypoint(LittleEndianInput input) {
             Wpt wpt = new Wpt();
-            wpt.shortName = readString(input);
-            wpt.waypointClass = input.readInt32();
-            skipString(input);                     // country code
-            input.skip(22);                         // subclass
-            wpt.latitude = readLatLon(input);
-            wpt.longitude = readLatLon(input);
-            if (input.readUInt8() == 1) {
-                double altitude = input.readDouble();
-                if (altitude < ALTITUDE_LIMIT)
-                    wpt.altitude = altitude;
+            try {
+                wpt.shortName = readString(input);
+                wpt.waypointClass = input.readInt32();
+                skipString(input);                  // country code
+                input.skip(SUBCLASS_LENGTH);
+                wpt.latitude = readLatLon(input);
+                wpt.longitude = readLatLon(input);
+                if (input.readUInt8() == 1) {
+                    double altitude = input.readDouble();
+                    if (altitude < ALTITUDE_LIMIT)
+                        wpt.altitude = altitude;
+                }
+                wpt.notes = readString(input);
+            } catch (EOFException e) {
+                log.warning("Skipped unreadable W record: " + e.getMessage());
+                return null;
             }
-            wpt.notes = readString(input);
-            if (input.readUInt8() == 1)
-                input.readDouble();                 // proximity
+
+            try {
+                readWaypointDetails(input, wpt);
+            } catch (EOFException e) {
+                // keep name, position, altitude and comment of a record the reader does not fully understand
+                log.warning("Read only name and position of waypoint " + wpt.shortName + ": " + e.getMessage());
+                wpt.description = null;
+                wpt.time = 0;
+            }
+            return wpt;
+        }
+
+        private void readWaypointDetails(LittleEndianInput input, Wpt wpt) throws EOFException {
+            skipFDouble(input);                     // proximity
             input.readInt32();                      // display
             input.readInt32();                      // color
             input.readInt32();                      // icon
             skipString(input);                      // city
             skipString(input);                      // state
             skipString(input);                      // facility
-            input.skip(1);
-            if (input.readUInt8() == 1)
-                input.readDouble();                 // depth
+            input.skip(1);                          // map line 8
+            skipFDouble(input);                     // depth
+            skipString(input);                      // street
+            skipFString(input);                     // unknown 1
+            input.readInt32();                      // predicted leg time
+            String directions = readText(input);
 
-            int waypointFlag = 0;
             if (version <= 2) {
-                input.skip(2);
-                waypointFlag = input.readUInt8();
-                input.skip(waypointFlag == 0 ? 3 : 2);
-                readQString(input);                 // undocumented & unused string
-                String link = readQString(input);
-                if (wpt.waypointClass != 0)
+                String link = readText(input);
+                // GPSBabel's fixed offsets delivered the link as the description of a map point
+                if (!directions.isEmpty())
+                    wpt.description = directions;
+                else if (wpt.waypointClass != 0)
                     wpt.description = link;
             } else {
-                skipString(input);                  // street address
-                input.skip(1);
-                input.readUInt32();                 // duration
-                wpt.description = readQString(input);  // instruction
-                int urlCount = input.readInt32();
-                for (int i = urlCount; i != 0; i--)
-                    readQString(input);
+                wpt.description = directions;
+                int links = input.readInt32();
+                for (int i = 0; i < links; i++)
+                    skipString(input);
             }
 
-            input.readInt16();                      // category
+            input.readUInt16();                     // categories
+            skipFDouble(input);                     // temperature
             if (input.readUInt8() == 1)
-                input.readDouble();                 // temperature
-            if (version <= 2 && waypointFlag != 0)
-                input.skip(1);
-            if (input.readUInt8() == 1)
-                wpt.time = input.readUInt32();
+                wpt.time = input.readInt32();       // creation time, a signed fint
 
             if (version >= 3) {
-                if (input.readInt32() == 1) {
+                int phoneNumbers = input.readInt32();
+                for (int i = 0; i < phoneNumbers; i++) {
                     skipString(input);              // phone number
-                    skipString(input);              // fax / mobile
+                    skipFString(input);             // category
                 }
                 skipString(input);                  // country
                 skipString(input);                  // postal code
             }
-            return wpt;
         }
 
         private Wpt findWaypoint(Wpt wpt, boolean exact) {
-            for (Wpt candidate : waypointQueue) {
-                if (!qEqualsIgnoreCase(candidate.shortName, wpt.shortName))
-                    continue;
-                if (!exact || isSamePosition(candidate, wpt))
-                    return candidate;
-            }
-            return null;
+            return exact ? queueByNameAndPosition.get(NameAndPosition.of(wpt)) : queueByName.get(foldCase(wpt.shortName));
         }
 
         // find_waypt_by_name(): case-sensitive over the waypoint list
         private Wpt findWaypointByName(String name) {
-            for (Wpt candidate : waypoints) {
-                if (qEquals(candidate.shortName, name))
-                    return candidate;
-            }
-            return null;
+            return waypointsByName.get(name == null ? "" : name);
         }
 
         // route_add_wpt(): numbers a route point without name across all routes
@@ -365,7 +444,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
         }
 
         // gdb_add_route_waypt()
-        private void addRouteWaypoint(Rte rte, Wpt ref) throws GdbException {
+        private void addRouteWaypoint(Rte rte, Wpt ref) {
             Wpt found = findWaypoint(ref, true);
             if (found == null) {
                 found = findWaypointByName(ref.shortName);
@@ -373,105 +452,126 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
                     addRoutePoint(rte, ref);
                     return;
                 }
-                if (Math.abs(distance(ref, found)) > MAXIMUM_ROUTE_POINT_DISTANCE)
-                    throw new GdbException("Route point mismatch");
+                if (Math.abs(distance(ref, found)) > MAXIMUM_ROUTE_POINT_DISTANCE) {
+                    // GPSBabel stops with "Route point mismatch"
+                    log.warning("Dropped route point " + ref.shortName + " far from its waypoint");
+                    return;
+                }
             }
             addRoutePoint(rte, found.copy());
         }
 
-        private Rte readRoute(LittleEndianInput input) throws EOFException, GdbException {
-            Rte rte = new Rte();
+        private void readRoute(LittleEndianInput input, Rte rte) throws EOFException {
             rte.name = readString(input);
-            input.skip(1);                          // display/autoname
-            if (input.readUInt8() == 0)
-                skipBounds(input);
+            input.skip(1);                          // auto-name
+            skipBounds(input);
             int points = input.readInt32();
-            int warnings = 0;
-
+            rte.declaredPoints = points;
             for (int i = 0; i < points; i++) {
-                Wpt wpt = new Wpt();
-                wpt.shortName = readString(input);
-                wpt.waypointClass = input.readInt32();
-                skipString(input);                  // country code
-                input.skip(18 + 4);                 // subclass part 1-3 / unknown
-                if (input.readUInt8() != 0) {
-                    input.skip(8);                  // aviation data
-                    if (version >= 3)
-                        input.skip(8);
-                }
-                int unknown = input.readUInt8();
-                input.skip(17);
-                if (unknown != 0x00 && unknown != 0x01 && unknown != 0x03) {
-                    warnings++;
-                    if (warnings > 3)
-                        throw new GdbException("Too many warnings in route");
-                }
-
-                int links = input.readInt32();
-                for (int j = 0; j < links; j++) {
-                    double latitude = readLatLon(input);
-                    double longitude = readLatLon(input);
-                    double altitude = input.readUInt8() == 1 ? input.readDouble() : UNKNOWN_ALTITUDE;
-                    if (j == 0) {
-                        wpt.latitude = latitude;
-                        wpt.longitude = longitude;
-                        wpt.altitude = altitude;
-                    }
-                }
-                if (input.readUInt8() == 0)
-                    skipBounds(input);              // interlink bounds
-
-                if (links == 0) {
-                    // without links all information comes from the waypoint
-                    Wpt found = findWaypoint(wpt, false);
-                    if (found == null)
-                        throw new GdbException("Sleeping route point without coordinates");
-                    wpt = found.copy();
-                }
-
-                if (version >= 2) {
-                    input.skip(8);
-                    if (version >= 3)
-                        input.skip(2);
-                }
-                addRouteWaypoint(rte, wpt);
+                Wpt wpt = readRoutePoint(input);
+                if (wpt != null)
+                    addRouteWaypoint(rte, wpt);
             }
+            rte.pointsComplete = true;
 
             if (version <= 2) {
-                readString(input);                  // url
+                skipString(input);                  // link
             } else {
-                readStringList(input);              // url
+                int links = input.readInt32();
+                for (int i = 0; i < links; i++)
+                    skipString(input);
                 input.readInt32();                  // color
                 if (input.readUInt8() == 1)
-                    input.skip(6 + 1 + 4 + 1 + 4 + 5 * 8 + 8);  // autoroute settings
+                    skipAutorouteSettings(input);
                 rte.description = readString(input);
             }
-            return rte;
         }
 
+        private Wpt readRoutePoint(LittleEndianInput input) throws EOFException {
+            Wpt wpt = new Wpt();
+            wpt.shortName = readString(input);
+            wpt.waypointClass = input.readInt32();
+            skipString(input);                      // country code
+            input.skip(SUBCLASS_LENGTH);
+            skipFString(input);                     // unknown 1, GPSBabel's aviation data
+            input.skip(4 + 4 + 4 + 2 + 4);          // unknown 2 to 6
+
+            int links = input.readInt32();
+            for (int j = 0; j < links; j++) {
+                double latitude = readLatLon(input);
+                double longitude = readLatLon(input);
+                double altitude = input.readUInt8() == 1 ? input.readDouble() : UNKNOWN_ALTITUDE;
+                if (j == 0) {
+                    wpt.latitude = latitude;
+                    wpt.longitude = longitude;
+                    wpt.altitude = altitude;
+                }
+            }
+            skipBounds(input);                      // interlink bounds
+
+            if (version >= 2)
+                input.skip(8);                      // unknown 7
+            if (version >= 3) {
+                skipFInt(input);                    // unknown 11
+                skipFInt(input);                    // end time
+            }
+
+            if (links == 0) {
+                // without links all information comes from the waypoint
+                Wpt found = findWaypoint(wpt, false);
+                if (found == null) {
+                    // GPSBabel stops with "Sleeping route point without coordinates"
+                    log.warning("Dropped route point " + wpt.shortName + " without coordinates");
+                    return null;
+                }
+                wpt = found.copy();
+            }
+            return wpt;
+        }
+
+        // a flag and, if it is clear, the maximum and minimum position and altitude
         private void skipBounds(LittleEndianInput input) throws EOFException {
-            input.skip(8);
-            if (input.readUInt8() == 1)
+            if (input.readUInt8() == 0) {
                 input.skip(8);
-            input.skip(8);
-            if (input.readUInt8() == 1)
+                skipFDouble(input);
                 input.skip(8);
-        }
-
-        private void readStringList(LittleEndianInput input) throws EOFException {
-            int count = input.readInt32();
-            while (count > 0) {
-                readString(input);
-                count--;
+                skipFDouble(input);
             }
         }
 
-        private Rte readTrack(LittleEndianInput input) throws EOFException {
-            Rte trk = new Rte();
+        private void skipAutorouteSettings(LittleEndianInput input) throws EOFException {
+            input.skip(6 + 1 + 4 + 1 + 4 + 5 * 8);  // avoidances, style, vehicle, road selection, speeds
+            int areaAvoidances = input.readInt32();
+            for (int i = 0; i < areaAvoidances; i++) {
+                skipString(input);                  // name
+                skipBounds(input);
+            }
+            int roadAvoidances = input.readInt32();
+            for (int i = 0; i < roadAvoidances; i++) {
+                skipString(input);                  // name
+                input.skip(2 + 2);                  // product and family id
+                input.skip(8);                      // position max
+                skipFDouble(input);
+                input.skip(8);                      // position min
+                skipFDouble(input);
+                int linkPoints = input.readInt32();
+                for (int j = 0; j < linkPoints; j++) {
+                    input.skip(8);
+                    skipFDouble(input);
+                }
+                int segments = input.readInt32();
+                if (segments < 0 || segments > input.remaining() / 16)
+                    throw new EOFException("Cannot read " + segments + " road segments");
+                input.skip(segments * 16);
+            }
+        }
+
+        private void readTrack(LittleEndianInput input, Rte trk) throws EOFException {
             trk.name = readString(input);
             input.skip(1);                          // display
             input.readInt32();                      // color
             int points = input.readInt32();
+            trk.declaredPoints = points;
             for (int i = 0; i < points; i++) {
                 Wpt wpt = new Wpt();
                 wpt.latitude = readLatLon(input);
@@ -482,18 +582,19 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
                         wpt.altitude = altitude;
                 }
                 if (input.readUInt8() == 1)
-                    wpt.time = input.readUInt32();
-                if (input.readUInt8() == 1)
-                    input.readDouble();             // depth
-                if (input.readUInt8() == 1)
-                    input.readDouble();             // temperature
+                    wpt.time = input.readInt32();   // a signed fint
+                skipFDouble(input);                 // depth
+                skipFDouble(input);                 // temperature
                 trk.points.add(wpt);
             }
-            if (version >= 3)
-                readStringList(input);              // url
-            else
-                readQString(input);                 // url
-            return trk;
+            trk.pointsComplete = true;
+
+            if (version >= 3) {
+                int links = input.readInt32();
+                for (int i = 0; i < links; i++)
+                    skipString(input);
+            } else
+                skipString(input);                  // link
         }
 
         private List<GpxRoute> toRoutes() {
@@ -501,7 +602,9 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
             if (!waypoints.isEmpty())
                 result.add(createRoute(Waypoints, null, null, waypoints));
             for (Rte rte : routes)
-                result.add(createRoute(Route, rte.name, rte.description, rte.points));
+                // a route that lost all its points to the salvage is gone
+                if (!rte.points.isEmpty() || (rte.pointsComplete && rte.declaredPoints == 0))
+                    result.add(createRoute(Route, rte.name, rte.description, rte.points));
             for (Rte trk : tracks)
                 if (!trk.points.isEmpty())
                     result.add(createRoute(Track, trk.name, null, trk.points));
@@ -548,15 +651,13 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
         return (a == null ? "" : a).equals(b == null ? "" : b);
     }
 
-    // the exact comparison of the doubles in gdb_find_wayptq(), as C's == does it
-    private static boolean isSamePosition(Wpt a, Wpt b) {
-        return a.latitude <= b.latitude && a.latitude >= b.latitude &&
-                a.longitude <= b.longitude && a.longitude >= b.longitude;
-    }
-
-    // QString::compare(..., Qt::CaseInsensitive)
-    private static boolean qEqualsIgnoreCase(String a, String b) {
-        return (a == null ? "" : a).equalsIgnoreCase(b == null ? "" : b);
+    // the key of String.equalsIgnoreCase() for QString::compare(..., Qt::CaseInsensitive); null is empty
+    static String foldCase(String string) {
+        if (string == null)
+            return "";
+        StringBuilder builder = new StringBuilder(string.length());
+        string.codePoints().forEach(c -> builder.appendCodePoint(Character.toLowerCase(Character.toUpperCase(c))));
+        return builder.toString();
     }
 
     // grtcirc.cc gcdist() and radtometers()
@@ -632,16 +733,17 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
         private final List<Wpt> waypoints = new ArrayList<>();
         private final List<Rte> routes = new ArrayList<>();
         private final List<Rte> tracks = new ArrayList<>();
-        private final List<Wpt> writtenWaypoints = new ArrayList<>();
+        private final WrittenWaypoints writtenWaypoints = new WrittenWaypoints();
         private int routePointCount;
         private ShortNames shortNames;
 
         private Wpt createWpt(GpxPosition position) {
             Wpt wpt = new Wpt();
-            wpt.longitude = formatPosition(position.getLongitude()).doubleValue();
-            wpt.latitude = formatPosition(position.getLatitude()).doubleValue();
-            BigDecimal elevation = formatElevation(position.getElevation());
-            wpt.altitude = elevation != null ? elevation.doubleValue() : UNKNOWN_ALTITUDE;
+            // the exact values: neither GPSBabel's GPX exchange nor the user's display precision rounds them (D18)
+            wpt.longitude = position.getLongitude();
+            wpt.latitude = position.getLatitude();
+            Double elevation = position.getElevation();
+            wpt.altitude = elevation != null && Double.isFinite(elevation) ? elevation : UNKNOWN_ALTITUDE;
             CompactCalendar time = position.getTime();
             if (time != null) {
                 long seconds = Math.floorDiv(time.getTimeInMillis(), 1000L);
@@ -655,7 +757,8 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
 
         private boolean isValid(GpxPosition position) {
             // the GPX written for GPSBabel skips positions without valid coordinates
-            return formatPosition(position.getLongitude()) != null && formatPosition(position.getLatitude()) != null;
+            Double longitude = position.getLongitude(), latitude = position.getLatitude();
+            return longitude != null && latitude != null && Double.isFinite(longitude) && Double.isFinite(latitude);
         }
 
         // gpx.cc <wpt> and waypt_add()
@@ -729,7 +832,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
         private void writeWaypoint(LittleEndianOutput output, Wpt reference, boolean routePoint) throws IOException {
             if (reference.shortName != null)
                 reference.shortName = qtTrimmed(reference.shortName);
-            Wpt test = findWritten(writtenWaypoints, reference);
+            Wpt test = writtenWaypoints.find(reference);
             if (test != null && !routePoint && !qEquals(test.notes, reference.notes))
                 test = null;
             if (test != null)
@@ -755,6 +858,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
                     name = wpt.shortName;
             }
             name = shortNames.mkshort(name != null ? name : "");
+            wpt.writtenName = name;
             writeRecord(output, 'W', writeWaypointRecord(wpt, name, icon, display));
         }
     }
@@ -780,13 +884,17 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
             throw new IOException("Invalid longitude " + wpt.longitude + " in waypoint " + wpt.shortName);
     }
 
-    // gdb_find_wayptq(): the first written waypoint with the same name and position
-    static Wpt findWritten(List<Wpt> writtenWaypoints, Wpt wpt) {
-        for (Wpt candidate : writtenWaypoints) {
-            if (qEqualsIgnoreCase(candidate.shortName, wpt.shortName) && isSamePosition(candidate, wpt))
-                return candidate;
+    /** gdb_find_wayptq() over the written waypoints: the first one with the same name, ignoring case, and position */
+    static class WrittenWaypoints {
+        private final Map<NameAndPosition, Wpt> waypoints = new HashMap<>();
+
+        void add(Wpt wpt) {
+            waypoints.putIfAbsent(NameAndPosition.of(wpt), wpt);
         }
-        return null;
+
+        Wpt find(Wpt wpt) {
+            return waypoints.get(NameAndPosition.of(wpt));
+        }
     }
 
     static void writeRecord(LittleEndianOutput output, char type, byte[] payload) {
@@ -826,19 +934,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
         }
     }
 
-    /**
-     * GPS_Math_Deg_To_Semi() of GPSBabel 1.5.4: the product is truncated towards zero (master
-     * rounds). A product outside the int range or NaN is undefined behaviour in C; the shipped x86
-     * builds of 1.5.4 return INT_MIN for it (cvttsd2si), which happens for +180 degrees and for
-     * unnormalized track positions.
-     */
-    static int degreesToSemicircles(double degrees) {
-        double product = SEMICIRCLES_PER_DEGREE * degrees;
-        if (Double.isNaN(product) || product >= 2147483648.0 || product <= -2147483649.0)
-            return Integer.MIN_VALUE;
-        return (int) product;
-    }
-
+    // GPS_Math_Deg_To_Semi() of GPSBabel master: rounded, +180 degrees stays +180 (D18)
     private static void writeLatLon(LittleEndianOutput output, double degrees) {
         output.writeInt32(degreesToSemicircles(degrees));
     }
@@ -954,7 +1050,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
     }
 
     // GdbFormat::write_route() for version 3
-    static byte[] writeRoute(Rte rte, String name, List<Wpt> writtenWaypoints) throws IOException {
+    static byte[] writeRoute(Rte rte, String name, WrittenWaypoints writtenWaypoints) throws IOException {
         LittleEndianOutput output = new LittleEndianOutput();
         writeString(output, name);
         output.writeUInt8(0);                               // display/autoname
@@ -974,12 +1070,13 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
             if (!last)
                 checkPosition(next);
 
-            Wpt wpt = findWritten(writtenWaypoints, rte.points.get(index));
+            Wpt wpt = writtenWaypoints.find(rte.points.get(index));
             if (wpt == null)
                 throw new IOException("Sorry, that should never happen");
 
-            // GPSBabel 1.5.4 writes the waypoint's own name, not the one made unique by mkshort()
-            writeString(output, wpt.shortName);
+            // the name mkshort() made unique for the W record, as GPSBabel master writes it (D21);
+            // 1.5.4 wrote the waypoint's own name and could not read its own file back
+            writeString(output, wpt.writtenName != null ? wpt.writtenName : wpt.shortName);
             output.writeInt32(wpt.waypointClass);
             writeString(output, "");                        // country
             writeSubclass(output);
@@ -1048,8 +1145,8 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
         private static final String BAD_CHARACTERS = "\r\n\t";
 
         private final String defaultName;
-        private final List<String> names = new ArrayList<>();
-        private final List<int[]> conflictCounters = new ArrayList<>();
+        // the conflict counter of every name, keyed by the name with ASCII case folded
+        private final Map<String, int[]> conflictCounters = new HashMap<>();
 
         ShortNames(String defaultName) {
             this.defaultName = defaultName;
@@ -1064,19 +1161,13 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
             return string.getBytes(UTF_8).length;
         }
 
-        // case_ignore_strcmp(): ASCII case folding only
-        private static boolean equalsIgnoreAsciiCase(String a, String b) {
-            if (a.length() != b.length())
-                return false;
-            for (int i = 0; i < a.length(); i++) {
-                char ca = a.charAt(i), cb = b.charAt(i);
-                if (ca == cb)
-                    continue;
-                if (ca < 128 && cb < 128 && Character.toUpperCase(ca) == Character.toUpperCase(cb))
-                    continue;
-                return false;
-            }
-            return true;
+        // the key of case_ignore_strcmp(): ASCII case folding only
+        static String foldAsciiCase(String string) {
+            char[] chars = string.toCharArray();
+            for (int i = 0; i < chars.length; i++)
+                if (chars[i] >= 'a' && chars[i] <= 'z')
+                    chars[i] = (char) (chars[i] - 'a' + 'A');
+            return new String(chars);
         }
 
         static String replaceConstants(String string) {
@@ -1126,9 +1217,9 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
 
         // mkshort_add_to_list()
         private String addToList(String name) {
-            int index;
-            while ((index = indexOf(name)) != -1) {
-                int counter = ++conflictCounters.get(index)[0];
+            int[] conflicts;
+            while ((conflicts = conflictCounters.get(foldAsciiCase(name))) != null) {
+                int counter = ++conflicts[0];
                 String suffix = "." + counter;
                 byte[] bytes = name.getBytes(UTF_8);
                 if (bytes.length + suffix.length() < NAME_LENGTH) {
@@ -1140,16 +1231,8 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
                     name = new String(replaced, UTF_8);
                 }
             }
-            names.add(name);
-            conflictCounters.add(new int[1]);
+            conflictCounters.put(foldAsciiCase(name), new int[1]);
             return name;
-        }
-
-        private int indexOf(String name) {
-            for (int i = 0; i < names.size(); i++)
-                if (equalsIgnoreAsciiCase(names.get(i), name))
-                    return i;
-            return -1;
         }
     }
 }

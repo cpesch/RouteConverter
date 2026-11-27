@@ -56,8 +56,6 @@ import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.common.NavigationConversion.formatElevation;
-import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.garmin.GarminDefaults.MAPSOURCE_DEFAULT_CLASS;
 import static slash.navigation.garmin.GarminDefaults.MAPSOURCE_TRACK_COLOR;
 import static slash.navigation.garmin.GarminDefaults.MAPSOURCE_TRACK_DISPLAY;
@@ -66,8 +64,8 @@ import static slash.navigation.garmin.GarminDefaults.MAPSOURCE_WAYPOINT_DISPLAY;
 import static slash.navigation.garmin.GarminDefaults.mapSourceWaypointClass;
 import static slash.navigation.garmin.GarminDefaults.mapSourceWaypointIconNumber;
 import static slash.navigation.garmin.GarminMapSource6Format.asGpxText;
-import static slash.navigation.garmin.GarminMapSource6Format.degreesToSemicircles;
 import static slash.navigation.garmin.GarminMapSource6Format.qtTrimmed;
+import static slash.navigation.gpsbabel.GpsBabelMath.degreesToSemicircles;
 import static slash.navigation.gpsbabel.GpsBabelMath.semicirclesToDegrees;
 
 /**
@@ -732,10 +730,11 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
 
         private Wpt createWpt(GpxPosition position) throws IOException {
             Wpt wpt = new Wpt();
-            wpt.longitude = formatPosition(position.getLongitude()).doubleValue();
-            wpt.latitude = formatPosition(position.getLatitude()).doubleValue();
-            BigDecimal elevation = formatElevation(position.getElevation());
-            wpt.altitude = elevation != null ? elevation.doubleValue() : UNKNOWN_ALTITUDE;
+            // the exact values: neither GPSBabel's GPX exchange nor the user's display precision rounds them (D18)
+            wpt.longitude = position.getLongitude();
+            wpt.latitude = position.getLatitude();
+            Double elevation = position.getElevation();
+            wpt.altitude = elevation != null && Double.isFinite(elevation) ? elevation : UNKNOWN_ALTITUDE;
             wpt.time = toTimeT(position.getTime());
             wpt.shortName = asGpsBabelText(asName(position.getDescription()));
             wpt.notes = asGpsBabelText(asDesc(position.getDescription()));
@@ -749,7 +748,8 @@ public class GarminMapSource5Format extends GpxBackedNavigationFormat implements
 
         private boolean isValid(GpxPosition position) {
             // the GPX written for GPSBabel skips positions without valid coordinates
-            return formatPosition(position.getLongitude()) != null && formatPosition(position.getLatitude()) != null;
+            Double longitude = position.getLongitude(), latitude = position.getLatitude();
+            return longitude != null && latitude != null && Double.isFinite(longitude) && Double.isFinite(latitude);
         }
 
         // gpx.cc <wpt> and waypt_add()
