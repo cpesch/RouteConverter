@@ -37,6 +37,7 @@ import slash.navigation.googlemaps.GoogleElevationService;
 import slash.navigation.googlemaps.GoogleGeocodingService;
 import slash.navigation.googlemaps.GoogleRoutingService;
 import slash.navigation.graphhopper.GraphHopper;
+import slash.navigation.gsi.GsiElevationService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.hgt.HgtFiles;
@@ -188,6 +189,7 @@ public class RouteConverter extends BaseRouteConverter {
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
         }
+        getElevationServiceFacade().addElevationService(new GsiElevationService());
         getElevationServiceFacade().addElevationService(new GoogleElevationService());
     }
 

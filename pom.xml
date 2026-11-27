@@ -942,6 +942,7 @@
         <module>googlemaps</module>
         <module>gpx</module>
         <module>graphhopper</module>
+        <module>gsi</module>
         <module>hgt</module>
         <module>java-version-guard</module>
         <module>kml</module>
