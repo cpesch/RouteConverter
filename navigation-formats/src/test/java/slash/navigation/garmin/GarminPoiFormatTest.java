@@ -488,6 +488,147 @@ public class GarminPoiFormatTest {
         assertTrue(read(obfuscate(clear, headers.length, clear.length)).isEmpty());
     }
 
+    // address and contact
+
+    private static byte[] pString(String string) {
+        byte[] bytes = string.getBytes(WINDOWS_1252);
+        return concat(int16(bytes.length), bytes);
+    }
+
+    // format version 00: the flags in the main data, the strings in the extra data
+    private static byte[] address(int flags, byte[]... strings) {
+        return record(0xb, int16(flags), concat(strings));
+    }
+
+    private static byte[] contact(int flags, byte[]... strings) {
+        return record(0xc, int16(flags), concat(strings));
+    }
+
+    @Test
+    public void readsAddressAndPhoneIntoTheDescription() throws IOException {
+        byte[] bytes = gpi(1252, group("Dealers", area(waypoint(53.7, 9.4, "Bike Shop GmbH",
+                address(0x1b, string("Musterstadt"), string("DEU"), pString("12345"), string("Hauptstr. 5a")),
+                contact(0x1, pString("+49-1234-567890"))))));
+        assertEquals(List.of("Bike Shop GmbH; Hauptstr. 5a, 12345 Musterstadt, DEU; +49-1234-567890"),
+                readDescriptions(bytes));
+    }
+
+    @Test
+    public void appendsAddressAndContactToTheComment() throws IOException {
+        byte[] bytes = gpi(1252, group("Dealers", area(
+                waypoint(1.0, 1.0, "Shop", comment("Open daily"), address(0x1, string("Musterstadt"))),
+                waypoint(1.1, 1.0, "Same", comment("Same and more"), contact(0x1, pString("123"))),
+                waypoint(1.2, 1.0, "Notes", notes(1, "note"), address(0x1, string("Ort"))))));
+        assertEquals(List.of("Shop; Open daily; Musterstadt", "Same and more; 123", "Notes; note; Ort"),
+                readDescriptions(bytes));
+    }
+
+    @Test
+    public void readsTheAddressPartsThatArePresent() throws IOException {
+        byte[] bytes = gpi(1252, group("Addresses", area(
+                waypoint(1.0, 1.0, "City", address(0x1, string("M\u00fcnchen"))),
+                waypoint(1.1, 1.0, "Street", address(0x30, string("Main Street"), pString("12"))),
+                waypoint(1.2, 1.0, "Number", address(0x28, pString("8000"), pString("7"))),
+                waypoint(1.3, 1.0, "State", address(0xf, string("Springfield"), string("USA"), string("IL"),
+                        pString("62701"))),
+                waypoint(1.4, 1.0, "Empty", address(0x3f, string(""), string(""), string(""), pString(""),
+                        string(""), pString(""))),
+                waypoint(1.5, 1.0, "None", address(0)))));
+        assertEquals(List.of("City; M\u00fcnchen", "Street; Main Street 12", "Number; 7, 8000",
+                "State; 62701 Springfield, IL, USA", "Empty", "None"), readDescriptions(bytes));
+    }
+
+    @Test
+    public void detectsLanguageAndSingleByteStringsPerField() throws IOException {
+        byte[] bytes = gpi(1252, group("Encodings", area(
+                // the city as a single byte string, the postal code as a language string
+                waypoint(1.0, 1.0, "Swapped", address(0x9, pString("Musterstadt"), string("12345"))),
+                // an empty language string with a 32 bit length of zero is skipped as a whole
+                waypoint(1.1, 1.0, "Empty", address(0x3, int32(0), string("DEU"))),
+                waypoint(1.2, 1.0, "Phone", contact(0x3, string("111"), pString("222"))))));
+        assertEquals(List.of("Swapped; 12345 Musterstadt", "Empty; DEU", "Phone; 111, 222"), readDescriptions(bytes));
+    }
+
+    @Test
+    public void takesTheFirstLanguageOfAnAddressField() throws IOException {
+        byte[] bytes = gpi(1252, group("Languages", area(waypoint(1.0, 1.0, "Shop",
+                address(0x11, languageString("Munich".getBytes(US_ASCII), "M\u00fcnchen".getBytes(WINDOWS_1252)),
+                        languageString("Main Street".getBytes(US_ASCII), "Hauptstra\u00dfe".getBytes(WINDOWS_1252)))))));
+        assertEquals(List.of("Shop; Main Street, Munich"), readDescriptions(bytes));
+    }
+
+    @Test
+    public void readsAnAddressInTheMainDataOfFormatVersion01() throws IOException {
+        byte[] main = concat(int16(0x11), string("Musterstadt"), string("Hauptstr. 1"));
+        byte[] bytes = gpi(1252, group("Dealers", area(waypoint(1.0, 1.0, "Shop", record(0xb, main)))));
+        assertEquals(List.of("Shop; Hauptstr. 1, Musterstadt"), readDescriptions(bytes));
+    }
+
+    @Test
+    public void readsTheContactsButNotTheFax() throws IOException {
+        byte[] bytes = gpi(1252, group("Contacts", area(
+                waypoint(1.0, 1.0, "All", contact(0x3f, pString("111"), pString("222"), pString("333"),
+                        pString("shop@example.com"), pString("www.example.com"), string("comment"))),
+                waypoint(1.1, 1.0, "Fax", contact(0x4, pString("333"))),
+                waypoint(1.2, 1.0, "Mail", contact(0x8, pString("shop@example.com"))))));
+        assertEquals(List.of("All; 111, 222, shop@example.com, www.example.com", "Fax", "Mail; shop@example.com"),
+                readDescriptions(bytes));
+    }
+
+    @Test
+    public void readsAddressAndContactInTheCodePageOfTheFile() throws IOException {
+        byte[] street = "Stra\u00dfe 1".getBytes(UTF_8);
+        byte[] bytes = gpi(65001, group("Dealers", area(waypoint(1.0, 1.0, "Shop",
+                address(0x10, languageString(street)), contact(0x1, concat(int16(street.length), street))))));
+        assertEquals(List.of("Shop; Stra\u00dfe 1; Stra\u00dfe 1"), readDescriptions(bytes));
+    }
+
+    @Test
+    public void dropsABrokenAddressOrContactButKeepsTheWaypoint() throws IOException {
+        byte[] bytes = gpi(1252, group("Broken", area(
+                // the flags announce a postal code the record does not hold
+                waypoint(1.0, 1.0, "Truncated", address(0x9, string("Musterstadt")), contact(0x1, pString("123"))),
+                // a string longer than its record
+                waypoint(1.1, 1.0, "Long", address(0x1, concat(int32(1000), "EN".getBytes(US_ASCII), int16(3))),
+                        contact(0x1, concat(int16(1000), "12".getBytes(US_ASCII)))),
+                // a language string longer than the string
+                waypoint(1.2, 1.0, "Language", address(0x1, concat(int32(8), "EN".getBytes(US_ASCII), int16(10),
+                        "Ort".getBytes(US_ASCII), new byte[1]))),
+                // no flags at all
+                waypoint(1.3, 1.0, "NoFlags", record(0xb, new byte[0]), record(0xc, new byte[1])),
+                waypoint(1.4, 1.0, "After", address(0x1, string("Ort"))))));
+        assertEquals(List.of("Truncated; 123", "Long", "Language", "NoFlags", "After; Ort"), readDescriptions(bytes));
+    }
+
+    @Test
+    public void neverThrowsForMutatedAddressAndContactRecords() throws IOException {
+        byte[] details = concat(address(0x3f, string("Musterstadt"), string("DEU"), string("NI"), pString("12345"),
+                string("Hauptstr."), pString("5a")), contact(0x1f, pString("1"), pString("2"), pString("3"),
+                pString("a@b.c"), pString("www.b.c")));
+        Random random = new Random(11);
+        for (int i = 0; i < 2000; i++) {
+            byte[] mutated = details.clone();
+            for (int j = 0; j < 1 + random.nextInt(4); j++)
+                mutated[random.nextInt(mutated.length)] = (byte) random.nextInt(256);
+            byte[] bytes = gpi(1252, group("G", area(waypoint(1.0, 1.0, "A", mutated), waypoint(1.1, 1.0, "B"))));
+            try {
+                read(bytes);
+            } catch (Exception e) {
+                fail("Throws " + e + " for " + HexFormat.of().formatHex(mutated));
+            }
+        }
+    }
+
+    @Test
+    public void keepsAddressAndContactAsCommentTextWhenWriting() throws IOException {
+        byte[] bytes = gpi(1252, group("Dealers", area(waypoint(53.7, 9.4, "Bike Shop",
+                address(0x19, string("Musterstadt"), pString("12345"), string("Hauptstr. 5a")),
+                contact(0x1, pString("+49-1234-567890"))))));
+        List<GpxRoute> routes = read(bytes);
+        byte[] written = write(routes.get(0), 0x12345678L);
+        assertEquals(List.of("Bike Shop; Hauptstr. 5a, 12345 Musterstadt; +49-1234-567890"), readDescriptions(written));
+    }
+
     // write
 
     private static GpxRoute route(String name, GpxPosition... positions) {
