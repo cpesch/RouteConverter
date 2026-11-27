@@ -26,6 +26,7 @@
 package slash.navigation.holux;
 
 import slash.navigation.base.GpxBackedNavigationFormat;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
@@ -35,6 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.math.RoundingMode.HALF_EVEN;
@@ -53,6 +55,18 @@ import static slash.navigation.common.UnitConversion.msToKmh;
  * log format bitmask. The device type decides the record layout like {@code mtk_device} does in GPSBabel:
  * the generic MTK logger writes 8 byte double coordinates, a 4 byte float height and a '*' before the
  * checksum, the Holux devices write 4 byte float coordinates, a 3 byte float height and no '*'.
+ * <p>
+ * Beyond GPSBabel 1.5.4 (spec 00083, D19, D23, D25):
+ * <ul>
+ * <li>after a record with a bad checksum, the reader moves on byte by byte until a record with a matching
+ * checksum and plausible values follows, so a lost or extra byte costs one record, not the rest of the sector</li>
+ * <li>positions with a latitude beyond 90 or a longitude beyond 180 degrees are dropped</li>
+ * <li>every sector header sets the log format for its sector; an erased header of a Holux device
+ * means the M-241 default format</li>
+ * <li>with the overwrite log policy, a dump whose ring buffer wrapped is read from its oldest sector on</li>
+ * <li>a dump with a log header whose records cannot be read or whose log format has fields of unknown size
+ * fails with an {@link UnreadableFileException}</li>
+ * </ul>
  *
  * @author Christian Pesch
  */
@@ -99,14 +113,28 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
     private static final int MTK_EVT_START = 1 << 0x07;
     private static final int MTK_EVT_WAYPT = 1 << 0x10;
 
-    // Holux-specific 'low precision' bit
-    private static final int HOLUX_LOW_PRECISION_MASK = 0x7fffffff;
+    // Holux-specific 'low precision' bit, the generic loggers use it for 'log only positions with a valid fix'
+    private static final int LOW_PRECISION_OR_VALID_FIX_ONLY = 1 << 31;
+    private static final int HOLUX_LOW_PRECISION_MASK = ~LOW_PRECISION_OR_VALID_FIX_ONLY;
     static final int HOLUX245_MASK = 1 << 27;
+    // the log format of the M-241, assumed for an erased sector header
+    private static final int HOLUX_DEFAULT_BITMASK = LOW_PRECISION_OR_VALID_FIX_ONLY |
+            1 << UTC | 1 << LATITUDE | 1 << LONGITUDE | 1 << HEIGHT;
 
-    // the guard: bits mtk_logger.cc knows a size for, plus the GPSport 245 marker bit on the Holux devices
-    private static final int KNOWN_MTK_BITS = (1 << (DISTANCE + 1)) - 1;
+    // the guard: bits mtk_logger.cc knows a size for, plus bit 31 with size 0, plus the GPSport 245 marker bit on the Holux devices
+    private static final int KNOWN_MTK_BITS = (1 << (DISTANCE + 1)) - 1 | LOW_PRECISION_OR_VALID_FIX_ONLY;
     private static final int KNOWN_BITS = KNOWN_MTK_BITS | HOLUX245_MASK;
     private static final int REQUIRED_BITS = 1 << UTC | 1 << LATITUDE | 1 << LONGITUDE;
+
+    // the log status word of a sector header: logging enabled (0x0100), logger on (0x0002), stop when full (0x0004)
+    private static final int LOG_STATUS_ENABLED = 0x0100;
+    private static final int LOG_STATUS_ON = 0x0002;
+    private static final int LOG_STATUS_STOP_WHEN_FULL = 0x0004;
+
+    // the values a record must have to end a resync after a bad checksum
+    private static final int MAXIMUM_VALID = 0x0100;
+    private static final float MINIMUM_HEIGHT = -1000.0f;
+    private static final float MAXIMUM_HEIGHT = 18000.0f;
 
     private static final int GPX_COORDINATE_DIGITS = 9;
     private static final int GPX_DECIMAL_DIGITS = 6;
@@ -132,9 +160,28 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
         byte[] data = source.readAllBytes();
         // in a generic MTK dump, the Holux layout finds a few records with a matching checksum by chance
-        if (isHolux() && !new Parser(data, false).read().isEmpty())
+        if (isHolux() && !parse(data, false).routes.isEmpty())
             return emptyList();
-        return new Parser(data, isHolux()).read();
+
+        Parser parser = parse(data, isHolux());
+        List<GpxRoute> routes = parser.routes;
+        // routes that isValidRoute() rejects are declined quietly: they are another format's data
+        if (routes.isEmpty() && parser.unsupportedBitmask != 0)
+            throw new UnreadableFileException(String.format("Holux/MTK logger file has the log format 0x%08x with fields RouteConverter does not know", parser.unsupportedBitmask));
+        if (routes.isEmpty() && parser.isDamaged())
+            throw new UnreadableFileException("Holux/MTK logger file is damaged: it has a log header, but no record can be read");
+        return routes;
+    }
+
+    private Parser parse(byte[] data, boolean holux) {
+        Parser parser = new Parser(data, holux);
+        parser.read();
+        byte[] rotated = parser.rotateWrappedRing();
+        if (rotated != null) {
+            parser = new Parser(rotated, holux);
+            parser.read();
+        }
+        return parser;
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) {
@@ -181,6 +228,10 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
         private boolean holux245;
         private int bitmask, logLength, period, distance, speed, trackEvent;
         private int count, validChecksumCount, starredValidChecksumCount;
+        private boolean headerMatched, holuxStringFound, overwrite, resyncing;
+        private int resyncSkipped, unsupportedBitmask;
+        private final int[] newestTimestampPerSector;
+        private List<GpxRoute> routes = emptyList();
         private final List<GpxPosition> wayPoints = new ArrayList<>();
         private final List<GpxRoute> tracks = new ArrayList<>();
         private List<GpxPosition> trackPositions;
@@ -188,6 +239,7 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
         Parser(byte[] data, boolean holux) {
             this.data = data;
             this.holux = holux;
+            this.newestTimestampPerSector = new int[(data.length + SECTOR_SIZE - 1) / SECTOR_SIZE];
             if (holux) {
                 // file_init() for HOLUX_M241
                 logTypeSizes[LATITUDE] = logTypeSizes[LONGITUDE] = 4;
@@ -250,6 +302,72 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
             return holux ? bitmask & HOLUX_LOW_PRECISION_MASK : bitmask;
         }
 
+        private boolean isLogStatus(int status) {
+            return (status & ~(LOG_STATUS_ON | LOG_STATUS_STOP_WHEN_FULL)) == LOG_STATUS_ENABLED;
+        }
+
+        /** the header of the second and later sectors sets the log format of its sector, as BT747 does */
+        private void readSectorHeader(long header) {
+            if (header + SECTOR_HEADER_PREFIX_SIZE > data.length)
+                return;
+            int mask = s32(header + 2);
+            if (mask == 0xffffffff)
+                return; // erased: keep the current format
+            mask = asBitmask(mask);
+            if (holux245)
+                mask &= ~HOLUX245_MASK;
+            if (!isPlausibleBitmask(mask) || mask == bitmask)
+                return;
+            trackEvent |= MTK_EVT_BITMASK;
+            bitmask = mask;
+            logLength = logLength(bitmask);
+        }
+
+        /** the values of a record found while resyncing must look like a position on earth */
+        private boolean isPlausible(int bitmask, DataItem item) {
+            if (has(bitmask, UTC) && item.timestamp <= 0)
+                return false;
+            if (has(bitmask, VALID) && ((item.valid & (item.valid - 1)) != 0 || item.valid > MAXIMUM_VALID))
+                return false;
+            if (has(bitmask, LATITUDE) && !(Math.abs(item.latitude) <= 90.0))
+                return false;
+            if (has(bitmask, LONGITUDE) && !(Math.abs(item.longitude) <= 180.0))
+                return false;
+            return item.height >= MINIMUM_HEIGHT && item.height <= MAXIMUM_HEIGHT;
+        }
+
+        /** a log header was found but none of the records could be read */
+        boolean isDamaged() {
+            return (headerMatched || holuxStringFound) && count > 0;
+        }
+
+        /**
+         * With the overwrite log policy, the logger continues in the first sector when the last one is full.
+         * Like BT747, take the sector whose newest position is the oldest as the start of the log.
+         * @return the sectors in the order they were written or null if the dump has not wrapped
+         */
+        byte[] rotateWrappedRing() {
+            int sectors = newestTimestampPerSector.length;
+            if (!overwrite || sectors < 2)
+                return null;
+            int oldest = -1;
+            for (int i = 0; i < sectors; i++) {
+                int newest = newestTimestampPerSector[i];
+                if (newest > 0 && (oldest == -1 || newest < newestTimestampPerSector[oldest]))
+                    oldest = i;
+            }
+            if (oldest <= 0)
+                return null;
+
+            byte[] result = new byte[sectors * SECTOR_SIZE];
+            Arrays.fill(result, (byte) 0xff);
+            for (int i = 0; i < sectors; i++) {
+                int from = ((oldest + i) % sectors) * SECTOR_SIZE;
+                System.arraycopy(data, from, result, i * SECTOR_SIZE, Math.min(SECTOR_SIZE, data.length - from));
+            }
+            return result;
+        }
+
         private boolean isPlausibleBitmask(int bitmask) {
             int knownBits = holux ? KNOWN_BITS : KNOWN_MTK_BITS;
             return (bitmask & ~knownBits) == 0 && (bitmask & REQUIRED_BITS) == REQUIRED_BITS;
@@ -276,6 +394,11 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
         }
 
         List<GpxRoute> read() {
+            routes = readRoutes();
+            return routes;
+        }
+
+        private List<GpxRoute> readRoutes() {
             long fileSize = data.length;
             if (fileSize <= HEADER_SIZE)
                 return emptyList();
@@ -286,13 +409,20 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
             int logPolicy = u16(header + 6);
             if (!(logPolicy == 0x0104 || logPolicy == 0x0106) && fileSize > SECTOR_SIZE)
                 header = SECTOR_SIZE; // invalid initial log policy - check next block
-            bitmask = asBitmask(s32(header + 2));
+            int headerBitmask = s32(header + 2);
+            // an erased header of a Holux device: BT747 assumes the M-241 default format
+            if (holux && headerBitmask == 0xffffffff)
+                headerBitmask = HOLUX_DEFAULT_BITMASK;
+            bitmask = asBitmask(headerBitmask);
             period = s32(header + 8);
             distance = s32(header + 12);
             speed = s32(header + 16);
             if (header + SECTOR_HEADER_PREFIX_SIZE > fileSize)
                 return emptyList();
             trackEvent = 0;
+            int firstLogStatus = u16(6);
+            overwrite = isLogStatus(firstLogStatus) && (firstLogStatus & LOG_STATUS_STOP_WHEN_FULL) == 0;
+            boolean logStatus = isLogStatus(firstLogStatus) || isLogStatus(logPolicy);
 
             // read initial info blocks -- if any
             long position = HEADER_SIZE;
@@ -313,8 +443,13 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
             position += bufferLength;
 
             // the guard: GPSBabel would try to parse anything
-            if (!isPlausibleBitmask(bitmask))
+            if (!isPlausibleBitmask(bitmask)) {
+                // a log header with time and position, but with a field of unknown size
+                if (logStatus && (bitmask & REQUIRED_BITS) == REQUIRED_BITS)
+                    unsupportedBitmask = bitmask;
                 return emptyList();
+            }
+            headerMatched = logStatus;
             logLength = logLength(bitmask);
 
             // the 512 byte buffer of file_read() is a window into the file
@@ -335,9 +470,12 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
                         parseInfo(offset, length - i);
                         k = INFO_SIZE;
                     } else if (isHoluxString(offset, length - i)) {
-                        if (!holux)
+                        if (!holux) {
                             // an M-241 dump, which GPSBabel's mtk-bin would parse as records: leave it to the Holux format
+                            headerMatched = false;
                             return emptyList();
+                        }
+                        holuxStringFound = true;
                         // m241  - HOLUXGR241LOGGER or HOLUXGR241WAYPNT or HOLUXGR241LOGGER<SP><SP><SP><SP>
                         // gr245 - HOLUXGR245LOGGER<SP><SP><SP><SP> or HOLUXGR245WAYPNT<SP><SP><SP><SP>
                         if (matches(offset + 10, "WAYPNT"))
@@ -360,6 +498,10 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
                         windowStart = filePosition = next;
                         windowLength = 0;
                         jumped = true;
+                        // a resync ends at the sector boundary
+                        resyncing = false;
+                        resyncSkipped = 0;
+                        readSectorHeader(next - HEADER_SIZE);
                         break;
                     } else {
                         k = parse(offset, bitmask);
@@ -516,7 +658,7 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
                 }
                 else if (u8(offset + i) == 0xff)
                     // in some case star-crc hasn't been written on power off: skip the record including '*' and crc
-                    return i + 2;
+                    return resyncing ? skipByte() : i + 2;
                 // else: GPSBabel reports the missing '*' and compares the checksum with the byte in its place
             }
 
@@ -528,18 +670,39 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
 
             boolean validChecksum = u8(offset + i) == checksum;
             i++; // checksum
-            count++;
 
-            // GPSBabel only reports a bad checksum and keeps the record; spec 00083.12 skips it and
-            // keeps a pending log restart or waypoint event for the next record
-            if (validChecksum) {
-                validChecksumCount++;
-                if (starred)
-                    starredValidChecksumCount++;
-                addTrackPoint(count, bitmask, item);
-                trackEvent = 0;
+            if (resyncing) {
+                // after a bad checksum, try every byte until a record matches and looks like a position
+                if (!(validChecksum && (holux || starred) && isPlausible(bitmask, item)))
+                    return skipByte();
+                resyncing = false;
+            } else if (!validChecksum) {
+                // GPSBabel only reports a bad checksum and keeps the record; spec 00083.12 skips it and
+                // keeps a pending log restart or waypoint event for the next record; spec 00083 D25 resyncs
+                count++;
+                resyncing = true;
+                resyncSkipped = 0;
+                return 1;
             }
+
+            count++;
+            validChecksumCount++;
+            if (starred)
+                starredValidChecksumCount++;
+            if (has(bitmask, UTC) && item.timestamp > 0) {
+                int sector = (int) (offset / SECTOR_SIZE);
+                newestTimestampPerSector[sector] = Math.max(newestTimestampPerSector[sector], item.timestamp);
+            }
+            addTrackPoint(count, bitmask, item);
+            trackEvent = 0;
             return i;
+        }
+
+        // every further record length skipped while resyncing counts as another record that could not be read
+        private int skipByte() {
+            if (++resyncSkipped % logLength == 0)
+                count++;
+            return 1;
         }
 
         private static boolean has(int bitmask, int type) {
@@ -563,6 +726,9 @@ abstract class MtkBinaryFormat extends GpxBackedNavigationFormat {
 
             // GPSBabel writes nan or inf coordinates, which the GPX reader cannot read at all: drop the position
             if (!Double.isFinite(item.latitude) || !Double.isFinite(item.longitude))
+                return;
+            // GPSBabel writes coordinates beyond the poles and the date line, too: drop them (spec 00083 D23)
+            if (Math.abs(item.latitude) > 90.0 || Math.abs(item.longitude) > 180.0)
                 return;
 
             if (has(bitmask, VALID)) {
