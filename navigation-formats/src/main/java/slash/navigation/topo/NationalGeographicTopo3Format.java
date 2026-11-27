@@ -25,6 +25,7 @@
 package slash.navigation.topo;
 
 import slash.navigation.base.GpxBackedNavigationFormat;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpsbabel.LittleEndianInput;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
@@ -60,7 +61,6 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
     static final Charset CHARSET = Charset.forName("windows-1252");
 
     private static final byte[] VERSION_PREFIX = "TOPO! Ver".getBytes(US_ASCII);
-    private static final byte[] START_SECTION = "Red Without Arrow".getBytes(US_ASCII);
     private static final int FIXED_HEADER_SIZE = 512;
 
     static final int SYMBOLS_BLOCK = 0x040000;
@@ -127,34 +127,45 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
     }
 
     /**
-     * tpo_read_until_section(): GPSBabel fails unless the end of the embedded symbol image is found; its scan
-     * restarts without re-examining the byte that broke a partial match.
+     * Checks the chain of blocks that follows the fixed-length header: every block points to the next one
+     * inside the file until a pointer of 0 ends the chain. GPSBabel scans for
+     * the "Red Without Arrow" compass style instead, a user-editable name that the readers do not need,
+     * since every reader finds its block by following this chain (tpo_find_block()).
+     *
+     * @return null if the chain is sound, otherwise what is wrong with it
      */
-    static boolean hasStartSection(byte[] data) {
-        int start = findNul(data) - (data[0] & 0xFF);
-        if (start < 0)
-            return false;
-        int matchIndex = 0;
-        for (int i = start; i < data.length; i++) {
-            if (data[i] == START_SECTION[matchIndex]) {
-                matchIndex++;
-                if (matchIndex == START_SECTION.length)
-                    return true;
-            } else
-                matchIndex = 0;
+    static String checkBlockChain(byte[] data) {
+        long offset = FIXED_HEADER_SIZE;
+        // a chain of blocks of at least 8 bytes each cannot be longer than this
+        int maximumHops = data.length / 8 + 1;
+        for (int hops = 0; hops < maximumHops; hops++) {
+            if (offset + 8 > data.length)
+                return "block " + (hops + 1) + " at byte " + offset + " is beyond the end of the file at " + data.length;
+            // the type of the block at position does not matter here
+            int position = (int) offset;
+            offset = ((data[position + 4] & 0xFFL) | (data[position + 5] & 0xFFL) << 8 |
+                    (data[position + 6] & 0xFFL) << 16 | (data[position + 7] & 0xFFL) << 24);
+            if (offset == 0)
+                return null;
         }
-        return false;
+        return "block chain loops";
     }
 
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
         byte[] data = source.readAllBytes();
-        if (!isTopo3Header(data) || !hasStartSection(data))
+        if (!isTopo3Header(data))
             return emptyList();
+
+        // the version string at the start makes this a TOPO! file: from here on it is damaged, not foreign
+        String chainProblem = checkBlockChain(data);
+        if (chainProblem != null)
+            throw new UnreadableFileException("TOPO! file is damaged: " + chainProblem);
         try {
             return new Parser(data).read();
-        } catch (EOFException | InvalidTopoException e) {
-            // GPSBabel fails the whole file on these
-            return emptyList();
+        } catch (EOFException e) {
+            throw new UnreadableFileException("TOPO! file ends unexpectedly: " + e.getMessage(), e);
+        } catch (InvalidTopoException e) {
+            throw new UnreadableFileException("TOPO! file is damaged: " + e.getMessage(), e);
         }
     }
 

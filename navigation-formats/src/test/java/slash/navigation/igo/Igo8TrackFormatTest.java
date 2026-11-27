@@ -22,6 +22,7 @@
 package slash.navigation.igo;
 
 import slash.navigation.base.ParserContextImpl;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpsbabel.LittleEndianOutput;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -45,6 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -89,6 +92,19 @@ public class Igo8TrackFormatTest {
         ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
         format.read(new ByteArrayInputStream(data), context);
         return context.getRoutes();
+    }
+
+    // a file with the ID block of iGO8 that cannot be read is reported as damaged, not as empty;
+    // without the ID block it is declined
+    private void assertUnreadable(byte[] data) throws IOException {
+        assertThrows(UnreadableFileException.class, () -> read(data));
+        assertTrue(read(withoutMagic(data)).isEmpty());
+    }
+
+    private static byte[] withoutMagic(byte[] data) {
+        byte[] result = data.clone();
+        Arrays.fill(result, 0, 8, (byte) 0);
+        return result;
     }
 
     private static GpxPosition position(Double longitude, Double latitude, Long seconds) {
@@ -172,26 +188,26 @@ public class Igo8TrackFormatTest {
 
     @Test
     public void rejectsTotalFileSizeBelowHeader() throws IOException {
-        assertTrue(read(file(100, 0, point(5, degrees(1), degrees(2)))).isEmpty());
+        assertUnreadable(file(100, 0, point(5, degrees(1), degrees(2))));
     }
 
     @Test
     public void rejectsTotalFileSizeBeyondFileLength() throws IOException {
-        assertTrue(read(file(288 + 24, 0, point(5, degrees(1), degrees(2)))).isEmpty());
+        assertUnreadable(file(288 + 24, 0, point(5, degrees(1), degrees(2))));
     }
 
     @Test
     public void rejectsDataNotMultipleOfPointSize() throws IOException {
-        assertTrue(read(file(288 + 13, 20, point(5, degrees(1), degrees(2)))).isEmpty());
+        assertUnreadable(file(288 + 13, 20, point(5, degrees(1), degrees(2))));
     }
 
     @Test
     public void rejectsOutOfRangeCoordinates() throws IOException {
-        assertTrue(read(file(point(5, degrees(181), degrees(2)))).isEmpty());
-        assertTrue(read(file(point(5, degrees(-181), degrees(2)))).isEmpty());
-        assertTrue(read(file(point(5, degrees(1), degrees(91)))).isEmpty());
-        assertTrue(read(file(point(5, degrees(1), degrees(-91)))).isEmpty());
-        assertTrue(read(file(point(5, degrees(1), degrees(2)), point(6, degrees(200), degrees(2)))).isEmpty());
+        assertUnreadable(file(point(5, degrees(181), degrees(2))));
+        assertUnreadable(file(point(5, degrees(-181), degrees(2))));
+        assertUnreadable(file(point(5, degrees(1), degrees(91))));
+        assertUnreadable(file(point(5, degrees(1), degrees(-91))));
+        assertUnreadable(file(point(5, degrees(1), degrees(2)), point(6, degrees(200), degrees(2))));
     }
 
     @Test
@@ -201,8 +217,28 @@ public class Igo8TrackFormatTest {
     }
 
     @Test
-    public void rejectsRouteWithGreedyDistances() throws IOException {
-        assertTrue(read(file(point(5, degrees(0), degrees(0)), point(6, degrees(179), degrees(0)))).isEmpty());
+    public void rejectsRouteWithGreedyDistancesWithoutMagic() throws IOException {
+        assertTrue(read(withoutMagic(file(point(5, degrees(0), degrees(0)), point(6, degrees(179), degrees(0))))).isEmpty());
+    }
+
+    @Test
+    public void acceptsSparseRouteWithMagic() throws IOException {
+        // the distance heuristic used to decline any two-point intercontinental route
+        assertEquals(2, read(file(point(5, degrees(0), degrees(0)), point(6, degrees(179), degrees(0)))).get(0).getPositionCount());
+        assertEquals(3, read(file(point(5, degrees(180), degrees(90)), point(6, degrees(-180), degrees(-90)),
+                point(7, degrees(0), degrees(0)))).get(0).getPositionCount());
+    }
+
+    @Test
+    public void detectsMagic() {
+        assertTrue(Igo8TrackFormat.hasMagic(file(point(5, degrees(1), degrees(2)))));
+        assertFalse(Igo8TrackFormat.hasMagic(withoutMagic(file(point(5, degrees(1), degrees(2))))));
+        assertFalse(Igo8TrackFormat.hasMagic(new byte[]{(byte) 0x9B, 0x02, 0, 0}));
+    }
+
+    @Test
+    public void headerWithMagicCutShortIsUnreadable() {
+        assertThrows(UnreadableFileException.class, () -> read(Arrays.copyOf(file(point(5, degrees(1), degrees(2))), 100)));
     }
 
     @Test

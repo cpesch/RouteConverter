@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserContextImpl;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpsbabel.LittleEndianOutput;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
@@ -37,10 +38,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Arrays.copyOf;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -111,6 +114,11 @@ public class MagellanMapSendFormatTest {
         ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
         format.read(new ByteArrayInputStream(data), context);
         return context.getRoutes();
+    }
+
+    // a file with the MapSend signature that cannot be read is reported as damaged, not as empty
+    private UnreadableFileException assertUnreadable(byte[] data) {
+        return assertThrows(UnreadableFileException.class, () -> read(data));
     }
 
     private byte[] write(String routeName, GpxPosition... positions) throws IOException {
@@ -249,7 +257,7 @@ public class MagellanMapSendFormatTest {
             waypoint(output, "A", "A", 1, 0.0, coordinate[0], coordinate[1]);
             output.writeInt32(0);
             // fatal in GPSBabel's waypt_add()
-            assertTrue(read(output.toByteArray()).isEmpty());
+            assertUnreadable(output.toByteArray());
         }
     }
 
@@ -267,14 +275,15 @@ public class MagellanMapSendFormatTest {
     }
 
     @Test
-    public void rejectsOtherFileTypes() throws IOException {
-        // 0 region and 3 log are fatal to GPSBabel, 2 track is not delivered with "-r -w"
+    public void rejectsOtherFileTypes() {
+        // 0 region and 3 log are fatal to GPSBabel, 2 track is not read yet
         for (int type : new int[]{0, 2, 3, 4}) {
             LittleEndianOutput output = header(type);
             output.writeInt32(1);
             waypoint(output, "A", "B", 1, 1.0, 2.0, 3.0);
             output.writeInt32(0);
-            assertTrue(read(output.toByteArray()).isEmpty(), "type " + type);
+            assertEquals("Cannot read MapSend file of type " + type + ", only waypoint files (type 1)",
+                    assertUnreadable(output.toByteArray()).getMessage());
         }
     }
 
@@ -289,17 +298,16 @@ public class MagellanMapSendFormatTest {
         output.writeInt32(1700000000);
         output.writeInt32(1);
         output.writeUInt8(0);
-        assertTrue(read(output.toByteArray()).isEmpty());
+        assertUnreadable(output.toByteArray());
     }
 
     @Test
     public void rejectsWrongHeader() throws IOException {
         byte[][] headers = {
-                header(12, "4D533330 MS", "30", 1).toByteArray(),
                 header(13, "4D533330 XX", "30", 1).toByteArray(),
                 header(13, "5D533330 MS", "30", 1).toByteArray(),
                 header(13, "4D53333X MS", "30", 1).toByteArray(),
-                header(13, "4D533330 MS", "3a", 1).toByteArray()
+                header(13, "4D53 330 MS", "30", 1).toByteArray()
         };
         for (byte[] header : headers) {
             LittleEndianOutput output = new LittleEndianOutput();
@@ -313,21 +321,42 @@ public class MagellanMapSendFormatTest {
     }
 
     @Test
-    public void rejectsCountsLargerThanTheRemainingBytes() throws IOException {
+    public void acceptsRelaxedSignature() throws IOException {
+        // mapsend.cc: the signature changes with the versions; GPSBabel checks neither it nor the length or version
+        byte[][] headers = {
+                header(12, "4D533330 MS", "30", 1).toByteArray(),
+                header(13, "4D533430 MS", "30", 1).toByteArray(),
+                header(13, "4D533230 MS", "30", 1).toByteArray(),
+                header(13, "4D539999 MS", "99", 1).toByteArray(),
+                header(13, "4D533330 MS", "3a", 1).toByteArray()
+        };
+        for (byte[] header : headers) {
+            assertTrue(MagellanMapSendFormat.isMapSendHeader(copyOf(header, 18)));
+            LittleEndianOutput output = new LittleEndianOutput();
+            output.writeBytes(header);
+            output.writeInt32(1);
+            waypoint(output, "A", "B", 1, 1.0, 2.0, 3.0);
+            output.writeInt32(0);
+            assertEquals(1, read(output.toByteArray()).size());
+        }
+    }
+
+    @Test
+    public void rejectsCountsLargerThanTheRemainingBytes() {
         LittleEndianOutput waypoints = header(1);
         waypoints.writeInt32(1000);
         waypoint(waypoints, "A", "B", 1, 1.0, 2.0, 3.0);
         waypoints.writeInt32(0);
-        assertTrue(read(waypoints.toByteArray()).isEmpty());
+        assertUnreadable(waypoints.toByteArray());
 
         LittleEndianOutput negative = header(1);
         negative.writeInt32(-1);
-        assertTrue(read(negative.toByteArray()).isEmpty());
+        assertUnreadable(negative.toByteArray());
 
         LittleEndianOutput routes = header(1);
         routes.writeInt32(0);
         routes.writeInt32(50);
-        assertTrue(read(routes.toByteArray()).isEmpty());
+        assertUnreadable(routes.toByteArray());
 
         LittleEndianOutput points = header(1);
         points.writeInt32(0);
@@ -336,7 +365,7 @@ public class MagellanMapSendFormatTest {
         points.writeInt32(0);
         points.writeInt32(9);
         routePoint(points, "P", 1, 1.0, 2.0);
-        assertTrue(read(points.toByteArray()).isEmpty());
+        assertUnreadable(points.toByteArray());
     }
 
     @Test
@@ -345,12 +374,16 @@ public class MagellanMapSendFormatTest {
         for (int length = 18; length < data.length; length += 7) {
             byte[] truncated = new byte[length];
             System.arraycopy(data, 0, truncated, 0, length);
-            // never throws
-            read(truncated);
+            // throws nothing but UnreadableFileException
+            try {
+                read(truncated);
+            } catch (UnreadableFileException e) {
+                // expected for most lengths
+            }
         }
         byte[] cut = new byte[data.length - 1];
         System.arraycopy(data, 0, cut, 0, cut.length);
-        assertTrue(read(cut).isEmpty());
+        assertTrue(assertUnreadable(cut).getMessage().startsWith("MapSend file ends unexpectedly at byte "));
     }
 
     @Test

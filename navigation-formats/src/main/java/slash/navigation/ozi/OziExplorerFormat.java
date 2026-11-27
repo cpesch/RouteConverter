@@ -96,8 +96,8 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
     }
 
     /**
-     * Decides from the first line of a file whether it is of this format. Like GPSBabel's ozi reader a line
-     * naming a track or a route file is one, everything else starting with the OziExplorer prefix is read as waypoints.
+     * Decides from the first line of a file whether it is of this format. The OziExplorer prefix is followed by
+     * the file type, which must name the type of this format.
      */
     protected abstract boolean isFileType(String firstLine);
 

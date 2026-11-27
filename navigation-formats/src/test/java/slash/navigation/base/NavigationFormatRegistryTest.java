@@ -40,7 +40,6 @@ import slash.navigation.nmn.NavigonCruiserFormat;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.photo.PhotoFormat;
 import slash.navigation.simple.*;
-import slash.navigation.url.GoogleMapsUrlFormat;
 
 import java.util.HashSet;
 import java.util.List;
@@ -63,10 +62,10 @@ public class NavigationFormatRegistryTest {
     }
 
     @Test
-    public void testGetReadFormatsSortedByExtensionIsCaseSensitive() {
+    public void testGetReadFormatsSortedByExtensionIsCaseInsensitive() {
         List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".OV2");
-        assertEquals(NmnUrlFormat.class, formats.get(0).getClass());
-        assertEquals(GoogleMapsUrlFormat.class, formats.get(1).getClass());
+        assertEquals(TomTomPoiFormat.class, formats.get(0).getClass());
+        assertEquals(NmnUrlFormat.class, formats.get(1).getClass());
     }
 
     @Test
