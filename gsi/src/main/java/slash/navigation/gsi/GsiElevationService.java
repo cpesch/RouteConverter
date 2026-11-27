@@ -195,9 +195,9 @@ public class GsiElevationService implements ElevationService {
         if (!file.exists())
             downloadTile(dataset, tileX, tileY, file);
 
-        // a missing file after a download attempt means the GSI server has no tile here
-        // (outside the dataset's coverage); treat that as "no data" instead of an error
-        if (!file.exists())
+        // an empty file is a cached "no data" result for a tile outside this dataset's
+        // coverage (the GSI server answered 404); treat it as "no data" without retrying
+        if (file.length() == 0)
             return null;
 
         try {
@@ -221,8 +221,12 @@ public class GsiElevationService implements ElevationService {
             return entity != null ? EntityUtils.toByteArray(entity) : null;
         });
 
-        if (!get.isSuccessful() || bytes == null)
-            return;
+        if (get.isNotFound())
+            // cache the "no data" result with an empty file instead of re-requesting
+            // this tile on every lookup
+            bytes = new byte[0];
+        else if (!get.isSuccessful() || bytes == null)
+            throw new IOException(format("Cannot download GSI tile %s: HTTP status %d", url, get.getStatusCode()));
 
         ensureDirectory(file.getParentFile());
         try (FileOutputStream out = new FileOutputStream(file)) {

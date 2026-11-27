@@ -196,6 +196,23 @@ public class GsiElevationServiceTest {
     }
 
     @Test
+    public void testGetElevationForTreatsCachedEmptyFileAsNoData(@TempDir File tempDir) throws IOException {
+        service.setPath(tempDir.getAbsolutePath());
+
+        double longitude = 139.7;
+        double latitude = 35.7;
+        Dataset best = DATASETS[0];
+        Dataset fallback = DATASETS[1];
+
+        // an empty file is the cached result of a prior 404 from the GSI server
+        writeEmptyTile(best, longitude, latitude);
+        writeTile(fallback, longitude, latitude, encodeElevation(42.0));
+
+        Double elevation = service.getElevationFor(longitude, latitude);
+        assertEquals(42.0, elevation, 0.0001);
+    }
+
+    @Test
     public void testDownloadElevationDataForEmptyListDoesNothing() {
         service.downloadElevationDataFor(emptyList(), false);
     }
@@ -239,5 +256,14 @@ public class GsiElevationServiceTest {
         File file = service.createTileFile(dataset, tileX, tileY);
         file.getParentFile().mkdirs();
         ImageIO.write(image, "png", file);
+    }
+
+    private void writeEmptyTile(Dataset dataset, double longitude, double latitude) throws IOException {
+        int tileX = longitudeToTileX(longitude, dataset.zoom);
+        int tileY = latitudeToTileY(latitude, dataset.zoom);
+
+        File file = service.createTileFile(dataset, tileX, tileY);
+        file.getParentFile().mkdirs();
+        assertTrue(file.createNewFile());
     }
 }
