@@ -103,7 +103,9 @@ public class BabelGoldenWriteIT {
             // coordinates and elevations (D18, audit 2026-11-27), 1.5.4 truncates them after rounding to the display precision
             "GarminMapSource5Format/from10.gpx", "GarminMapSource5Format/from10trk.gpx",
             "GarminMapSource6Format/from10.gpx", "GarminMapSource6Format/from10trk.gpx",
-            "GarminMapSource6Format/from11.gpx", "GarminMapSource6Format/synthetic"
+            "GarminMapSource6Format/from11.gpx", "GarminMapSource6Format/synthetic",
+            // Tom Tom POI rounds a negative coordinate half up (D18, audit 2026-11-27), 1.5.4 truncates it toward zero
+            "TomTomPoiFormat/from10.gpx", "TomTomPoiFormat/from10trk.gpx", "TomTomPoiFormat/from11.gpx"
     );
     // native writers of formats GPSBabel 1.5.4 never wrote: there is no write golden and none can exist
     // (spec 00083.3 decision D3.1, issue #386: "there is no oracle for the writer"); see TourExchangeFormatTest

@@ -182,6 +182,23 @@ public class TomTomPoiFormatTest {
     }
 
     @Test
+    public void decodesUtf8() throws IOException {
+        List<GpxPosition> positions = read(new Bytes().u8(2).i32(14 + 7).i32(1000000).i32(5000000)
+                .raw(new byte[]{'M', (byte) 0xC3, (byte) 0xBC, 'l', 'l', 'e', 'r'}).u8(0).get());
+        assertEquals("Müller", positions.get(0).getDescription());
+    }
+
+    @Test
+    public void undefinedWindows1252BytesSurviveReadAndWrite() throws IOException {
+        byte[] text = {'A', (byte) 0x81, (byte) 0x8D, (byte) 0x8F, (byte) 0x90, (byte) 0x9D, (byte) 0xFC};
+        byte[] data = new Bytes().header(21 + 13 + text.length + 1, 1000000, 5000000, 1000000, 5000000)
+                .u8(2).i32(14 + text.length).i32(1000000).i32(5000000).raw(text).u8(0).get();
+        List<GpxPosition> positions = read(data);
+        assertEquals("A\u0081\u008D\u008F\u0090\u009Dü", positions.get(0).getDescription());
+        assertArrayEquals(data, write(positions));
+    }
+
+    @Test
     public void decodesWindows1252() throws IOException {
         List<GpxPosition> positions = read(new Bytes().poi(1000000, 5000000, "Müller Äß €").get());
         assertEquals("Müller Äß €", positions.get(0).getDescription());
@@ -208,21 +225,49 @@ public class TomTomPoiFormatTest {
     }
 
     @Test
-    public void rejectsBadRecordSize() throws IOException {
-        assertNull(read(new Bytes().poi(1000000, 5000000, "Kept").u8(2).i32(100001).i32(0).i32(0).get()));
-        assertNull(read(new Bytes().poi(1000000, 5000000, "Kept").u8(2).i32(-1).i32(0).i32(0).get()));
-        assertNull(read(new Bytes().poi(1000000, 5000000, "Kept").u8(2).i32(12).i32(0).i32(0).get()));
+    public void rejectsBadRecordSizeBeforeTheFirstPoi() throws IOException {
+        assertNull(read(new Bytes().u8(2).i32(100001).i32(0).i32(0).get()));
+        assertNull(read(new Bytes().u8(2).i32(12).i32(0).i32(0).get()));
         assertNull(read(new Bytes().u8(0).i32(4).get()));
         assertNull(read(new Bytes().u8(100).i32(100006).get()));
     }
 
     @Test
-    public void rejectsTruncatedFile() throws IOException {
-        byte[] data = new Bytes().poi(1000000, 5000000, "Kept").poi(1100000, 5100000, "Truncated").get();
-        for (int length : new int[]{data.length - 1, data.length - 5, 20 + 1 + 3})
+    public void keepsThePoisReadBeforeABadRecordSize() throws IOException {
+        for (int size : new int[]{100001, -1, 12}) {
+            List<GpxPosition> positions = read(new Bytes().poi(1000000, 5000000, "Kept").u8(2).i32(size).i32(0).i32(0).get());
+            assertEquals(1, positions.size(), "size " + size);
+            assertEquals("Kept", positions.get(0).getDescription());
+        }
+    }
+
+    @Test
+    public void rejectsTruncatedFileWithoutCompletePoi() throws IOException {
+        byte[] data = new Bytes().poi(1000000, 5000000, "Truncated").get();
+        for (int length : new int[]{data.length - 1, data.length - 5, 1 + 3})
             assertNull(read(java.util.Arrays.copyOf(data, length)), "length " + length);
         assertNull(read(new Bytes().header(21, 0, 0, 0, 0).u8(9).u8(10).raw(new byte[5]).get()));
         assertNull(read(new Bytes().u8(0).i32(50).raw(new byte[10]).get()));
+    }
+
+    @Test
+    public void keepsThePoisReadBeforeATruncatedRecord() throws IOException {
+        byte[] data = new Bytes().poi(1000000, 5000000, "Kept").poi(1100000, 5100000, "Truncated").get();
+        int first = 1 + 4 + 8 + 4 + 1;
+        for (int length : new int[]{data.length - 1, data.length - 3, data.length - 5, first + 1 + 3}) {
+            List<GpxPosition> positions = read(java.util.Arrays.copyOf(data, length));
+            assertEquals(1, positions.size(), "length " + length);
+            assertEquals("Kept", positions.get(0).getDescription());
+        }
+    }
+
+    @Test
+    public void keepsThePoisReadBeforePaddingAtTheEnd() throws IOException {
+        byte[] data = new Bytes().poi(1000000, 5000000, "One").poi(1100000, 5100000, "Two").get();
+        for (int padding : new int[]{1, 8, 512}) {
+            byte[] padded = java.util.Arrays.copyOf(data, data.length + padding);
+            assertEquals(2, read(padded).size(), "padding " + padding);
+        }
     }
 
     @Test
@@ -237,16 +282,22 @@ public class TomTomPoiFormatTest {
     // writing
 
     @Test
-    public void writeFloatAsLongTruncatesTowardZero() {
+    public void writeFloatAsLongRoundsHalfUp() {
         assertEquals(100000L, TomTomPoiFormat.writeFloatAsLong(100000.0));
         assertEquals(100000L, TomTomPoiFormat.writeFloatAsLong(99999.7));
         assertEquals(99999L, TomTomPoiFormat.writeFloatAsLong(99999.4));
-        assertEquals(0L, TomTomPoiFormat.writeFloatAsLong(-1.0000001));
-        assertEquals(0L, TomTomPoiFormat.writeFloatAsLong(-0.7));
-        assertEquals(-99999L, TomTomPoiFormat.writeFloatAsLong(-100000.4));
-        // -100000.0 + 0.5 = -99999.5 truncates to -99999: negative integral values are one off
-        assertEquals(-99999L, TomTomPoiFormat.writeFloatAsLong(-100000.0));
-        assertEquals(-1L, TomTomPoiFormat.writeFloatAsLong(-1.6));
+        assertEquals(100000L, TomTomPoiFormat.writeFloatAsLong(99999.5));
+        assertEquals(-1L, TomTomPoiFormat.writeFloatAsLong(-1.0000001));
+        assertEquals(-1L, TomTomPoiFormat.writeFloatAsLong(-0.7));
+        assertEquals(0L, TomTomPoiFormat.writeFloatAsLong(-0.4));
+        assertEquals(-100000L, TomTomPoiFormat.writeFloatAsLong(-100000.4));
+        assertEquals(-100000L, TomTomPoiFormat.writeFloatAsLong(-100000.0));
+        assertEquals(-2L, TomTomPoiFormat.writeFloatAsLong(-1.6));
+        assertEquals(-1012345L, TomTomPoiFormat.writeFloatAsLong(-10.12345 * 100000));
+        assertEquals(-5012345L, TomTomPoiFormat.writeFloatAsLong(-50.12345 * 100000));
+        assertEquals(-912346L, TomTomPoiFormat.writeFloatAsLong(-9.123456 * 100000));
+        assertEquals(-12300000L, TomTomPoiFormat.writeFloatAsLong(-123.0 * 100000));
+        assertEquals(-1L, TomTomPoiFormat.writeFloatAsLong(-0.00001 * 100000));
     }
 
     @Test
@@ -260,7 +311,7 @@ public class TomTomPoiFormatTest {
 
     @Test
     public void writesNoPoiAsBoundingBoxOfNothing() throws IOException {
-        byte[] expected = new Bytes().header(21, -19999999, -19999999, 20000000, 20000000).get();
+        byte[] expected = new Bytes().header(21, -20000000, -20000000, 20000000, 20000000).get();
         assertArrayEquals(expected, write(new ArrayList<>()));
     }
 
@@ -353,13 +404,13 @@ public class TomTomPoiFormatTest {
     }
 
     @Test
-    public void roundsNegativeCoordinatesTowardZero() throws IOException {
-        // -1.0000001 * 100000 = -100000.01 + 0.5 = -99999.51 truncates to -99999; 51.0 is not affected
-        byte[] expected = new Bytes().header(21 + 13 + 2, -99999, 5100000, -99999, 5100000)
-                .poi(-99999, 5100000, "W").get();
-        assertArrayEquals(expected, write(List.of(position(-1.0000001, 51.0, "W"))));
+    public void roundsNegativeCoordinatesHalfUpInPoiAndSkipperBox() throws IOException {
+        // -1.0000001 * 100000 = -100000.01 rounds to -100000; GPSBabel truncated it to -99999
+        byte[] expected = new Bytes().header(21 + 13 + 2, -100000, -5012345, -100000, -5012345)
+                .poi(-100000, -5012345, "W").get();
+        assertArrayEquals(expected, write(List.of(position(-1.0000001, -50.12345, "W"))));
 
-        // -1.0 * 100000 + 0.5 truncates to 0 only below half: -0.000004 * 100000 = -0.4 + 0.5 = 0.1 -> 0
+        // -0.000004 * 100000 = -0.4 rounds to 0
         byte[] tiny = new Bytes().header(21 + 13 + 2, 0, 5100000, 0, 5100000).poi(0, 5100000, "W").get();
         assertArrayEquals(tiny, write(List.of(position(-0.000004, 51.0, "W"))));
     }
@@ -401,8 +452,7 @@ public class TomTomPoiFormatTest {
         List<GpxPosition> read = read(write(positions));
         assertEquals(3, read.size());
         assertEquals("Lisboa", read.get(0).getDescription());
-        // -950000 + 0.5 truncates to -949999, as in GPSBabel
-        assertEquals(-9.49999, read.get(0).getLongitude(), 0.0);
+        assertEquals(-9.5, read.get(0).getLongitude(), 0.0);
         assertEquals(52.5, read.get(1).getLatitude(), 0.0);
         // the written empty text reads back as the synthesized name
         assertEquals("WPT003", read.get(2).getDescription());
