@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
@@ -44,6 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -92,22 +94,23 @@ public class GarminMapSource5FormatTest {
         assertEquals(description, position.getDescription());
     }
 
-    private void assertSample(List<GpxRoute> routes, int version) {
+    // the formats 1.0 and 1.1 have no directions, GPSBabel's notes
+    private void assertSample(List<GpxRoute> routes, boolean notes) {
         assertEquals(3, routes.size());
 
         GpxRoute waypoints = routes.get(0);
         assertEquals(Waypoints, waypoints.getCharacteristics());
         // the hidden route waypoint H is no user waypoint
         assertEquals(2, waypoints.getPositionCount());
-        // version 3 has no notes: the description is the comment
-        assertPosition(waypoints.getPosition(0), 11.5, 48.1, 10.0, version == 3 ? "A; desc A" : "A; note A");
+        // without notes the description is the comment
+        assertPosition(waypoints.getPosition(0), 11.5, 48.1, 10.0, notes ? "A; note A" : "A; desc A");
         assertPosition(waypoints.getPosition(1), 11.6, 48.2, null, "B; desc B");
 
         GpxRoute route = routes.get(1);
         assertEquals(Route, route.getCharacteristics());
         assertEquals("R1", route.getName());
         assertEquals(4, route.getPositionCount());
-        assertPosition(route.getPosition(0), 11.5, 48.1, 10.0, version == 3 ? "A; desc A" : "A; note A");
+        assertPosition(route.getPosition(0), 11.5, 48.1, 10.0, notes ? "A; note A" : "A; desc A");
         assertPosition(route.getPosition(1), 11.7, 48.3, 5.5, "H; hidden");
         assertPosition(route.getPosition(2), 11.6, 48.2, null, "B; desc B");
         // a route point without waypoint takes its position from the route link
@@ -119,42 +122,65 @@ public class GarminMapSource5FormatTest {
         assertEquals(4, track.getPositionCount());
         assertPosition(track.getPosition(0), 11.0, 48.0, 1.0, null);
         assertEquals(fromMillis(1000000000L * 1000), track.getPosition(0).getTime());
-        // a track point without time keeps the time of the previous point
-        assertEquals(fromMillis(1000000000L * 1000), track.getPosition(1).getTime());
+        // a track point without time has none, GPSBabel gave it the time of the previous point
+        assertNull(track.getPosition(1).getTime());
         assertNull(track.getPosition(2).getTime());
-        // the time is an unsigned 32 bit value
-        assertEquals(fromMillis((0x100000000L - 5) * 1000), track.getPosition(3).getTime());
+        // the time is a signed 32 bit value, a time before 1970 is implausible (D23)
+        assertNull(track.getPosition(3).getTime());
     }
 
     @Test
     public void testReadVersion5() throws IOException {
-        assertSample(read(sample(new MpsBuilder(5)).toBytes()), 5);
+        assertSample(read(sample(new MpsBuilder(5)).toBytes()), true);
     }
 
     @Test
     public void testReadVersion4() throws IOException {
-        assertSample(read(sample(new MpsBuilder(4)).toBytes()), 4);
-        assertSample(read(sample(new MpsBuilder(4, 'e')).toBytes()), 4);
-        assertSample(read(sample(new MpsBuilder(4, 'h')).toBytes()), 4);
+        assertSample(read(sample(new MpsBuilder(4)).toBytes()), true);
+        assertSample(read(sample(new MpsBuilder(4, 'h')).toBytes()), true);
     }
 
     @Test
     public void testReadVersion3() throws IOException {
-        assertSample(read(sample(new MpsBuilder(3)).toBytes()), 3);
+        assertSample(read(sample(new MpsBuilder(3)).toBytes()), false);
+    }
+
+    @Test
+    public void testReadFormats11And12() throws IOException {
+        // MapSource 3.6 and 4.0: an 18 byte subclass, the directions only from 1.2 on; GPSBabel read neither
+        assertSample(read(sample(new MpsBuilder(4, 'e')).toBytes()), false);
+        assertSample(read(sample(new MpsBuilder(4, 'f')).toBytes()), true);
     }
 
     @Test
     public void testVersionFlags() throws Exception {
-        assertEquals(3, new GarminMapSource5Format().new Reader(versionHeader('d')).readVersion());
-        assertEquals(4, new GarminMapSource5Format().new Reader(versionHeader('e')).readVersion());
-        assertEquals(4, new GarminMapSource5Format().new Reader(versionHeader('h')).readVersion());
-        assertEquals(5, new GarminMapSource5Format().new Reader(versionHeader('i')).readVersion());
+        for (char flag = 'd'; flag <= 'i'; flag++) {
+            GarminMapSource5Format.Reader reader = new GarminMapSource5Format().new Reader(new MpsBuilder(5, flag).mapSet().toBytes());
+            reader.readHeader(new slash.navigation.gpsbabel.LittleEndianInput(new MpsBuilder(5, flag).mapSet().toBytes()));
+            assertEquals(100 + flag - 'd', reader.getVersion());
+        }
+        // a MapSource file of another version is recognized, but cannot be read
         for (char flag : new char[]{'a', 'c', 'j', 'k', 'z'})
-            assertTrue(read(new MpsBuilder(5, flag).waypoint("A", 0, 1, 2, null, "d", "n").mapSet().toBytes()).isEmpty());
+            assertThrows(UnreadableFileException.class, () ->
+                    read(new MpsBuilder(5, flag).waypoint("A", 0, 1, 2, null, "d", "n").mapSet().toBytes()));
     }
 
-    private static byte[] versionHeader(char flag) {
-        return new MpsBuilder(5, flag).mapSet().toBytes();
+    @Test
+    public void testReadWaypointWithStreetAndUnknown1() throws IOException {
+        for (char flag : new char[]{'d', 'g', 'i'}) {
+            MpsBuilder builder = new MpsBuilder(5, flag);
+            byte[] street = builder.waypointPayload(MpsBuilder.ascii("S"), 0, 1, 2, null, MpsBuilder.ascii("d"),
+                    MpsBuilder.ascii("n"), MpsBuilder.ascii("Hauptstrasse 1"), null);
+            byte[] unknown1 = builder.waypointPayload(MpsBuilder.ascii("U"), 0, 3, 4, null, MpsBuilder.ascii("e"),
+                    MpsBuilder.ascii("m"), null, MpsBuilder.ascii("xyz"));
+            List<GpxRoute> routes = read(builder.record('W', street).record('W', unknown1)
+                    .route("R", point("S", 0, 1, 2, null), point("U", 0, 3, 4, null)).mapSet().toBytes());
+            // GPSBabel's fixed offsets lost sync and junked both waypoints
+            assertEquals(2, routes.get(0).getPositionCount());
+            assertEquals(flag == 'd' ? "S; d" : "S; n", routes.get(0).getPosition(0).getDescription());
+            assertEquals(flag == 'd' ? "U; e" : "U; m", routes.get(0).getPosition(1).getDescription());
+            assertEquals(flag == 'd' ? "U; e" : "U; m", routes.get(1).getPosition(1).getDescription());
+        }
     }
 
     @Test
@@ -214,6 +240,36 @@ public class GarminMapSource5FormatTest {
     }
 
     @Test
+    public void testReadRoutePointByNameAndPosition() throws IOException {
+        List<GpxRoute> routes = read(new MpsBuilder(5)
+                .waypoint("A", 0, 1, 2, null, "first", "")
+                .waypoint("A", 0, 3, 4, null, "second", "")
+                .waypoint("A", 8, 5, 6, null, "hidden", "")
+                .route("R", point("A", 0, 3, 4, null), point("A", 8, 5, 6, null), point("A", 0, 1, 2, null))
+                .mapSet().toBytes());
+        // a route point refers to the waypoint with its name and position (D21)
+        assertPosition(routes.get(1).getPosition(0), 4, 3, null, "A; second");
+        assertPosition(routes.get(1).getPosition(1), 6, 5, null, "A; hidden");
+        assertPosition(routes.get(1).getPosition(2), 2, 1, null, "A; first");
+    }
+
+    @Test
+    public void testReadTrackTimes() throws IOException {
+        List<GpxRoute> routes = read(new MpsBuilder(5)
+                .track("T", trackPoint(1, 2, null, 1262347200), trackPoint(1, 3, null, null), trackPoint(1, 4, null, null),
+                        trackPoint(1, 5, null, Integer.MAX_VALUE), trackPoint(1, 6, null, -1))
+                .mapSet().toBytes());
+        GpxRoute track = routes.get(0);
+        assertEquals(fromMillis(1262347200L * 1000), track.getPosition(0).getTime());
+        // no invented times
+        assertNull(track.getPosition(1).getTime());
+        assertNull(track.getPosition(2).getTime());
+        assertEquals(fromMillis(Integer.MAX_VALUE * 1000L), track.getPosition(3).getTime());
+        // GPSBabel's 0xFFFFFFFF for a time it could not represent
+        assertNull(track.getPosition(4).getTime());
+    }
+
+    @Test
     public void testReadCharsets() throws IOException {
         byte[] windows1252 = {'M', (byte) 0xFC, 'h', 'l', 'e'};
         byte[] utf8 = {'M', (byte) 0xC3, (byte) 0xBC, 'h', 'l', 'e'};
@@ -242,9 +298,10 @@ public class GarminMapSource5FormatTest {
         byte[] payload = builder.waypointPayload(MpsBuilder.ascii("A"), 0, 1, 2, null, MpsBuilder.ascii("d"), MpsBuilder.ascii(""));
         byte[] longer = Arrays.copyOf(payload, payload.length + 3);
         List<GpxRoute> routes = read(builder.record('W', longer).waypoint("B", 0, 3, 4, null, "e", "").mapSet().toBytes());
-        // a waypoint that lost sync with the file is junked, the reader resyncs on the record length
-        assertEquals(1, routes.get(0).getPositionCount());
-        assertEquals("B; e", routes.get(0).getPosition(0).getDescription());
+        // the bytes behind a waypoint are ignored, the reader resyncs on the record length
+        assertEquals(2, routes.get(0).getPositionCount());
+        assertEquals("A; d", routes.get(0).getPosition(0).getDescription());
+        assertEquals("B; e", routes.get(0).getPosition(1).getDescription());
     }
 
     @Test
@@ -268,18 +325,41 @@ public class GarminMapSource5FormatTest {
         assertTrue(read("<?xml version=\"1.0\"?><gpx/>".getBytes(US_ASCII)).isEmpty());
         assertTrue(read(new byte[]{'M', 's', 'R', 'c', 'f', 0, 2, 0, 0, 0, 'D', 'k', 0}).isEmpty());
         assertTrue(read(new byte[]{'M', 's', 'R', 'c', 'd'}).isEmpty());
-        assertTrue(read(Arrays.copyOf(new MpsBuilder(5).toBytes(), 6)).isEmpty());
+        // the signature without anything behind it is a MapSource file that cannot be read
+        assertThrows(UnreadableFileException.class, () -> read(Arrays.copyOf(new MpsBuilder(5).toBytes(), 6)));
+        // an intact file without waypoints, routes and tracks is declined
+        assertTrue(read(new MpsBuilder(5).mapSet().toBytes()).isEmpty());
+        assertTrue(read(new MpsBuilder(5).toBytes()).isEmpty());
         assertFalse(GarminMapSource5Format.isMps("MsRcf".getBytes(US_ASCII)));
         assertTrue(GarminMapSource5Format.isMps(new MpsBuilder(5).toBytes()));
     }
 
     @Test
-    public void testTruncatedInputNeverThrows() throws IOException {
+    public void testTruncatedInputKeepsRecordsBeforeTheCut() throws IOException {
         byte[] bytes = sample(new MpsBuilder(5)).toBytes();
-        for (int length = 0; length < bytes.length; length++)
-            read(Arrays.copyOf(bytes, length));
-        // a number read beyond the end of the file is fatal in GPSBabel: no route
-        assertTrue(read(Arrays.copyOf(bytes, 120)).isEmpty());
+        int header = new MpsBuilder(5).toBytes().length;
+        // record header (5) + name "A\0" (2) + class (4) + country (1) + subclass (22) + position (8)
+        int firstPosition = header + 5 + 2 + 4 + 1 + 22 + 8;
+        int firstWaypoint = new MpsBuilder(5).waypoint("A", 0, 48.1, 11.5, 10.0, "desc A", "note A").toBytes().length;
+        for (int length = 0; length < bytes.length; length++) {
+            byte[] truncated = Arrays.copyOf(bytes, length);
+            if (length < SIGNATURE_LENGTH || length == header)
+                assertTrue(read(truncated).isEmpty(), "length " + length);
+            else if (length < firstPosition)
+                // a cut in the header or the start of the first waypoint leaves nothing: recognized, but damaged (D19)
+                assertThrows(UnreadableFileException.class, () -> read(truncated), "length " + length);
+            else if (length >= firstWaypoint)
+                assertFalse(read(truncated).isEmpty(), "length " + length);
+            else
+                readOrUnreadable(truncated);
+        }
+
+        // GPSBabel lost the whole file for a cut in the track (R1)
+        List<GpxRoute> routes = read(Arrays.copyOf(bytes, bytes.length - 7 - 10));
+        assertEquals(3, routes.size());
+        assertEquals(2, routes.get(0).getPositionCount());
+        assertEquals(4, routes.get(1).getPositionCount());
+        assertEquals(3, routes.get(2).getPositionCount());
     }
 
     @Test
@@ -290,7 +370,7 @@ public class GarminMapSource5FormatTest {
             byte[] bytes = Arrays.copyOf(header, header.length + random.nextInt(400));
             for (int j = header.length; j < bytes.length; j++)
                 bytes[j] = (byte) random.nextInt(256);
-            read(bytes);
+            readOrUnreadable(bytes);
         }
 
         byte[] sample = sample(new MpsBuilder(5)).toBytes();
@@ -298,7 +378,15 @@ public class GarminMapSource5FormatTest {
             byte[] bytes = sample.clone();
             for (int j = 0; j < 4; j++)
                 bytes[header.length + random.nextInt(bytes.length - header.length)] = (byte) random.nextInt(256);
+            readOrUnreadable(bytes);
+        }
+    }
+
+    private void readOrUnreadable(byte[] bytes) throws IOException {
+        try {
             read(bytes);
+        } catch (UnreadableFileException e) {
+            assertNotNull(e.getMessage());
         }
     }
 
@@ -324,19 +412,20 @@ public class GarminMapSource5FormatTest {
         route[steps + 1] = (byte) 0xFF;
         route[steps + 2] = (byte) 0xFF;
         route[steps + 3] = 0x7F;
-        assertTrue(read(builder.record('R', route).mapSet().toBytes()).isEmpty());
+        // nothing is left of the only record
+        assertThrows(UnreadableFileException.class, () -> read(builder.record('R', route).mapSet().toBytes()));
     }
 
     @Test
-    public void testRouteWithoutInterlinkSteps() throws IOException {
+    public void testRouteWithMorePointsThanTheRecord() throws IOException {
         MpsBuilder builder = new MpsBuilder(5).waypoint("A", 0, 1, 2, null, "d", "");
         byte[] route = builder.routePayload("R", false, point("A", 0, 1, 2, null), point("B", 8, 3, 4, null));
-        route[indexOf(route, new byte[]{2, 0, 0, 0}, FIRST_POINT)] = 0;
-        List<GpxRoute> routes = read(builder.record('R', route).mapSet().toBytes());
-        // GPSBabel keeps the route it started with no points
+        route[FIRST_POINT - 4] = 5;
+        List<GpxRoute> routes = read(builder.record('R', route).track("T", trackPoint(1, 2, null, null)).mapSet().toBytes());
+        // a record the reader does not understand is skipped, the records around it stay (D19)
         assertEquals(2, routes.size());
-        assertEquals(Route, routes.get(1).getCharacteristics());
-        assertEquals(0, routes.get(1).getPositionCount());
+        assertEquals(Waypoints, routes.get(0).getCharacteristics());
+        assertEquals(Track, routes.get(1).getCharacteristics());
     }
 
     @Test
@@ -348,8 +437,10 @@ public class GarminMapSource5FormatTest {
         // of the zero terminated data and the end of the file: GPSBabel 1.5.4 keeps reading that byte forever
         byte[] truncated = Arrays.copyOf(route, FIRST_POINT + 2 + 4 + 1 + 22 + 1);
         truncated[truncated.length - 1] = 0x05;
-        assertTrue(read(builder.record(route.length, 'R', truncated).toBytes()).isEmpty());
+        assertThrows(UnreadableFileException.class, () -> read(builder.record(route.length, 'R', truncated).toBytes()));
     }
+
+    private static final int SIGNATURE_LENGTH = 6;
 
     // the first route point of a route without bounds: name "R\0" (2) + autoname (1) + bounds flag (1) + count (4)
     private static final int FIRST_POINT = 8;
@@ -430,8 +521,8 @@ public class GarminMapSource5FormatTest {
         byte[] bytes = write(route(Route, "R", position(11.5, 48.1, null, null, "A"), position(11.6, 48.2, null, null, "A")));
         // the "Waypoint" symbol of MapSource 5
         assertEquals(18, GarminDefaults.mapSourceWaypointIconNumber(GarminMapSource5Format.WRITE_VERSION));
-        // a waypoint is written once per name: one user waypoint, the second route point refers to it
-        assertEquals(1, count(bytes, 'W'));
+        // a waypoint is written once per name and position: two places named A are two waypoints (D21)
+        assertEquals(2, count(bytes, 'W'));
         assertEquals(1, count(bytes, 'R'));
         assertEquals(1, count(bytes, 'T'));
     }
@@ -522,8 +613,93 @@ public class GarminMapSource5FormatTest {
         assertEquals(0, GarminMapSource5Format.toTimeT(null));
         assertEquals(0, GarminMapSource5Format.toTimeT(fromMillis(999)));
         assertEquals(1, GarminMapSource5Format.toTimeT(fromMillis(1000)));
-        assertEquals(0xFFFFFFFFL, GarminMapSource5Format.toTimeT(fromMillis(-1000)));
-        assertEquals(0xFFFFFFFFL, GarminMapSource5Format.toTimeT(fromMillis(0x100000000L * 1000)));
+        assertEquals(Integer.MAX_VALUE, GarminMapSource5Format.toTimeT(fromMillis(Integer.MAX_VALUE * 1000L)));
+        // a signed int holds 1970 to 2038-01-19: GPSBabel wrote 0xFFFFFFFF (2106) for an earlier time
+        assertEquals(0, GarminMapSource5Format.toTimeT(fromMillis(-1000)));
+        assertEquals(0, GarminMapSource5Format.toTimeT(fromMillis((Integer.MAX_VALUE + 1L) * 1000)));
+        assertEquals(0, GarminMapSource5Format.toTimeT(fromMillis(0x100000000L * 1000)));
+    }
+
+    @Test
+    public void testWriteTimesOutsideTheIntRange() throws IOException {
+        byte[] bytes = write(List.of(route(Track, "T", position(1, 2, null, -86400L, null),
+                position(1, 3, null, Integer.MAX_VALUE + 1L, null), position(1, 4, null, 1262347200L, null))));
+        List<GpxRoute> routes = read(bytes);
+        // without time instead of 2106 and a negative int
+        assertNull(routes.get(0).getPosition(0).getTime());
+        assertNull(routes.get(0).getPosition(1).getTime());
+        assertEquals(fromMillis(1262347200L * 1000), routes.get(0).getPosition(2).getTime());
+    }
+
+    @Test
+    public void testWriteSameNamedWaypoints() throws IOException {
+        GpxPosition[] positions = new GpxPosition[500];
+        for (int i = 0; i < positions.length; i++)
+            positions[i] = position(1 + i / 1000.0, 2, null, null, "Same");
+        List<GpxRoute> routes = read(write(List.of(route(Waypoints, "W", positions))));
+        // GPSBabel wrote one waypoint for all of them
+        assertEquals(500, routes.get(0).getPositionCount());
+        assertEquals("Same", routes.get(0).getPosition(0).getDescription());
+        assertEquals("Same.1", routes.get(0).getPosition(1).getDescription());
+        assertEquals("Same.499", routes.get(0).getPosition(499).getDescription());
+        for (int i = 0; i < positions.length; i++)
+            assertEquals(1 + i / 1000.0, routes.get(0).getPosition(i).getLongitude(), DELTA);
+    }
+
+    @Test
+    public void testWriteNamesUniqueIgnoringCase() throws IOException {
+        List<GpxRoute> routes = read(write(List.of(route(Waypoints, "W", position(1, 2, null, null, "Same"),
+                position(1, 3, null, null, "same"), position(1, 4, null, null, "Same.1"), position(1, 5, null, null, "SAME")))));
+        assertEquals(asList("Same", "same.1", "Same.1.1", "SAME.2"), asList(
+                routes.get(0).getPosition(0).getDescription(), routes.get(0).getPosition(1).getDescription(),
+                routes.get(0).getPosition(2).getDescription(), routes.get(0).getPosition(3).getDescription()));
+    }
+
+    @Test
+    public void testWriteSameNameAndPositionOnce() throws IOException {
+        byte[] bytes = write(List.of(route(Waypoints, "W", position(1, 2, null, null, "A"), position(1, 2, null, null, "A")),
+                route(Route, "R", position(1, 2, null, null, "A"), position(3, 4, null, null, "B"), position(1, 2, null, null, "A"))));
+        // A once as user waypoint, B as hidden route waypoint
+        assertEquals(2, count(bytes, 'W'));
+    }
+
+    @Test
+    public void testWriteDuplicateNamesInRoute() throws IOException {
+        byte[] bytes = write(route(Route, "R", position(10.0, 51.0, null, null, "Start"),
+                position(10.5, 51.5, null, null, "Kreuzung"), position(11.0, 52.0, null, null, "Kreuzung"),
+                position(11.5, 52.5, null, null, "Ziel")));
+        List<GpxRoute> routes = read(bytes);
+        GpxRoute route = routes.get(1);
+        assertEquals(Route, route.getCharacteristics());
+        assertEquals(4, route.getPositionCount());
+        // GPSBabel moved the third route point onto the second one
+        assertPosition(route.getPosition(1), 10.5, 51.5, null, "Kreuzung");
+        assertPosition(route.getPosition(2), 11.0, 52.0, null, "Kreuzung.1");
+    }
+
+    @Test
+    public void testWriteRoutePointSharingAWaypointName() throws IOException {
+        byte[] bytes = write(List.of(route(Waypoints, "W", position(1.0, 1.0, null, null, "Shared")),
+                route(Route, "R", position(10.0, 51.0, null, null, "Start"), position(10.5, 51.5, null, null, "Shared"),
+                        position(11.0, 52.0, null, null, "Ziel"))));
+        List<GpxRoute> routes = read(bytes);
+        assertEquals(1, routes.get(0).getPositionCount());
+        assertPosition(routes.get(0).getPosition(0), 1.0, 1.0, null, "Shared");
+        // GPSBabel moved the route point onto the waypoint at (1, 1)
+        assertPosition(routes.get(1).getPosition(1), 10.5, 51.5, null, "Shared.1");
+    }
+
+    @Test
+    public void testWriteUnnamedRoutesAndTracksDeterministic() throws IOException {
+        List<GpxRoute> input = List.of(route(Route, null, position(1, 2, null, null, "A"), position(3, 4, null, null, "B")),
+                route(Route, null, position(5, 6, null, null, "C"), position(7, 8, null, null, "D")),
+                route(Track, null, position(1, 2, null, null, null)), route(Track, null, position(3, 4, null, null, null)));
+        byte[] bytes = write(input);
+        // GPSBabel named them after the current time
+        assertTrue(Arrays.equals(bytes, write(input)));
+        List<GpxRoute> routes = read(bytes);
+        assertEquals(asList("Route0000", "Route0000.1", "Track0000", "Track0000.1"), asList(routes.get(0).getName(),
+                routes.get(1).getName(), routes.get(2).getName(), routes.get(3).getName()));
     }
 
     // the records of this type, assuming the type letter follows a record length below 256
