@@ -539,6 +539,25 @@ public class GarminPoiFormatTest {
     }
 
     @Test
+    public void detectsLanguageAndSingleByteStringsPerField() throws IOException {
+        byte[] bytes = gpi(1252, group("Encodings", area(
+                // the city as a single byte string, the postal code as a language string
+                waypoint(1.0, 1.0, "Swapped", address(0x9, pString("Musterstadt"), string("12345"))),
+                // an empty language string with a 32 bit length of zero is skipped as a whole
+                waypoint(1.1, 1.0, "Empty", address(0x3, int32(0), string("DEU"))),
+                waypoint(1.2, 1.0, "Phone", contact(0x3, string("111"), pString("222"))))));
+        assertEquals(List.of("Swapped; 12345 Musterstadt", "Empty; DEU", "Phone; 111, 222"), readDescriptions(bytes));
+    }
+
+    @Test
+    public void takesTheFirstLanguageOfAnAddressField() throws IOException {
+        byte[] bytes = gpi(1252, group("Languages", area(waypoint(1.0, 1.0, "Shop",
+                address(0x11, languageString("Munich".getBytes(US_ASCII), "M\u00fcnchen".getBytes(WINDOWS_1252)),
+                        languageString("Main Street".getBytes(US_ASCII), "Hauptstra\u00dfe".getBytes(WINDOWS_1252)))))));
+        assertEquals(List.of("Shop; Main Street, Munich"), readDescriptions(bytes));
+    }
+
+    @Test
     public void readsAnAddressInTheMainDataOfFormatVersion01() throws IOException {
         byte[] main = concat(int16(0x11), string("Musterstadt"), string("Hauptstr. 1"));
         byte[] bytes = gpi(1252, group("Dealers", area(waypoint(1.0, 1.0, "Shop", record(0xb, main)))));

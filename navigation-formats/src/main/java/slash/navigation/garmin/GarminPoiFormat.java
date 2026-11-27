@@ -466,18 +466,20 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
 
         /**
          * Oppmann, "Record type 11: Address": flags and the strings they announce, which are in the extra data
-         * for format version 00 and in the main data for 01. GPSBabel 1.5.4 drops the address on its way to
-         * RouteConverter's GPX; a broken or truncated record loses the address only.
+         * for format version 00 and in the main data for 01. Like GPSBabel, every field is read with
+         * gpi_read_string(), which tells a language string from a single byte string per field. GPSBabel 1.5.4
+         * reads the address, but it is lost on its way to RouteConverter's GPX; a broken or truncated record
+         * loses the address only.
          */
         private String readAddress(int limit) {
             try {
                 int flags = input.readUInt16();
-                String city = (flags & ADDRESS_CITY) != 0 ? readLString(limit) : null;
-                String country = (flags & ADDRESS_COUNTRY) != 0 ? readLString(limit) : null;
-                String state = (flags & ADDRESS_STATE) != 0 ? readLString(limit) : null;
-                String postalCode = (flags & ADDRESS_POSTAL_CODE) != 0 ? readPString(limit) : null;
-                String street = (flags & ADDRESS_STREET) != 0 ? readLString(limit) : null;
-                String houseNumber = (flags & ADDRESS_HOUSE_NUMBER) != 0 ? readPString(limit) : null;
+                String city = (flags & ADDRESS_CITY) != 0 ? readField(limit, true) : null;
+                String country = (flags & ADDRESS_COUNTRY) != 0 ? readField(limit, true) : null;
+                String state = (flags & ADDRESS_STATE) != 0 ? readField(limit, true) : null;
+                String postalCode = (flags & ADDRESS_POSTAL_CODE) != 0 ? readField(limit, false) : null;
+                String street = (flags & ADDRESS_STREET) != 0 ? readField(limit, true) : null;
+                String houseNumber = (flags & ADDRESS_HOUSE_NUMBER) != 0 ? readField(limit, false) : null;
                 return join(", ", join(" ", street, houseNumber), join(" ", postalCode, city), state, country);
             } catch (GpiException | EOFException e) {
                 return null;
@@ -491,34 +493,30 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         private String readContact(int limit) {
             try {
                 int flags = input.readUInt16();
-                String phone = (flags & CONTACT_PHONE) != 0 ? readPString(limit) : null;
-                String phone2 = (flags & CONTACT_PHONE2) != 0 ? readPString(limit) : null;
+                String phone = (flags & CONTACT_PHONE) != 0 ? readField(limit, false) : null;
+                String phone2 = (flags & CONTACT_PHONE2) != 0 ? readField(limit, false) : null;
                 if ((flags & CONTACT_FAX) != 0)
-                    readPString(limit);
-                String email = (flags & CONTACT_EMAIL) != 0 ? readPString(limit) : null;
-                String link = (flags & CONTACT_LINK) != 0 ? readPString(limit) : null;
+                    readField(limit, false);
+                String email = (flags & CONTACT_EMAIL) != 0 ? readField(limit, false) : null;
+                String link = (flags & CONTACT_LINK) != 0 ? readField(limit, false) : null;
                 return join(", ", phone, phone2, email, link);
             } catch (GpiException | EOFException e) {
                 return null;
             }
         }
 
-        // Oppmann, "PString": a string with a 16 bit length
-        private String readPString(int limit) throws EOFException, GpiException {
-            int length = input.readUInt16();
-            if (input.position() + length > limit)
-                throw new GpiException("String at " + input.position() + " exceeds its record");
-            return decode(input.readBytes(length));
-        }
-
-        // Oppmann, "LString": a 32 bit length and one or more localized strings
-        private String readLString(int limit) throws EOFException, GpiException {
-            long length = input.readUInt32();
-            if (input.position() + length > limit)
-                throw new GpiException("String at " + input.position() + " exceeds its record");
-            if (length == 0)
-                return null;
-            return decode(readLanguageStrings((int) length, limit));
+        /**
+         * A field of the Address or Contact record read with gpi_read_string(). For a field that Oppmann
+         * describes as a language string, an empty one - a 32 bit length of zero - is skipped as a whole,
+         * where gpi_read_string() would stop after its first half and read the rest as the next field.
+         */
+        private String readField(int limit, boolean languageString) throws EOFException, GpiException {
+            int start = input.position();
+            String result = readString(limit);
+            if (languageString && result == null && input.position() == start + 2 && start + 4 <= limit &&
+                    input.readUInt16() != 0)
+                input.seek(start + 2);
+            return result;
         }
 
         // GPSBabel 1.5.4 handles strings as C strings
