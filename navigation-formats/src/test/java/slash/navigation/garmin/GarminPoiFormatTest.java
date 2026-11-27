@@ -24,8 +24,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserContextImpl;
+import slash.navigation.base.ParserResult;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpsbabel.LittleEndianInput;
 import slash.navigation.gpsbabel.LittleEndianOutput;
 import slash.navigation.gpx.Gpx10Format;
@@ -47,7 +50,9 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -179,6 +184,10 @@ public class GarminPoiFormatTest {
         ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
         format.read(new ByteArrayInputStream(bytes), context);
         return context.getRoutes();
+    }
+
+    private String unreadable(byte[] bytes) {
+        return assertThrows(UnreadableFileException.class, () -> read(bytes)).getMessage();
     }
 
     private List<String> readDescriptions(byte[] bytes) throws IOException {
@@ -402,8 +411,8 @@ public class GarminPoiFormatTest {
 
     @Test
     public void refusesHostilelyDeepNestingWithoutStackOverflow() throws IOException {
-        assertTrue(read(gpi(1252, nestedAreas(100_000, new byte[0]))).isEmpty());
-        assertTrue(read(gpi(1252, nestedAreas(GarminPoiFormat.MAXIMUM_NESTING + 2, waypoint(1.0, 1.0, "Deep")))).isEmpty());
+        assertTrue(unreadable(gpi(1252, nestedAreas(100_000, new byte[0]))).contains("records nested deeper than"));
+        assertTrue(unreadable(gpi(1252, nestedAreas(GarminPoiFormat.MAXIMUM_NESTING + 2, waypoint(1.0, 1.0, "Deep")))).contains("records nested deeper than"));
     }
 
     // obfuscated files of format version 01
@@ -484,7 +493,7 @@ public class GarminPoiFormatTest {
         // the same obfuscated bytes with an Obfuscation field of 0 must not be read as clear text
         byte[] headers = concat(header1("01", 0, productInfo()), header2("01", 1252, copyright()));
         byte[] clear = concat(headers, poiGroups(), end());
-        assertTrue(read(obfuscate(clear, headers.length, clear.length)).isEmpty());
+        assertTrue(unreadable(obfuscate(clear, headers.length, clear.length)).startsWith("Garmin POI file is damaged: "));
     }
 
     // address and contact
@@ -990,8 +999,8 @@ public class GarminPoiFormatTest {
         // cut inside the second waypoint of the first group
         List<String> descriptions = readDescriptions(copyOfRange(full, indexOf(full, string("Two")) - 20));
         assertEquals(List.of("One"), descriptions);
-        // nothing readable: still no route
-        assertTrue(read(copyOfRange(full, indexOf(full, string("One")) - 20)).isEmpty());
+        // nothing readable: an error with a reason instead of no route (D19)
+        assertTrue(unreadable(copyOfRange(full, indexOf(full, string("One")) - 20)).startsWith("Garmin POI file is damaged: "));
     }
 
     @Test
@@ -1043,7 +1052,50 @@ public class GarminPoiFormatTest {
     // detection
 
     @Test
-    public void returnsNoRouteForForeignOrBrokenInput() throws IOException {
+    public void readsAFileWithoutPoisAsNoRoute() throws IOException {
+        assertTrue(read(gpi(1252, group("Empty"))).isEmpty());
+        assertTrue(read(gpi(1252)).isEmpty());
+    }
+
+    @Test
+    public void reportsADamagedHeader() {
+        assertEquals("Garmin POI file is damaged: it ends without its End record after " +
+                        concat(header1("00", 0, null), header2("00", 1252, null)).length + " bytes",
+                unreadable(concat(header1("00", 0, null), header2("00", 1252, null))));
+        assertEquals("Garmin POI file is damaged: its second header record is missing or too short",
+                unreadable(concat(header1("00", 0, null), record(1, "XYZ".getBytes(US_ASCII)), end())));
+        byte[] valid = gpi(1252, group("G", area(waypoint(1.0, 1.0, "A"))));
+        assertEquals("Garmin POI file ends in its header after 20 bytes", unreadable(Arrays.copyOf(valid, 20)));
+    }
+
+    @Test
+    public void reportsEveryTruncationThatLosesAllPois() throws IOException {
+        byte[] valid = gpi(1252, group("G", area(waypoint(1.0, 1.0, "A"))));
+        for (int length = 0; length < valid.length; length++) {
+            byte[] truncated = Arrays.copyOf(valid, length);
+            if (!GarminPoiFormat.isGpiHeader(truncated, truncated.length)) {
+                assertTrue(read(truncated).isEmpty(), "length " + length);
+                continue;
+            }
+            try {
+                assertEquals(List.of("A"), readDescriptions(truncated), "length " + length);
+            } catch (UnreadableFileException e) {
+                assertTrue(e.getMessage().startsWith("Garmin POI file "), "length " + length + ": " + e.getMessage());
+            }
+        }
+    }
+
+    @Test
+    public void parserReportsAnUnreadableFileInsteadOfAnEmptyRoute() throws IOException {
+        byte[] valid = gpi(1252, group("G", area(waypoint(1.0, 1.0, "A"))));
+        ParserResult result = new NavigationFormatParser(new NavigationFormatRegistry())
+                .read(new ByteArrayInputStream(copyOfRange(valid, indexOf(valid, string("A")) - 12)));
+        assertFalse(result.isSuccessful());
+        assertTrue(result.getFailure().getMessage().startsWith("Garmin POI file is damaged: "), result.getFailure().getMessage());
+    }
+
+    @Test
+    public void returnsNoRouteForForeignInputAndAnErrorForBrokenGpiFiles() throws IOException {
         byte[] valid = gpi(1252, group("G", area(waypoint(1.0, 1.0, "A"))));
         List<byte[]> inputs = new ArrayList<>();
         inputs.add(new byte[0]);
@@ -1069,6 +1121,10 @@ public class GarminPoiFormatTest {
                 List<GpxRoute> routes = read(input);
                 if (input.length < 100 || indexOf(input, "GRMREC".getBytes(US_ASCII)) < 0)
                     assertTrue(routes.isEmpty());
+            } catch (UnreadableFileException e) {
+                // only for a file with a GPI header
+                assertTrue(indexOf(input, "GRMREC".getBytes(US_ASCII)) >= 0, HexFormat.of().formatHex(input));
+                assertTrue(e.getMessage().startsWith("Garmin POI file "), e.getMessage());
             } catch (Exception e) {
                 fail("Throws " + e + " for " + HexFormat.of().formatHex(input));
             }
