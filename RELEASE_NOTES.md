@@ -14,6 +14,7 @@
 - MTK logger binary files (.bin) from iBlue 747, Qstarz BT-Q1000, Transystem and other MediaTek-based GPS loggers can be read
 - Online maps and overlays show the attribution supplied by the map catalog, so new map providers can name their exact terms without a RouteConverter update; applied overlays now show their attribution next to the map's (#438)
 - Pasting or opening a Google Maps directions link now imports the coordinates of every stop, any via-points dragged onto the route, and names the route after the travel mode shown in Google Maps, for example "Hamburg to Hannover (bicycle)" (#439)
+- GSI Japan, the high-resolution elevation data of the Geospatial Information Authority of Japan, is now available as an elevation service; it is picked automatically for positions in Japan and falls back to the previous services elsewhere (#544)
 - Obfuscated Garmin POI (.gpi) files, as commercial POI packages often come, can now be read; GPSBabel could not read them (#453)
 - Garmin POI (.gpi) files in other code pages than Western European, for example Central European, Cyrillic, Greek or UTF-8, can now be read; GPSBabel refused them (#453)
 - Pasting or opening a Google Maps shared list link (maps.app.goo.gl or the full placelists/list link) now imports it as a waypoint list, one waypoint per place, named after the list (#445)
