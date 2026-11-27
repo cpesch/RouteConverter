@@ -21,7 +21,9 @@
 package slash.navigation.wbt;
 
 import static java.lang.Math.abs;
+import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Collections.emptyList;
 import static java.util.Calendar.YEAR;
 
 import java.nio.ByteBuffer;
@@ -41,6 +43,10 @@ import slash.navigation.base.Wgs84Route;
  */
 
 public class WintecWbt202TesFormat extends WintecWbt201Format {
+    private static final int RECORD_SIZE = 16;
+    private static final int MINIMUM_PLAUSIBLE_RECORDS = 3;
+    // tolerates a damaged record in a hundred, which is skipped
+    private static final double MINIMUM_PLAUSIBLE_SHARE = 0.99;
 
     public String getExtension() {
         return ".tes";
@@ -113,6 +119,55 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
 	}
 
     protected List<Wgs84Route> internalRead(ByteBuffer buffer) {
-        return readPositions(buffer, 0, buffer.capacity());
+        ByteBuffer plausible = plausibleRecords(buffer);
+        if (plausible == null)
+            return emptyList();
+        return readPositions(plausible, 0, plausible.capacity());
+    }
+
+    /**
+     * The format has no header, so the first records decide and every other byte sequence of the
+     * right length would be read: random bytes and MapSend tracks became dozens of garbage tracks.
+     * Real files consist of plausible records only, random data of about one in five.
+     *
+     * @return the plausible records if they make up nearly all of the file, otherwise null
+     */
+    static ByteBuffer plausibleRecords(ByteBuffer buffer) {
+        buffer.order(LITTLE_ENDIAN);
+        int count = buffer.capacity() / RECORD_SIZE;
+        ByteBuffer result = allocate(count * RECORD_SIZE);
+        int plausibleCount = 0;
+        for (int i = 0; i < count; i++) {
+            int offset = i * RECORD_SIZE;
+            int time = buffer.getInt(offset + 2);
+            int latitude = buffer.getInt(offset + 6);
+            int longitude = buffer.getInt(offset + 10);
+            if (isPlausibleRecord(time, latitude, longitude)) {
+                for (int j = 0; j < RECORD_SIZE; j++)
+                    result.put(buffer.get(offset + j));
+                plausibleCount++;
+            }
+        }
+        if (plausibleCount < MINIMUM_PLAUSIBLE_RECORDS || plausibleCount < count * MINIMUM_PLAUSIBLE_SHARE)
+            return null;
+
+        ByteBuffer plausible = allocate(plausibleCount * RECORD_SIZE);
+        plausible.put(result.array(), 0, plausibleCount * RECORD_SIZE);
+        plausible.position(0);
+        return plausible;
+    }
+
+    // the calendar of createWaypoint() is lenient and would turn month 15 into a date of the next year
+    static boolean isPlausibleRecord(int time, int latitude, int longitude) {
+        int month = (time >>> 22) & 0xF;
+        int day = (time >>> 17) & 0x1F;
+        int hour = (time >>> 12) & 0x1F;
+        int minute = (time >>> 6) & 0x3F;
+        int second = time & 0x3F;
+        if (month < 1 || month > 12 || day < 1 || hour > 23 || minute > 59 || second > 59)
+            return false;
+        // latitude and longitude in 1/10,000,000 degrees, both zero means no fix
+        return abs((long) latitude) <= 900_000_000L && abs((long) longitude) <= 1_800_000_000L &&
+                !(latitude == 0 && longitude == 0);
     }
 }

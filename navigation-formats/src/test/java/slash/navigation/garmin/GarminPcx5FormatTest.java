@@ -485,4 +485,14 @@ public class GarminPcx5FormatTest {
         assertEquals("CompeGPSDataWaypointFormat", names.get(index - 1).substring(names.get(index - 1).lastIndexOf('.') + 1));
         assertEquals("GeoCachingFormat", names.get(index + 1).substring(names.get(index + 1).lastIndexOf('.') + 1));
     }
+
+    @Test
+    public void testAbbreviatesLoggedLines() {
+        assertEquals("M  G WGS 84", GarminPcx5Format.abbreviateForLog("M  G WGS 84"));
+        assertEquals("MsRcd?d??", GarminPcx5Format.abbreviateForLog("MsRcd\u0000d\u0001\u0002"));
+        String longLine = "M" + "x".repeat(5000);
+        String abbreviated = GarminPcx5Format.abbreviateForLog(longLine);
+        assertEquals(83, abbreviated.length());
+        assertTrue(abbreviated.endsWith("..."));
+    }
 }

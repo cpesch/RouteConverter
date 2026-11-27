@@ -453,6 +453,9 @@ public class ReadIT {
                     // strict extension routing has no fallback to a quiet format
                     if (!result.isSuccessful() && STRICT_EXTENSIONS.contains(getExtension(file)))
                         return;
+                    // a format recognized the file but cannot read it, and says why
+                    if (!result.isSuccessful() && result.getFailure() != null)
+                        return;
                     assertNotEquals(0, result.getAllRoutes().size(), "Can read route from " + file);
                 } catch (NumberFormatException e) {
                     // intentionally left empty

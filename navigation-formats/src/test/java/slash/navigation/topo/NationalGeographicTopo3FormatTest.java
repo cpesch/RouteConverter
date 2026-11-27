@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Timeout;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserContextImpl;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.tef.TourExchangeFormat;
@@ -41,7 +42,9 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.copyOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -82,6 +85,19 @@ public class NationalGeographicTopo3FormatTest {
 
     private void assertNoRoutes(byte[] data) throws IOException {
         assertTrue(read(data).isEmpty());
+    }
+
+    // a file with the TOPO! version string that cannot be read is reported as damaged, not as empty
+    private void assertUnreadable(byte[] data) {
+        assertThrows(UnreadableFileException.class, () -> read(data));
+    }
+
+    private void readOrUnreadable(byte[] data) throws IOException {
+        try {
+            read(data);
+        } catch (UnreadableFileException e) {
+            // expected for most corruptions
+        }
     }
 
     private GpxRoute readSingle(byte[] data) throws IOException {
@@ -163,24 +179,39 @@ public class NationalGeographicTopo3FormatTest {
     }
 
     @Test
-    public void testRejectsHeaderWithoutNulOrStartSection() throws IOException {
+    public void testRejectsHeaderWithoutNul() throws IOException {
         byte[] noNul = "\u0010TOPO! Ver. 3.4.3".getBytes();
         assertFalse(NationalGeographicTopo3Format.isTopo3Header(noNul));
         assertNoRoutes(noNul);
-
-        byte[] header = header("TOPO! Ver. 3.4.3", false);
-        assertTrue(NationalGeographicTopo3Format.isTopo3Header(header));
-        assertFalse(NationalGeographicTopo3Format.hasStartSection(header));
-        assertNoRoutes(new Bytes().raw(header).i32(WAYPOINTS_BLOCK).i32(0).raw(waypoints(waypoint("A", 1, 2, 0, "")).toByteArray()).toByteArray());
     }
 
     @Test
-    public void testStartSectionScanDoesNotBacktrack() {
-        // tpo_read_until_section() restarts its match without re-examining the mismatching byte
-        assertFalse(NationalGeographicTopo3Format.hasStartSection(new Bytes().u8(3).raw("TOP".getBytes()).u8(0)
-                .raw("RRed Without Arrow".getBytes()).toByteArray()));
-        assertTrue(NationalGeographicTopo3Format.hasStartSection(new Bytes().u8(3).raw("TOP".getBytes()).u8(0)
-                .raw("R Red Without Arrow".getBytes()).toByteArray()));
+    public void testReadsFileWithoutStartSection() throws IOException {
+        // GPSBabel requires the "Red Without Arrow" compass style, a name the user can edit, but no reader needs it
+        byte[] header = header("TOPO! Ver. 3.4.3", false);
+        assertTrue(NationalGeographicTopo3Format.isTopo3Header(header));
+        GpxRoute route = readSingle(new Bytes().raw(header).i32(WAYPOINTS_BLOCK).i32(0).raw(waypoints(waypoint("A", 1, 2, 0, "")).toByteArray()).toByteArray());
+        assertEquals(1, route.getPositionCount());
+    }
+
+    @Test
+    public void testBlockChain() {
+        byte[] header = header("TOPO! Ver. 3.4.3", false);
+        assertNull(NationalGeographicTopo3Format.checkBlockChain(new Bytes().raw(header).i32(0).i32(520).i32(WAYPOINTS_BLOCK).i32(0).toByteArray()));
+        assertNull(NationalGeographicTopo3Format.checkBlockChain(new Bytes().raw(header).i32(WAYPOINTS_BLOCK).i32(0).toByteArray()));
+        // header only, a block header cut short, a pointer beyond the end, a loop
+        assertEquals("block 1 at byte 512 is beyond the end of the file at 512", NationalGeographicTopo3Format.checkBlockChain(header));
+        assertNotNull(NationalGeographicTopo3Format.checkBlockChain(new Bytes().raw(header).i32(0).toByteArray()));
+        assertEquals("block 2 at byte 600 is beyond the end of the file at 520",
+                NationalGeographicTopo3Format.checkBlockChain(new Bytes().raw(header).i32(0).i32(600).toByteArray()));
+        assertEquals("block chain loops", NationalGeographicTopo3Format.checkBlockChain(new Bytes().raw(header).i32(0).i32(512).toByteArray()));
+    }
+
+    @Test
+    public void testDamagedFileIsUnreadable() {
+        UnreadableFileException e = assertThrows(UnreadableFileException.class,
+                () -> read(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).i32(0).i32(600).toByteArray()));
+        assertEquals("TOPO! file is damaged: block 2 at byte 600 is beyond the end of the file at 520", e.getMessage());
     }
 
     // tracks
@@ -299,15 +330,15 @@ public class NationalGeographicTopo3FormatTest {
     }
 
     @Test
-    public void testInvalidTracksFailTheFile() throws IOException {
+    public void testInvalidTracksFailTheFile() {
         Bytes point = new Bytes().point(10.5, 47.25);
         // style numbers start at 1
-        assertNoRoutes(trackFile(defaultStyles(), track(0, "T", point)));
-        assertNoRoutes(trackFile(defaultStyles(), track(2, "T", point)));
+        assertUnreadable(trackFile(defaultStyles(), track(0, "T", point)));
+        assertUnreadable(trackFile(defaultStyles(), track(2, "T", point)));
         // a delta before any scale
-        assertNoRoutes(trackFile(defaultStyles(), track(1, "T", new Bytes().point(10.5, 47.25).u8(0x11))));
+        assertUnreadable(trackFile(defaultStyles(), track(1, "T", new Bytes().point(10.5, 47.25).u8(0x11))));
         // a full point cut short by the end of the track
-        assertNoRoutes(trackFile(defaultStyles(), track(1, "T", new Bytes().point(10.5, 47.25).u8(0x88).u16(0x1234))));
+        assertUnreadable(trackFile(defaultStyles(), track(1, "T", new Bytes().point(10.5, 47.25).u8(0x88).u16(0x1234))));
     }
 
     // waypoints
@@ -442,11 +473,11 @@ public class NationalGeographicTopo3FormatTest {
     }
 
     @Test
-    public void testRouteWithUndefinedWaypointFailsTheFile() throws IOException {
+    public void testRouteWithUndefinedWaypointFailsTheFile() {
         Bytes waypoints = waypoints(waypoint("A", 11.5, 48.25, 0, ""));
-        assertNoRoutes(new TopoFileBuilder().block(WAYPOINTS_BLOCK, waypoints).block(ROUTES_BLOCK, routes(route("R", 0))).build());
-        assertNoRoutes(new TopoFileBuilder().block(WAYPOINTS_BLOCK, waypoints).block(ROUTES_BLOCK, routes(route("R", 2))).build());
-        assertNoRoutes(new TopoFileBuilder().block(ROUTES_BLOCK, routes(route("R", 1))).build());
+        assertUnreadable(new TopoFileBuilder().block(WAYPOINTS_BLOCK, waypoints).block(ROUTES_BLOCK, routes(route("R", 0))).build());
+        assertUnreadable(new TopoFileBuilder().block(WAYPOINTS_BLOCK, waypoints).block(ROUTES_BLOCK, routes(route("R", 2))).build());
+        assertUnreadable(new TopoFileBuilder().block(ROUTES_BLOCK, routes(route("R", 1))).build());
     }
 
     // map notes, symbols and text labels
@@ -503,12 +534,16 @@ public class NationalGeographicTopo3FormatTest {
 
     @Test
     @Timeout(value = 30000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
-    public void testTruncatedFilesReturnNoRoute() throws IOException {
+    public void testTruncatedFilesAreUnreadable() throws IOException {
         byte[] data = completeFile();
         for (int length = 0; length < data.length; length++) {
             byte[] truncated = new byte[length];
             System.arraycopy(data, 0, truncated, 0, length);
-            assertNoRoutes(truncated);
+            // too short for the version string and its NUL: no TOPO! file
+            if (NationalGeographicTopo3Format.isTopo3Header(truncated))
+                assertUnreadable(truncated);
+            else
+                assertNoRoutes(truncated);
         }
     }
 
@@ -519,7 +554,7 @@ public class NationalGeographicTopo3FormatTest {
         byte[] waypointsLast = waypointFile(waypoint("A", 11.5, 48.25, 0, ""), waypoint("B", 11.75, 48.5, 0, ""));
         for (int missing = 0; missing <= 4; missing++)
             assertEquals(2, readSingle(copyOf(waypointsLast, waypointsLast.length - missing)).getPositionCount());
-        assertNoRoutes(copyOf(waypointsLast, waypointsLast.length - 5));
+        assertUnreadable(copyOf(waypointsLast, waypointsLast.length - 5));
 
         byte[] stylesLast = new TopoFileBuilder()
                 .block(TRACKS_BLOCK, tracks(track(1, "T", new Bytes().point(10.5, 47.25))))
@@ -527,13 +562,13 @@ public class NationalGeographicTopo3FormatTest {
                 .build();
         for (int missing = 0; missing <= 2; missing++)
             assertEquals(Track, readSingle(copyOf(stylesLast, stylesLast.length - missing)).getCharacteristics());
-        assertNoRoutes(copyOf(stylesLast, stylesLast.length - 3));
+        assertUnreadable(copyOf(stylesLast, stylesLast.length - 3));
 
         // the smallest records: a single unnamed waypoint without comment, a single unnamed style
         byte[] singleWaypointLast = waypointFile(waypoint("", 11.5, 48.25, 0, ""));
         for (int missing = 0; missing <= 4; missing++)
             assertEquals("WPT 1", readSingle(copyOf(singleWaypointLast, singleWaypointLast.length - missing)).getPositions().get(0).getDescription());
-        assertNoRoutes(copyOf(singleWaypointLast, singleWaypointLast.length - 5));
+        assertUnreadable(copyOf(singleWaypointLast, singleWaypointLast.length - 5));
 
         byte[] unnamedStyleLast = new TopoFileBuilder()
                 .block(TRACKS_BLOCK, tracks(track(1, "T", new Bytes().point(10.5, 47.25))))
@@ -542,39 +577,39 @@ public class NationalGeographicTopo3FormatTest {
         for (int missing = 0; missing <= 2; missing++)
             assertEquals(asList("Style=STYLE 0", "Width=2", "Dashed=0", "Color=#000000"),
                     readSingle(copyOf(unnamedStyleLast, unnamedStyleLast.length - missing)).getDescription());
-        assertNoRoutes(copyOf(unnamedStyleLast, unnamedStyleLast.length - 3));
+        assertUnreadable(copyOf(unnamedStyleLast, unnamedStyleLast.length - 3));
     }
 
     @Test
     @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
-    public void testOverrunningCountsAndLengths() throws IOException {
+    public void testOverrunningCountsAndLengths() {
         // counts as 32 bit values
-        assertNoRoutes(new TopoFileBuilder().block(WAYPOINTS_BLOCK, new Bytes().varint(0xffffffffL)).build());
-        assertNoRoutes(new TopoFileBuilder().block(MAP_NOTES_BLOCK, new Bytes().varint(0x7fffffff)).build());
-        assertNoRoutes(new TopoFileBuilder().block(TRACK_STYLES_BLOCK, new Bytes().varint(0x10000)).build());
+        assertUnreadable(new TopoFileBuilder().block(WAYPOINTS_BLOCK, new Bytes().varint(0xffffffffL)).build());
+        assertUnreadable(new TopoFileBuilder().block(MAP_NOTES_BLOCK, new Bytes().varint(0x7fffffff)).build());
+        assertUnreadable(new TopoFileBuilder().block(TRACK_STYLES_BLOCK, new Bytes().varint(0x10000)).build());
         // a name longer than the file
-        assertNoRoutes(new TopoFileBuilder().block(WAYPOINTS_BLOCK, new Bytes().varint(1).varint(0).varint(0).varint(0xffff).zeros(30)).build());
+        assertUnreadable(new TopoFileBuilder().block(WAYPOINTS_BLOCK, new Bytes().varint(1).varint(0).varint(0).varint(0xffff).zeros(30)).build());
         // track bytes beyond the end of the file
-        assertNoRoutes(trackFile(defaultStyles(), new Bytes().varint(0).varint(1).varint(0).varint(0).varint(0x7fffffff)));
+        assertUnreadable(trackFile(defaultStyles(), new Bytes().varint(0).varint(1).varint(0).varint(0).varint(0x7fffffff)));
         // a route with more points than bytes
-        assertNoRoutes(new TopoFileBuilder().block(WAYPOINTS_BLOCK, waypoints(waypoint("A", 1, 2, 0, "")))
+        assertUnreadable(new TopoFileBuilder().block(WAYPOINTS_BLOCK, waypoints(waypoint("A", 1, 2, 0, "")))
                 .block(ROUTES_BLOCK, new Bytes().varint(1).varint(0).varint(0).varint(0).varint(0).varint(0xfffffff)).build());
     }
 
     @Test
     @Timeout(value = 10000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
-    public void testLoopingBlockChainReturnsNoRoute() throws IOException {
+    public void testLoopingBlockChainIsUnreadable() {
         // the block at 512 points to itself, and two blocks point to each other
-        assertNoRoutes(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).i32(0x7f0000).i32(512).toByteArray());
-        assertNoRoutes(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).i32(0x7f0000).i32(520).i32(0x7e0000).i32(512).toByteArray());
+        assertUnreadable(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).i32(0x7f0000).i32(512).toByteArray());
+        assertUnreadable(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).i32(0x7f0000).i32(520).i32(0x7e0000).i32(512).toByteArray());
         // offsets beyond the file and beyond 2^31
-        assertNoRoutes(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).i32(0x7f0000).i32(100000).toByteArray());
-        assertNoRoutes(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).i32(0x7f0000).i32(0x90000000).toByteArray());
+        assertUnreadable(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).i32(0x7f0000).i32(100000).toByteArray());
+        assertUnreadable(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).i32(0x7f0000).i32(0x90000000).toByteArray());
     }
 
     @Test
     @Timeout(value = 60000, unit = TimeUnit.MILLISECONDS, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
-    public void testCorruptedFilesNeverThrow() throws IOException {
+    public void testCorruptedFilesThrowNothingButUnreadable() throws IOException {
         byte[] data = completeFile();
         Random random = new Random(4711);
         for (int i = 0; i < 5000; i++) {
@@ -583,12 +618,12 @@ public class NationalGeographicTopo3FormatTest {
                 int index = 512 + random.nextInt(corrupted.length - 512);
                 corrupted[index] = (byte) random.nextInt(256);
             }
-            read(corrupted);
+            readOrUnreadable(corrupted);
         }
         for (int i = 0; i < 1000; i++) {
             byte[] tail = new byte[random.nextInt(2048)];
             random.nextBytes(tail);
-            read(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).raw(tail).toByteArray());
+            readOrUnreadable(new Bytes().raw(header("TOPO! Ver. 3.4.3", true)).raw(tail).toByteArray());
         }
     }
 
