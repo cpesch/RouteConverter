@@ -207,8 +207,8 @@ public class GsiElevationService implements ElevationService {
             return image;
         } catch (IOException e) {
             // do not keep a corrupted cache entry around
-            //noinspection ResultOfMethodCallIgnored
-            file.delete();
+            if (!file.delete())
+                log.warning(format("Cannot delete corrupted GSI tile cache entry %s", file));
             throw e;
         }
     }
