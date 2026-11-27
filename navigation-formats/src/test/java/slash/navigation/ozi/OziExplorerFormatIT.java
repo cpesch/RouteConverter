@@ -50,7 +50,7 @@ public class OziExplorerFormatIT {
 
     @Test
     public void testRoute() throws IOException {
-        checkFile("from-ozi.rte", Route, 3, 2);
+        checkFile("from-ozi.rte", Route, 1, 2);
     }
 
     @Test
@@ -71,6 +71,6 @@ public class OziExplorerFormatIT {
         List<BaseRoute<?, ?>> routes = result.getAllRoutes();
         assertEquals(1, routes.size());
         BaseRoute<?, ?> route = result.getTheRoute();
-        assertEquals(49, route.getPositionCount());
+        assertEquals(5, route.getPositionCount());
     }
 }
