@@ -30,10 +30,13 @@ import slash.navigation.gpx.GpxRoute;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -46,9 +49,9 @@ import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.gpsbabel.GpsBabelMath.degreesToSemicircles;
 
 public class GarminMapSource6FormatTest {
-    private static final double SEMICIRCLES_PER_DEGREE = 2147483648.0 / 180.0;
     private static final long T1 = 1767261600L; // 2026-01-01T10:00:00Z
     private final GarminMapSource6Format format = new GarminMapSource6Format();
 
@@ -59,7 +62,11 @@ public class GarminMapSource6FormatTest {
         private final Charset charset;
 
         Builder(int version) {
-            this.charset = version >= 3 ? UTF_8 : ISO_8859_1;
+            this(version >= 3 ? UTF_8 : ISO_8859_1);
+        }
+
+        Builder(Charset charset) {
+            this.charset = charset;
         }
 
         Builder bytes(int... values) {
@@ -97,7 +104,7 @@ public class GarminMapSource6FormatTest {
         }
 
         Builder semi(double degrees) {
-            return i32((int) (SEMICIRCLES_PER_DEGREE * degrees));
+            return i32(degreesToSemicircles(degrees));
         }
 
         Builder raw(byte[] bytes) {
@@ -232,9 +239,17 @@ public class GarminMapSource6FormatTest {
         Builder valid = header(3);
         valid.record('W', waypoint(3, "Home", 0, 48.1, 11.5, null, null, null, null));
         byte[] complete = end(valid);
-        // every truncation, including one without the end record
-        for (int length = 0; length < complete.length - 7; length++)
-            assertTrue(read(Arrays.copyOf(complete, length)).isEmpty(), "length " + length);
+        // every truncation: nothing or the waypoint with its name and position
+        for (int length = 0; length < complete.length - 7; length++) {
+            List<GpxRoute> routes = read(Arrays.copyOf(complete, length));
+            if (!routes.isEmpty()) {
+                assertEquals(1, routes.get(0).getPositionCount(), "length " + length);
+                assertEquals("Home", routes.get(0).getPosition(0).getDescription(), "length " + length);
+                assertEquals(48.1, routes.get(0).getPosition(0).getLatitude(), 0.0000001, "length " + length);
+            }
+        }
+        // a file without the end record ends after its last record
+        assertEquals(1, read(Arrays.copyOf(complete, complete.length - 7)).size());
 
         // a record length overrunning the file
         assertTrue(read(end(header(3).i32(1000).bytes('W').fill(10, 0))).isEmpty());
@@ -324,7 +339,7 @@ public class GarminMapSource6FormatTest {
         routePoint(route, 3, "Junction", 8, new double[][]{{48.1, 11.1, 510.0}, {48.15, 11.15}, {48.2, 11.2}});
         // without links the route point is the waypoint of the same name
         routePoint(route, 3, "end", 0, new double[][]{});
-        route.i32(0).i32(14).bytes(1).fill(6 + 1 + 4 + 1 + 4 + 5 * 8 + 8, 0x77).str("route description");
+        route.i32(0).i32(14).bytes(1).fill(6 + 1 + 4 + 1 + 4 + 5 * 8, 0x77).i32(0).i32(0).str("route description");
         file.record('R', route);
 
         List<GpxRoute> routes = read(end(file));
@@ -367,19 +382,37 @@ public class GarminMapSource6FormatTest {
     }
 
     @Test
-    public void testDeclinesRoutePointsWithoutCoordinatesOrFarFromTheirWaypoint() throws IOException {
+    public void testDropsRoutePointsWithoutCoordinatesOrFarFromTheirWaypoint() throws IOException {
         Builder sleeping = header(3);
         Builder route = new Builder(3).str("R").bytes(0).bytes(1).i32(1);
         routePoint(route, 3, "Nowhere", 0, new double[][]{});
         sleeping.record('R', route.i32(0).i32(14).bytes(0).str(""));
         assertTrue(read(end(sleeping)).isEmpty());
 
+        // GPSBabel stops at the mismatch; the route keeps its other points (D19)
         Builder mismatch = header(3);
         mismatch.record('W', waypoint(3, "A", 0, 10.0, 20.0, null, null, "", null));
-        Builder far = new Builder(3).str("R").bytes(0).bytes(1).i32(1);
-        routePoint(far, 3, "A", 0, new double[][]{{10.01, 20.0}});
+        Builder far = new Builder(3).str("R").bytes(0).bytes(1).i32(3);
+        routePoint(far, 3, "B", 0, new double[][]{{9.0, 19.0}, {10.01, 20.0}});
+        routePoint(far, 3, "A", 0, new double[][]{{10.01, 20.0}, {11.0, 21.0}});
+        routePoint(far, 3, "C", 0, new double[][]{{11.0, 21.0}});
         mismatch.record('R', far.i32(0).i32(14).bytes(0).str(""));
-        assertTrue(read(end(mismatch)).isEmpty());
+        mismatch.record('W', waypoint(3, "After", 0, 12.0, 22.0, null, null, "", null));
+        List<GpxRoute> routes = read(end(mismatch));
+        assertEquals(2, routes.size());
+        assertEquals(2, routes.get(0).getPositionCount());
+        GpxRoute salvaged = routes.get(1);
+        assertEquals(2, salvaged.getPositionCount());
+        assertEquals("B", salvaged.getPosition(0).getDescription());
+        assertEquals("C", salvaged.getPosition(1).getDescription());
+
+        // a route that loses every point is gone
+        Builder lost = header(3);
+        lost.record('W', waypoint(3, "A", 0, 10.0, 20.0, null, null, "", null));
+        Builder only = new Builder(3).str("R").bytes(0).bytes(1).i32(1);
+        routePoint(only, 3, "A", 0, new double[][]{{10.01, 20.0}});
+        lost.record('R', only.i32(0).i32(14).bytes(0).str(""));
+        assertEquals(1, read(end(lost)).size());
     }
 
     @Test
@@ -405,8 +438,215 @@ public class GarminMapSource6FormatTest {
         assertNull(walk.getPosition(1).getElevation());
         assertNull(walk.getPosition(1).getTime());
         assertNull(walk.getPosition(2).getElevation());
-        // GPSBabel 1.5.4 keeps the time as an unsigned 32 bit value
-        assertEquals(0xFFFFFFFFL * 1000, walk.getPosition(2).getTime().getTimeInMillis());
+        // the time is a signed fint: one second before 1970 (GPSBabel 1.5.4 read 2106)
+        assertEquals(-1000L, walk.getPosition(2).getTime().getTimeInMillis());
+    }
+
+    // Oppmann's layouts for file formats before 1.46
+
+    private static final Charset WINDOWS_1252 = Charset.forName("windows-1252");
+
+    // a waypoint record with all fields of Oppmann's layout
+    private static Builder oppmannWaypoint(int version, Charset charset, String name, int waypointClass,
+                                           double latitude, double longitude, String comment, String street,
+                                           String unknown1, int legTime, String directions, String[] links,
+                                           Long time, String... phones) {
+        Builder w = new Builder(charset);
+        w.str(name).i32(waypointClass).str("").fill(4, 0).fill(12, 0xFF).fill(2, 0).fill(4, 0xFF);
+        w.semi(latitude).semi(longitude).bytes(0);
+        w.str(comment).bytes(0).i32(1).i32(0).i32(18).str("").str("").str("").bytes(0).bytes(0);
+        w.str(street);
+        if (unknown1 != null)
+            w.bytes(1).str(unknown1);
+        else
+            w.bytes(0);
+        w.i32(legTime).str(directions);
+        if (version <= 2) {
+            w.str(links.length > 0 ? links[0] : "");
+        } else {
+            w.i32(links.length);
+            for (String link : links)
+                w.str(link);
+        }
+        w.i16(0).bytes(0);
+        if (time != null)
+            w.bytes(1).i32((int) (long) time);
+        else
+            w.bytes(0);
+        if (version >= 3) {
+            w.i32(phones.length);
+            for (String phone : phones)
+                w.str(phone).bytes(1).str("Mobile");
+            w.str("").str("");
+        }
+        return w;
+    }
+
+    private static String[] links(String... links) {
+        return links;
+    }
+
+    @Test
+    public void testReadsStreetLegTimeDirectionsAndLinkOfVersion1And2Waypoints() throws IOException {
+        for (int version = 1; version <= 2; version++) {
+            Builder file = header(version);
+            file.record('W', oppmannWaypoint(version, ISO_8859_1, "Street", 0, 50.1, 8.1, "c1", "Hauptstrasse 1", null, 0, "", links(), T1));
+            file.record('W', oppmannWaypoint(version, ISO_8859_1, "Unknown", 0, 50.2, 8.2, "", "", "xyz", 0, "", links(), T1 + 1));
+            file.record('W', oppmannWaypoint(version, ISO_8859_1, "Leg", 10, 50.3, 8.3, "", "", null, 0x12, "Turn left", links("http://example.com"), T1 + 2));
+            file.record('W', oppmannWaypoint(version, ISO_8859_1, "Link", 10, 50.4, 8.4, "", "", null, 0x105, "", links("http://example.com"), null));
+            file.record('W', oppmannWaypoint(version, ISO_8859_1, "User", 0, 50.5, 8.5, "", "", null, 0, "Directions", links("http://example.com"), null));
+            List<GpxPosition> positions = read(end(file)).get(0).getPositions();
+            assertEquals(5, positions.size(), "version " + version);
+            assertEquals("Street; c1", positions.get(0).getDescription());
+            // GPSBabel's fixed offsets lost the creation time behind a street, an unknown string or a leg time
+            assertEquals(T1 * 1000, positions.get(0).getTime().getTimeInMillis(), "version " + version);
+            assertEquals((T1 + 1) * 1000, positions.get(1).getTime().getTimeInMillis(), "version " + version);
+            assertEquals((T1 + 2) * 1000, positions.get(2).getTime().getTimeInMillis(), "version " + version);
+            // the directions are the description, as in version 3
+            assertEquals("Leg; Turn left", positions.get(2).getDescription());
+            // without directions a map point keeps GPSBabel's link
+            assertEquals("Link; http://example.com", positions.get(3).getDescription());
+            assertNull(positions.get(3).getTime());
+            assertEquals("User; Directions", positions.get(4).getDescription());
+            assertEquals(50.5, positions.get(4).getLatitude(), 0.0000001);
+        }
+    }
+
+    @Test
+    public void testReadsStreetUnknownStringLinksAndPhoneNumbersOfVersion3Waypoints() throws IOException {
+        Builder file = header(3);
+        file.record('W', oppmannWaypoint(3, UTF_8, "Street", 0, 50.1, 8.1, "c1", "Hauptstraße 1", "xyz", 0x105, "",
+                links("http://a", "http://b"), T1, "+49 1", "+49 2"));
+        file.record('W', oppmannWaypoint(3, UTF_8, "After", 0, 51.0, 9.0, "", "", null, 0, "", links(), null));
+        List<GpxPosition> positions = read(end(file)).get(0).getPositions();
+        assertEquals(2, positions.size());
+        assertEquals("Street; c1", positions.get(0).getDescription());
+        assertEquals(T1 * 1000, positions.get(0).getTime().getTimeInMillis());
+        assertEquals("After", positions.get(1).getDescription());
+    }
+
+    @Test
+    public void testReadsWindows1252Text() throws IOException {
+        for (int version = 1; version <= 3; version++) {
+            Builder file = header(version);
+            file.record('W', oppmannWaypoint(version, WINDOWS_1252, "Café €", 0, 50.1, 8.1, "„quote“", "", null, 0, "", links(), null));
+            file.record('W', oppmannWaypoint(version, WINDOWS_1252, "Turn", 10, 50.2, 8.2, "", "", null, 0x105,
+                    "Links abbiegen auf Müllerstraße", links(), null));
+            file.record('W', oppmannWaypoint(version, UTF_8, "Käse – UTF-8", 0, 50.3, 8.3, "", "", null, 0, "", links(), null));
+            List<GpxPosition> positions = read(end(file)).get(0).getPositions();
+            assertEquals("Café €; „quote“", positions.get(0).getDescription(), "version " + version);
+            assertEquals("Turn; Links abbiegen auf Müllerstraße", positions.get(1).getDescription(), "version " + version);
+            assertEquals("Käse – UTF-8", positions.get(2).getDescription(), "version " + version);
+        }
+    }
+
+    private static Builder oppmannRoutePoint(Builder r, int version, String name, double[][] links, String unknown1, Long endTime) {
+        r.str(name).i32(0).str("").fill(22, 0);
+        if (unknown1 != null)
+            r.bytes(1).str(unknown1);
+        else
+            r.bytes(0);
+        r.i32(3).i32(-1).i32(0).i16(0).i32(0);
+        r.i32(links.length);
+        for (double[] link : links)
+            r.semi(link[0]).semi(link[1]).bytes(0);
+        r.bytes(1);
+        if (version >= 2)
+            r.fill(8, 0xFF);
+        if (version >= 3) {
+            r.bytes(1).i32(7);                      // unknown 11
+            if (endTime != null)
+                r.bytes(1).i32((int) (long) endTime);
+            else
+                r.bytes(0);
+        }
+        return r;
+    }
+
+    @Test
+    public void testReadsRoutePointsWithUnknownStringAndEndTime() throws IOException {
+        Builder file = header(3);
+        file.record('W', waypoint(3, "A", 0, 50.1, 8.1, null, null, "", null));
+        file.record('W', waypoint(3, "B", 0, 50.2, 8.2, null, null, "", null));
+        Builder route = new Builder(3).str("R1").bytes(0).bytes(1).i32(2);
+        oppmannRoutePoint(route, 3, "A", new double[][]{{50.1, 8.1}, {50.2, 8.2}}, "abc", T1);
+        oppmannRoutePoint(route, 3, "B", new double[][]{}, "a much longer aviation string", null);
+        file.record('R', route.i32(0).i32(14).bytes(0).str("notes"));
+        file.record('W', waypoint(3, "After", 0, 51.0, 9.0, null, null, "", null));
+        List<GpxRoute> routes = read(end(file));
+        assertEquals(2, routes.size());
+        assertEquals(3, routes.get(0).getPositionCount());
+        GpxRoute r1 = routes.get(1);
+        assertEquals("R1", r1.getName());
+        assertEquals(asList("notes"), r1.getDescription());
+        assertEquals(2, r1.getPositionCount());
+        assertEquals(50.2, r1.getPosition(1).getLatitude(), 0.0000001);
+    }
+
+    @Test
+    public void testReadsRoutesWithAreaAndRoadAvoidances() throws IOException {
+        Builder file = header(3);
+        file.record('W', waypoint(3, "A", 0, 50.1, 8.1, null, null, "", null));
+        file.record('W', waypoint(3, "B", 0, 50.2, 8.2, null, null, "", null));
+        Builder route = new Builder(3).str("R1").bytes(0).bytes(1).i32(2);
+        routePoint(route, 3, "A", 0, new double[][]{{50.1, 8.1}, {50.2, 8.2}});
+        routePoint(route, 3, "B", 0, new double[][]{});
+        route.i32(0).i32(14).bytes(1).fill(6, 0).bytes(1).i32(0).bytes(0).i32(0).fill(5 * 8, 0);
+        route.i32(1).str("Area");
+        bounds(route, 2.0, 2.0, null, 1.0, 1.0, 1.5);
+        route.i32(1).str("Road").i16(1).i16(6203).semi(2.0).semi(2.0).bytes(0).semi(1.0).semi(1.0).bytes(1).dbl(3.0);
+        route.i32(1).semi(1.5).semi(1.5).bytes(0);
+        route.i32(2).fill(32, 0x11);
+        route.str("route notes");
+        file.record('R', route);
+        List<GpxRoute> routes = read(end(file));
+        assertEquals(2, routes.size());
+        assertEquals(asList("route notes"), routes.get(1).getDescription());
+        assertEquals(2, routes.get(1).getPositionCount());
+    }
+
+    @Test
+    public void testKeepsTheRecordsAroundAnUnreadableRecord() throws IOException {
+        Builder file = header(3);
+        file.record('W', waypoint(3, "Good1", 0, 50.1, 8.1, null, null, "", null));
+        // a waypoint record whose declared length is shorter than its fields
+        byte[] bad = waypoint(3, "Bad", 0, 50.2, 8.2, null, null, "", null).toByteArray();
+        file.i32(10).bytes('W').raw(Arrays.copyOf(bad, 10));
+        // a track whose points do not fit its record
+        file.record('T', new Builder(3).str("t").bytes(0).i32(0).i32(5).semi(1).semi(1).bytes(0, 0, 0, 0).semi(2));
+        file.record('W', waypoint(3, "Good2", 0, 50.3, 8.3, null, null, "", null));
+        List<GpxRoute> routes = read(end(file));
+        assertEquals(1, routes.size());
+        List<GpxPosition> positions = routes.get(0).getPositions();
+        assertEquals(2, positions.size());
+        assertEquals("Good1", positions.get(0).getDescription());
+        assertEquals("Good2", positions.get(1).getDescription());
+    }
+
+    @Test
+    public void testKeepsTheTrackPointsBeforeTheEndOfATruncatedFile() throws IOException {
+        Builder file = header(3);
+        file.record('W', waypoint(3, "Home", 0, 50.1, 8.1, null, null, "", null));
+        Builder track = new Builder(3).str("Walk").bytes(0).i32(0).i32(3);
+        for (int i = 0; i < 3; i++)
+            track.semi(47.0 + i).semi(8.0).bytes(0).bytes(1).i32((int) T1 + i).bytes(0).bytes(0);
+        file.record('T', track.i32(0));
+        byte[] complete = file.toByteArray();
+        // cut in the middle of the third point
+        List<GpxRoute> routes = read(Arrays.copyOf(complete, complete.length - 4 - 2 - 5));
+        assertEquals(2, routes.size());
+        assertEquals(1, routes.get(0).getPositionCount());
+        GpxRoute walk = routes.get(1);
+        assertEquals(Track, walk.getCharacteristics());
+        assertEquals(2, walk.getPositionCount());
+        assertEquals(48.0, walk.getPosition(1).getLatitude(), 0.0000001);
+    }
+
+    @Test
+    public void testReadsHomePortSignature() throws IOException {
+        Builder file = header(3, "HomePort");
+        file.record('W', waypoint(3, "Home", 0, 48.1, 11.5, null, null, null, null));
+        assertEquals(1, read(end(file)).size());
     }
 
     // writing
@@ -589,21 +829,125 @@ public class GarminMapSource6FormatTest {
         assertEquals((T1 + 60) * 1000, track.getPosition(1).getTime().getTimeInMillis());
     }
 
-    // helpers
+    @Test
+    public void testWritesTheUniqueNamesIntoRoutes() throws IOException {
+        GpxPosition start = new GpxPosition(10.0, 51.0, null, null, null, "Start");
+        GpxPosition first = new GpxPosition(10.5, 51.5, null, null, null, "Kreuzung");
+        GpxPosition second = new GpxPosition(11.0, 52.0, null, null, null, "Kreuzung");
+        GpxPosition end = new GpxPosition(11.5, 52.5, null, null, null, "Ziel");
+        byte[] bytes = write(route("Tour", start, first, second, end));
+
+        List<GpxRoute> routes = read(bytes);
+        assertEquals(3, routes.size());
+        assertEquals(4, routes.get(0).getPositionCount());
+        GpxRoute tour = routes.get(1);
+        assertEquals(Route, tour.getCharacteristics());
+        assertEquals(4, tour.getPositionCount());
+        assertEquals("Kreuzung", tour.getPosition(1).getDescription());
+        assertEquals(51.5, tour.getPosition(1).getLatitude(), 0.0000001);
+        assertEquals("Kreuzung.1", tour.getPosition(2).getDescription());
+        assertEquals(52.0, tour.getPosition(2).getLatitude(), 0.0000001);
+        assertEquals(11.0, tour.getPosition(2).getLongitude(), 0.0000001);
+    }
 
     @Test
-    public void testSemicirclesAreTruncatedLikeGpsBabel154() {
-        assertEquals(1, GarminMapSource6Format.degreesToSemicircles(1.7 / SEMICIRCLES_PER_DEGREE));
-        assertEquals(-1, GarminMapSource6Format.degreesToSemicircles(-1.7 / SEMICIRCLES_PER_DEGREE));
-        // out of the int range: INT_MIN like the x86 builds of GPSBabel 1.5.4
-        assertEquals(Integer.MIN_VALUE, GarminMapSource6Format.degreesToSemicircles(180.0));
-        assertEquals(Integer.MIN_VALUE, GarminMapSource6Format.degreesToSemicircles(190.0));
-        assertEquals(Integer.MIN_VALUE, GarminMapSource6Format.degreesToSemicircles(-190.0));
-        assertEquals(Integer.MIN_VALUE, GarminMapSource6Format.degreesToSemicircles(Double.NaN));
-        assertEquals(-2147483648, GarminMapSource6Format.degreesToSemicircles(-180.0));
-        assertEquals(2147483647, GarminMapSource6Format.degreesToSemicircles(179.99999999999));
-        assertEquals(-1073741824, GarminMapSource6Format.degreesToSemicircles(-90.0));
+    public void testWritesTheUniqueNameOfARoutePointSharingTheNameOfAWaypoint() throws IOException {
+        List<GpxRoute> routes = new ArrayList<>();
+        routes.add(new GpxRoute(new Gpx10Format(), Waypoints, null, null, new ArrayList<>(asList(
+                new GpxPosition(1.0, 1.0, null, null, null, "Shared")))));
+        routes.add(route("Tour", new GpxPosition(10.0, 51.0, null, null, null, "Start"),
+                new GpxPosition(10.5, 51.5, null, null, null, "Shared")));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        format.write(routes, out);
+
+        List<GpxRoute> read = read(out.toByteArray());
+        assertEquals(2, read.size());
+        GpxRoute tour = read.get(1);
+        assertEquals(2, tour.getPositionCount());
+        assertEquals("Shared.1", tour.getPosition(1).getDescription());
+        assertEquals(51.5, tour.getPosition(1).getLatitude(), 0.0000001);
+        assertEquals(10.5, tour.getPosition(1).getLongitude(), 0.0000001);
     }
+
+    @Test
+    public void testWritesRoundedSemicircles() throws IOException {
+        Random random = new Random(20261127L);
+        List<GpxPosition> positions = new ArrayList<>();
+        for (int i = 0; i < 20000; i++) {
+            double latitude = (random.nextInt(1800000001) - 900000000) / 1.0e7;
+            double longitude = (random.nextLong(3600000000L) - 1800000000L) / 1.0e7;
+            positions.add(new GpxPosition(longitude, latitude, null, null, null, "P" + i));
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        format.write(asList(new GpxRoute(new Gpx10Format(), Waypoints, null, null, positions)), out);
+
+        List<GpxPosition> read = read(out.toByteArray()).get(0).getPositions();
+        assertEquals(positions.size(), read.size());
+        for (int i = 0; i < positions.size(); i++) {
+            assertEquals(positions.get(i).getLatitude(), roundTo7(read.get(i).getLatitude()), "latitude " + i);
+            assertEquals(positions.get(i).getLongitude(), roundTo7(read.get(i).getLongitude()), "longitude " + i);
+        }
+    }
+
+    private static double roundTo7(double value) {
+        return new BigDecimal(value).setScale(7, RoundingMode.HALF_UP).doubleValue();
+    }
+
+    @Test
+    public void testWritesTheDatelineAsPlus180() throws IOException {
+        GpxPosition east = new GpxPosition(180.0, 10.0, null, null, null, "East");
+        GpxPosition west = new GpxPosition(-180.0, -10.0, null, null, null, "West");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        format.write(asList(new GpxRoute(new Gpx10Format(), Waypoints, null, null, new ArrayList<>(asList(east, west)))), out);
+
+        Builder expected = expectedHeader();
+        expected.record('W', expectedWaypoint("East", 0, 1, 10.0, 180.0, null, "East", null, null));
+        expected.record('W', expectedWaypoint("West", 0, 1, -10.0, -180.0, null, "West", null, null));
+        byte[] bytes = out.toByteArray();
+        assertArrayEquals(end(expected), bytes);
+
+        List<GpxPosition> read = read(bytes).get(0).getPositions();
+        assertEquals(180.0, read.get(0).getLongitude(), 0.0000001);
+        assertEquals(-180.0, read.get(1).getLongitude(), 0.0000001);
+    }
+
+    @Test
+    public void testWritesPositionsAndElevationsWithoutDisplayRounding() throws IOException {
+        GpxPosition precise = new GpxPosition(11.123456789, 48.987654321, 512.3456, null, null, "Precise");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        format.write(asList(new GpxRoute(new Gpx10Format(), Waypoints, null, null, new ArrayList<>(asList(precise)))), out);
+
+        Builder expected = expectedHeader();
+        expected.record('W', expectedWaypoint("Precise", 0, 1, 48.987654321, 11.123456789, 512.3456, "Precise", null, null));
+        assertArrayEquals(end(expected), out.toByteArray());
+    }
+
+    @Test
+    public void testWritesAndReadsLargeRoutesInLinearTime() throws IOException {
+        List<GpxPosition> positions = new ArrayList<>();
+        for (int i = 0; i < 40000; i++)
+            positions.add(new GpxPosition(8.0 + i / 100000.0, 47.0 + i / 100000.0, null, null, null, "P" + (i % 100)));
+        GpxRoute route = route("Large", positions.toArray(new GpxPosition[0]));
+
+        long start = System.nanoTime();
+        byte[] bytes = write(route);
+        long written = System.nanoTime();
+        List<GpxRoute> routes = read(bytes);
+        long read = System.nanoTime();
+
+        assertEquals(3, routes.size());
+        assertEquals(40000, routes.get(0).getPositionCount());
+        GpxRoute large = routes.get(1);
+        assertEquals(40000, large.getPositionCount());
+        assertEquals(47.39999, large.getPosition(39999).getLatitude(), 0.0000001);
+        assertEquals(40000, routes.get(2).getPositionCount());
+        // quadratic lookups took 16 s to write and 3 s to read
+        assertTrue(written - start < 2_000_000_000L, "write took " + (written - start) / 1000000 + " ms");
+        assertTrue(read - written < 2_000_000_000L, "read took " + (read - written) / 1000000 + " ms");
+    }
+
+    // helpers
+
 
     @Test
     public void testShortNames() {

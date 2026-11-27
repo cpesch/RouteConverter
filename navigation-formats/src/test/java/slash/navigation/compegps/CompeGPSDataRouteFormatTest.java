@@ -326,4 +326,19 @@ public class CompeGPSDataRouteFormatTest {
         assertEquals(400.5, route.getPosition(0).getElevation(), DELTA);
         assertEquals(millis("2011-06-03T07:24:50Z"), route.getPosition(1).getTime().getTimeInMillis());
     }
+
+    @Test
+    public void trackNameWithLineBreakOrPipeStaysOnTheTrackLine() throws IOException {
+        CompeGPSDataFormat format = new CompeGPSDataTrackFormat();
+        List<GpxPosition> positions = new ArrayList<>();
+        positions.add(position(11.5, 48.1, 1.0, "2011-06-03T11:34:37Z", null));
+        positions.add(position(11.6, 48.2, 2.0, "2011-06-03T11:35:37Z", null));
+        String written = write(format, format.createRoute(Track, "Name\r\nwith\0| newline\uFFFE", positions));
+        for (String line : written.split("\n"))
+            assertTrue(line.matches("^[GUTtF] .*"), line);
+        assertTrue(written.contains("t 4294967295|Name with  newline |-1|-1\n"), written);
+        List<GpxRoute> routes = read(format, written);
+        assertEquals(1, routes.size());
+        assertEquals(2, routes.get(0).getPositionCount());
+    }
 }

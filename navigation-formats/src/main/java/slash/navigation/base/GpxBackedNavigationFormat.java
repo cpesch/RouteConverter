@@ -44,6 +44,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  */
 
 public abstract class GpxBackedNavigationFormat extends BaseNavigationFormat<GpxRoute> implements GpxBackedFormat {
+    private static final int TAB = 0x9;
     private static final int SPACE = 0x20;
     private static final int LF = 0xA;
     private static final int CR = 0xD;
@@ -94,19 +95,33 @@ public abstract class GpxBackedNavigationFormat extends BaseNavigationFormat<Gpx
             context.appendRoutes(result);
     }
 
-    private static boolean isIllegalXmlCharacter(char character) {
-        return character > 0 && character < SPACE && !(character == LF || character == CR);
+    /**
+     * Whether a character may appear in an XML 1.0 document: #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD].
+     * Surrogates are not legal on their own, a valid pair is handled by {@link #stripIllegalXmlCharacters(String)}.
+     */
+    public static boolean isLegalXmlCharacter(char character) {
+        return character == TAB || character == LF || character == CR ||
+                (character >= SPACE && character <= 0xD7FF) ||
+                (character >= 0xE000 && character <= 0xFFFD);
     }
 
-    protected static String stripIllegalXmlCharacters(String string) {
+    /**
+     * Replaces every character that is illegal in XML 1.0 - NUL and the other C0 controls except TAB, LF and CR,
+     * U+FFFE, U+FFFF and unpaired surrogates - by a space.
+     */
+    public static String stripIllegalXmlCharacters(String string) {
         if (string == null)
             return null;
 
         StringBuilder result = new StringBuilder(string.length());
         for (int i = 0; i < string.length(); i++) {
             char character = string.charAt(i);
-            if (!isIllegalXmlCharacter(character))
-                result.append(character);
+            if (Character.isHighSurrogate(character) && i + 1 < string.length() &&
+                    Character.isLowSurrogate(string.charAt(i + 1))) {
+                result.append(character).append(string.charAt(++i));
+                continue;
+            }
+            result.append(isLegalXmlCharacter(character) ? character : SPACE);
         }
         return result.toString();
     }

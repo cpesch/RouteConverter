@@ -335,7 +335,9 @@ public class TomTomPoiFormat extends GpxBackedNavigationFormat {
             double longitude = formatPosition(position.getLongitude()).doubleValue();
             double latitude = formatPosition(position.getLatitude()).doubleValue();
             String description = stripIllegalXmlCharacters(trim(position.getDescription()));
-            list.add(new Poi(longitude, latitude, description != null ? description : ""));
+            // a line break in the text is displayed as is by no device: replace it by a space
+            description = description != null ? description.replaceAll("\r\n|[\r\n]", " ") : "";
+            list.add(new Poi(longitude, latitude, description));
             if (longitude > maxLongitude)
                 maxLongitude = longitude;
             if (longitude < minLongitude)

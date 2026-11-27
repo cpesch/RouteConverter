@@ -417,4 +417,18 @@ public class TomTomPoiFormatTest {
         assertTrue(format.isSupportsWriting());
         assertEquals(18, format.getMaximumFileNameLength());
     }
+
+    @Test
+    public void textWithLineBreaksNulAndNoncharacterIsWrittenOnOneLine() throws IOException {
+        List<GpxPosition> positions = new ArrayList<>();
+        positions.add(position(11.5, 48.1, "Na,me\r\nx\ny\0z\uFFFE; de,sc\rq"));
+        positions.add(position(11.6, 48.2, "B"));
+        positions.add(position(11.7, 48.3, "C"));
+        List<GpxPosition> read = read(write(positions));
+        assertEquals(3, read.size());
+        for (GpxPosition position : read)
+            assertFalse(position.getDescription().indexOf('\r') != -1 || position.getDescription().indexOf('\n') != -1 ||
+                    position.getDescription().indexOf('\0') != -1 || position.getDescription().indexOf('\uFFFE') != -1);
+        assertTrue(read.get(0).getDescription().startsWith("Na,me x y z"), read.get(0).getDescription());
+    }
 }

@@ -79,7 +79,9 @@ public class BabelGoldenWriteIT {
     // the CompeGPS Data formats write all text as Windows-1252 (#390), 1.5.4 writes names as UTF-8 bytes next to a
     // single byte degree sign;
     // the OziExplorer formats write all text as Windows-1252 (#391), 1.5.4 writes route point text as UTF-8
-    // bytes and replaces the euro sign in waypoint files;
+    // bytes and replaces the euro sign in waypoint files; they write the description of a route point to field 14 and
+    // limit name and description of a waypoint separately (D18, audit 2026-11-27), 1.5.4 leaves field 14 empty and cuts
+    // the combined text at 40 characters;
     // Magellan MapSend writes all text as Windows-1252 with a length byte that counts the bytes written (#431),
     // 1.5.4 writes UTF-8 bytes behind a length byte that counts characters, which corrupts the file;
     // Garmin MapSource 5.x writes all text as Windows-1252 with record lengths that count the bytes written (#452),
@@ -90,9 +92,16 @@ public class BabelGoldenWriteIT {
             "GarminPcx5Format",
             "CompeGPSDataRouteFormat/synthetic", "CompeGPSDataTrackFormat/synthetic", "CompeGPSDataWaypointFormat/synthetic",
             "OziExplorerRouteFormat/from11.gpx", "OziExplorerRouteFormat/synthetic", "OziExplorerWaypointFormat/synthetic",
+            "OziExplorerRouteFormat/from10.gpx", "OziExplorerRouteFormat/from10trk.gpx",
+            "OziExplorerWaypointFormat/from10.gpx", "OziExplorerWaypointFormat/from10trk.gpx", "OziExplorerWaypointFormat/from11.gpx",
             "MagellanMapSendFormat/from11.gpx", "MagellanMapSendFormat/synthetic",
             "GarminMapSource5Format/from11.gpx", "GarminMapSource5Format/synthetic",
-            "GarminPoiFormat/synthetic"
+            "GarminPoiFormat/synthetic",
+            // Garmin MapSource 5.x and 6.x round a coordinate to the nearest semicircle and write the exact
+            // coordinates and elevations (D18, audit 2026-11-27), 1.5.4 truncates them after rounding to the display precision
+            "GarminMapSource5Format/from10.gpx", "GarminMapSource5Format/from10trk.gpx",
+            "GarminMapSource6Format/from10.gpx", "GarminMapSource6Format/from10trk.gpx",
+            "GarminMapSource6Format/from11.gpx", "GarminMapSource6Format/synthetic"
     );
     // native writers of formats GPSBabel 1.5.4 never wrote: there is no write golden and none can exist
     // (spec 00083.3 decision D3.1, issue #386: "there is no oracle for the writer"); see TourExchangeFormatTest
