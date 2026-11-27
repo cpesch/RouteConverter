@@ -122,12 +122,20 @@ public class GpxBackedNavigationFormatTest {
     }
 
     @Test
-    public void stripIllegalXmlCharactersRemovesControlCharactersButKeepsLineBreaks() {
-        assertEquals("abc\n\rd", GpxBackedNavigationFormat.stripIllegalXmlCharacters("a\u0001b\u000Bc\n\rd"));
+    public void stripIllegalXmlCharactersReplacesControlCharactersByASpaceButKeepsTabAndLineBreaks() {
+        assertEquals("a b c\n\rd\te", GpxBackedNavigationFormat.stripIllegalXmlCharacters("a\u0001b\u000Bc\n\rd\te"));
     }
 
     @Test
     public void stripIllegalXmlCharactersIsNullSafe() {
         assertNull(GpxBackedNavigationFormat.stripIllegalXmlCharacters(null));
+    }
+
+    @Test
+    public void stripIllegalXmlCharactersReplacesNulNoncharactersAndLoneSurrogates() {
+        assertEquals("a b c d", GpxBackedNavigationFormat.stripIllegalXmlCharacters("a\0b\uFFFEc\uFFFFd"));
+        assertEquals("a b c", GpxBackedNavigationFormat.stripIllegalXmlCharacters("a\uD800b\uDC00c"));
+        assertEquals("\uD83D\uDE00", GpxBackedNavigationFormat.stripIllegalXmlCharacters("\uD83D\uDE00"));
+        assertEquals("a   ", GpxBackedNavigationFormat.stripIllegalXmlCharacters("a \uD83D "), "lone high surrogate");
     }
 }

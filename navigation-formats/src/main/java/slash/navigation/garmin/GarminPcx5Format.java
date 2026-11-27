@@ -58,6 +58,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.gpsbabel.GpsBabelMath.ddmm2degrees;
 import static slash.navigation.gpsbabel.GpsBabelMath.degrees2ddmm;
 import static slash.navigation.gpsbabel.GpsBabelMath.monthLookup;
+import static slash.navigation.gpsbabel.GpsBabelText.cleanField;
 import static slash.navigation.gpsbabel.GpsBabelText.humanToDec;
 
 /**
@@ -458,11 +459,11 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
             GpxPosition position = positions.get(i);
             if (position.getLongitude() == null || position.getLatitude() == null)
                 continue;
-            String name = stripIllegalXmlCharacters(asName(position.getDescription()));
-            String desc = stripIllegalXmlCharacters(asDesc(position.getDescription()));
+            // a line break would split the fixed column record in two
+            String name = cleanField(asName(position.getDescription()), "");
+            String rawDesc = asDesc(position.getDescription());
             // GPSBabel's GPX reader uses the name as the description if there is none
-            if (desc == null)
-                desc = name;
+            String desc = rawDesc == null ? name : cleanField(rawDesc, "");
             buffer.append(formatWaypointLine(name, position.getLongitude(), position.getLatitude(), position.getTime(),
                     position.getElevation(), desc, WAYPOINT_ICON_NUMBER));
         }

@@ -116,7 +116,7 @@ public class GarminPoiDbFormatTest {
     @Test
     public void stripsIllegalControlCharacters() throws IOException {
         GpxRoute route = readSingle("11.1,47.1,Na\u0001me,Des\u000Bc\n");
-        assertEquals("Name; Desc", route.getPosition(0).getDescription());
+        assertEquals("Na me; Des c", route.getPosition(0).getDescription());
     }
 
     @Test
@@ -242,5 +242,17 @@ public class GarminPoiDbFormatTest {
         assertEquals("01.00002", GarminPoiDbFormat.formatCoordinate(1.000015));
         assertEquals("-2.00002", GarminPoiDbFormat.formatCoordinate(-2.000025));
         assertEquals("00.00002", GarminPoiDbFormat.formatCoordinate(0.000015));
+    }
+
+    @Test
+    public void textWithLineBreaksTabNulAndNoncharacterWritesOneLinePerPosition() throws IOException {
+        String written = write(position(11.5, 48.1, "Na,me\r\nx\ty\0z\uFFFE; de,sc\r\nq"),
+                position(11.6, 48.2, "B"), position(11.7, 48.3, "C"));
+        assertEquals(3, written.split("\r?\n", -1).length - 1, written);
+        assertFalse(written.indexOf('\0') != -1 || written.indexOf('\uFFFE') != -1 || written.indexOf('\t') != -1);
+        List<GpxRoute> routes = read(written);
+        assertEquals(1, routes.size());
+        assertEquals(3, routes.get(0).getPositionCount());
+        assertEquals("Name x y z", routes.get(0).getPosition(0).getDescription().split(";")[0].trim());
     }
 }

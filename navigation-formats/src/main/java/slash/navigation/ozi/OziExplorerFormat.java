@@ -43,7 +43,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Math.min;
 import static java.nio.charset.CodingErrorAction.REPORT;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -54,6 +53,7 @@ import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.gpsbabel.GpsBabelText.cleanField;
 
 /**
  * The base of the OziExplorer formats: reads and writes OziExplorer Track (.plt), Route (.rte) and
@@ -447,42 +447,39 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
         String shortName, description;
     }
 
+    /*
+     * The text of a position is split into name and description, each cleaned of the comma that separates the
+     * fields, of line breaks, TAB and characters illegal in XML. Only the description is limited to 40 characters,
+     * the name is not: "use the correct length name to suit the GPS type". The route of the caller is left alone.
+     */
     private List<WritePoint> prepareForWriting(GpxRoute route, int startIndex, int endIndex) {
-        // like GPSBabel's old OziExplorerFormat.prepareForWriting() this modifies the route
-        route.setCharacteristics(getRouteCharacteristics());
-
         List<WritePoint> result = new ArrayList<>();
         List<GpxPosition> positions = route.getPositions();
-        // all descriptions are reduced, not only the ones in the range to be written
-        for (GpxPosition position : positions) {
-            String description = position.getDescription();
-            if (description != null) {
-                description = description.substring(0, min(description.length(), MAXIMUM_DESCRIPTION_LENGTH));
-                position.setDescription(description.replace(",", " "));
-            }
-        }
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
             if (position.getLatitude() == null || position.getLongitude() == null)
                 continue;
-
-            // reduce description to 40 chars and replace comma by space (character 209 aka Ñ didn't work)
-            String description = position.getDescription();
-            if (description != null) {
-                description = description.substring(0, min(description.length(), MAXIMUM_DESCRIPTION_LENGTH));
-                description = description.replace(",", " ");
-            }
 
             WritePoint point = new WritePoint();
             point.latitude = position.getLatitude();
             point.longitude = position.getLongitude();
             point.elevation = position.getElevation();
             point.time = position.getTime();
-            point.shortName = asName(description);
-            point.description = asDesc(description);
+            point.shortName = cleanField(asName(position.getDescription()), ",").trim();
+            point.description = cut(cleanField(asDesc(position.getDescription()), ",").trim(), MAXIMUM_DESCRIPTION_LENGTH);
             result.add(point);
         }
         return result;
+    }
+
+    private static String cut(String string, int maximumLength) {
+        if (string.length() <= maximumLength)
+            return string;
+        int end = maximumLength;
+        // do not cut a surrogate pair in half
+        if (Character.isHighSurrogate(string.charAt(end - 1)))
+            end--;
+        return string.substring(0, end);
     }
 
     private static String fixed(double value, int digits) {
@@ -493,19 +490,8 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
         return result;
     }
 
-    private static String clean(String string, String badCharacters) {
-        if (string == null)
-            return "";
-        StringBuilder buffer = new StringBuilder(string.length());
-        for (int i = 0; i < string.length(); i++) {
-            if (badCharacters.indexOf(string.charAt(i)) == -1)
-                buffer.append(string.charAt(i));
-        }
-        return buffer.toString();
-    }
-
     private static String joinDescription(List<String> strings) {
-        return strings == null ? null : String.join(",\n", strings);
+        return strings == null ? null : String.join(" ", strings);
     }
 
     private static String nullToEmpty(String string) {
@@ -527,7 +513,7 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
 
     private void writeTracks(StringBuilder buffer, List<GpxRoute> routes, List<List<WritePoint>> points) {
         // all tracks go into one file, the name is the one of the first track
-        String name = nullIfEmpty(asRouteName(routes.get(0).getName()));
+        String name = nullIfEmpty(cleanField(asRouteName(routes.get(0).getName()), ",").trim());
         buffer.append("OziExplorer Track Point File Version 2.1").append(CRLF)
                 .append("WGS 84").append(CRLF)
                 .append("Altitude is in Feet").append(CRLF)
@@ -556,8 +542,8 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
             GpxRoute route = routes.get(i);
             int routeNumber = i + 1;
             buffer.append("R,").append(routeNumber).append(',')
-                    .append(encodeText(nullToEmpty(asRouteName(route.getName())))).append(',')
-                    .append(encodeText(nullToEmpty(joinDescription(route.getDescription())))).append(',').append(CRLF);
+                    .append(encodeText(cleanField(asRouteName(route.getName()), ",").trim())).append(',')
+                    .append(encodeText(cleanField(joinDescription(route.getDescription()), ",").trim())).append(',').append(CRLF);
             int count = 0;
             for (WritePoint point : points.get(i)) {
                 count++;
@@ -566,6 +552,7 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
                         .append(fixed(point.latitude, 6)).append(',')
                         .append(fixed(point.longitude, 6)).append(',')
                         .append(toTimeString(point.time)).append(",0,1,3,0,65535,")
+                        .append(encodeText(nullToEmpty(point.description)))
                         .append(",0,0").append(CRLF);
             }
         }
@@ -579,16 +566,10 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
         int index = 0;
         for (List<WritePoint> list : points) {
             for (WritePoint point : list) {
-                String shortName, description;
-                if (point.shortName == null || point.shortName.isEmpty())
-                    shortName = point.description != null && !point.description.isEmpty() ?
-                            clean(point.description, ",\r\n") : "";
-                else
-                    shortName = clean(point.shortName, ",\r\n");
-                if (point.description == null || point.description.isEmpty())
-                    description = clean(shortName, ",\r\n");
-                else
-                    description = clean(point.description, ",\r\n");
+                String shortName = point.shortName == null || point.shortName.isEmpty() ?
+                        nullToEmpty(point.description) : point.shortName;
+                String description = point.description == null || point.description.isEmpty() ?
+                        cut(shortName, MAXIMUM_DESCRIPTION_LENGTH) : point.description;
 
                 buffer.append(++index).append(',')
                         .append(encodeText(shortName)).append(',')
