@@ -28,6 +28,7 @@
 package slash.navigation.garmin;
 
 import slash.navigation.base.GpxBackedNavigationFormat;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpsbabel.LittleEndianInput;
 import slash.navigation.gpsbabel.LittleEndianOutput;
 import slash.navigation.gpx.Gpx10Format;
@@ -62,6 +63,10 @@ import static slash.navigation.gpsbabel.GpsBabelMath.semicirclesToDegrees;
  * groups, areas and waypoints. Obfuscated files of format version 01 are de-obfuscated on read.
  * The address and contact records of a waypoint are read into its description; the writer keeps them
  * as part of the comment text, not as address and contact records.
+ * <p>
+ * A damaged record costs only that record (D19). A file with a GPI header of which no POI can be read
+ * because it is damaged or cut off raises an {@link UnreadableFileException} that says why; a file
+ * without POIs is declined quietly.
  *
  * @author Christian Pesch
  */
@@ -160,19 +165,24 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         buffer.write(head);
         buffer.write(readFully(source));
 
+        // the GRMREC header has matched: a file that cannot be read is an error with a reason (D19)
+        byte[] data = buffer.toByteArray();
+        Reader reader = new Reader(data);
         List<GpxPosition> positions;
-        String name;
         try {
-            Reader reader = new Reader(buffer.toByteArray());
             positions = reader.read();
-            name = reader.headerName();
-        } catch (GpiException | EOFException | RuntimeException e) {
-            // GPSBabel stops with a fatal error and delivers no waypoints
+        } catch (EOFException e) {
+            throw new UnreadableFileException("Garmin POI file ends in its header after " + data.length + " bytes", e);
+        } catch (GpiException | RuntimeException e) {
+            throw new UnreadableFileException("Garmin POI file is damaged: " + e.getMessage(), e);
+        }
+        if (positions.isEmpty()) {
+            // nothing to salvage from a damaged file; a file without POIs is no error
+            if (reader.damage != null)
+                throw new UnreadableFileException("Garmin POI file is damaged: " + reader.damage);
             return null;
         }
-        if (positions.isEmpty())
-            return null;
-        return singletonList(new GpxRoute(new Gpx10Format(), Waypoints, name, null, positions));
+        return singletonList(new GpxRoute(new Gpx10Format(), Waypoints, reader.headerName(), null, positions));
     }
 
     /**
@@ -214,12 +224,15 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
     /** A record header as Oppmann describes it: type, flags, [total length,] main length. */
     static class Record {
         final int type, flags, mainEnd, end;
+        // the end of the container cuts the record off
+        final boolean cut;
 
-        Record(int type, int flags, int mainEnd, int end) {
+        Record(int type, int flags, int mainEnd, int end, boolean cut) {
             this.type = type;
             this.flags = flags;
             this.mainEnd = mainEnd;
             this.end = end;
+            this.cut = cut;
         }
 
         boolean hasExtraData() {
@@ -275,9 +288,9 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         else if (wpt.longitude > 180)
             wpt.longitude -= 360;
         if (wpt.latitude < -90 || wpt.latitude > 90.0)
-            throw new GpiException("Invalid latitude " + latitude + " in waypoint " + wpt.shortName);
+            throw new GpiException("invalid latitude " + latitude + " in waypoint " + wpt.shortName);
         if (wpt.longitude < -180 || wpt.longitude > 180.0)
-            throw new GpiException("Invalid longitude " + longitude + " in waypoint " + wpt.shortName);
+            throw new GpiException("invalid longitude " + longitude + " in waypoint " + wpt.shortName);
 
         if (wpt.shortName == null) {
             if (wpt.description != null)
@@ -316,19 +329,21 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
                 total = main;
             int start = input.position();
             if (main > total || start > limit)
-                throw new GpiException("Record " + type + " at " + start + " exceeds its container");
+                throw new GpiException("record " + type + " at byte " + start + " exceeds its container");
             // a record that the end of its container cuts off keeps the part that is there
             int end = (int) Math.min(start + total, limit);
-            return new Record(type, flags, (int) Math.min(start + main, end), end);
+            return new Record(type, flags, (int) Math.min(start + main, end), end, start + total > limit);
         }
 
         // GarminGPIFormat::read_header() with Oppmann's record layout for Header1 and Header2
         private int readHeaders() throws EOFException, GpiException {
             Record header1 = readRecord(data.length);
+            if (header1.cut)
+                throw new EOFException("Header1 is cut off");
             if (header1.type != HEADER1 || header1.mainEnd - input.position() < 16)
-                throw new GpiException("No GPI file");
+                throw new GpiException("its first header record is too short");
             if (!"GRMREC".equals(input.readFixedString(6, US_ASCII)))
-                throw new GpiException("No GPI file");
+                throw new GpiException("its first header record has no GRMREC");
             input.skip(2 + 4);                              // format version, creation date
             int flags1 = input.readUInt8();
             int obfuscation = input.readUInt8();
@@ -345,10 +360,12 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             input.seek(header1.end);
 
             Record header2 = readRecord(data.length);
+            if (header2.cut)
+                throw new EOFException("Header2 is cut off");
             if (header2.type != HEADER2 || header2.mainEnd - input.position() < 12)
-                throw new GpiException("Wrong or unsupported GPI file");
+                throw new GpiException("its second header record is missing or too short");
             if (!"POI".equals(input.readFixedString(3, US_ASCII)))
-                throw new GpiException("Wrong or unsupported GPI file");
+                throw new GpiException("its second header record is no POI header");
             input.skip(3 + 2);                              // padding, format version
             int codePage = input.readUInt16();
             charset = charsetForCodePage(codePage);
@@ -376,8 +393,17 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
          */
         List<GpxPosition> read() throws EOFException, GpiException {
             int start = readHeaders();
-            readRecords(start, data.length, null, 0);
+            if (!readRecords(start, data.length, null, 0))
+                damaged("it ends without its End record after " + data.length + " bytes");
             return positions;
+        }
+
+        // the first thing that went wrong reading the records; with no POI read it makes the file unreadable
+        String damage;
+
+        private void damaged(String problem) {
+            if (damage == null)
+                damage = problem;
         }
 
         /**
@@ -399,28 +425,33 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
          * record carries its length, so a record that cannot be read costs only itself: a waypoint its POI, a
          * comment its text. A record header that is broken or cut off ends the loop, since the next record
          * cannot be found, and keeps what was read before; so does a missing End record.
+         *
+         * @return whether the loop ended at an End record
          */
-        private void readRecords(int start, int end, Wpt poi, int depth) throws EOFException, GpiException {
+        private boolean readRecords(int start, int end, Wpt poi, int depth) throws EOFException, GpiException {
             if (depth > MAXIMUM_NESTING)
-                throw new GpiException("Records nested deeper than " + MAXIMUM_NESTING + " levels at " + start);
+                throw new GpiException("records nested deeper than " + MAXIMUM_NESTING + " levels at byte " + start);
             input.seek(start);
             try {
                 while (end - input.position() >= 8) {
                     int position = input.position();
                     if (input.readUInt16() == END)
-                        break;
+                        return true;
                     input.seek(position);
                     Record record = readRecord(end);
                     try {
                         readRecordContent(record, poi, depth);
                     } catch (GpiException | EOFException e) {
                         // drop this record and go on behind it
+                        damaged("skipped the unreadable record " + record.type + " at byte " + position + ": " + e.getMessage());
                     }
                     input.seek(record.end);
                 }
             } catch (GpiException | EOFException e) {
                 // no further record can be found
+                damaged("no record can be found behind byte " + input.position() + ": " + e.getMessage());
             }
+            return false;
         }
 
         // GarminGPIFormat::read_tag(); record types GPSBabel does not interpret are skipped by their length
@@ -466,7 +497,7 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             // GPXSee skip as many bytes as Unknown4 says
             int unknown4 = input.readUInt16();
             if (input.position() + unknown4 > record.end)
-                throw new GpiException("Waypoint at " + input.position() + " exceeds its record");
+                throw new GpiException("waypoint at byte " + input.position() + " exceeds its record");
             input.skip(unknown4);
             Wpt poi = new Wpt(latitude, longitude, readField(record.end, true), null, null);
 
@@ -595,7 +626,7 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             byte[] bytes;
             if (high == 0) {
                 if (input.position() + length > limit)
-                    throw new GpiException("String at " + input.position() + " exceeds its record");
+                    throw new GpiException("string at byte " + input.position() + " exceeds its record");
                 bytes = readLanguageStrings(length, limit);
             } else if (high < 0x100 && languageString && isLanguageString(start, limit)) {
                 input.seek(start);
@@ -604,7 +635,7 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             } else {
                 input.seek(afterLength);
                 if (input.position() + length > limit)
-                    throw new GpiException("String at " + input.position() + " exceeds its record");
+                    throw new GpiException("string at byte " + input.position() + " exceeds its record");
                 bytes = input.readBytes(length);
             }
             return decode(bytes);
@@ -648,11 +679,11 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             while (consumed < length) {
                 int language1 = input.readUInt8(), language2 = input.readUInt8();
                 if (language1 < 'A' || language1 > 'Z' || language2 < 'A' || language2 > 'Z')
-                    throw new GpiException("Invalid language code at " + input.position());
+                    throw new GpiException("invalid language code at byte " + input.position());
                 String language = "" + (char) language1 + (char) language2;
                 int stringLength = input.readUInt16();
                 if (input.position() + stringLength > limit)
-                    throw new GpiException("String at " + input.position() + " exceeds its record");
+                    throw new GpiException("string at byte " + input.position() + " exceeds its record");
                 byte[] bytes = input.readBytes(stringLength);
                 consumed += 4 + stringLength;
                 if (first == null)
@@ -663,7 +694,7 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
                     user = bytes;
             }
             if (consumed != length)
-                throw new GpiException("Error out of sync (wrong size " + length + "/" + consumed + ")");
+                throw new GpiException("out of sync (wrong size " + length + "/" + consumed + ")");
             return user != null ? user : english != null ? english : first;
         }
     }
