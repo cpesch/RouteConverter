@@ -44,6 +44,7 @@ import static java.util.Collections.singletonList;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.gpsbabel.GpsBabelText.cleanField;
 import static slash.navigation.gpsbabel.GpsBabelText.csvLineParse;
 import static slash.navigation.gpsbabel.GpsBabelText.humanToDec;
 
@@ -206,14 +207,10 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
     private static String clean(String string, int maximumLength) {
         if (string == null)
             return "";
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < string.length(); i++) {
-            char c = string.charAt(i);
-            if (c != BAD_CHARACTER)
-                result.append(c);
-        }
+        // a comma is dropped, a line break would split the record in two lines
+        String result = cleanField(string.replace(String.valueOf(BAD_CHARACTER), ""), "");
         // "%-.Ns" cuts after N characters
-        return result.length() > maximumLength ? result.substring(0, maximumLength) : result.toString();
+        return result.length() > maximumLength ? result.substring(0, maximumLength) : result;
     }
 
     // GPSBabel hands the shortname on as the description when a waypoint has no description

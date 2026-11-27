@@ -123,4 +123,13 @@ public class GpsBabelTextTest {
     public void testCsvLineParseWhitespaceDelimiter() {
         assertEquals(asList("a ", "b\t", "c"), csvLineParse("a b\tc", "\\w", "\""));
     }
+
+    @Test
+    public void cleanFieldReplacesDelimitersLineBreaksTabAndIllegalXmlCharactersByASpace() {
+        assertEquals("a b c d e f g h", GpsBabelText.cleanField("a,b;c\r\nd\te\0f\uFFFEg\uD800h", ",;"));
+        assertEquals("a b  c", GpsBabelText.cleanField("a\nb\n\nc", ""));
+        assertEquals("a;b", GpsBabelText.cleanField("a;b", ","));
+        assertEquals("", GpsBabelText.cleanField(null, ","));
+        assertEquals("\uD83D\uDE00 x", GpsBabelText.cleanField("\uD83D\uDE00 x", ","));
+    }
 }

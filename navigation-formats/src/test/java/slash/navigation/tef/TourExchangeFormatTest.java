@@ -304,4 +304,18 @@ public class TourExchangeFormatTest {
         assertEquals(description, routes.get(1).getPosition(0).getDescription());
         assertEquals("Ä", routes.get(1).getPosition(1).getDescription());
     }
+
+    @Test
+    public void textWithXmlIllegalCharactersKeepsTheFileReadable() throws IOException {
+        String hostile = "Na,me\r\nx\ty\0z\uFFFE\uFFFF\uD800w; de,sc\r\nq";
+        String xml = write(route("Tour\0\uFFFE" + hostile, position(10.0, 53.5, null, null, hostile),
+                position(10.1, 53.6, null, null, "B"), position(10.2, 53.7, null, null, "C")));
+        List<GpxRoute> routes = readBack(xml);
+        assertEquals(2, routes.size());
+        assertEquals(3, routes.get(1).getPositionCount());
+        String description = routes.get(1).getPosition(0).getDescription();
+        assertTrue(description.contains("Na,me"), description);
+        assertTrue(description.contains("x\ty z"), description);
+        assertFalse(description.indexOf('\0') != -1 || description.indexOf('\uFFFE') != -1 || description.indexOf('\uD800') != -1);
+    }
 }

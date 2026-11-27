@@ -55,6 +55,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.NavigationConversion.formatElevation;
 import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.gpsbabel.GpsBabelText.cleanField;
 import static slash.navigation.gpsbabel.GpsBabelText.csvLineParse;
 import static slash.navigation.gpsbabel.GpsBabelText.humanToDec;
 
@@ -467,10 +468,6 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
         return format(Locale.ROOT, "%.10f%c%c", abs(longitude), DEGREE, longitude >= 0 ? 'E' : 'W');
     }
 
-    private static String clean(String string, char nuke) {
-        return string.replace(String.valueOf(nuke), "");
-    }
-
     private static String formatDateTime(CompactCalendar time) {
         if (time == null)
             return "01-JAN-70 00:00:00";
@@ -500,7 +497,7 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
             if (writeTrackInfo) {
                 writeTrackInfo = false;
                 if (routeName != null)
-                    builder.append("t 4294967295|").append(clean(routeName, '|')).append("|-1|-1\n");
+                    builder.append("t 4294967295|").append(cleanField(routeName.replace("|", ""), "")).append("|-1|-1\n");
             }
         }
         builder.append("F  1234\n");

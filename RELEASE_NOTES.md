@@ -54,6 +54,7 @@
 ### Fixes
 
 - Garmin POI (.gpi) files: positions with seven decimals are written and read back unchanged, where saving and reopening could move them by up to 9 mm; a text longer than 65 535 bytes is cut instead of written as a broken text
+- Garmin MapSource 6.x (.gdb) files: a damaged record no longer makes the whole file unreadable, the other records are read. Waypoints of older MapSource 6 files keep their time when they have a street address or a leg time, routes with avoided areas or roads keep their notes, and umlauts and the euro sign of older files are read correctly. Saving a route with two points of the same name now writes a file that can be read back; positions are rounded to the nearest unit instead of cut off, so +180° stays +180°, and no longer depend on the display precision; large files are read and written much faster. Garmin MapSource 5.x (.mps) files are saved with the same rounding
 - A damaged or truncated National Geographic TOPO! (.tpo), Magellan MapSend (.wpt) or iGO8 (.trk) file now opens with an error that says what is wrong, instead of as an empty position list; MapSend track files report that they cannot be read yet
 - Random data, Magellan MapSend tracks and other binary files are no longer read as dozens of garbage tracks of a Wintec WBT-202 (.tes) file, and OziExplorer Event and Point files are no longer read as waypoints with mixed-up coordinates
 - TOPO! files whose compass style "Red Without Arrow" was renamed, MapSend files with other version signatures and iGO8 tracks with points far apart are now read
@@ -79,6 +80,9 @@
 - Google Timeline (.json) files are read again when the Android export's first segment is a trip memory, when the file starts with a byte-order mark, and Google Takeout "Location History" exports (Records.json and Semantic Location History) are now read as well (#429)
 - Updates of the offline maps from alternativaslibres.org and osm.paws.cz are recognized: the nightly map catalog update now finds a map that is not the first file in its zip and reads map headers larger than 16 KB
 - Opening a text or web page file with many web links no longer takes minutes: the Google Maps URL and GeoHack URL readers search such files much faster. This also speeds up opening ZIP archives such as Google Takeout exports, where a single README took them seconds
+- OziExplorer route (.rte) files now keep the description of each route point, which was lost; waypoint files cut the name and the description separately, so a long name no longer eats the description, and saving no longer shortens the descriptions in the open position list
+- Names and descriptions with commas, line breaks, tabs or characters that are not valid in XML no longer break the written OziExplorer, CompeGPS, Garmin PCX5, Garmin POI Database, TomTom POI, Tour Exchange Format and Magellan MapSend files: such a character is replaced by a space, so the file reads back with all its positions
+- Magellan MapSend (.wpt) files whose names contain a NUL character are read up to that character
 
 ## 3.8 — 2026-11-15
 

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static slash.navigation.base.GpxBackedNavigationFormat.isLegalXmlCharacter;
 import static slash.navigation.gpsbabel.GpsBabelMath.ddmm2degrees;
 
 /**
@@ -39,6 +40,32 @@ public class GpsBabelText {
     private static final Pattern ATOF = Pattern.compile("^(?:\\d+\\.?\\d*|\\.\\d+)(?:[eE][+-]?\\d+)?");
 
     private GpsBabelText() {
+    }
+
+    /**
+     * Makes a text fit into one field of a line oriented text format: every delimiter, TAB, CR, LF and every
+     * character that is illegal in XML 1.0 (NUL, other C0 controls, U+FFFE, U+FFFF, unpaired surrogates) is
+     * replaced by a space, so the record keeps its field count and its line, and neither RouteConverter nor
+     * a strict XML parser stumbles over the character on the way back. A null text is an empty field.
+     */
+    public static String cleanField(String text, String delimiters) {
+        if (text == null)
+            return "";
+
+        StringBuilder result = new StringBuilder(text.length());
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (Character.isHighSurrogate(c) && i + 1 < text.length() && Character.isLowSurrogate(text.charAt(i + 1))) {
+                result.append(c).append(text.charAt(++i));
+                continue;
+            }
+            if (c == '\r' && i + 1 < text.length() && text.charAt(i + 1) == '\n')
+                continue; // CR LF becomes the one space of the LF
+            boolean replace = c == '\t' || c == '\r' || c == '\n' || !isLegalXmlCharacter(c) ||
+                    (delimiters != null && delimiters.indexOf(c) != -1);
+            result.append(replace ? ' ' : c);
+        }
+        return result.toString();
     }
 
     private static boolean isWhitespace(char c) {
