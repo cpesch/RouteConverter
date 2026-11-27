@@ -143,7 +143,7 @@ class FileOperations {
                         Gpx11Format gpxFormat = new Gpx11Format();
                         panel.formatAndRoutesModel.setRoutes(new FormatAndRoutes<>(gpxFormat, new GpxRoute(gpxFormat)));
                     });
-                    r.handleUnsupportedFormat(path);
+                    handleUnreadable(result, path);
                 }
             } catch (BabelException e) {
                 r.handleBabelError(e);
@@ -160,7 +160,16 @@ class FileOperations {
         });
     }
 
-    void saveFile(File file, NavigationFormat<?> format,
+    // a format that recognized the file but cannot read it says why, which beats "unsupported format"
+    private static void handleUnreadable(ParserResult result, String path) {
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
+        if (result.getFailure() != null)
+            r.handleOpenError(result.getFailure(), path);
+        else
+            r.handleUnsupportedFormat(path);
+    }
+
+        void saveFile(File file, NavigationFormat<?> format,
                   boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
         if (file.getParent() != null)
@@ -307,7 +316,7 @@ class FileOperations {
                         });
 
                     } else {
-                        r.handleUnsupportedFormat(path);
+                        handleUnreadable(result, path);
                     }
                 }
             } catch (BabelException e) {

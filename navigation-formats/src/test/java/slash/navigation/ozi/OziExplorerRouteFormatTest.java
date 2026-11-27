@@ -117,10 +117,16 @@ public class OziExplorerRouteFormatTest {
     }
 
     @Test
-    public void waypointFormatReadsOtherOziExplorerFileTypesLikeGpsBabel() throws IOException {
+    public void noFormatReadsOtherOziExplorerFileTypes() throws IOException {
+        // GPSBabel reads them as waypoints, with the columns of an event or point file in the wrong fields;
+        // JOSM and GPXSee require "Waypoint File"
         String event = lines("OziExplorer Event File Version 1.0", "WGS 84", "Reserved 2", "Reserved 3",
                 "1,Event,47.500000,8.250000,,0,1,3,0,65535,Event desc,0,0,0,328,6,0,17");
-        assertEquals(1, read(new OziExplorerWaypointFormat(), event).size());
+        assertTrue(read(new OziExplorerWaypointFormat(), event).isEmpty());
+        String point = lines("OziExplorer Point File Version 1.0", "WGS 84", "Reserved 2", "Reserved 3",
+                "1,Point,47.500000,8.250000,,0,1,3,0,65535,Point desc,0,0,0,328,6,0,17");
+        assertTrue(read(new OziExplorerWaypointFormat(), point).isEmpty());
+        assertEquals(1, read(new OziExplorerWaypointFormat(), event.replace("Event File", "CE Waypoint File")).size());
         assertTrue(read(new OziExplorerRouteFormat(), event).isEmpty());
         assertTrue(read(new OziExplorerTrackFormat(), event).isEmpty());
     }

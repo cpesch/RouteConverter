@@ -49,7 +49,8 @@ public class OziExplorerWaypointFormat extends OziExplorerFormat {
     }
 
     protected boolean isFileType(String firstLine) {
-        // GPSBabel's ozi reader takes every file that is neither a track nor a route for a waypoint file
-        return !firstLine.contains("Track Point") && !firstLine.contains("Route File");
+        // GPSBabel's ozi reader takes every file that is neither a track nor a route for a waypoint file,
+        // which claims OziExplorer Event and Point files, too; JOSM and GPXSee require the file type
+        return firstLine.contains("Waypoint File");
     }
 }
