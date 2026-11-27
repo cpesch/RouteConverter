@@ -25,6 +25,7 @@ package slash.navigation.igc;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.GpxBackedNavigationFormat;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
@@ -67,8 +68,10 @@ import static slash.navigation.common.NavigationConversion.formatPosition;
 /**
  * Reads and writes FAI/IGC Flight Recorder Data (.igc) files.
  *
- * Reading salvages record by record (spec 00083 D19, D23): an unreadable line is skipped and only a file without a
- * date or without a single valid fix is declined. Writing is as exact as the format permits (D18, D25): fixes carry
+ * Reading salvages record by record (spec 00083 D19, D23): an unreadable line is skipped. A file with a date record
+ * or a fix record of which nothing can be read - the date is missing or invalid, no fix is readable - raises an
+ * {@link UnreadableFileException} that says why; a file without both, or without fixes but without damage, is
+ * declined quietly. Writing is as exact as the format permits (D18, D25): fixes carry
  * whole seconds (rounded), altitudes are clamped to the 5 character field and the header carries the full set of
  * records required by the FAI Technical Specification. Limits of the format: a B record carries only the time of the
  * day, so the date of every later fix is derived from the first fix and tracks longer than 24 hours or unsorted
@@ -87,6 +90,7 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
     private static final String GNSS_TRACK_NAME = "GNSSALTTRK";
     private static final int MAXIMUM_DESCRIPTION_LENGTH = 1024;
     private static final int MAXIMUM_RECORD_TEXT_LENGTH = 78;
+    private static final int MAXIMUM_MESSAGE_LENGTH = 120;
     private static final String UTF8_BYTE_ORDER_MARK = "\u00ef\u00bb\u00bf";
     private static final char CTRL_Z = '\u001a';
     // a step back in time of more than 12 hours is the passing of midnight, everything smaller is jitter
@@ -188,6 +192,27 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
         }
     }
 
+    /**
+     * IGC has no magic number: a date record or a fix that matches the B record layout tells that a file is meant
+     * to be an IGC file, so that a file without a usable date is an error with a reason instead of a decline (D19).
+     */
+    private static String findDateProblem(String[] lines) {
+        String fix = null;
+        for (String raw : lines) {
+            String line = normalize(raw);
+            if (line.length() >= 3 && isDateRecord(line)) {
+                try {
+                    parseDate(line);
+                } catch (IgcException e) {
+                    return "its date (HFDTE) record is invalid: " + limit(e.getMessage(), MAXIMUM_MESSAGE_LENGTH);
+                }
+            }
+            if (fix == null && line.startsWith("B") && FIX_PATTERN.matcher(line).matches())
+                fix = line;
+        }
+        return fix != null ? "it has fix (B) records but no date (HFDTE) record" : null;
+    }
+
     // fixes in front of the first valid date record belong to that date
     private static LocalDate findFirstDate(String[] lines) {
         for (String raw : lines) {
@@ -203,13 +228,17 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
         return null;
     }
 
-    private List<GpxRoute> parse(String[] lines) {
+    private List<GpxRoute> parse(String[] lines) throws UnreadableFileException {
         TaskReader taskReader = new TaskReader();
         StringBuilder trackDescription = new StringBuilder(HEADER_MAGIC + HEADER_DELIMITER);
         String fixedTrackDescription = null;
         LocalDate date = findFirstDate(lines);
-        if (date == null)
+        if (date == null) {
+            String problem = findDateProblem(lines);
+            if (problem != null)
+                throw new UnreadableFileException("IGC file cannot be read: " + problem);
             return null;
+        }
         LocalTime previousTime = null;
         List<GpxPosition> pressurePositions = new ArrayList<>(), gnssPositions = new ArrayList<>();
         boolean pressureValid = false, gnssValid = false;
@@ -305,8 +334,13 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
         if (skipped > 0)
             log.fine("Skipped " + skipped + " unreadable lines reading " + getName() + ", first: " + firstSkipped);
 
-        if (pressurePositions.isEmpty())
+        if (pressurePositions.isEmpty()) {
+            // nothing to salvage from a damaged file; a file without fixes is no error
+            if (skipped > 0 && taskReader.getRoutes().isEmpty())
+                throw new UnreadableFileException("IGC file cannot be read: it has no readable fix (B) record, " +
+                        skipped + " unreadable lines, the first: " + limit(firstSkipped, MAXIMUM_MESSAGE_LENGTH));
             return null;
+        }
 
         List<GpxRoute> result = new ArrayList<>(taskReader.getRoutes());
         // include pressure altitude track only if it has useful altitude data, GNSS altitude track only if it has
