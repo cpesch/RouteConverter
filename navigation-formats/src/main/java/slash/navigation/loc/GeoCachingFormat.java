@@ -33,7 +33,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,18 +42,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.Reader;
 import java.io.StringReader;
-import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
+import java.util.logging.Logger;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_16BE;
+import static java.nio.charset.StandardCharsets.UTF_16LE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.gpsbabel.GpsBabelText.decodeUtf8OrCp1252;
+import static slash.navigation.gpsbabel.GpsBabelText.stripBom;
 
 /**
  * Reads and writes Geocaching.com/EasyGPS (.loc) files.
@@ -63,6 +62,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  */
 
 public class GeoCachingFormat extends GpxBackedNavigationFormat {
+    private static final Logger log = Logger.getLogger(GeoCachingFormat.class.getName());
     private static final String LOC = "loc";
     private static final String WAYPOINT = "waypoint";
 
@@ -89,7 +89,7 @@ public class GeoCachingFormat extends GpxBackedNavigationFormat {
 
         List<GpxPosition> positions;
         try {
-            positions = parse(new ByteArrayInputStream(buffer.toByteArray()));
+            positions = parse(buffer.toByteArray());
         } catch (XMLStreamException | RuntimeException e) {
             // GPSBabel 1.5.4 aborts with a fatal error: the parser sees a format that declines the file
             throw new IOException("Cannot read Geocaching.com/EasyGPS file: " + e.getMessage(), e);
@@ -108,36 +108,41 @@ public class GeoCachingFormat extends GpxBackedNavigationFormat {
 
     private static final Pattern ENCODING = Pattern.compile("^\\s*<\\?xml[^>]*encoding\\s*=\\s*[\"']([A-Za-z0-9._:-]+)[\"']");
 
-    // GPSBabel 1.5.4 rejects bytes that are not valid in the declared encoding (UTF-8 by default)
-    private static Reader createStrictReader(InputStream stream) throws XMLStreamException {
-        byte[] bytes;
-        try {
-            bytes = stream.readAllBytes();
-        } catch (IOException e) {
-            throw new XMLStreamException(e);
-        }
-        int offset = bytes.length >= 3 && bytes[0] == (byte) 0xEF && bytes[1] == (byte) 0xBB && bytes[2] == (byte) 0xBF ? 3 : 0;
-        Charset charset = UTF_8;
-        Matcher matcher = ENCODING.matcher(new String(bytes, offset, Math.min(bytes.length - offset, 200), ISO_8859_1));
-        if (matcher.find()) {
-            try {
-                charset = Charset.forName(matcher.group(1));
-            } catch (IllegalArgumentException e) {
-                throw new XMLStreamException("Unsupported encoding " + matcher.group(1));
+    /**
+     * Decodes the file leniently (decision D22): a UTF-16 byte order mark selects UTF-16, an encoding declared
+     * in the XML declaration is used when Java knows it, undecodable bytes become U+FFFD; without a declaration,
+     * with a declared UTF-8 or an unknown encoding the text is read as UTF-8 and, if that fails, as Windows-1252,
+     * which ITN Converter and other tools write without declaring it. Characters that are illegal in XML are
+     * replaced by a space before parsing, as the GPSBabel path did with its IllegalCharacterFilterInputStream.
+     */
+    static String decode(byte[] bytes) {
+        String text;
+        if (bytes.length >= 2 && bytes[0] == (byte) 0xFF && bytes[1] == (byte) 0xFE)
+            text = new String(bytes, 2, bytes.length - 2, UTF_16LE);
+        else if (bytes.length >= 2 && bytes[0] == (byte) 0xFE && bytes[1] == (byte) 0xFF)
+            text = new String(bytes, 2, bytes.length - 2, UTF_16BE);
+        else {
+            byte[] content = stripBom(bytes);
+            Charset charset = null;
+            Matcher matcher = ENCODING.matcher(new String(content, 0, Math.min(content.length, 200), ISO_8859_1));
+            if (matcher.find()) {
+                try {
+                    charset = Charset.forName(matcher.group(1));
+                } catch (IllegalArgumentException e) {
+                    // an unknown encoding: guess as if none was declared
+                }
             }
+            text = charset == null || UTF_8.equals(charset) ? decodeUtf8OrCp1252(content) : new String(content, charset);
         }
-        CharsetDecoder decoder = charset.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT);
-        try {
-            return new StringReader(decoder.decode(ByteBuffer.wrap(bytes, offset, bytes.length - offset)).toString());
-        } catch (CharacterCodingException e) {
-            throw new XMLStreamException("Invalid " + charset + " data", e);
-        }
+        if (!text.isEmpty() && text.charAt(0) == '\uFEFF')
+            text = text.substring(1);
+        return stripIllegalXmlCharacters(text);
     }
 
-    private List<GpxPosition> parse(InputStream stream) throws XMLStreamException {
-        XMLStreamReader reader = createFactory().createXMLStreamReader(createStrictReader(stream));
+    private List<GpxPosition> parse(byte[] bytes) throws XMLStreamException {
+        XMLStreamReader reader = createFactory().createXMLStreamReader(new StringReader(decode(bytes)));
+        List<GpxPosition> result = new ArrayList<>();
         try {
-            List<GpxPosition> result = new ArrayList<>();
             List<String> path = new ArrayList<>();
             Double latitude = null, longitude = null;
             String id = null, text = null;
@@ -150,9 +155,8 @@ public class GeoCachingFormat extends GpxBackedNavigationFormat {
                     String current = "/" + String.join("/", path);
                     if (current.equals("/loc/waypoint")) {
                         inWaypoint = true;
-                        // GPSBabel: there is no 'unknown' altitude, geo.cc sets 0
-                        latitude = 0.0;
-                        longitude = 0.0;
+                        latitude = null;
+                        longitude = null;
                         id = null;
                         text = null;
                     } else if (current.equals("/loc/waypoint/name")) {
@@ -160,19 +164,31 @@ public class GeoCachingFormat extends GpxBackedNavigationFormat {
                         text = reader.getElementText();
                         path.remove(path.size() - 1);
                     } else if (current.equals("/loc/waypoint/coord")) {
-                        latitude = parseDouble(reader.getAttributeValue(null, "lat"));
-                        longitude = parseDouble(reader.getAttributeValue(null, "lon"));
+                        latitude = parseCoordinate(reader.getAttributeValue(null, "lat"), 90.0);
+                        longitude = parseCoordinate(reader.getAttributeValue(null, "lon"), 180.0);
                     }
                 } else if (event == XMLStreamConstants.END_ELEMENT) {
                     if (inWaypoint && path.size() == 2 && LOC.equals(path.get(0)) && WAYPOINT.equals(path.get(1))) {
-                        result.add(new GpxPosition(longitude, latitude, 0.0, null, null,
-                                asWayPointDescription(emptyToNull(id), emptyToNull(text))));
+                        // decision D23: a waypoint without valid coordinates is skipped, GPSBabel puts it at 0/0
+                        if (latitude != null && longitude != null)
+                            // GPSBabel: there is no 'unknown' altitude, geo.cc sets 0
+                            result.add(new GpxPosition(longitude, latitude, 0.0, null, null,
+                                    asWayPointDescription(emptyToNull(id), emptyToNull(text))));
+                        else
+                            log.warning("Skipped waypoint " + id + " without valid coordinates");
                         inWaypoint = false;
                     }
                     path.remove(path.size() - 1);
                 }
             }
             return result;
+        } catch (XMLStreamException | RuntimeException e) {
+            // decision D19: keep the waypoints read before the XML broke
+            if (!result.isEmpty()) {
+                log.warning("Read " + result.size() + " waypoints before a broken part of the file: " + e.getMessage());
+                return result;
+            }
+            throw e;
         } finally {
             reader.close();
         }
@@ -182,14 +198,22 @@ public class GeoCachingFormat extends GpxBackedNavigationFormat {
         return asDescription(name, description);
     }
 
-    private static Double parseDouble(String value) {
+    private static final Pattern NUMBER = Pattern.compile("[+-]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][+-]?\\d+)?");
+
+    /**
+     * A coordinate in decimal degrees; a decimal comma is accepted. Null for a missing, non-numeric,
+     * non-finite or out of range value.
+     */
+    static Double parseCoordinate(String value, double maximum) {
         if (value == null)
-            return 0.0;
-        try {
-            return Double.parseDouble(value.trim());
-        } catch (NumberFormatException e) {
-            return 0.0;
-        }
+            return null;
+        String number = value.trim();
+        if (number.indexOf('.') == -1)
+            number = number.replace(',', '.');
+        if (!NUMBER.matcher(number).matches())
+            return null;
+        double result = Double.parseDouble(number);
+        return Double.isFinite(result) && Math.abs(result) <= maximum ? result : null;
     }
 
     private static String emptyToNull(String value) {

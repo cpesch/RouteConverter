@@ -88,6 +88,9 @@
 - OziExplorer route (.rte) files now keep the description of each route point, which was lost; waypoint files cut the name and the description separately, so a long name no longer eats the description, and saving no longer shortens the descriptions in the open position list
 - Names and descriptions with commas, line breaks, tabs or characters that are not valid in XML no longer break the written OziExplorer, CompeGPS, Garmin PCX5, Garmin POI Database, TomTom POI, Tour Exchange Format and Magellan MapSend files: such a character is replaced by a space, so the file reads back with all its positions
 - Magellan MapSend (.wpt) files whose names contain a NUL character are read up to that character
+- TomTom POI (.ov2) files: points west of Greenwich or south of the equator are saved at their exact position, where they moved about 1 m towards it; files with UTF-8 names, with a damaged or padded end and with characters that Windows-1252 leaves undefined are read, the last ones written back unchanged; characters that cannot be saved are reported in the log
+- Geocaching.com/EasyGPS (.loc) files are read more leniently: files with umlauts but without encoding declaration, UTF-16 files and files with control characters open, a damaged end keeps the waypoints before it, and waypoints with broken or missing coordinates are skipped instead of ending up at 0°/0°
+- Garmin POI Database (.xcsv) files are read more leniently: names and descriptions in double quotes keep their commas, lines may end with a carriage return only, and a byte order mark, a header line, comment lines starting with # or ; and Windows-1252 text are understood
 
 ## 3.8 — 2026-11-15
 
