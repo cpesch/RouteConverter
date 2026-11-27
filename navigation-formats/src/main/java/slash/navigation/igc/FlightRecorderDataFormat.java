@@ -38,7 +38,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,8 +50,11 @@ import java.util.regex.Pattern;
 import static java.lang.Math.abs;
 import static java.lang.Math.copySign;
 import static java.lang.Math.floor;
+import static java.lang.Math.floorDiv;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static java.time.Instant.ofEpochMilli;
+import static java.time.Instant.ofEpochSecond;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Locale.ROOT;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -59,6 +66,13 @@ import static slash.navigation.common.NavigationConversion.formatPosition;
 
 /**
  * Reads and writes FAI/IGC Flight Recorder Data (.igc) files.
+ *
+ * Reading salvages record by record (spec 00083 D19, D23): an unreadable line is skipped and only a file without a
+ * date or without a single valid fix is declined. Writing is as exact as the format permits (D18, D25): fixes carry
+ * whole seconds (rounded), altitudes are clamped to the 5 character field and the header carries the full set of
+ * records required by the FAI Technical Specification. Limits of the format: a B record carries only the time of the
+ * day, so the date of every later fix is derived from the first fix and tracks longer than 24 hours or unsorted
+ * tracks do not round trip; two digit years of the date records are read as 1970-2069.
  *
  * @author Christian Pesch
  */
@@ -73,12 +87,16 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
     private static final String GNSS_TRACK_NAME = "GNSSALTTRK";
     private static final int MAXIMUM_DESCRIPTION_LENGTH = 1024;
     private static final int MAXIMUM_RECORD_TEXT_LENGTH = 78;
+    private static final String UTF8_BYTE_ORDER_MARK = "\u00ef\u00bb\u00bf";
+    private static final char CTRL_Z = '\u001a';
+    // a step back in time of more than 12 hours is the passing of midnight, everything smaller is jitter
+    private static final int MIDNIGHT_ROLLOVER_SECONDS = 12 * 60 * 60;
+    private static final int MINIMUM_ALTITUDE = -9999, MAXIMUM_ALTITUDE = 99999;
 
-    private static final Pattern MANUFACTURER_PATTERN = Pattern.compile("^A[A-Z0-9]{3}.*");
     private static final Pattern HEADER_PATTERN = Pattern.compile("^H[FOPS]\\s*(\\S{1,3}).*");
     private static final Pattern DATE_PATTERN = Pattern.compile("^\\s*(\\d{2})\\s*(\\d{2})\\s*(\\d{2}).*", Pattern.DOTALL);
     private static final Pattern FIX_PATTERN = Pattern.compile(
-            "^B(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{3})([NS])(\\d{3})(\\d{2})(\\d{3})([WE]).(-\\d{4}|\\+\\d{4}|\\d{5})(-\\d{4}|\\+\\d{4}|\\d{5}).*");
+            "^B(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{3})([NS])(\\d{3})(\\d{2})(\\d{3})([WE])(.)(-\\d{4}|\\+\\d{4}|\\d{5})(-\\d{4}|\\+\\d{4}|\\d{5}).*");
     private static final Pattern TASK_ID_PATTERN = Pattern.compile(
             "^C(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{6})(.{4})(\\d{2})(.*)");
     private static final Pattern TASK_POINT_PATTERN = Pattern.compile(
@@ -109,17 +127,20 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
 
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
         String content = new String(source.readAllBytes(), ISO_8859_1);
-        try {
-            return parse(content.split("\r\n|\n|\r"));
-        } catch (IgcException e) {
-            log.fine("Cannot read " + getName() + ": " + e.getMessage());
-            return null;
-        }
+        // a UTF-8 byte order mark written by editors shows up as three Latin-1 characters
+        if (content.startsWith(UTF8_BYTE_ORDER_MARK))
+            content = content.substring(UTF8_BYTE_ORDER_MARK.length());
+        return parse(content.split("\r\n|\n|\r"));
     }
 
     private static double toDegrees(String hemisphere, int degrees, int minutes, int fraction, char positiveHemisphere) {
         return (hemisphere.charAt(0) == positiveHemisphere ? 1 : -1) *
                 (degrees + (minutes * 1000 + fraction) / 1000.0 / 60);
+    }
+
+    // degrees, minutes below 60 and not more than the maximum
+    private static boolean isValidCoordinate(int degrees, int minutes, int fraction, int maximumDegrees) {
+        return minutes < 60 && degrees * 60000L + minutes * 1000L + fraction <= maximumDegrees * 60000L;
     }
 
     private static boolean isZeroCoordinate(double latitude, double longitude) {
@@ -138,104 +159,151 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
         return string.length() > length ? string.substring(0, length) : string;
     }
 
-    private List<GpxRoute> parse(String[] lines) throws IgcException {
-        String manufacturer = null;
+    // leading blanks and DOS end-of-file markers (Ctrl-Z) are no part of a record
+    private static String normalize(String line) {
+        int start = 0, end = line.length();
+        while (start < end && (line.charAt(start) == ' ' || line.charAt(start) == '\t' || line.charAt(start) == CTRL_Z))
+            start++;
+        while (end > start && line.charAt(end - 1) == CTRL_Z)
+            end--;
+        return line.substring(start, end);
+    }
+
+    private static boolean isDateRecord(String line) {
+        Matcher matcher = HEADER_PATTERN.matcher(line);
+        return matcher.matches() && "DTE".equals(matcher.group(1));
+    }
+
+    private static LocalDate parseDate(String line) throws IgcException {
+        int colon = line.indexOf(':');
+        String data = colon != -1 ? line.substring(colon + 1) : line.length() > 5 ? line.substring(5) : "";
+        Matcher matcher = DATE_PATTERN.matcher(data);
+        if (!matcher.matches())
+            throw new IgcException("date (H) record parse error: " + line);
+        try {
+            return LocalDate.of(toYear(Integer.parseInt(matcher.group(3))),
+                    Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(1)));
+        } catch (DateTimeException e) {
+            throw new IgcException("bad date: " + line);
+        }
+    }
+
+    // fixes in front of the first valid date record belong to that date
+    private static LocalDate findFirstDate(String[] lines) {
+        for (String raw : lines) {
+            String line = normalize(raw);
+            if (line.length() >= 3 && isDateRecord(line)) {
+                try {
+                    return parseDate(line);
+                } catch (IgcException e) {
+                    // look at the next date record
+                }
+            }
+        }
+        return null;
+    }
+
+    private List<GpxRoute> parse(String[] lines) {
         TaskReader taskReader = new TaskReader();
         StringBuilder trackDescription = new StringBuilder(HEADER_MAGIC + HEADER_DELIMITER);
         String fixedTrackDescription = null;
-        LocalDate date = null;
+        LocalDate date = findFirstDate(lines);
+        if (date == null)
+            return null;
         LocalTime previousTime = null;
         List<GpxPosition> pressurePositions = new ArrayList<>(), gnssPositions = new ArrayList<>();
         boolean pressureValid = false, gnssValid = false;
+        int skipped = 0;
+        String firstSkipped = null;
 
-        for (String line : lines) {
+        for (String raw : lines) {
+            String line = normalize(raw);
             if (line.isEmpty())
                 continue;
 
-            if (manufacturer == null) {
-                if (!MANUFACTURER_PATTERN.matcher(line).matches())
-                    return null;
-                manufacturer = line.substring(1, 4);
-                continue;
-            }
+            try {
+                // anything that is not a record - too short, no upper case letter - is skipped
+                if (line.length() < 3 || line.charAt(0) < 'A' || line.charAt(0) > 'Z')
+                    throw new IgcException("bad input record: " + line);
 
-            if (line.length() < 3 || line.charAt(0) < 'A' || line.charAt(0) > 'Z')
-                throw new IgcException("bad input record: " + line);
-
-            switch (line.charAt(0)) {
-                case 'H' -> {
-                    Matcher matcher = HEADER_PATTERN.matcher(line);
-                    if (!matcher.matches())
-                        throw new IgcException("header (H) record parse error: " + line);
-                    if ("DTE".equals(matcher.group(1))) {
-                        int colon = line.indexOf(':');
-                        String data = colon != -1 ? line.substring(colon + 1) : line.length() > 5 ? line.substring(5) : "";
-                        Matcher dateMatcher = DATE_PATTERN.matcher(data);
-                        if (!dateMatcher.matches())
-                            throw new IgcException("date (H) record parse error: " + line);
-                        try {
-                            date = LocalDate.of(toYear(Integer.parseInt(dateMatcher.group(3))),
-                                    Integer.parseInt(dateMatcher.group(2)), Integer.parseInt(dateMatcher.group(1)));
-                        } catch (DateTimeException e) {
-                            throw new IgcException("bad date: " + line);
+                switch (line.charAt(0)) {
+                    case 'H' -> {
+                        Matcher matcher = HEADER_PATTERN.matcher(line);
+                        if (!matcher.matches())
+                            throw new IgcException("header (H) record parse error: " + line);
+                        if ("DTE".equals(matcher.group(1))) {
+                            date = parseDate(line);
+                        } else if (fixedTrackDescription == null && trackDescription.length() < MAXIMUM_DESCRIPTION_LENGTH) {
+                            // other header data is stored in the track descriptions, as long as there is room
+                            trackDescription.append(limit(line, MAXIMUM_DESCRIPTION_LENGTH - trackDescription.length()));
+                            trackDescription.append(limit(HEADER_DELIMITER, MAXIMUM_DESCRIPTION_LENGTH - trackDescription.length()));
                         }
-                    } else if (fixedTrackDescription == null && trackDescription.length() < MAXIMUM_DESCRIPTION_LENGTH) {
-                        // other header data is stored in the track descriptions, as long as there is room
-                        trackDescription.append(limit(line, MAXIMUM_DESCRIPTION_LENGTH - trackDescription.length()));
-                        trackDescription.append(limit(HEADER_DELIMITER, MAXIMUM_DESCRIPTION_LENGTH - trackDescription.length()));
                     }
-                }
-                case 'B' -> {
-                    if (date == null)
-                        throw new IgcException("bad date");
-                    if (fixedTrackDescription == null)
-                        fixedTrackDescription = trackDescription.toString();
-                    Matcher matcher = FIX_PATTERN.matcher(line);
-                    if (!matcher.matches())
-                        throw new IgcException("fix (B) record parse error: " + line);
-                    double latitude = toDegrees(matcher.group(7), Integer.parseInt(matcher.group(4)),
-                            Integer.parseInt(matcher.group(5)), Integer.parseInt(matcher.group(6)), 'N');
-                    double longitude = toDegrees(matcher.group(11), Integer.parseInt(matcher.group(8)),
-                            Integer.parseInt(matcher.group(9)), Integer.parseInt(matcher.group(10)), 'E');
-                    LocalTime time;
-                    try {
-                        time = LocalTime.of(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)),
-                                Integer.parseInt(matcher.group(3)));
-                    } catch (DateTimeException e) {
-                        throw new IgcException("bad time: " + line);
-                    }
-                    // increment date if we pass midnight UTC
-                    if (previousTime != null && time.isBefore(previousTime))
-                        date = date.plusDays(1);
-                    previousTime = time;
+                    case 'B' -> {
+                        if (fixedTrackDescription == null)
+                            fixedTrackDescription = trackDescription.toString();
+                        Matcher matcher = FIX_PATTERN.matcher(line);
+                        if (!matcher.matches())
+                            throw new IgcException("fix (B) record parse error: " + line);
+                        int latitudeDegrees = Integer.parseInt(matcher.group(4)), latitudeMinutes = Integer.parseInt(matcher.group(5)),
+                                latitudeFraction = Integer.parseInt(matcher.group(6));
+                        int longitudeDegrees = Integer.parseInt(matcher.group(8)), longitudeMinutes = Integer.parseInt(matcher.group(9)),
+                                longitudeFraction = Integer.parseInt(matcher.group(10));
+                        if (!isValidCoordinate(latitudeDegrees, latitudeMinutes, latitudeFraction, 90) ||
+                                !isValidCoordinate(longitudeDegrees, longitudeMinutes, longitudeFraction, 180))
+                            throw new IgcException("coordinate out of range: " + line);
+                        double latitude = toDegrees(matcher.group(7), latitudeDegrees, latitudeMinutes, latitudeFraction, 'N');
+                        double longitude = toDegrees(matcher.group(11), longitudeDegrees, longitudeMinutes, longitudeFraction, 'E');
+                        LocalTime time;
+                        try {
+                            time = LocalTime.of(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)),
+                                    Integer.parseInt(matcher.group(3)));
+                        } catch (DateTimeException e) {
+                            throw new IgcException("bad time: " + line);
+                        }
+                        // increment date if we pass midnight UTC; smaller steps back in time are jitter of the logger
+                        if (previousTime != null && previousTime.toSecondOfDay() - time.toSecondOfDay() > MIDNIGHT_ROLLOVER_SECONDS)
+                            date = date.plusDays(1);
+                        previousTime = time;
 
-                    CompactCalendar fixTime = toTime(date, time);
-                    int pressureAltitude = Integer.parseInt(matcher.group(12).replace("+", ""));
-                    int gnssAltitude = Integer.parseInt(matcher.group(13).replace("+", ""));
-                    if (pressureAltitude != 0)
-                        pressureValid = true;
-                    if (gnssAltitude != 0)
-                        gnssValid = true;
-                    pressurePositions.add(new GpxPosition(longitude, latitude,
-                            pressureAltitude != 0 ? Double.valueOf(pressureAltitude) : null, null, fixTime, null));
-                    gnssPositions.add(new GpxPosition(longitude, latitude,
-                            gnssAltitude != 0 ? Double.valueOf(gnssAltitude) : null, null, fixTime, null));
+                        // a fix without GPS reception at 0/0 is no position
+                        if (matcher.group(12).equals("V") && latitude == 0.0 && longitude == 0.0)
+                            continue;
+
+                        CompactCalendar fixTime = toTime(date, time);
+                        int pressureAltitude = Integer.parseInt(matcher.group(13).replace("+", ""));
+                        int gnssAltitude = Integer.parseInt(matcher.group(14).replace("+", ""));
+                        if (pressureAltitude != 0)
+                            pressureValid = true;
+                        if (gnssAltitude != 0)
+                            gnssValid = true;
+                        pressurePositions.add(new GpxPosition(longitude, latitude,
+                                pressureAltitude != 0 ? Double.valueOf(pressureAltitude) : null, null, fixTime, null));
+                        gnssPositions.add(new GpxPosition(longitude, latitude,
+                                gnssAltitude != 0 ? Double.valueOf(gnssAltitude) : null, null, fixTime, null));
+                    }
+                    case 'C' -> taskReader.readRecord(line);
+                    case 'L' -> {
+                        Matcher matcher = LOG_BOOK_PATTERN.matcher(line);
+                        if (!matcher.matches())
+                            throw new IgcException("log book (L) record parse error: " + line);
+                        // post-flight declaration
+                        if ("PFC".equals(matcher.group(1)))
+                            taskReader.readRecord(line.length() > 4 ? line.substring(4) : "");
+                    }
+                    // A (manufacturer/ID, not needed), D, E, F, G, I, J, K are discarded
+                    case 'A', 'D', 'E', 'F', 'G', 'I', 'J', 'K' -> {
+                    }
+                    default -> throw new IgcException("unknown record: " + line);
                 }
-                case 'C' -> taskReader.readRecord(line);
-                case 'L' -> {
-                    Matcher matcher = LOG_BOOK_PATTERN.matcher(line);
-                    if (!matcher.matches())
-                        throw new IgcException("log book (L) record parse error: " + line);
-                    // post-flight declaration
-                    if ("PFC".equals(matcher.group(1)))
-                        taskReader.readRecord(line.length() > 4 ? line.substring(4) : "");
-                }
-                // A (duplicate manufacturer/ID, only warned about), D, E, F, G, I, J, K are discarded
-                case 'A', 'D', 'E', 'F', 'G', 'I', 'J', 'K' -> {
-                }
-                default -> throw new IgcException("failure reading file: " + line);
+            } catch (IgcException e) {
+                skipped++;
+                if (firstSkipped == null)
+                    firstSkipped = e.getMessage();
             }
         }
+        if (skipped > 0)
+            log.fine("Skipped " + skipped + " unreadable lines reading " + getName() + ", first: " + firstSkipped);
 
         if (pressurePositions.isEmpty())
             return null;
@@ -264,7 +332,19 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
             return routes;
         }
 
+        // a damaged record drops the task it belongs to, the next task declaration starts afresh
         void readRecord(String record) throws IgcException {
+            try {
+                readTaskRecord(record);
+            } catch (IgcException e) {
+                if (state != TaskState.id && !routes.isEmpty())
+                    routes.remove(routes.size() - 1);
+                state = TaskState.id;
+                throw e;
+            }
+        }
+
+        private void readTaskRecord(String record) throws IgcException {
             if (state == TaskState.id) {
                 Matcher matcher = TASK_ID_PATTERN.matcher(record);
                 if (!matcher.matches())
@@ -287,12 +367,24 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
             }
 
             Matcher matcher = TASK_POINT_PATTERN.matcher(record);
-            if (!matcher.matches())
+            if (!matcher.matches()) {
+                // the declaration of the next task while the previous one is incomplete keeps the points read so far
+                if (TASK_ID_PATTERN.matcher(record).matches()) {
+                    state = TaskState.id;
+                    readTaskRecord(record);
+                    return;
+                }
                 throw new IgcException("task waypoint (C) record parse error: " + record);
-            double latitude = toDegrees(matcher.group(4), Integer.parseInt(matcher.group(1)),
-                    Integer.parseInt(matcher.group(2)), Integer.parseInt(matcher.group(3)), 'N');
-            double longitude = toDegrees(matcher.group(8), Integer.parseInt(matcher.group(5)),
-                    Integer.parseInt(matcher.group(6)), Integer.parseInt(matcher.group(7)), 'E');
+            }
+            int latitudeDegrees = Integer.parseInt(matcher.group(1)), latitudeMinutes = Integer.parseInt(matcher.group(2)),
+                    latitudeFraction = Integer.parseInt(matcher.group(3));
+            int longitudeDegrees = Integer.parseInt(matcher.group(5)), longitudeMinutes = Integer.parseInt(matcher.group(6)),
+                    longitudeFraction = Integer.parseInt(matcher.group(7));
+            if (!isValidCoordinate(latitudeDegrees, latitudeMinutes, latitudeFraction, 90) ||
+                    !isValidCoordinate(longitudeDegrees, longitudeMinutes, longitudeFraction, 180))
+                throw new IgcException("task waypoint (C) coordinate out of range: " + record);
+            double latitude = toDegrees(matcher.group(4), latitudeDegrees, latitudeMinutes, latitudeFraction, 'N');
+            double longitude = toDegrees(matcher.group(8), longitudeDegrees, longitudeMinutes, longitudeFraction, 'E');
             String text = limit(matcher.group(9), MAXIMUM_RECORD_TEXT_LENGTH);
 
             // name the waypoint according to the order of the task record
@@ -305,7 +397,8 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
                 case start -> {
                     shortName = "START";
                     turnPointIndex = 0;
-                    state = TaskState.turnpoint;
+                    // a task without turn points continues with the finish
+                    state = turnPointCount > 0 ? TaskState.turnpoint : TaskState.finish;
                 }
                 case turnpoint -> {
                     if (++turnPointIndex == turnPointCount)
@@ -334,13 +427,13 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
 
     private static class Fix {
         private final double latitude, longitude;
-        private final CompactCalendar time;
+        private final long seconds;
         private final Double elevation;
 
-        private Fix(double latitude, double longitude, CompactCalendar time, Double elevation) {
+        private Fix(double latitude, double longitude, long seconds, Double elevation) {
             this.latitude = latitude;
             this.longitude = longitude;
-            this.time = time;
+            this.seconds = seconds;
             this.elevation = elevation;
         }
     }
@@ -357,8 +450,20 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
                 abs(longitudeMilliMinutes) / 60000L, abs(longitudeMilliMinutes) % 60000L, longitudeMilliMinutes < 0 ? 'W' : 'E');
     }
 
-    private static String formatTime(CompactCalendar time, String pattern) {
-        return DateTimeFormatter.ofPattern(pattern).format(ofEpochMilli(time.getTimeInMillis()).atZone(UTC));
+    // a B record has 5 characters for an altitude: -9999 to 99999, unknown is 0
+    private static int formatAltitude(Double elevation) {
+        if (elevation == null || elevation.isNaN())
+            return 0;
+        return (int) max(MINIMUM_ALTITUDE, min(MAXIMUM_ALTITUDE, roundHalfAwayFromZero(elevation)));
+    }
+
+    // B records have whole seconds: the sub second part is rounded
+    private static long toSeconds(CompactCalendar time) {
+        return floorDiv(time.getTimeInMillis() + 500L, 1000L);
+    }
+
+    private static String formatTime(long seconds, String pattern) {
+        return DateTimeFormatter.ofPattern(pattern).format(ofEpochSecond(seconds).atZone(UTC));
     }
 
     private static String asHeaderDescription(List<String> description) {
@@ -368,9 +473,40 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
         for (int i = 0; i < description.size(); i++) {
             buffer.append(description.get(i));
             if (i != description.size() - 1)
-                buffer.append(",\n");
+                buffer.append(", ");
         }
         return buffer.toString();
+    }
+
+    // H records are one line of printable characters
+    private static String sanitizeHeaderField(String field) {
+        StringBuilder buffer = new StringBuilder(field.length());
+        for (int i = 0; i < field.length(); i++) {
+            char c = field.charAt(i);
+            if (c >= ' ' && c != 0x7f)
+                buffer.append(c);
+        }
+        return buffer.toString().trim();
+    }
+
+    // the records required by the FAI Technical Specification (A3.2.4) besides HFDTE, in order of the specification
+    private Map<String, String> requiredHeaderRecords() {
+        String version = getCreator().substring("RouteConverter ".length());
+        Map<String, String> required = new LinkedHashMap<>();
+        required.put("FXA", "HFFXA035");
+        required.put("PLT", "HFPLTPILOTINCHARGE:Unknown");
+        required.put("CM2", "HFCM2CREW2:NIL");
+        required.put("GTY", "HFGTYGLIDERTYPE:Unknown");
+        required.put("GID", "HFGIDGLIDERID:Unknown");
+        required.put("DTM", "HFDTM100GPSDATUM:WGS-1984");
+        required.put("RFW", "HFRFWFIRMWAREVERSION:" + version);
+        required.put("RHW", "HFRHWHARDWAREVERSION:NIL");
+        required.put("FTY", "HFFTYFRTYPE:RouteConverter," + version);
+        required.put("GPS", "HFGPSRECEIVER:NIL");
+        required.put("PRS", "HFPRSPRESSALTSENSOR:NIL");
+        required.put("ALG", "HFALGALTGPS:GEO");
+        required.put("ALP", "HFALPALTPRESSURE:ISA");
+        return required;
     }
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
@@ -382,37 +518,48 @@ public class FlightRecorderDataFormat extends GpxBackedNavigationFormat {
             BigDecimal longitude = formatPosition(position.getLongitude());
             if (latitude == null || longitude == null)
                 continue;
-            BigDecimal elevation = formatElevation(position.getElevation());
-            fixes.add(new Fix(latitude.doubleValue(), longitude.doubleValue(), position.getTime(),
-                    elevation != null ? Double.valueOf(elevation.doubleValue()) : null));
-        }
-        // igc.cc wr_header/wr_fix_record: "Bad track timestamp". GPSBabel 1.5.4 instead stamps the epoch (HFDTE010170,
-        // B000000), which invents 1970 fixes in a flight log - maintainer 2026-11-19: prefer correct behaviour
-        for (Fix fix : fixes) {
-            if (fix.time == null)
+            // igc.cc wr_header/wr_fix_record: "Bad track timestamp". GPSBabel 1.5.4 instead stamps the epoch (HFDTE010170,
+            // B000000), which invents 1970 fixes in a flight log - maintainer 2026-11-19: prefer correct behaviour
+            if (position.getTime() == null)
                 throw new IOException("Could not write " + getName() + ": Bad track timestamp");
+            BigDecimal elevation = formatElevation(position.getElevation());
+            fixes.add(new Fix(latitude.doubleValue(), longitude.doubleValue(), toSeconds(position.getTime()),
+                    elevation != null ? Double.valueOf(elevation.doubleValue()) : null));
         }
 
         String name = asRouteName(route.getName());
         boolean pressureTrack = name != null && name.startsWith(PRESSURE_TRACK_NAME);
         StringBuilder buffer = new StringBuilder();
         buffer.append("AXXXZZZRouteConverter\r\n");
-        CompactCalendar date = fixes.isEmpty() ? now() : fixes.get(0).time;
-        buffer.append("HFDTE").append(formatTime(date, "ddMMyy")).append("\r\n");
+        long dateSeconds = fixes.isEmpty() ? toSeconds(now()) : fixes.get(0).seconds;
+        buffer.append("HFDTEDATE:").append(formatTime(dateSeconds, "ddMMyy")).append(",01\r\n");
 
+        // header records stored in the track description are written in place of the defaults
+        Map<String, String> records = requiredHeaderRecords();
+        Set<String> replaced = new HashSet<>();
+        List<String> others = new ArrayList<>();
         String description = stripIllegalXmlCharacters(asHeaderDescription(route.getDescription()));
         if (description != null && description.startsWith(HEADER_MAGIC)) {
-            // other header data has been stored in the track description
             for (String field : description.substring(HEADER_MAGIC.length()).split(HEADER_DELIMITER)) {
-                if (!field.isEmpty())
-                    buffer.append(field).append("\r\n");
+                field = sanitizeHeaderField(field);
+                if (field.isEmpty())
+                    continue;
+                Matcher matcher = HEADER_PATTERN.matcher(field);
+                String code = matcher.matches() ? matcher.group(1) : null;
+                if (code != null && records.containsKey(code) && replaced.add(code))
+                    records.put(code, field);
+                else
+                    others.add(field);
             }
-        } else
-            buffer.append("HFPLTPILOT:Unknown\r\n");
+        }
+        for (String record : records.values())
+            buffer.append(record).append("\r\n");
+        for (String other : others)
+            buffer.append(other).append("\r\n");
 
         for (Fix fix : fixes) {
-            int altitude = fix.elevation != null ? fix.elevation.intValue() : 0;
-            buffer.append("B").append(formatTime(fix.time, "HHmmss"))
+            int altitude = formatAltitude(fix.elevation);
+            buffer.append("B").append(formatTime(fix.seconds, "HHmmss"))
                     .append(formatLatitudeAndLongitude(fix.latitude, fix.longitude)).append("A")
                     .append(String.format(ROOT, "%05d%05d", pressureTrack ? altitude : 0, pressureTrack ? 0 : altitude))
                     .append("\r\n");
