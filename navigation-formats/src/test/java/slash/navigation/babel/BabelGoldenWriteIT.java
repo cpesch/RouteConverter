@@ -103,7 +103,15 @@ public class BabelGoldenWriteIT {
             // coordinates and elevations (D18, audit 2026-11-27), 1.5.4 truncates them after rounding to the display precision
             "GarminMapSource5Format/from10.gpx", "GarminMapSource5Format/from10trk.gpx",
             "GarminMapSource6Format/from10.gpx", "GarminMapSource6Format/from10trk.gpx",
-            "GarminMapSource6Format/from11.gpx", "GarminMapSource6Format/synthetic"
+            "GarminMapSource6Format/from11.gpx", "GarminMapSource6Format/synthetic",
+            // CompeGPS Data waypoint and route files are written as "W" lines, a route with an "R" line in front (D20,
+            // audit 2026-11-27, OC B1), 1.5.4 writes a track for every class
+            "CompeGPSDataRouteFormat/from10.gpx", "CompeGPSDataRouteFormat/from10trk.gpx", "CompeGPSDataRouteFormat/from11.gpx",
+            "CompeGPSDataWaypointFormat/from10.gpx", "CompeGPSDataWaypointFormat/from10trk.gpx", "CompeGPSDataWaypointFormat/from11.gpx",
+            // OziExplorer tracks are written with altitudes of one decimal as GPSBabel master writes them (D18, audit
+            // 2026-11-27, OC E8b) and without the name ComplimentsOfGPSBabel (D25, OC E5), 1.5.4 writes whole feet
+            "OziExplorerTrackFormat/from10.gpx", "OziExplorerTrackFormat/from10trk.gpx", "OziExplorerTrackFormat/from11.gpx",
+            "OziExplorerTrackFormat/synthetic"
     );
     // native writers of formats GPSBabel 1.5.4 never wrote: there is no write golden and none can exist
     // (spec 00083.3 decision D3.1, issue #386: "there is no oracle for the writer"); see TourExchangeFormatTest

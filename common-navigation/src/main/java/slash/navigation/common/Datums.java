@@ -74,6 +74,8 @@ public class Datums {
     private static final int WGS84_ELLIPSE = 26;
     // index of "WGS 84" in DATUMS
     private static final int WGS84_DATUM = 118;
+    // above this latitude the longitude is not shifted
+    private static final double POLAR_LATITUDE = 89.99;
 
     private static final Ellipse[] ELLIPSES = {
             new Ellipse("Airy 1830", 6377563.396, 299.3249646),
@@ -95,8 +97,10 @@ public class Datums {
             new Ellipse("Indonesian 1974", 6378160.000, 298.247),
             new Ellipse("International 1924", 6378388.000, 297.0),
             new Ellipse("Krassovsky 1940", 6378245.000, 298.3),
-            new Ellipse("GRS67", 6378160.000, 6356774.516),
-            new Ellipse("GRS75", 6378140.000, 6356755.288),
+            // GPSBabel's table holds the semi-minor axis instead of the inverse flattening for GRS67 and GRS75;
+            // no datum uses them yet
+            new Ellipse("GRS67", 6378160.000, 298.247167427),
+            new Ellipse("GRS75", 6378140.000, 298.257),
             new Ellipse("GRS80", 6378137.000, 298.257222101),
             new Ellipse("S. American 1969", 6378160.000, 298.25),
             new Ellipse("WGS60", 6378165.000, 298.3),
@@ -266,10 +270,59 @@ public class Datums {
             new Alias("WGS-84", 118),
             new Alias("Israeli", 124),
             new Alias("D_Israel_new", 125),
+
+            // the names OziExplorer uses for datums that GPSBabel knows under another name with the same
+            // ellipsoid and the same shift; Ozi names of datums GPSBabel lacks are left out
+            new Alias("Afgooye", 1),
+            new Alias("Ain el Abd 1970", 2),
+            new Alias("Anna 1 Astro 1965", 5),
+            new Alias("Arc 1950", 6),
+            new Alias("Arc 1960", 7),
+            new Alias("Ascension Island 1958", 8),
+            new Alias("Astro B4 Sorol Atoll", 9),
+            new Alias("Astro Beacon 1945", 10),
+            new Alias("Astro DOS 71/4", 11),
+            new Alias("Astronomic Stn 1952", 12),
+            new Alias("Australian Geodetic 1984", 13),
+            new Alias("Bellevue (IGN)", 15),
+            new Alias("Campo Inchauspe", 19),
+            new Alias("Canton Astro 1966", 22),
+            new Alias("Cape Canaveral", 24),
+            new Alias("Djakarta (Batavia)", 33),
+            new Alias("Easter Island 1967", 35),
+            new Alias("European 1950 (Mean France)", 37),
+            new Alias("European 1979", 39),
+            new Alias("Finland Hayford", 40),
+            new Alias("GUX 1 Astro", 48),
+            new Alias("Hartebeeshoek94", 118),
+            new Alias("Indian Thailand", 110),
+            new Alias("ISTS 073 Astro 1969", 56),
+            new Alias("Johnston Island", 57),
+            new Alias("Kertau 1948", 60),
+            new Alias("Luzon Mindanao", 72),
+            new Alias("Luzon Philippines", 64),
+            new Alias("Midway Astro 1961", 71),
+            new Alias("Nahrwn Masirah Ilnd", 67),
+            new Alias("Nahrwn Saudi Arbia", 75),
+            new Alias("Nahrwn United Arab", 114),
+            new Alias("Ord Srvy Grt Britn", 86),
+            new Alias("Pitcairn Astro 1967", 88),
+            new Alias("Prov So Amrican 1956", 89),
+            new Alias("Prov So Chilean 1963", 90),
+            new Alias("Pulkovo 1942 (1)", 92),
+            new Alias("Pulkovo 1942 (2)", 92),
+            new Alias("Qatar National", 94),
+            new Alias("Reunion", 62),
+            new Alias("S42", 96),
+            new Alias("Sao Braz", 99),
+            new Alias("Sapper Hill 1943", 101),
+            new Alias("South American 1969", 105),
+            new Alias("Tokyo", 112),
     };
 
     /**
-     * Looks up the index of a datum by alias or name, both case-insensitive.
+     * Looks up the index of a datum by alias or name, both case-insensitive, ignoring leading and
+     * trailing blanks.
      *
      * @param name the name of the datum
      * @return the index of the datum or -1 if unknown
@@ -277,6 +330,7 @@ public class Datums {
     public static int lookupIndex(String name) {
         if (name == null)
             return -1;
+        name = name.trim();
 
         for (Alias alias : ALIASES) {
             if (alias.alias.equalsIgnoreCase(name))
@@ -299,14 +353,29 @@ public class Datums {
      * @return {latitude, longitude, height}
      */
     public static double[] toWgs84(double latitude, double longitude, double height, int datumIndex) {
-        if (datumIndex == WGS84_DATUM)
+        if (datumIndex == WGS84_DATUM ||
+                !Double.isFinite(latitude) || !Double.isFinite(longitude) || !Double.isFinite(height))
             return new double[]{latitude, longitude, height};
 
         Datum datum = DATUMS[datumIndex];
         Ellipse source = ELLIPSES[datum.ellipse];
         Ellipse destination = ELLIPSES[WGS84_ELLIPSE];
-        return molodensky(latitude, longitude, height, source.a, source.invf,
+        double[] result = molodensky(latitude, longitude, height, source.a, source.invf,
                 destination.a, destination.invf, datum.dx, datum.dy, datum.dz);
+        // the longitude shift divides by the cosine of the latitude and explodes near the poles, where the
+        // longitude hardly matters: keep it there
+        if (Math.abs(latitude) > POLAR_LATITUDE)
+            result[1] = longitude;
+        result[1] = wrapLongitude(result[1]);
+        return result;
+    }
+
+    private static double wrapLongitude(double longitude) {
+        if (longitude >= -180.0 && longitude <= 180.0)
+            return longitude;
+        double wrapped = ((longitude + 180.0) % 360.0 + 360.0) % 360.0 - 180.0;
+        // keep the eastern edge of the range instead of jumping to the western one
+        return wrapped == -180.0 && longitude > 0.0 ? 180.0 : wrapped;
     }
 
     private static double[] molodensky(double sphi, double slam, double sh, double sa, double sif,
