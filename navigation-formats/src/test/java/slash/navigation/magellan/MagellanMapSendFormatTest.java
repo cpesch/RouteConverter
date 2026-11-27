@@ -461,4 +461,34 @@ public class MagellanMapSendFormatTest {
         assertEquals("NationalGeographicTopo3Format", simpleName(names.get(index - 1)));
         assertEquals("AlanTrackLogFormat", simpleName(names.get(index + 1)));
     }
+
+    @Test
+    public void stringsAreCutAtTheFirstNul() throws IOException {
+        LittleEndianOutput output = header(1);
+        output.writeInt32(1);
+        waypoint(output, "AB\0CD", "de\0sc", 1, 12.5, 11.5, 48.1);
+        output.writeInt32(1);
+        pstr(output, "Ro\0ute");
+        output.writeInt32(7);
+        output.writeInt32(1);
+        routePoint(output, "P\0Q", 1, 11.5, 48.1);
+        List<GpxRoute> routes = read(output.toByteArray());
+        assertEquals(2, routes.size());
+        // the GPX RouteConverter reads delivers <desc> only
+        assertEquals("de", routes.get(0).getPosition(0).getDescription());
+        assertEquals("Ro", routes.get(1).getName());
+        assertEquals("P", routes.get(1).getPosition(0).getDescription());
+    }
+
+    @Test
+    public void textWithNulAndNoncharacterIsWrittenAsSpaces() throws IOException {
+        List<GpxRoute> routes = read(write("Ro\0ute\uFFFE", position(11.5, 48.1, null, "Na,me\r\nx\0y\uFFFE; de\0sc"),
+                position(11.6, 48.2, null, "B")));
+        assertEquals(2, routes.size());
+        assertEquals("Ro ute", routes.get(1).getName());
+        assertEquals(2, routes.get(1).getPositionCount());
+        String description = routes.get(0).getPosition(0).getDescription();
+        assertFalse(description.indexOf('\0') != -1 || description.indexOf('\uFFFE') != -1, description);
+        assertEquals("de sc", description);
+    }
 }

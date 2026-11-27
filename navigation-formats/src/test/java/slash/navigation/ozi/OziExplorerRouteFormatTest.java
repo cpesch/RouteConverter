@@ -20,6 +20,7 @@
 
 package slash.navigation.ozi;
 
+import slash.navigation.base.RouteCharacteristics;
 import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.ParserContextImpl;
@@ -349,12 +350,12 @@ public class OziExplorerRouteFormatTest {
         GpxRoute route = new GpxRoute(new Gpx10Format(), Waypoints, null, null, new ArrayList<>(asList(
                 position(8.25, 47.5, null, longDescription))));
         String written = write(new OziExplorerWaypointFormat(), route);
-        String name = "a b c d e f g h i j k l m n o p q r s t";
+        String name = longDescription.replace(",", " ");
+        // only the description column is limited to 40 characters, the name is not
         assertEquals(lines("OziExplorer Waypoint File Version 1.1", "WGS 84", "Reserved 2", "Reserved 3",
-                "1," + name + ",47.500000,8.250000,,0,1,3,0,65535," + name + ",0,0,0,-777,6,0,17"), written);
-        // like the old GPSBabel-backed class, the route's descriptions are reduced as well
-        assertEquals(name.replace(" ", " "), route.getPosition(0).getDescription().trim());
-        assertEquals(40, route.getPosition(0).getDescription().length());
+                "1," + name + ",47.500000,8.250000,,0,1,3,0,65535," + name.substring(0, 40) + ",0,0,0,-777,6,0,17"), written);
+        // writing leaves the route of the caller alone
+        assertEquals(longDescription, route.getPosition(0).getDescription());
     }
 
     @Test
@@ -423,7 +424,7 @@ public class OziExplorerRouteFormatTest {
         String expected = lines("OziExplorer Route File Version 1.0", "WGS 84", "Reserved 1", "Reserved 2",
                 "R,1,One,About one,",
                 "W,1,,1,A,47.500000,8.250000,,0,1,3,0,65535,,0,0",
-                "W,1,,2,B,47.750000,8.500000,,0,1,3,0,65535,,0,0",
+                "W,1,,2,B,47.750000,8.500000,,0,1,3,0,65535,bee,0,0",
                 "R,2,Two,,",
                 "W,2,,1,C,48.000000,9.000000,,0,1,3,0,65535,,0,0");
         assertEquals(expected, new String(out.toByteArray(), CP1252));
@@ -454,8 +455,8 @@ public class OziExplorerRouteFormatTest {
         assertEquals(1, routes.size());
         assertEquals("Roundtrip", routes.get(0).getName());
         assertEquals(2, routes.get(0).getPositionCount());
-        // GPSBabel 1.5.4 writes no description for route points
-        assertEquals("A", routes.get(0).getPosition(0).getDescription());
+        // the description of a route point is written to field 14
+        assertEquals("A; one", routes.get(0).getPosition(0).getDescription());
         assertNotNull(routes.get(0).getPosition(1));
     }
 
@@ -470,5 +471,92 @@ public class OziExplorerRouteFormatTest {
         assertTrue(new OziExplorerRouteFormat().isSupportsMultipleRoutes());
         assertFalse(new OziExplorerTrackFormat().isSupportsMultipleRoutes());
         assertFalse(new OziExplorerWaypointFormat().isSupportsMultipleRoutes());
+    }
+
+    // writing: sanitising (audit 00083 batch 1)
+
+    private static final String HOSTILE = "Na,me\r\nx\ty\0z\uFFFE";
+
+    private static GpxRoute hostileRoute(RouteCharacteristics characteristics, String name, List<String> description) {
+        return new GpxRoute(new Gpx10Format(), characteristics, name, description, new ArrayList<>(asList(
+                position(8.25, 47.5, null, HOSTILE + "; de,sc\r\nq"), position(8.5, 47.75, null, "B"), position(9.0, 48.0, null, "C"))));
+    }
+
+    private static void assertOneRecordPerLine(String written, int lines) {
+        assertEquals(lines, written.split("\r\n", -1).length - 1, written);
+        assertFalse(written.contains("\n\n"));
+        assertFalse(written.indexOf('\0') != -1 || written.indexOf('\uFFFE') != -1 || written.indexOf('\t') != -1);
+    }
+
+    @Test
+    public void waypointTextWithCommaLineBreaksTabNulAndNoncharacterIsCleaned() throws IOException {
+        OziExplorerWaypointFormat format = new OziExplorerWaypointFormat();
+        String written = write(format, hostileRoute(Waypoints, null, null));
+        assertOneRecordPerLine(written, 4 + 3);
+        List<GpxRoute> routes = read(format, written);
+        assertEquals(1, routes.size());
+        assertEquals(3, routes.get(0).getPositionCount());
+        assertEquals("Na me x y z; de sc q", routes.get(0).getPosition(0).getDescription());
+    }
+
+    @Test
+    public void routeNameDescriptionAndPointTextAreCleanedAndTheDescriptionOfAPointIsWritten() throws IOException {
+        OziExplorerRouteFormat format = new OziExplorerRouteFormat();
+        String written = write(format, hostileRoute(Route, "Rte, with\r\ncomma", asList("line one", "line two,three")));
+        assertOneRecordPerLine(written, 4 + 1 + 3);
+        assertTrue(written.contains("R,1,Rte  with comma,line one line two three,\r\n"), written);
+        // field 14 carries the description of the point
+        assertTrue(written.contains(",65535,de sc q,0,0\r\n"), written);
+        List<GpxRoute> routes = read(format, written);
+        assertEquals(1, routes.size());
+        assertEquals("Rte  with comma", routes.get(0).getName());
+        assertEquals(3, routes.get(0).getPositionCount());
+        assertEquals("Na me x y z; de sc q", routes.get(0).getPosition(0).getDescription());
+        assertEquals("B", routes.get(0).getPosition(1).getDescription());
+    }
+
+    @Test
+    public void trackNameIsCleaned() throws IOException {
+        OziExplorerTrackFormat format = new OziExplorerTrackFormat();
+        String written = write(format, hostileRoute(Track, "My, Track\r\n" + "x\0", null));
+        assertOneRecordPerLine(written, 6 + 3);
+        assertTrue(written.contains("0,2,255,My  Track x,0,0,2,8421376\r\n"), written);
+        List<GpxRoute> routes = read(format, written);
+        assertEquals(1, routes.size());
+        assertEquals("My  Track x", routes.get(0).getName());
+        assertEquals(3, routes.get(0).getPositionCount());
+    }
+
+    @Test
+    public void nameAndDescriptionAreCutSeparately() throws IOException {
+        String name = "N".repeat(60);
+        String description = "D".repeat(50);
+        GpxRoute route = new GpxRoute(new Gpx10Format(), Waypoints, null, null, new ArrayList<>(asList(
+                position(8.25, 47.5, null, name + "; short"), position(8.5, 47.75, null, "ab; " + description))));
+        String written = write(new OziExplorerWaypointFormat(), route);
+        assertTrue(written.contains("1," + name + ",47.500000,8.250000,,0,1,3,0,65535,short,"), written);
+        assertTrue(written.contains("2,ab,47.750000,8.500000,,0,1,3,0,65535," + "D".repeat(40) + ",0,0,0"), written);
+    }
+
+    @Test
+    public void writingLeavesTheRouteOfTheCallerAlone() throws IOException {
+        String text = "x, y; " + "z".repeat(60) + ", end";
+        for (OziExplorerFormat format : asList(new OziExplorerWaypointFormat(), new OziExplorerRouteFormat(), new OziExplorerTrackFormat())) {
+            GpxRoute route = new GpxRoute(new Gpx10Format(), Track, "Name, with comma", asList("a, b"), new ArrayList<>(asList(
+                    position(8.25, 47.5, null, text), position(8.5, 47.75, null, text), position(9.0, 48.0, null, text))));
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            format.write(route, out, 1, 2);
+            assertEquals(Track, route.getCharacteristics());
+            assertEquals("Name, with comma", route.getName());
+            assertEquals(asList("a, b"), route.getDescription());
+            for (int i = 0; i < 3; i++)
+                assertEquals(text, route.getPosition(i).getDescription());
+
+            ByteArrayOutputStream pack = new ByteArrayOutputStream();
+            format.write(asList(route), pack);
+            assertEquals(Track, route.getCharacteristics());
+            for (int i = 0; i < 3; i++)
+                assertEquals(text, route.getPosition(i).getDescription());
+        }
     }
 }

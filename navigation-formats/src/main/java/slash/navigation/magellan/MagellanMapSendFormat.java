@@ -135,6 +135,13 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
         return count >= 0 && count * minimumSize <= input.remaining();
     }
 
+    /** GPSBabel reads the strings as C strings: they end at the first NUL. */
+    private static String readString(LittleEndianInput input) throws EOFException {
+        String string = input.readPascalString(CHARSET);
+        int nul = string.indexOf('\0');
+        return nul == -1 ? string : string.substring(0, nul);
+    }
+
     private List<GpxRoute> readWaypointFile(LittleEndianInput input) throws EOFException {
         List<GpxRoute> result = new ArrayList<>();
 
@@ -144,8 +151,8 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
 
         List<GpxPosition> waypoints = new ArrayList<>(waypointCount);
         for (int i = 0; i < waypointCount; i++) {
-            String shortName = trim(input.readPascalString(CHARSET));
-            String description = trim(input.readPascalString(CHARSET));
+            String shortName = trim(readString(input));
+            String description = trim(readString(input));
             input.readInt32(); // number
             input.readUInt8(); // icon
             input.readUInt8(); // status
@@ -184,7 +191,7 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
         // GPSBabel's route_add_wpt() numbers with rte_waypts, which counts the points of all routes
         int routePointCount = 0;
         for (int i = 0; i < routeCount; i++) {
-            String routeName = stripIllegalXmlCharacters(trim(input.readPascalString(CHARSET)));
+            String routeName = stripIllegalXmlCharacters(trim(readString(input)));
             input.readInt32(); // route number
             int pointCount = input.readInt32();
             if (!fits(input, pointCount, MINIMUM_ROUTE_POINT_SIZE))
@@ -192,7 +199,7 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
 
             List<GpxPosition> positions = new ArrayList<>(pointCount);
             for (int j = 0; j < pointCount; j++) {
-                String shortName = trim(input.readPascalString(CHARSET));
+                String shortName = trim(readString(input));
                 input.readInt32(); // waypoint number
                 double longitude = input.readDouble();
                 double latitude = -input.readDouble();

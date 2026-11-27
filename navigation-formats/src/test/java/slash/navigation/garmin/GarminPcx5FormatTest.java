@@ -20,6 +20,7 @@
 
 package slash.navigation.garmin;
 
+import slash.navigation.gpx.Gpx10Format;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -484,5 +485,20 @@ public class GarminPcx5FormatTest {
         assertFalse(names.contains("slash.navigation.babel.GarminPcx5Format"));
         assertEquals("CompeGPSDataWaypointFormat", names.get(index - 1).substring(names.get(index - 1).lastIndexOf('.') + 1));
         assertEquals("GeoCachingFormat", names.get(index + 1).substring(names.get(index + 1).lastIndexOf('.') + 1));
+    }
+
+    @Test
+    public void nameAndDescriptionWithLineBreaksTabNulAndNoncharacterWriteOneLinePerPosition() throws IOException {
+        GpxRoute route = new GpxRoute(new Gpx10Format(), Waypoints, "route", null, new ArrayList<>(asList(
+                position(11.5, 48.1, null, T0, "Na,me\r\nx\ty\0z\uFFFE; de,sc\r\nq\tr"),
+                position(11.6, 48.2, null, T0, "B"),
+                position(11.7, 48.3, null, T0, "C"))));
+        String written = write(route);
+        assertEquals(3, written.lines().filter(line -> line.startsWith("W  ")).count(), written);
+        assertFalse(written.indexOf('\0') != -1 || written.indexOf('\uFFFE') != -1 || written.indexOf('\t') != -1);
+        List<GpxRoute> routes = read(written);
+        assertEquals(1, routes.size());
+        assertEquals(3, routes.get(0).getPositionCount());
+        assertTrue(routes.get(0).getPosition(0).getDescription().contains("de,sc q r"), routes.get(0).getPosition(0).getDescription());
     }
 }
