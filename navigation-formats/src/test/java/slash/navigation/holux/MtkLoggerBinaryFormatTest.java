@@ -27,6 +27,7 @@ import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.ParserResult;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
@@ -44,6 +45,7 @@ import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -367,11 +369,58 @@ public class MtkLoggerBinaryFormatTest {
     }
 
     @Test
-    public void bitmaskChangeKeepsTheLowPrecisionBit() throws IOException {
-        // GPSBabel clears bit 31 only for Holux devices; the generic layout does not know it
-        assertTrue(read(sector(header(BASIC),
+    public void validFixOnlyBitHasNoField() throws IOException {
+        // bit 31 is 'log only positions with a valid fix' of the iBlue 747 and others; GPSBabel gives it size 0
+        GpxRoute route = readTrack(sector(header(BASIC | 1 << 31),
+                record(BASIC, rec()),
                 info(0x02, BASIC | 1 << 31),
-                record(BASIC, rec()))).isEmpty());
+                record(BASIC, rec().utc(TIME + 1))));
+        assertEquals(2, route.getPositionCount());
+    }
+
+    @Test
+    public void dumpWithValidFixOnlyBitIsMtkNotHolux() throws IOException {
+        int bitmask = bits(UTC, VALID, LATITUDE, LONGITUDE, HEIGHT) | 1 << 31;
+        byte[][] records = new byte[100][];
+        for (int i = 0; i < records.length; i++)
+            records[i] = record(bitmask & ~(1 << 31), rec().utc(TIME + i * 5L).at(48.7 + i * 0.0001, 9.8 + i * 0.0001));
+        byte[] data = sector(header(bitmask, 0x0104, 50, 0, 0), concat(info(0x07, 0x0106), concat(records)));
+
+        assertEquals(100, readTrack(data).getPositionCount());
+        ParserResult result = new NavigationFormatParser(new NavigationFormatRegistry()).read(new ByteArrayInputStream(data));
+        assertTrue(result.isSuccessful());
+        assertEquals(MtkLoggerBinaryFormat.class, result.getFormat().getClass());
+        assertEquals(100, result.getTheRoute().getPositionCount());
+    }
+
+    @Test
+    public void extraByteCostsNoRecord() throws IOException {
+        // spec 00083 D25: after a bad checksum the reader resyncs byte by byte
+        byte[][] records = new byte[41][];
+        for (int i = 0; i < 40; i++)
+            records[i < 20 ? i : i + 1] = record(BASIC, rec().utc(TIME + i * 5L));
+        records[20] = new byte[]{0x2a};
+        GpxRoute route = readTrack(sector(header(BASIC), records));
+        assertEquals(40, route.getPositionCount());
+        assertEquals((TIME + 39 * 5L) * 1000, route.getPosition(39).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void positionOutOfRangeIsDropped() throws IOException {
+        // spec 00083 D23: GPSBabel writes them, the records have a valid checksum
+        GpxRoute route = readTrack(sector(header(BASIC),
+                record(BASIC, rec().at(500.0, 11.5)),
+                record(BASIC, rec().utc(TIME + 1).at(48.25, -400.0)),
+                record(BASIC, rec().utc(TIME + 2).at(90.0, -180.0))));
+        assertEquals(asList("TP000003"), descriptions(route));
+    }
+
+    @Test
+    public void erasedHeaderIsNoM241Format() throws IOException {
+        // the M-241 default is for Holux devices only; GPSBabel reads nothing, too
+        byte[] erased = new byte[0x200];
+        Arrays.fill(erased, (byte) 0xff);
+        assertTrue(read(sector(erased, record(BASIC, rec()), record(BASIC, rec().utc(TIME + 1)))).isEmpty());
     }
 
     @Test
@@ -467,14 +516,12 @@ public class MtkLoggerBinaryFormatTest {
 
     @Test
     public void holuxM241DumpIsNotRecognized() throws IOException {
-        // the header of an M-241 sets the 'low precision' bit
-        assertTrue(read(sector(header(BASIC | 1 << 31), record(BASIC, rec()))).isEmpty());
         // the marker string of an M-241 or GPSport 245 log session
         assertTrue(read(sector(header(BASIC), ascii("HOLUXGR241LOGGER"), record(BASIC, rec()))).isEmpty());
         assertTrue(read(sector(header(BASIC), info(0x07, 0x0106), record(BASIC, rec()),
                 ascii("HOLUXGR245WAYPNT    "), record(BASIC, rec()))).isEmpty());
-        // a record in the Holux layout: 4 byte floats, 3 byte height, no '*'
-        assertTrue(read(sector(header(BASIC), holuxRecord(), holuxRecord(), holuxRecord())).isEmpty());
+        // a record in the Holux layout: 4 byte floats, 3 byte height, no '*'; the log header is the same
+        assertThrows(UnreadableFileException.class, () -> read(sector(header(BASIC), holuxRecord(), holuxRecord(), holuxRecord())));
     }
 
     static byte[] holuxRecord() {
@@ -527,7 +574,8 @@ public class MtkLoggerBinaryFormatTest {
         byte[] zeros = new byte[4096];
         ByteBuffer.wrap(zeros).order(LITTLE_ENDIAN).putInt(2, bits(UTC, LATITUDE, LONGITUDE));
         assertTrue(read(zeros).isEmpty());
-        assertTrue(read(sector(header(BASIC), new byte[SECTOR - 0x200])).isEmpty());
+        // spec 00083 D19: with a log header, the zero records make the file damaged
+        assertThrows(UnreadableFileException.class, () -> read(sector(header(BASIC), new byte[SECTOR - 0x200])));
 
         byte[] sparse = new byte[20000];
         ByteBuffer.wrap(sparse).order(LITTLE_ENDIAN).putInt(2, bits(UTC, LATITUDE, LONGITUDE));
@@ -546,9 +594,9 @@ public class MtkLoggerBinaryFormatTest {
 
     @Test
     public void zeroRecordsDoNotCountForRecognition() throws IOException {
-        // a few real records followed by zero fill instead of 0xFF fill
-        assertTrue(read(sector(header(BASIC), record(BASIC, rec()), record(BASIC, rec().utc(TIME + 1)),
-                new byte[26 * 10])).isEmpty());
+        // a few real records followed by zero fill instead of 0xFF fill: not read, but the log header matched
+        assertThrows(UnreadableFileException.class, () -> read(sector(header(BASIC), record(BASIC, rec()),
+                record(BASIC, rec().utc(TIME + 1)), new byte[26 * 10])));
         // GPSBabel reads the zero records as positions at 0/0 without time; they are kept once the file is recognized
         GpxRoute route = readTrack(sector(header(BASIC), record(BASIC, rec()), record(BASIC, rec().utc(TIME + 1)),
                 new byte[25], record(BASIC, rec().utc(TIME + 2))));
@@ -559,15 +607,17 @@ public class MtkLoggerBinaryFormatTest {
     @Test
     public void holuxDumpPaddedWithZerosIsNotRecognized() throws IOException {
         // else the Holux format would decline it as a generic dump
-        assertTrue(read(sector(header(BASIC), holuxRecord(), holuxRecord(), holuxRecord(), new byte[SECTOR / 2])).isEmpty());
+        assertThrows(UnreadableFileException.class, () -> read(sector(header(BASIC),
+                holuxRecord(), holuxRecord(), holuxRecord(), new byte[SECTOR / 2])));
     }
 
     @Test
-    public void mostlyBadRecordsAreNotRecognized() throws IOException {
-        assertTrue(read(sector(header(BASIC),
+    public void mostlyBadRecordsAreDamaged() {
+        // the resync counts every record length it skips as a record that could not be read
+        assertThrows(UnreadableFileException.class, () -> read(sector(header(BASIC),
                 record(BASIC, rec().badChecksum()),
                 record(BASIC, rec().utc(TIME + 1).noStar().badChecksum()),
-                record(BASIC, rec().utc(TIME + 2)))).isEmpty());
+                record(BASIC, rec().utc(TIME + 2)))));
     }
 
     @Test
@@ -596,9 +646,14 @@ public class MtkLoggerBinaryFormatTest {
     }
 
     @Test
-    public void bitmaskWithUnknownBitsIsNotRecognized() throws IOException {
-        assertTrue(read(sector(header(BASIC | 1 << 21), record(BASIC, rec()))).isEmpty());
-        assertTrue(read(sector(header(BASIC | 1 << 27), record(BASIC, rec()))).isEmpty());
+    public void bitmaskWithUnknownBitsIsUnsupported() throws IOException {
+        // spec 00083 D19: a log header whose format has fields of unknown size, like bit 20 of the Royaltek loggers
+        UnreadableFileException exception = assertThrows(UnreadableFileException.class,
+                () -> read(sector(header(BASIC | 1 << 20), record(BASIC, rec()))));
+        assertEquals("Holux/MTK logger file has the log format 0x0010001d with fields RouteConverter does not know", exception.getMessage());
+        assertThrows(UnreadableFileException.class, () -> read(sector(header(BASIC | 1 << 27), record(BASIC, rec()))));
+        // without a log header, the file is not recognized
+        assertTrue(read(sector(header(BASIC | 1 << 21, 0x0000, 50, 0, 0), record(BASIC, rec()))).isEmpty());
         assertTrue(read(sector(header(bits(UTC, LATITUDE)), record(bits(UTC, LATITUDE), rec()))).isEmpty());
     }
 
