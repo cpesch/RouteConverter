@@ -1,0 +1,2 @@
+# synthetic IGC cases: line ends, byte order mark and Ctrl-Z are part of the test
+*.igc -text

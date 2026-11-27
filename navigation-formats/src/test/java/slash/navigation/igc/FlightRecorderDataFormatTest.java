@@ -28,6 +28,7 @@ import slash.navigation.gpx.GpxRoute;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,18 +100,10 @@ public class FlightRecorderDataFormatTest {
     // guard
 
     @Test
-    public void rejectsFileWithoutManufacturerRecord() throws IOException {
-        assertTrue(read(igc("HFDTE280919", FIX_10, FIX_11)).isEmpty());
-    }
-
-    @Test
-    public void rejectsFileWithManufacturerRecordNotFirst() throws IOException {
-        assertTrue(read(igc("HFDTE280919", A_RECORD, FIX_10)).isEmpty());
-    }
-
-    @Test
-    public void rejectsTooShortManufacturerRecord() throws IOException {
-        assertTrue(read(igc("AXX", "HFDTE280919", FIX_10)).isEmpty());
+    public void readsFileWithoutManufacturerRecord() throws IOException {
+        assertEquals(2, read(igc("HFDTE280919", FIX_10, FIX_11)).size());
+        assertEquals(2, read(igc("HFDTE280919", A_RECORD, FIX_10)).size());
+        assertEquals(2, read(igc("AXX", "HFDTE280919", FIX_10)).size());
     }
 
     @Test
@@ -127,8 +120,44 @@ public class FlightRecorderDataFormatTest {
     }
 
     @Test
-    public void rejectsMalformedFixRecordWithoutThrowing() throws IOException {
-        assertTrue(read(igc(A_RECORD, "HFDTE280919", FIX_10, "B10010048072")).isEmpty());
+    public void rejectsFileWithOnlyMalformedFixRecordsWithoutThrowing() throws IOException {
+        assertTrue(read(igc(A_RECORD, "HFDTE280919", "B10010048072")).isEmpty());
+    }
+
+    @Test
+    public void skipsMalformedAndUnknownLinesAndKeepsTheFixes() throws IOException {
+        List<GpxRoute> routes = read(igc(A_RECORD, "HFDTE280919", FIX_10, "B10010048072", "MUnknown", "K", "lower case",
+                FIX_11, "B1002004807200N01116200EA01010010"));
+        assertEquals(2, routes.size());
+        assertEquals(2, routes.get(0).getPositionCount());
+    }
+
+    @Test
+    public void toleratesByteOrderMarkCtrlZAndLeadingBlanks() throws IOException {
+        String bom = "\u00ef\u00bb\u00bf";
+        assertEquals(2, read(bom + igc(A_RECORD, "HFDTE280919", FIX_10)).size());
+        assertEquals(2, read(igc("  " + A_RECORD, "\t HFDTE280919", " " + FIX_10) + "\u001a").size());
+        assertEquals(2, read(igc(A_RECORD, "HFDTE280919", FIX_10, "\u001a")).size());
+    }
+
+    @Test
+    public void usesFirstDateForFixesInFrontOfIt() throws IOException {
+        List<GpxRoute> routes = read(igc(A_RECORD, FIX_10, "HFDTE280919", FIX_11));
+        assertEquals(2, routes.get(0).getPositionCount());
+        assertEquals(millis("2019-09-28T10:00:00Z"), routes.get(0).getPosition(0).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void skipsFixesWithCoordinatesOutOfRange() throws IOException {
+        List<GpxRoute> routes = read(igc(A_RECORD, "HFDTE280919", FIX_10,
+                "B1000104860000N01116123EA0100001050", // 48 degrees 60 minutes
+                "B1000204807123N18100000EA0100001050", // 181 degrees
+                "B1000309100000N01116123EA0100001050", // 91 degrees
+                "B1000409000001N01116123EA0100001050", // 90 degrees 0.001 minutes
+                "B1000509000000N18000000EA0100001050"));
+        assertEquals(2, routes.get(0).getPositionCount());
+        assertEquals(90.0, routes.get(0).getPosition(1).getLatitude(), 0.0);
+        assertEquals(180.0, routes.get(0).getPosition(1).getLongitude(), 0.0);
     }
 
     @Test
@@ -173,6 +202,28 @@ public class FlightRecorderDataFormatTest {
         assertEquals(millis("2019-09-29T00:01:02Z"), route.getPosition(2).getTime().getTimeInMillis());
     }
 
+    @Test
+    public void keepsDateForSmallStepsBackInTime() throws IOException {
+        GpxRoute route = read(igc(A_RECORD, "HFDTE280919",
+                "B100000" + "4807123N01116123EA0100001050",
+                "B100005" + "4807123N01116123EA0100001050",
+                "B100004" + "4807123N01116123EA0100001050",
+                "B100010" + "4807123N01116123EA0100001050")).get(0);
+        assertEquals(millis("2019-09-28T10:00:10Z"), route.getPosition(3).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void advancesDateOnlyForStepsBackOfMoreThanTwelveHours() throws IOException {
+        GpxRoute route = read(igc(A_RECORD, "HFDTE280919",
+                "B200000" + "4807123N01116123EA0100001050",
+                "B075900" + "4807123N01116123EA0100001050",   // 12 h 1 min back: midnight
+                "B000000" + "4807123N01116123EA0100001050",   // 7 h 59 min back: jitter
+                "B195900" + "4807123N01116123EA0100001050")).get(0);
+        assertEquals(millis("2019-09-29T07:59:00Z"), route.getPosition(1).getTime().getTimeInMillis());
+        assertEquals(millis("2019-09-29T00:00:00Z"), route.getPosition(2).getTime().getTimeInMillis());
+        assertEquals(millis("2019-09-29T19:59:00Z"), route.getPosition(3).getTime().getTimeInMillis());
+    }
+
     // fixes
 
     @Test
@@ -208,6 +259,24 @@ public class FlightRecorderDataFormatTest {
         List<GpxRoute> routes = read(igc(A_RECORD, "HFDTE280919", "B1000003330000S07015000WA0100001050"));
         assertEquals(-33.5, routes.get(0).getPosition(0).getLatitude(), 1e-9);
         assertEquals(-70.25, routes.get(0).getPosition(0).getLongitude(), 1e-9);
+    }
+
+    @Test
+    public void dropsFixesWithValidityVOnlyAtZeroCoordinates() throws IOException {
+        List<GpxRoute> routes = read(igc(A_RECORD, "HFDTE280919",
+                "B1000000000000N00000000EV0000000000",
+                FIX_10.replace("EA0", "EV0"),
+                "B1000200000000N00000000EA0100001050",
+                "B1000300000000S00000000WV0000000000"));
+        GpxRoute route = routes.get(0);
+        assertEquals(2, route.getPositionCount());
+        assertEquals(LATITUDE, route.getPosition(0).getLatitude(), 1e-9);
+        assertEquals(0.0, route.getPosition(1).getLatitude(), 0.0);
+    }
+
+    @Test
+    public void rejectsFileWithOnlyNoFixRecords() throws IOException {
+        assertTrue(read(igc(A_RECORD, "HFDTE280919", "B1000000000000N00000000EV0000000000")).isEmpty());
     }
 
     @Test
@@ -338,6 +407,66 @@ public class FlightRecorderDataFormatTest {
     }
 
     @Test
+    public void readsTaskWithoutTurnPoints() throws IOException {
+        GpxRoute task = read(igc(A_RECORD, "HFDTE280919",
+                "C2809190900002809190001" + "00" + "Task",
+                "C4807123N01116123ETakeoff", "C4807200N01116200EStart",
+                "C4808000N01117000EFinish", "C4809000N01118000ELanding",
+                FIX_10)).get(0);
+        assertEquals(4, task.getPositionCount());
+        assertEquals("TAKEOFF; Takeoff", task.getPosition(0).getDescription());
+        assertEquals("START; Start", task.getPosition(1).getDescription());
+        assertEquals("FINISH; Finish", task.getPosition(2).getDescription());
+        assertEquals("LANDING; Landing", task.getPosition(3).getDescription());
+    }
+
+    @Test
+    public void readsSecondTaskAsSecondRoute() throws IOException {
+        List<GpxRoute> routes = read(igc(A_RECORD, "HFDTE280919",
+                "C2809190900002809190001" + "00" + "Task",
+                "C4807123N01116123ETakeoff", "C4807200N01116200EStart",
+                "C4808000N01117000EFinish", "C4809000N01118000ELanding",
+                "C2809190900002809190002" + "00" + "Tsk2",
+                "C4807123N01116123ETakeoff", "C4807200N01116200EStart",
+                "C4808000N01117000EFinish", "C4809000N01118000ELanding",
+                FIX_10));
+        assertEquals(4, routes.size());
+        assertEquals("0001", routes.get(0).getName());
+        assertEquals("0002", routes.get(1).getName());
+        assertEquals(Route, routes.get(1).getCharacteristics());
+        assertEquals("LANDING; Landing", routes.get(1).getPosition(3).getDescription());
+    }
+
+    @Test
+    public void keepsPointsOfIncompleteTaskWhenNextTaskStarts() throws IOException {
+        List<GpxRoute> routes = read(igc(A_RECORD, "HFDTE280919",
+                "C2809190900002809190001" + "02" + "Task",
+                "C4807123N01116123ETakeoff", "C4807200N01116200EStart",
+                "C2809190900002809190002" + "00" + "Tsk2",
+                "C4807123N01116123ETakeoff", "C4807200N01116200EStart",
+                "C4808000N01117000EFinish", "C4809000N01118000ELanding",
+                FIX_10));
+        assertEquals(4, routes.size());
+        assertEquals(2, routes.get(0).getPositionCount());
+        assertEquals(4, routes.get(1).getPositionCount());
+    }
+
+    @Test
+    public void dropsDamagedTaskOnlyAndKeepsFixes() throws IOException {
+        List<GpxRoute> routes = read(igc(A_RECORD, "HFDTE280919",
+                "C2809190900002809190001" + "00" + "Bad",
+                "C4807123N01116123ETakeoff", "Cgarbage", "C4808000N01117000EFinish",
+                "C2809190900002809190002" + "00" + "Good",
+                "C4807123N01116123ETakeoff", "C4807200N01116200EStart",
+                "C4808000N01117000EFinish", "C4809000N01118000ELanding",
+                "C4807123N01116123E", // stray point
+                FIX_10));
+        assertEquals(3, routes.size());
+        assertEquals("0002", routes.get(0).getName());
+        assertEquals(4, routes.get(0).getPositionCount());
+    }
+
+    @Test
     public void readsPostFlightDeclarationFromLogBookRecord() throws IOException {
         List<GpxRoute> routes = read(igc(A_RECORD, "HFDTE280919", FIX_10,
                 "LPFCC2809191200002809190002" + "01" + "Post",
@@ -349,7 +478,109 @@ public class FlightRecorderDataFormatTest {
         assertEquals(5, routes.get(0).getPositionCount());
     }
 
+    // synthetic cases checked against the aerofiles and go-igc readers
+
+    private static final Object[][] CASES = {
+        {"01-basic-crlf.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"02-basic-lf.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"03-basic-cr.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"04-hfdte-old.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"05-hfdte-colon-nocomma.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"06-hfdte-utc-long.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"07-hfdte-flightno.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"08-hfdte-4digit-year.igc", 3, "2020-01-16T10:00:00Z", "2020-01-16T10:00:10Z"},
+        {"09-year-99.igc", 3, "1999-01-01T10:00:00Z", "1999-01-01T10:00:10Z"},
+        {"10-year-00.igc", 3, "2000-01-01T10:00:00Z", "2000-01-01T10:00:10Z"},
+        {"11-midnight.igc", 4, "2011-01-16T23:59:50Z", "2011-01-17T00:00:05Z"},
+        {"12-time-jitter-back.igc", 4, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"13-time-duplicate.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:01Z"},
+        {"14-i-record.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"15-lad-lod.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"16-v-fixes.igc", 2, "2011-01-16T10:00:05Z", "2011-01-16T10:00:10Z"},
+        {"17-alt-pressure-only.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"18-alt-gnss-only.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"19-alt-zero-both.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"20-alt-negative.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"21-alt-real-zero.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"21b-alt-real-zero-distinct-coords.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"22-unknown-record-M.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"23-short-line.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"24-lowercase.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"25-truncated-last-b.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"26-bad-b-middle.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"27-bom.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"28-ctrlz-eof.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"29-leading-blank-lines.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"30-leading-space-A.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"31-no-A-record.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"32-b-before-date.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"33-no-date.igc", 0, null, null},
+        {"34-b-trailing-spaces.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"35-b-with-spaces-in-coords.igc", 0, null, null},
+        {"36-non-ascii-header.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"37-utf8-header.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"38-hfdtm-non-wgs84.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"39-lat-lon-limits.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
+        {"40-lat-invalid-minutes.igc", 0, null, null},
+        {"41-task-ok.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"42-task-zero-tp.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"42b-two-tasks-zero-tp.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"43-task-incomplete.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"44-task-bad-id.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"45-task-no-task-declared.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"46-task-no-id-leading-c.igc", 1, "2011-01-16T10:00:00Z", "2011-01-16T10:00:00Z"},
+        {"47-task-short-name.igc", 1, "2011-01-16T10:00:00Z", "2011-01-16T10:00:00Z"},
+        {"48-many-misc-records.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"49-long-headers.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"50-two-dates.igc", 3, "2011-01-16T10:00:00Z", "2011-01-17T10:00:10Z"},
+        {"51-validity-other.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"52-alt-too-long.igc", 1, "2011-01-16T10:00:00Z", "2011-01-16T10:00:00Z"},
+        {"53-b-extra-ext-without-I.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+        {"54-no-fixes.igc", 0, null, null},
+        {"55-only-A.igc", 0, null, null},
+        {"56-empty.igc", 0, null, null},
+        {"57-not-igc-text.igc", 0, null, null},
+        {"58-bad-date.igc", 0, null, null},
+        {"59-hfdte-short.igc", 0, null, null},
+        {"60-H-subtype-other.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
+    };
+
+    @Test
+    public void readsSyntheticCases() throws IOException {
+        for (Object[] c : CASES) {
+            String name = (String) c[0];
+            int count = (Integer) c[1];
+            List<GpxRoute> routes;
+            try (InputStream in = getClass().getResourceAsStream("cases/" + name)) {
+                ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
+                format.read(in, context);
+                routes = context.getRoutes();
+            }
+            if (count == 0) {
+                assertTrue(routes.isEmpty(), name);
+                continue;
+            }
+            GpxRoute track = routes.get(routes.size() - 1);
+            assertEquals(Track, track.getCharacteristics(), name);
+            assertEquals(count, track.getPositionCount(), name);
+            assertEquals(millis((String) c[2]), track.getPosition(0).getTime().getTimeInMillis(), name);
+            assertEquals(millis((String) c[3]), track.getPosition(count - 1).getTime().getTimeInMillis(), name);
+        }
+    }
+
     // write
+
+    private static List<String> fixes(List<String> lines) {
+        return lines.stream().filter(l -> l.startsWith("B")).collect(java.util.stream.Collectors.toList());
+    }
+
+    private static String headerValue(List<String> lines, String code) {
+        for (String line : lines) {
+            if (line.startsWith("HF" + code))
+                return line;
+        }
+        return null;
+    }
 
     @Test
     public void writesHeaderFixesAndBrandedTrailer() throws IOException {
@@ -359,28 +590,89 @@ public class FlightRecorderDataFormatTest {
 
         List<String> lines = write(route);
 
-        assertEquals(7, lines.size());
+        int b = lines.size() - 4;
         assertEquals("AXXXZZZRouteConverter", lines.get(0));
-        assertEquals("HFDTE280919", lines.get(1));
-        assertEquals("HFPLTPILOT:Unknown", lines.get(2));
-        assertEquals("B1000004807123N01116123EA0000001050", lines.get(3));
-        assertEquals("B1001004807200N01116200EA0000001060", lines.get(4));
-        assertTrue(lines.get(5).startsWith("LXXXGenerated by RouteConverter "), lines.get(5));
-        assertEquals("GRouteConverterSecurityRecordGuaranteedToFailVALIChecks", lines.get(6));
+        assertEquals("HFDTEDATE:280919,01", lines.get(1));
+        assertEquals("B1000004807123N01116123EA0000001050", lines.get(b));
+        // 10:01:00.750 is rounded to the next second, the altitude 1060.9 to the next meter
+        assertEquals("B1001014807200N01116200EA0000001061", lines.get(b + 1));
+        assertTrue(lines.get(b + 2).startsWith("LXXXGenerated by RouteConverter "), lines.get(b + 2));
+        assertEquals("GRouteConverterSecurityRecordGuaranteedToFailVALIChecks", lines.get(b + 3));
+    }
+
+    @Test
+    public void writesTheRequiredHeaderRecordsOfTheSpecification() throws IOException {
+        List<String> lines = write(track("GNSSALTTRK", position(LONGITUDE, LATITUDE, 1050.0, "2019-09-28T10:00:00Z")));
+        assertEquals("HFDTEDATE:280919,01", lines.get(1));
+        for (String code : asList("FXA", "PLT", "CM2", "GTY", "GID", "DTM", "RFW", "RHW", "FTY", "GPS", "PRS"))
+            assertTrue(headerValue(lines, code) != null, code);
+        assertEquals("HFPLTPILOTINCHARGE:Unknown", headerValue(lines, "PLT"));
+        assertEquals("HFDTM100GPSDATUM:WGS-1984", headerValue(lines, "DTM"));
+        assertTrue(headerValue(lines, "FTY").startsWith("HFFTYFRTYPE:RouteConverter,"));
+    }
+
+    @Test
+    public void writtenFileReadsBackWithItsHeader() throws IOException {
+        ByteArrayOutputStream target = new ByteArrayOutputStream();
+        format.write(track("GNSSALTTRK", position(LONGITUDE, LATITUDE, 1050.0, "2019-09-28T10:00:00Z")), target, 0, 1);
+        List<GpxRoute> routes = read(new String(target.toByteArray(), ISO_8859_1));
+        assertEquals(1, routes.size());
+        assertEquals(millis("2019-09-28T10:00:00Z"), routes.get(0).getPosition(0).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void roundsSubSecondsAndAdvancesTheDateWithTheRoundedFirstFix() throws IOException {
+        List<String> lines = write(track("GNSSALTTRK",
+                position(LONGITUDE, LATITUDE, 1.0, "2019-09-28T23:59:59.600Z"),
+                position(LONGITUDE, LATITUDE, 1.0, "2019-09-29T00:00:01.400Z"),
+                position(LONGITUDE, LATITUDE, 1.0, "2019-09-29T00:00:02.500Z")));
+        assertEquals("HFDTEDATE:290919,01", lines.get(1));
+        int b = lines.size() - 5;
+        assertEquals("B000000", lines.get(b).substring(0, 7));
+        assertEquals("B000001", lines.get(b + 1).substring(0, 7));
+        assertEquals("B000003", lines.get(b + 2).substring(0, 7));
+    }
+
+    @Test
+    public void clampsAltitudesToTheFieldWidth() throws IOException {
+        List<String> lines = write(track("GNSSALTTRK",
+                position(LONGITUDE, LATITUDE, 123456.0, "2019-09-28T10:00:00Z"),
+                position(LONGITUDE, LATITUDE, -12345.0, "2019-09-28T10:00:01Z"),
+                position(LONGITUDE, LATITUDE, 99999.4, "2019-09-28T10:00:02Z"),
+                position(LONGITUDE, LATITUDE, -9999.0, "2019-09-28T10:00:03Z"),
+                position(LONGITUDE, LATITUDE, -0.4, "2019-09-28T10:00:04Z"),
+                position(LONGITUDE, LATITUDE, -12.5, "2019-09-28T10:00:05Z")));
+        int b = lines.size() - 8;
+        assertEquals("B1000004807123N01116123EA0000099999", lines.get(b));
+        assertEquals("B1000014807123N01116123EA00000-9999", lines.get(b + 1));
+        assertEquals("B1000024807123N01116123EA0000099999", lines.get(b + 2));
+        assertEquals("B1000034807123N01116123EA00000-9999", lines.get(b + 3));
+        assertEquals("B1000044807123N01116123EA0000000000", lines.get(b + 4));
+        assertEquals("B1000054807123N01116123EA00000-0013", lines.get(b + 5));
+        for (int i = b; i < b + 6; i++)
+            assertEquals(35, lines.get(i).length());
+    }
+
+    @Test
+    public void writesHeaderFieldsWithCommasAsOneLine() throws IOException {
+        GpxRoute route = read(igc(A_RECORD, "HFDTE280919", "HFPLTPILOT:Muster, Max", FIX_10)).get(1);
+        List<String> lines = write(route);
+        assertEquals("HFPLTPILOT:Muster, Max", headerValue(lines, "PLT"));
+        assertEquals(1, lines.stream().filter(l -> l.contains("Muster")).count());
     }
 
     @Test
     public void writesTrackNotNamedLikeIgcTracksWithGnssAltitude() throws IOException {
         List<String> lines = write(track("Some track", position(LONGITUDE, LATITUDE, 1050.0, "2019-09-28T10:00:00Z")));
-        assertEquals("B1000004807123N01116123EA0000001050", lines.get(3));
-        assertEquals("B1000004807123N01116123EA0000001050", write(track(null,
-                position(LONGITUDE, LATITUDE, 1050.0, "2019-09-28T10:00:00Z"))).get(3));
+        assertEquals("B1000004807123N01116123EA0000001050", fixes(lines).get(0));
+        assertEquals("B1000004807123N01116123EA0000001050", fixes(write(track(null,
+                position(LONGITUDE, LATITUDE, 1050.0, "2019-09-28T10:00:00Z")))).get(0));
     }
 
     @Test
     public void writesPressureTrackWithPressureAltitude() throws IOException {
         List<String> lines = write(track("PRESALTTRK", position(LONGITUDE, LATITUDE, 1000.0, "2019-09-28T10:00:00Z")));
-        assertEquals("B1000004807123N01116123EA0100000000", lines.get(3));
+        assertEquals("B1000004807123N01116123EA0100000000", fixes(lines).get(0));
     }
 
     @Test
@@ -388,14 +680,14 @@ public class FlightRecorderDataFormatTest {
         List<String> lines = write(track("GNSSALTTRK",
                 position(LONGITUDE, LATITUDE, null, "2019-09-28T10:00:00Z"),
                 position(LONGITUDE, LATITUDE, -12.0, "2019-09-28T10:00:01Z")));
-        assertEquals("B1000004807123N01116123EA0000000000", lines.get(3));
-        assertEquals("B1000014807123N01116123EA00000-0012", lines.get(4));
+        assertEquals("B1000004807123N01116123EA0000000000", lines.get(lines.size() - 4));
+        assertEquals("B1000014807123N01116123EA00000-0012", lines.get(lines.size() - 3));
     }
 
     @Test
     public void writesSouthernAndWesternHemisphere() throws IOException {
         List<String> lines = write(track("GNSSALTTRK", position(-70.25, -33.5, 5.0, "2019-09-28T10:00:00Z")));
-        assertEquals("B1000003330000S07015000WA0000000005", lines.get(3));
+        assertEquals("B1000003330000S07015000WA0000000005", fixes(lines).get(0));
     }
 
     @Test
@@ -403,9 +695,9 @@ public class FlightRecorderDataFormatTest {
         List<String> lines = write(track("GNSSALTTRK",
                 position(LONGITUDE, LATITUDE, 1.0, "2019-09-28T23:59:59Z"),
                 position(LONGITUDE, LATITUDE, 1.0, "2019-09-29T00:00:01Z")));
-        assertEquals("HFDTE280919", lines.get(1));
-        assertEquals("B235959", lines.get(3).substring(0, 7));
-        assertEquals("B000001", lines.get(4).substring(0, 7));
+        assertEquals("HFDTEDATE:280919,01", lines.get(1));
+        assertEquals("B235959", fixes(lines).get(0).substring(0, 7));
+        assertEquals("B000001", fixes(lines).get(1).substring(0, 7));
     }
 
     @Test
@@ -417,15 +709,15 @@ public class FlightRecorderDataFormatTest {
         ByteArrayOutputStream target = new ByteArrayOutputStream();
         format.write(route, target, 1, 3);
         List<String> lines = lines(target.toByteArray());
-        assertEquals(6, lines.size());
-        assertEquals("B100002", lines.get(3).substring(0, 7));
+        assertEquals(1, fixes(lines).size());
+        assertEquals("B100002", fixes(lines).get(0).substring(0, 7));
     }
 
     @Test
     public void writesTrackWithoutPositionsAsHeaderOnly() throws IOException {
         List<String> lines = write(track("GNSSALTTRK"));
-        assertEquals(5, lines.size());
-        assertEquals("HFPLTPILOT:Unknown", lines.get(2));
+        assertEquals(0, fixes(lines).size());
+        assertEquals("HFPLTPILOTINCHARGE:Unknown", headerValue(lines, "PLT"));
     }
 
     @Test
@@ -446,10 +738,11 @@ public class FlightRecorderDataFormatTest {
     public void writesHeaderRecordsStoredInTrackDescription() throws IOException {
         GpxRoute route = read(igc(A_RECORD, "HFDTE280919", PILOT, GLIDER, FIX_10)).get(1);
         List<String> lines = write(route);
-        assertEquals("HFDTE280919", lines.get(1));
-        assertEquals(PILOT, lines.get(2));
-        assertEquals(GLIDER, lines.get(3));
-        assertTrue(lines.get(4).startsWith("B100000"));
+        assertEquals("HFDTEDATE:280919,01", lines.get(1));
+        assertEquals(PILOT, headerValue(lines, "PLT"));
+        assertEquals(GLIDER, headerValue(lines, "GTY"));
+        assertEquals(2, lines.stream().filter(l -> l.startsWith("HFPLT") || l.startsWith("HFGTY")).count());
+        assertTrue(fixes(lines).get(0).startsWith("B100000"));
     }
 
     @Test

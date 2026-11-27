@@ -52,6 +52,8 @@
 
 ### Fixes
 
+- FAI/IGC Flight Recorder (.igc) files: damaged lines, a byte order mark, a missing A record and a damaged task declaration no longer make the whole flight unreadable; a small step back in the fix times no longer moves the rest of the flight to the next day; no-fix positions at 0/0 and fixes with impossible coordinates are skipped; a task without turn points and a second task are read
+- FAI/IGC Flight Recorder (.igc) files are written with all header records the FAI specification requires and the date as HFDTEDATE, fixes are rounded to whole seconds and meters, and altitudes outside -9999 to 99999 m no longer corrupt the fix record
 - ZIP archives written as a stream, such as Google Takeout exports, now open completely: files larger than 8 KB inside them were skipped; a damaged file inside a ZIP archive no longer ends reading the others, a partly downloaded archive is read up to where it breaks off, and files larger than 64 MB inside are skipped
 - Photos in a Google Takeout ZIP archive are now placed from the JSON file Google writes next to each photo (IMG_1.jpg.json), since Google removes the GPS data from most photos; photos without any location no longer show up as position lists without coordinates
 - A ZIP archive with several KML files no longer loses the positions of the first file and shows those of a later file twice
