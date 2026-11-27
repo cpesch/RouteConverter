@@ -22,8 +22,11 @@ package slash.navigation.holux;
 
 import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserContextImpl;
+import slash.navigation.base.ParserResult;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 import slash.navigation.tomtom.TomTomPoiFormat;
@@ -43,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -668,17 +672,170 @@ public class HoluxM241BinaryFormatTest {
     }
 
     @Test
-    public void bitmaskWithUnknownBitsIsNotRecognized() throws IOException {
-        assertTrue(read(sector(header(BASIC | 1 << 21), record(BASIC, rec()))).isEmpty());
+    public void bitmaskWithUnknownBitsIsUnsupported() throws IOException {
+        // spec 00083 D19: with a log header, the file is reported; without, it is not recognized
+        assertThrows(UnreadableFileException.class, () -> read(sector(header(BASIC | 1 << 21), record(BASIC, rec()))));
+        assertTrue(read(sector(header(BASIC | 1 << 21, 0x0000, 50, 0, 0), record(BASIC, rec()))).isEmpty());
         // the Holux 'low precision' bit is cleared before
         assertEquals(1, read(sector(header(BASIC | 1 << 31), record(BASIC, rec()))).size());
     }
 
     @Test
-    public void fileWithoutValidChecksumIsNotRecognized() throws IOException {
-        assertTrue(read(sector(header(BASIC),
+    public void fileWithLogHeaderButWithoutValidChecksumIsDamaged() {
+        // spec 00083 D19: the log header matched, so the reader reports why it cannot read the file
+        UnreadableFileException exception = assertThrows(UnreadableFileException.class, () -> read(sector(header(BASIC),
+                record(BASIC, rec().badChecksum()),
+                record(BASIC, rec().utc(TIME + 1).badChecksum()))));
+        assertTrue(exception.getMessage().startsWith("Holux/MTK logger file is damaged"));
+    }
+
+    @Test
+    public void fileWithoutLogHeaderAndValidChecksumIsNotRecognized() throws IOException {
+        // a log status of 0 is no log header
+        assertTrue(read(sector(header(BASIC, 0x0000, 50, 0, 0),
                 record(BASIC, rec().badChecksum()),
                 record(BASIC, rec().utc(TIME + 1).badChecksum()))).isEmpty());
+    }
+
+    @Test
+    public void logWithoutRecordsIsNotDamaged() throws IOException {
+        assertTrue(read(header(BASIC)).isEmpty());
+        assertTrue(read(sector(header(BASIC))).isEmpty());
+        assertTrue(read(sector(header(BASIC), info(0x07, 0x0106), ascii("HOLUXGR241LOGGER    "))).isEmpty());
+    }
+
+    @Test
+    public void parserReportsUnreadableDumpInsteadOfEmptyRoute() throws IOException {
+        byte[] data = sector(header(BASIC), ascii("HOLUXGR241LOGGER    "),
+                record(BASIC, rec().badChecksum()), record(BASIC, rec().utc(TIME + 1).badChecksum()));
+        ParserResult result = new NavigationFormatParser(new NavigationFormatRegistry()).read(new ByteArrayInputStream(data));
+        assertFalse(result.isSuccessful());
+        assertTrue(result.getFailure() instanceof UnreadableFileException);
+    }
+
+    @Test
+    public void extraByteCostsNoRecord() throws IOException {
+        // spec 00083 D25: after a bad checksum the reader resyncs byte by byte; GPSBabel loses the rest of the sector
+        byte[][] records = new byte[101][];
+        for (int i = 0; i < 100; i++)
+            records[i < 50 ? i : i + 1] = record(BASIC, rec().utc(TIME + i * 5L).at(48.25f + i * 0.0001f, 11.5f));
+        records[50] = new byte[]{0x00};
+        GpxRoute route = readTrack(sector(header(BASIC), records));
+        assertEquals(100, route.getPositionCount());
+        assertEquals((TIME + 50 * 5L) * 1000, route.getPosition(50).getTime().getTimeInMillis());
+        assertEquals((TIME + 99 * 5L) * 1000, route.getPosition(99).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void lostBytesCostOneRecord() throws IOException {
+        byte[] damaged = Arrays.copyOf(record(BASIC, rec().utc(TIME + 5)), 7);
+        GpxRoute route = readTrack(sector(header(BASIC),
+                record(BASIC, rec()), damaged, record(BASIC, rec().utc(TIME + 10)), record(BASIC, rec().utc(TIME + 15))));
+        assertEquals(3, route.getPositionCount());
+        assertEquals((TIME + 10) * 1000, route.getPosition(1).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void resyncSkipsRecordsWithImplausibleValues() throws IOException {
+        // the remains of a damaged record plus a record whose checksum matches but whose values do not look like
+        // a position: out of range coordinates, a time before 1970 and an unknown fix mode
+        int bitmask = bits(UTC, VALID, LATITUDE, LONGITUDE, HEIGHT);
+        GpxRoute route = readTrack(sector(header(bitmask),
+                record(bitmask, rec()),
+                new byte[]{0x01, 0x02, 0x03},
+                record(bitmask, rec().utc(TIME + 1).at(91.0f, 11.5f)),
+                record(bitmask, rec().utc(-5)),
+                record(bitmask, rec().utc(TIME + 3).valid(0x0003)),
+                record(bitmask, rec().utc(TIME + 4).height(25000.0f)),
+                record(bitmask, rec().utc(TIME + 5))));
+        assertEquals(2, route.getPositionCount());
+        assertEquals((TIME + 5) * 1000, route.getPosition(1).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void resyncEndsAtTheSectorBoundary() throws IOException {
+        byte[] garbage = new byte[100];
+        new Random(241).nextBytes(garbage);
+        byte[] first = sector(header(BASIC), record(BASIC, rec()), garbage);
+        byte[] second = sector(header(BASIC), record(BASIC, rec().utc(TIME + 10)));
+        GpxRoute route = readTrack(concat(first, second));
+        assertEquals((TIME + 10) * 1000, route.getPosition(route.getPositionCount() - 1).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void positionOutOfRangeIsDropped() throws IOException {
+        // spec 00083 D23: GPSBabel writes them, the records have a valid checksum
+        GpxRoute route = readTrack(sector(header(BASIC),
+                record(BASIC, rec().at(500.0f, 11.5f)),
+                record(BASIC, rec().utc(TIME + 1).at(48.25f, -400.0f)),
+                record(BASIC, rec().utc(TIME + 2).at(-90.0f, 180.0f))));
+        assertEquals(asList("TP000003"), descriptions(route));
+    }
+
+    @Test
+    public void sectorHeaderSetsTheBitmaskOfItsSector() throws IOException {
+        // spec 00083 D25: GPSBabel keeps the bitmask of the first sector and reads the second one misaligned
+        int extended = bits(UTC, LATITUDE, LONGITUDE, HEIGHT, HEADING);
+        byte[] first = sector(header(BASIC), record(BASIC, rec()), record(BASIC, rec().utc(TIME + 5)));
+        byte[] second = sector(header(extended), record(extended, rec().utc(TIME + 10)), record(extended, rec().utc(TIME + 15)));
+        GpxRoute route = readTrack(concat(first, second));
+        assertEquals(4, route.getPositionCount());
+        assertNull(route.getPosition(1).getHeading());
+        assertEquals(90.5, route.getPosition(3).getHeading(), 0.0);
+    }
+
+    @Test
+    public void erasedSectorHeaderKeepsTheCurrentBitmask() throws IOException {
+        int bitmask = bits(UTC, LATITUDE, LONGITUDE, HEIGHT, HEADING);
+        byte[] first = sector(header(BASIC), info(0x02, bitmask), record(bitmask, rec()));
+        byte[] second = sector(header(0xffffffff, 0xffff, -1, -1, -1), record(bitmask, rec().utc(TIME + 10)));
+        GpxRoute route = readTrack(concat(first, second));
+        assertEquals(2, route.getPositionCount());
+        assertEquals(90.5, route.getPosition(1).getHeading(), 0.0);
+    }
+
+    @Test
+    public void erasedFirstHeaderMeansTheM241Format() throws IOException {
+        // like BT747; GPSBabel reads nothing
+        byte[] erased = new byte[0x200];
+        Arrays.fill(erased, (byte) 0xff);
+        GpxRoute route = readTrack(sector(erased, ascii("HOLUXGR241LOGGER    "),
+                record(BASIC, rec()), record(BASIC, rec().utc(TIME + 5))));
+        assertEquals(2, route.getPositionCount());
+        assertEquals(truncated(512.5f), route.getPosition(0).getElevation(), 0.0);
+    }
+
+    private static byte[] ring(int policy) {
+        // sector 0 was overwritten with the newest positions, sector 1 holds the oldest, sector 2 the ones between
+        byte[] newest = sector(header(BASIC, policy, 50, 0, 0), record(BASIC, rec().utc(TIME + 200)), record(BASIC, rec().utc(TIME + 205)));
+        byte[] oldest = sector(header(BASIC, policy, 50, 0, 0), record(BASIC, rec().utc(TIME)), record(BASIC, rec().utc(TIME + 5)));
+        byte[] between = sector(header(BASIC, policy, 50, 0, 0), record(BASIC, rec().utc(TIME + 100)));
+        return concat(newest, oldest, Arrays.copyOf(between, 0x400));
+    }
+
+    private static List<Long> times(GpxRoute route) {
+        return route.getPositions().stream().map(position -> position.getTime().getTimeInMillis() / 1000 - TIME).toList();
+    }
+
+    @Test
+    public void wrappedRingWithOverwritePolicyIsReadFromItsOldestSector() throws IOException {
+        // spec 00083 D25, like BT747; GPSBabel reads in file order
+        assertEquals(asList(0L, 5L, 100L, 200L, 205L), times(readTrack(ring(0x0102))));
+        assertEquals(asList(0L, 5L, 100L, 200L, 205L), times(readTrack(ring(0x0100))));
+    }
+
+    @Test
+    public void ringWithStopPolicyIsReadInFileOrder() throws IOException {
+        // a logger that stops when full never wraps
+        assertEquals(asList(200L, 205L, 0L, 5L, 100L), times(readTrack(ring(0x0104))));
+        assertEquals(asList(200L, 205L, 0L, 5L, 100L), times(readTrack(ring(0x0106))));
+    }
+
+    @Test
+    public void unwrappedRingWithOverwritePolicyIsReadInFileOrder() throws IOException {
+        byte[] first = sector(header(BASIC, 0x0102, 50, 0, 0), record(BASIC, rec()));
+        byte[] second = sector(header(BASIC, 0x0102, 50, 0, 0), record(BASIC, rec().utc(TIME + 10)));
+        assertEquals(asList(0L, 10L), times(readTrack(concat(first, second))));
     }
 
     @Test
