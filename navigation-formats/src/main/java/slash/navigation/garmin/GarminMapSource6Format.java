@@ -28,6 +28,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.GpxBackedNavigationFormat;
 import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpsbabel.LittleEndianInput;
 import slash.navigation.gpsbabel.LittleEndianOutput;
 import slash.navigation.gpx.Gpx10Format;
@@ -71,7 +72,8 @@ import static slash.navigation.gpsbabel.GpsBabelMath.semicirclesToDegrees;
  * Reading delivers what GPSBabel 1.5.4 delivered through its GPX 1.0 exchange file: every waypoint
  * record as a waypoint, the routes with their via points and the tracks. The records are read with the
  * layouts of Herbert Oppmann's format description, the text as UTF-8 or else Windows-1252, and a damaged
- * record costs only that record (D19). Writing produces version 3 files the way GPSBabel's {@code ver=3}
+ * record costs only that record (D19). A file with the GDB signature of which nothing can be read, and the
+ * file formats of BaseCamp and HomePort, raise an {@link UnreadableFileException} that says why. Writing produces version 3 files the way GPSBabel's {@code ver=3}
  * did, with RouteConverter's watermark in the header (D15.1), rounded semicircles (D18) and the unique
  * waypoint names in the route records (D21).
  *
@@ -94,6 +96,9 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
     private static final double ALTITUDE_LIMIT = 1.0e24;
     private static final int NAME_LENGTH = 1024;
     private static final int MAXIMUM_HEADER_RECORD_LENGTH = 128;
+    // Oppmann's file formats of record 'D': 1.07 to 1.09 are GDB versions 1 to 3, BaseCamp and HomePort write 1.15 to 1.88
+    static final int FIRST_FILE_FORMAT = 107;
+    private static final int FIRST_BASECAMP_FILE_FORMAT = 115, LAST_BASECAMP_FILE_FORMAT = 188;
     private static final int RECORD_HEADER_LENGTH = 5;
     private static final int SUBCLASS_LENGTH = 4 + 4 + 8 + 2 + 4;
     private static final int GPX_COORDINATE_DIGITS = 9;
@@ -115,13 +120,6 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
 
     public boolean isWritingRouteCharacteristics() {
         return true;
-    }
-
-    /** a file GPSBabel refuses: the native reader returns no route */
-    static class GdbException extends Exception {
-        GdbException(String message) {
-            super(message);
-        }
     }
 
     /** GPSBabel's Waypoint, reduced to the fields gdb.cc and the GPX exchange use */
@@ -172,12 +170,15 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
 
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
         byte[] bytes = source.readAllBytes();
-        try {
-            return new Reader(bytes).read();
-        } catch (GdbException | EOFException e) {
-            // not a GDB file the reader knows: no route
+        // not a GDB file: no route
+        if (!isGdb(bytes))
             return null;
-        }
+        return new Reader(bytes).read();
+    }
+
+    // the file format of record 'D' as Oppmann writes it, e.g. 1.09 for MapSource 6.12 "Ver 3"
+    static String formatVersion(int fileFormat) {
+        return String.format(Locale.ROOT, "%d.%02d", fileFormat / 100, fileFormat % 100);
     }
 
     static boolean isGdb(byte[] bytes) {
@@ -250,48 +251,84 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
             return semicirclesToDegrees(input.readInt32());
         }
 
-        private void readHeader(LittleEndianInput input) throws IOException, GdbException {
-            if (!isGdb(bytes))
-                throw new GdbException("Invalid file");
-            input.skip(SIGNATURE.length);
-            input.readInt32();
-            String record = input.readCString(ISO_8859_1);
-            if (record.isEmpty() || record.charAt(0) != 'D')
-                throw new GdbException("Invalid file");
-            version = record.length() > 1 ? record.charAt(1) - 'k' + 1 : -'k' + 1;
-            if (version < 1 || version > 3)
-                throw new GdbException("Unknown or/and unsupported GDB version " + version);
-            int length = input.readInt32();
-            if (length < 0 || length + 1 > MAXIMUM_HEADER_RECORD_LENGTH)
-                throw new GdbException("Invalid record length");
-            input.skip(length + 1);
-            String application = input.readCString(ISO_8859_1);
-            if (!APPLICATIONS.contains(application))
-                throw new GdbException("Not a recognized signature in header");
+        /**
+         * The signature has matched, so a header that cannot be read is an error with a reason (D19):
+         * the records 'D' and 'A' and the application field. File formats other than 1.07 to 1.09 have
+         * other record layouts: 1.15 to 1.88 are written by BaseCamp and HomePort (GM L1(a)).
+         */
+        private void readHeader(LittleEndianInput input) throws UnreadableFileException {
+            try {
+                input.skip(SIGNATURE.length);
+                input.readInt32();
+                String record = input.readCString(ISO_8859_1);
+                if (record.length() < 2 || record.length() > 3 || record.charAt(0) != 'D')
+                    throw new UnreadableFileException("Garmin GDB file is damaged: no file format record in its header");
+                int fileFormat = record.charAt(1) | (record.length() > 2 ? record.charAt(2) << 8 : 0);
+                int length = input.readInt32();
+                if (length < 0 || length + 1 > MAXIMUM_HEADER_RECORD_LENGTH)
+                    throw new UnreadableFileException("Garmin GDB file is damaged: its header record has a length of " + length);
+                input.skip(length + 1);
+                String application = input.readCString(ISO_8859_1);
+                if (!APPLICATIONS.contains(application))
+                    throw new UnreadableFileException("Garmin GDB file is damaged: its header names no known application");
+
+                version = fileFormat - FIRST_FILE_FORMAT + 1;
+                if (version < 1 || version > 3) {
+                    String writer = fileFormat >= FIRST_BASECAMP_FILE_FORMAT && fileFormat <= LAST_BASECAMP_FILE_FORMAT ?
+                            " of " + application : "";
+                    throw new UnreadableFileException("Cannot read Garmin GDB file format " + formatVersion(fileFormat) +
+                            writer + ", only " + formatVersion(FIRST_FILE_FORMAT) + " to " +
+                            formatVersion(FIRST_FILE_FORMAT + 2) + " of MapSource 6");
+                }
+            } catch (EOFException e) {
+                throw new UnreadableFileException("Garmin GDB file ends in its header after " + bytes.length + " bytes", e);
+            }
         }
 
-        List<GpxRoute> read() throws IOException, GdbException {
+        // the first thing that went wrong reading the records; with no record read it makes the file unreadable
+        private String damage;
+
+        private void damaged(String problem) {
+            log.warning(problem);
+            if (damage == null)
+                damage = problem;
+        }
+
+        List<GpxRoute> read() throws IOException {
             LittleEndianInput input = new LittleEndianInput(bytes);
             readHeader(input);
 
             // a file without the end record ends after its last complete record
+            boolean ended = false;
             while (input.remaining() >= RECORD_HEADER_LENGTH) {
+                int start = input.position();
                 int length = input.readInt32();
                 char type = (char) input.readUInt8();
-                if (type == 'V')
+                if (type == 'V') {
+                    ended = true;
                     break;
+                }
                 if (length < 0) {
-                    log.warning("Stopped reading at record with negative length " + length);
+                    damaged("stopped reading at the record at byte " + start + " with the negative length " + length);
                     break;
                 }
                 // gbfcopyfrom() caches the record; the reader resyncs on the declared length
                 boolean truncated = length > input.remaining();
+                if (truncated)
+                    damaged("the " + type + " record at byte " + start + " is cut off by the end of the file");
                 LittleEndianInput record = new LittleEndianInput(input.readBytes(truncated ? input.remaining() : length));
                 readRecord(type, record, truncated);
                 if (truncated)
                     break;
             }
-            return toRoutes();
+            if (!ended)
+                damaged("it ends without its end record after " + bytes.length + " bytes");
+
+            List<GpxRoute> result = toRoutes();
+            // nothing to salvage from a damaged file: say why instead of opening an empty route (D19)
+            if (result == null && damage != null)
+                throw new UnreadableFileException("Garmin GDB file is damaged: " + damage);
+            return result;
         }
 
         private void readRecord(char type, LittleEndianInput record, boolean truncated) {
@@ -312,7 +349,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
                         // the points before a cut keep their values; a record that is longer than its
                         // points is not understood: its points may be garbage
                         if (!rte.pointsComplete && !truncated) {
-                            log.warning("Skipped unreadable " + type + " record: " + e.getMessage());
+                            damaged("skipped an unreadable " + type + " record: " + e.getMessage());
                             return;
                         }
                     }
@@ -366,7 +403,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
                 }
                 wpt.notes = readString(input);
             } catch (EOFException e) {
-                log.warning("Skipped unreadable W record: " + e.getMessage());
+                damaged("skipped an unreadable W record: " + e.getMessage());
                 return null;
             }
 
@@ -454,7 +491,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
                 }
                 if (Math.abs(distance(ref, found)) > MAXIMUM_ROUTE_POINT_DISTANCE) {
                     // GPSBabel stops with "Route point mismatch"
-                    log.warning("Dropped route point " + ref.shortName + " far from its waypoint");
+                    damaged("dropped the route point " + ref.shortName + " far from its waypoint");
                     return;
                 }
             }
@@ -521,7 +558,7 @@ public class GarminMapSource6Format extends GpxBackedNavigationFormat implements
                 Wpt found = findWaypoint(wpt, false);
                 if (found == null) {
                     // GPSBabel stops with "Sleeping route point without coordinates"
-                    log.warning("Dropped route point " + wpt.shortName + " without coordinates");
+                    damaged("dropped the route point " + wpt.shortName + " without coordinates");
                     return null;
                 }
                 wpt = found.copy();
