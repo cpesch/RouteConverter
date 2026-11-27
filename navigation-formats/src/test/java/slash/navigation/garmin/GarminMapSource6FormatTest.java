@@ -21,7 +21,11 @@
 package slash.navigation.garmin;
 
 import org.junit.jupiter.api.Test;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserContextImpl;
+import slash.navigation.base.ParserResult;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpsbabel.LittleEndianOutput;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
@@ -43,7 +47,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -191,6 +197,10 @@ public class GarminMapSource6FormatTest {
         return context.getRoutes();
     }
 
+    private String unreadable(byte[] bytes) {
+        return assertThrows(UnreadableFileException.class, () -> read(bytes)).getMessage();
+    }
+
     // header and version guard
 
     @Test
@@ -219,53 +229,121 @@ public class GarminMapSource6FormatTest {
     }
 
     @Test
-    public void testDeclinesForeignAndNewerFiles() throws IOException {
+    public void testDeclinesForeignFilesQuietly() throws IOException {
         assertTrue(read(new byte[0]).isEmpty());
         assertTrue(read("<?xml version=\"1.0\"?><gpx/>".getBytes(UTF_8)).isEmpty());
         assertTrue(read("MsRcd\0\0\0\0\0".getBytes(ISO_8859_1)).isEmpty());
-        // BaseCamp versions after MapSource 6.16 write file format versions GPSBabel does not know
-        for (int version : new int[]{0, 4, 15}) {
-            Builder file = header(version);
-            file.record('W', waypoint(3, "Home", 0, 48.1, 11.5, null, null, null, null));
-            assertTrue(read(end(file)).isEmpty(), "version " + version);
-        }
-        Builder file = header(3, "Other");
-        file.record('W', waypoint(3, "Home", 0, 48.1, 11.5, null, null, null, null));
-        assertTrue(read(end(file)).isEmpty());
+        // MapSource 6.0.2 beta, primary file format 1.1, which GPSBabel refuses, too
+        assertTrue(read("MsRce\0\0\0\0\0".getBytes(ISO_8859_1)).isEmpty());
+        assertTrue(read("MsRc".getBytes(ISO_8859_1)).isEmpty());
     }
 
     @Test
-    public void testDeclinesTruncatedAndHostileFiles() throws IOException {
+    public void testReadsAnEmptyFileAsNoRoute() throws IOException {
+        for (int version = 1; version <= 3; version++)
+            assertTrue(read(end(header(version))).isEmpty(), "version " + version);
+    }
+
+    // header(version) writes the file format 1.06 + version
+    private static byte[] fileOfFormat(int fileFormat, String application) {
+        Builder file = header(fileFormat - 106, application);
+        file.record('W', waypoint(3, "Home", 0, 48.1, 11.5, null, null, null, null));
+        return end(file);
+    }
+
+    @Test
+    public void testReportsTheFileFormatsOfBaseCampAndHomePort() {
+        // BaseCamp and HomePort write file formats 1.15 to 1.88 with other record layouts (GM L1(a))
+        for (int fileFormat : new int[]{115, 129, 146, 188})
+            assertEquals("Cannot read Garmin GDB file format 1." + fileFormat % 100 + " of BaseCamp, only 1.07 to 1.09 of MapSource 6",
+                    unreadable(fileOfFormat(fileFormat, "BaseCamp")));
+        assertEquals("Cannot read Garmin GDB file format 1.19 of HomePort, only 1.07 to 1.09 of MapSource 6",
+                unreadable(fileOfFormat(119, "HomePort")));
+    }
+
+    @Test
+    public void testReportsUnknownFileFormats() {
+        assertEquals("Cannot read Garmin GDB file format 1.06, only 1.07 to 1.09 of MapSource 6", unreadable(fileOfFormat(106, "MapSource")));
+        assertEquals("Cannot read Garmin GDB file format 1.10, only 1.07 to 1.09 of MapSource 6", unreadable(fileOfFormat(110, "MapSource")));
+        assertEquals("Cannot read Garmin GDB file format 1.89, only 1.07 to 1.09 of MapSource 6", unreadable(fileOfFormat(189, "BaseCamp")));
+    }
+
+    @Test
+    public void testReportsADamagedHeader() {
+        Builder file = header(3, "Other");
+        file.record('W', waypoint(3, "Home", 0, 48.1, 11.5, null, null, null, null));
+        assertEquals("Garmin GDB file is damaged: its header names no known application", unreadable(end(file)));
+        assertEquals("Garmin GDB file ends in its header after 6 bytes", unreadable("MsRcf\0".getBytes(ISO_8859_1)));
+        assertEquals("Garmin GDB file is damaged: no file format record in its header",
+                unreadable("MsRcf\0\2\0\0\0X\0\0\0\0\0\0".getBytes(ISO_8859_1)));
+    }
+
+    @Test
+    public void testParserReportsAnUnreadableFileInsteadOfAnEmptyRoute() throws IOException {
+        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+        ParserResult result = parser.read(new ByteArrayInputStream(fileOfFormat(188, "BaseCamp")));
+        assertFalse(result.isSuccessful());
+        assertEquals("Cannot read Garmin GDB file format 1.88 of BaseCamp, only 1.07 to 1.09 of MapSource 6", result.getFailure().getMessage());
+
         Builder valid = header(3);
         valid.record('W', waypoint(3, "Home", 0, 48.1, 11.5, null, null, null, null));
         byte[] complete = end(valid);
-        // every truncation: nothing or the waypoint with its name and position
+        // cut inside the name of the only waypoint: nothing to salvage
+        result = parser.read(new ByteArrayInputStream(Arrays.copyOf(complete, header(3).toByteArray().length + 7)));
+        assertFalse(result.isSuccessful());
+        assertTrue(result.getFailure().getMessage().startsWith("Garmin GDB file is damaged: "), result.getFailure().getMessage());
+    }
+
+    @Test
+    public void testReportsTruncatedAndHostileFiles() throws IOException {
+        Builder valid = header(3);
+        valid.record('W', waypoint(3, "Home", 0, 48.1, 11.5, null, null, null, null));
+        byte[] complete = end(valid);
+        // every truncation: no GDB file without the signature, else an error or the waypoint with its name and position
         for (int length = 0; length < complete.length - 7; length++) {
-            List<GpxRoute> routes = read(Arrays.copyOf(complete, length));
-            if (!routes.isEmpty()) {
-                assertEquals(1, routes.get(0).getPositionCount(), "length " + length);
-                assertEquals("Home", routes.get(0).getPosition(0).getDescription(), "length " + length);
-                assertEquals(48.1, routes.get(0).getPosition(0).getLatitude(), 0.0000001, "length " + length);
+            byte[] truncated = Arrays.copyOf(complete, length);
+            if (length < GarminMapSource6Format.SIGNATURE.length) {
+                assertTrue(read(truncated).isEmpty(), "length " + length);
+                continue;
             }
+            List<GpxRoute> routes;
+            try {
+                routes = read(truncated);
+            } catch (UnreadableFileException e) {
+                assertTrue(e.getMessage().startsWith("Garmin GDB file "), "length " + length + ": " + e.getMessage());
+                continue;
+            }
+            assertEquals(1, routes.get(0).getPositionCount(), "length " + length);
+            assertEquals("Home", routes.get(0).getPosition(0).getDescription(), "length " + length);
+            assertEquals(48.1, routes.get(0).getPosition(0).getLatitude(), 0.0000001, "length " + length);
         }
         // a file without the end record ends after its last record
         assertEquals(1, read(Arrays.copyOf(complete, complete.length - 7)).size());
 
         // a record length overrunning the file
-        assertTrue(read(end(header(3).i32(1000).bytes('W').fill(10, 0))).isEmpty());
+        assertTrue(unreadable(end(header(3).i32(1000).bytes('W').fill(10, 0))).matches(
+                "Garmin GDB file is damaged: the W record at byte \\d+ is cut off by the end of the file"));
         // a negative record length
-        assertTrue(read(end(header(3).i32(-5).bytes('W'))).isEmpty());
+        assertTrue(unreadable(end(header(3).i32(-5).bytes('W'))).matches(
+                "Garmin GDB file is damaged: stopped reading at the record at byte \\d+ with the negative length -5"));
         // a huge point count in a short track record
         Builder track = new Builder(3).str("t").bytes(0).i32(0).i32(Integer.MAX_VALUE).semi(1).semi(1);
-        assertTrue(read(end(header(3).record('T', track))).isEmpty());
+        assertTrue(unreadable(end(header(3).record('T', track))).startsWith("Garmin GDB file is damaged: skipped an unreadable T record"));
         // a waypoint record that is shorter than its fields
         Builder shortWaypoint = new Builder(3).str("w").i32(0);
-        assertTrue(read(end(header(3).record('W', shortWaypoint))).isEmpty());
+        assertTrue(unreadable(end(header(3).record('W', shortWaypoint))).startsWith("Garmin GDB file is damaged: skipped an unreadable W record"));
         // a header record length beyond GPSBabel's buffer
         byte[] header = header(3).toByteArray();
         byte[] hostile = header.clone();
         hostile[13] = (byte) 0xFF;
-        assertTrue(read(hostile).isEmpty());
+        assertEquals("Garmin GDB file is damaged: its header record has a length of 255", unreadable(hostile));
+        // a damaged record behind a readable one costs only itself
+        Builder salvage = header(3);
+        salvage.record('W', waypoint(3, "Home", 0, 48.1, 11.5, null, null, null, null));
+        salvage.record('W', shortWaypoint);
+        assertEquals(1, read(end(salvage)).get(0).getPositionCount());
+        // a file that ends behind the header
+        assertEquals("Garmin GDB file is damaged: it ends without its end record after " + header.length + " bytes", unreadable(header));
     }
 
     @Test
@@ -387,7 +465,7 @@ public class GarminMapSource6FormatTest {
         Builder route = new Builder(3).str("R").bytes(0).bytes(1).i32(1);
         routePoint(route, 3, "Nowhere", 0, new double[][]{});
         sleeping.record('R', route.i32(0).i32(14).bytes(0).str(""));
-        assertTrue(read(end(sleeping)).isEmpty());
+        assertEquals("Garmin GDB file is damaged: dropped the route point Nowhere without coordinates", unreadable(end(sleeping)));
 
         // GPSBabel stops at the mismatch; the route keeps its other points (D19)
         Builder mismatch = header(3);
