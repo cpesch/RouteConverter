@@ -232,6 +232,21 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
         return new GpxPosition(coordinates[0], coordinates[1], elevation, null, time, description);
     }
 
+    private static final int MAXIMUM_LOGGED_LINE_LENGTH = 80;
+
+    // a binary file that starts with M, such as a MapSource file, would otherwise log megabytes
+    static String abbreviateForLog(String line) {
+        boolean cut = line.length() > MAXIMUM_LOGGED_LINE_LENGTH;
+        StringBuilder result = new StringBuilder(cut ? line.substring(0, MAXIMUM_LOGGED_LINE_LENGTH) : line);
+        for (int i = 0; i < result.length(); i++) {
+            if (Character.isISOControl(result.charAt(i)))
+                result.setCharAt(i, '?');
+        }
+        if (cut)
+            result.append("...");
+        return result.toString();
+    }
+
     // pcx.cc data_read(); where GPSBabel would stop with fatal() there is no route
     List<GpxRoute> parse(String text) {
         List<GpxPosition> waypoints = new ArrayList<>();
@@ -333,7 +348,7 @@ public class GarminPcx5Format extends GpxBackedNavigationFormat {
                 }
                 case 'M':
                     if (!line.toUpperCase().contains("WGS 84"))
-                        log.info("Ignoring datum line '" + line + "', assuming WGS 84");
+                        log.info("Ignoring datum line '" + abbreviateForLog(line) + "', assuming WGS 84");
                     break;
                 default:
                     // 'H': "H  LATITUDE ..." or "H  TN name" start a track

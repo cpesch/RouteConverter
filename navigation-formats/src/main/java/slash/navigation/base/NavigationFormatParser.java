@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
 
@@ -155,20 +156,27 @@ public class NavigationFormatParser {
     // probe loops below (internalRead and bufferedInternalRead) since only what happens after
     // a MATCHED/DECLINED-with-reset-failure result differs between them (rc/RouteConverter#194)
     // EMPTY_CONTAINER: a container format such as ZIP recognized the file, but no entry had routes
-    private enum ProbeOutcome { MATCHED, READ, DECLINED, EMPTY_CONTAINER }
+    // UNREADABLE: the format recognized the file as its own but cannot read it, see UnreadableFileException
+    private enum ProbeOutcome { MATCHED, READ, DECLINED, EMPTY_CONTAINER, UNREADABLE }
 
     private ProbeOutcome probeFormat(NavigationFormat<BaseRoute<?, ?>> format, InputStream buffer,
-                                     ParserContext<BaseRoute<?, ?>> context, int routeCountBefore) {
+                                     ParserContext<BaseRoute<?, ?>> context, int routeCountBefore,
+                                     Consumer<UnreadableFileException> unreadable) {
         notifyReading(format);
 
         log.fine(format("Trying to read with %s", format));
         boolean declined = false;
+        UnreadableFileException failure = null;
         long startNanos = System.nanoTime();
         try {
             format.read(buffer, context);
         } catch (ContainerWithoutRoutesException e) {
             log.fine(format("Container without routes for %s: %s", format, e.getMessage()));
             return ProbeOutcome.EMPTY_CONTAINER;
+        } catch (UnreadableFileException e) {
+            // unlike a decline this is worth a line in the log: the file was recognized but is damaged
+            log.info(format("Recognized by %s but cannot read: %s", format, e.getMessage()));
+            failure = e;
         } catch (Exception e) {
             // probing tries every candidate format in turn, so a format declining a file it does
             // not handle (e.g. Gpx11Format on a GPX 1.0 file, before Gpx10Format reads it) is normal
@@ -179,9 +187,14 @@ public class NavigationFormatParser {
             ProbeTimings.recordProbe(format, System.nanoTime() - startNanos);
         }
 
+        // routes a format salvaged before it gave up still count as read
         if (context.getRoutes().size() > routeCountBefore) {
             context.addFormat(format);
             return ProbeOutcome.MATCHED;
+        }
+        if (failure != null) {
+            unreadable.accept(failure);
+            return ProbeOutcome.UNREADABLE;
         }
         return declined ? ProbeOutcome.DECLINED : ProbeOutcome.READ;
     }
@@ -194,7 +207,8 @@ public class NavigationFormatParser {
 
         try {
             for (NavigationFormat<BaseRoute<?, ?>> format : formats) {
-                ProbeOutcome outcome = probeFormat(format, buffer, context, routeCountBefore);
+                // an entry no format can read is skipped like an entry no format recognizes
+                ProbeOutcome outcome = probeFormat(format, buffer, context, routeCountBefore, failure -> { });
                 if (outcome == ProbeOutcome.MATCHED || outcome == ProbeOutcome.EMPTY_CONTAINER)
                     break;
 
@@ -286,7 +300,7 @@ public class NavigationFormatParser {
         commentRouteName(route);
     }
 
-    private ParserResult createResult(ParserContext<BaseRoute<?, ?>> context) throws IOException {
+    private ParserResult createResult(ParserContext<BaseRoute<?, ?>> context, UnreadableFileException failure) throws IOException {
         List<BaseRoute<?, ?>> source = context.getRoutes();
         // if (source != null && source.size() > 0) {
         if (source != null && !context.getFormats().isEmpty()) {
@@ -298,6 +312,9 @@ public class NavigationFormatParser {
                 destination.add(format.createRoute(RouteCharacteristics.Route, null, new ArrayList<>()));
             commentRoutes(destination);
             return new ParserResult(FormatAndRoutes.of(format, destination));
+        } else if (failure != null) {
+            log.info("Cannot read: " + failure.getMessage());
+            return ParserResult.failed(failure);
         } else
             return new ParserResult(null);
     }
@@ -360,8 +377,8 @@ public class NavigationFormatParser {
                               List<NavigationFormat<BaseRoute<?, ?>>> formats) throws IOException {
         log.fine("Reading with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
         ParserContext<BaseRoute<?, ?>> context = new InternalParserContext(file, startDate);
-        bufferedInternalRead(source, readBufferSize, formats, context);
-        return createResult(context);
+        UnreadableFileException failure = bufferedInternalRead(source, readBufferSize, formats, context);
+        return createResult(context, failure);
     }
 
     /**
@@ -383,16 +400,21 @@ public class NavigationFormatParser {
      * from {@code source} to continue with the remaining candidates (rc/RouteConverter#188).
      * A {@code source} that cannot be re-opened (e.g. a one-shot {@link InputStream}) returns
      * {@code null} on its second call, which stops probing exactly as a failed reset() used to.
+     *
+     * @return if no format read a route: why the first format that recognized the source could
+     * not read it, or {@code null} if none recognized it
      */
-    private void bufferedInternalRead(Supplier<InputStream> source, int markSize, List<NavigationFormat<BaseRoute<?, ?>>> formats,
+    private UnreadableFileException bufferedInternalRead(Supplier<InputStream> source, int markSize, List<NavigationFormat<BaseRoute<?, ?>>> formats,
                                       ParserContext<BaseRoute<?, ?>> context) throws IOException {
         int routeCountBefore = context.getRoutes().size();
         NavigationFormat<BaseRoute<?, ?>> firstSuccessfulFormat = null;
+        // the formats are in the order of preference, so the first that recognized the source explains best
+        List<UnreadableFileException> failures = new ArrayList<>();
 
         NotClosingUnderlyingInputStream buffer = openAndMark(getStream(source), markSize);
         try {
             for (NavigationFormat<BaseRoute<?, ?>> format : formats) {
-                ProbeOutcome outcome = probeFormat(format, buffer, context, routeCountBefore);
+                ProbeOutcome outcome = probeFormat(format, buffer, context, routeCountBefore, failures::add);
                 if (outcome == ProbeOutcome.MATCHED)
                     break;
                 // a ZIP archive without routes is no file of another format: report it as unrecognized
@@ -436,8 +458,15 @@ public class NavigationFormatParser {
             buffer.closeUnderlyingInputStream();
         }
 
-        if (context.getRoutes().isEmpty() && context.getFormats().isEmpty() && firstSuccessfulFormat != null)
+        if (!context.getRoutes().isEmpty() || !context.getFormats().isEmpty())
+            return null;
+        // a format that recognized the source but cannot read it is a better answer than an empty
+        // route from the first format that merely did not throw
+        if (!failures.isEmpty())
+            return failures.get(0);
+        if (firstSuccessfulFormat != null)
             context.addFormat(firstSuccessfulFormat);
+        return null;
     }
 
     private static InputStream getStream(Supplier<InputStream> source) throws IOException {

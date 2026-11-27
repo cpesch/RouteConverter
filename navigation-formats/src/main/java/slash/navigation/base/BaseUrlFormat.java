@@ -51,7 +51,8 @@ public abstract class BaseUrlFormat extends SimpleFormat<Wgs84Route> {
             buffer.append(line).append("\n");
         }
 
-        String url = findURL(buffer.toString());
+        // a UTF-16 file such as a mail saved as Unicode text decodes to its ASCII URL interleaved with NULs
+        String url = findURL(buffer.toString().replace("\u0000", ""));
         if (url == null)
             throw new IOException(format("Cannot find %s URL in %s", getName(), context.getFile()));
         processURL(url, encoding, context);

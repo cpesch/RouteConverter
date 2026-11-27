@@ -373,9 +373,11 @@ public class NavigationFormatRegistry {
     }
 
     public List<NavigationFormat<BaseRoute<?, ?>>> getReadFormatsPreferredByExtension(String preferredExtension) {
+        // the extensions of the formats are lowercase, those of files and ZIP entries not always
+        String extension = preferredExtension == null ? null : preferredExtension.toLowerCase(ROOT);
         List<NavigationFormat<BaseRoute<?, ?>>> preferredFormats = new ArrayList<>();
         for(NavigationFormat<BaseRoute<?, ?>> format : getReadFormats()) {
-            if(format.getExtension().equals(preferredExtension))
+            if(format.getExtension().equals(extension))
                 preferredFormats.add(format);
         }
 

@@ -27,6 +27,7 @@
 package slash.navigation.magellan;
 
 import slash.navigation.base.GpxBackedNavigationFormat;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpsbabel.LittleEndianInput;
 import slash.navigation.gpsbabel.LittleEndianOutput;
 import slash.navigation.gpx.Gpx10Format;
@@ -65,8 +66,9 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
 
     private static final int HEADER_LENGTH = 13;
     private static final int HEADER_SIZE = 18;
-    private static final String SIGNATURE_PREFIX = "4D53333";
+    private static final String SIGNATURE_PREFIX = "4D53";
     private static final String SIGNATURE_SUFFIX = " MS";
+    private static final String WRITTEN_SIGNATURE = "4D533330 MS";
     private static final int TYPE_WAYPOINT = 1;
     // name, description, number, icon, status, altitude, longitude, latitude
     private static final int MINIMUM_WAYPOINT_SIZE = 1 + 1 + 4 + 1 + 1 + 3 * 8;
@@ -97,14 +99,22 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
 
     // reading
 
+    /**
+     * The signature is "4D53" and four digits followed by " MS": mapsend.cc notes that it changes with the
+     * versions although the format document says it should not, so the digits, the length byte before it and
+     * the version after it are not checked, as GPSBabel's reader does not check them either.
+     */
     static boolean isMapSendHeader(byte[] data) {
-        if (data.length < HEADER_SIZE || (data[0] & 0xFF) != HEADER_LENGTH)
+        if (data.length < HEADER_SIZE)
             return false;
         String signature = new String(data, 1, 11, CHARSET);
-        if (!signature.startsWith(SIGNATURE_PREFIX) || !signature.endsWith(SIGNATURE_SUFFIX) ||
-                !isDigit(signature.charAt(SIGNATURE_PREFIX.length())))
+        if (!signature.startsWith(SIGNATURE_PREFIX) || !signature.endsWith(SIGNATURE_SUFFIX))
             return false;
-        return isDigit((char) data[12]) && isDigit((char) data[13]);
+        for (int i = SIGNATURE_PREFIX.length(); i < signature.length() - SIGNATURE_SUFFIX.length(); i++) {
+            if (!isDigit(signature.charAt(i)))
+                return false;
+        }
+        return true;
     }
 
     private static boolean isDigit(char c) {
@@ -119,15 +129,15 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
         LittleEndianInput input = new LittleEndianInput(data);
         input.seek(HEADER_SIZE - 4);
         int type = input.readInt16();
-        // regions and logs are fatal to GPSBabel; track files are not delivered with "-r -w"
+        // regions and logs are fatal to GPSBabel
         if (type != TYPE_WAYPOINT)
-            return emptyList();
+            throw new UnreadableFileException(String.format("Cannot read MapSend file of type %d, only waypoint files (type %d)", type, TYPE_WAYPOINT));
 
         input.seek(HEADER_SIZE);
         try {
             return readWaypointFile(input);
         } catch (EOFException e) {
-            return emptyList();
+            throw new UnreadableFileException("MapSend file ends unexpectedly at byte " + input.position(), e);
         }
     }
 
@@ -135,12 +145,17 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
         return count >= 0 && count * minimumSize <= input.remaining();
     }
 
-    private List<GpxRoute> readWaypointFile(LittleEndianInput input) throws EOFException {
+    private static UnreadableFileException countExceedsFile(String what, long count, LittleEndianInput input) {
+        return new UnreadableFileException(String.format("MapSend file is damaged: %d %s exceed the %d remaining bytes",
+                count, what, input.remaining()));
+    }
+
+    private List<GpxRoute> readWaypointFile(LittleEndianInput input) throws IOException {
         List<GpxRoute> result = new ArrayList<>();
 
         int waypointCount = input.readInt32();
         if (!fits(input, waypointCount, MINIMUM_WAYPOINT_SIZE))
-            return emptyList();
+            throw countExceedsFile("waypoints", waypointCount, input);
 
         List<GpxPosition> waypoints = new ArrayList<>(waypointCount);
         for (int i = 0; i < waypointCount; i++) {
@@ -153,7 +168,7 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
             double longitude = input.readDouble();
             double latitude = -input.readDouble();
             if (!Double.isFinite(longitude) || !Double.isFinite(latitude))
-                return emptyList();
+                throw new UnreadableFileException(String.format("MapSend file is damaged: waypoint %d has no valid coordinates", i + 1));
 
             // GPSBabel's waypt_add() wraps coordinates once and fails the whole file if they are still out of range
             if (latitude < -90.0)
@@ -165,7 +180,7 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
             else if (longitude > 180.0)
                 longitude -= 360.0;
             if (latitude < -90.0 || latitude > 90.0 || longitude < -180.0 || longitude > 180.0)
-                return emptyList();
+                throw new UnreadableFileException(String.format("MapSend file is damaged: waypoint %d is out of range", i + 1));
 
             // GPSBabel's waypt_add(): a waypoint without description takes its name; gbfgetpstr() never returns
             // a null name, so nothing is numbered and both empty leave the description empty
@@ -179,7 +194,7 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
 
         int routeCount = input.readInt32();
         if (!fits(input, routeCount, MINIMUM_ROUTE_SIZE))
-            return emptyList();
+            throw countExceedsFile("routes", routeCount, input);
 
         // GPSBabel's route_add_wpt() numbers with rte_waypts, which counts the points of all routes
         int routePointCount = 0;
@@ -188,7 +203,7 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
             input.readInt32(); // route number
             int pointCount = input.readInt32();
             if (!fits(input, pointCount, MINIMUM_ROUTE_POINT_SIZE))
-                return emptyList();
+                throw countExceedsFile("route points", pointCount, input);
 
             List<GpxPosition> positions = new ArrayList<>(pointCount);
             for (int j = 0; j < pointCount; j++) {
@@ -198,7 +213,7 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
                 double latitude = -input.readDouble();
                 input.readUInt8(); // icon
                 if (!Double.isFinite(longitude) || !Double.isFinite(latitude))
-                    return emptyList();
+                    throw new UnreadableFileException(String.format("MapSend file is damaged: point %d of route %d has no valid coordinates", j + 1, i + 1));
 
                 routePointCount++;
                 // GPSBabel's route_add_wpt(): a route point without name is numbered across all routes
@@ -237,7 +252,7 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
 
     private static void writeHeader(LittleEndianOutput output) {
         output.writeUInt8(HEADER_LENGTH);
-        output.writeBytes(encode(SIGNATURE_PREFIX + "0" + SIGNATURE_SUFFIX));
+        output.writeBytes(encode(WRITTEN_SIGNATURE));
         output.writeBytes(encode("30"));
         output.writeUInt8(TYPE_WAYPOINT);
         output.writeBytes(new byte[3]);

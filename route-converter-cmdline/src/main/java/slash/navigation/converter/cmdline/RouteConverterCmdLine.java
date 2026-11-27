@@ -191,7 +191,8 @@ public class RouteConverterCmdLine {
         NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
         ParserResult result = parser.read(source);
         if (!result.isSuccessful()) {
-            log.severe("Could not read source '" + source.getAbsolutePath() + "'");
+            log.severe("Could not read source '" + source.getAbsolutePath() + "'" +
+                    (result.getFailure() != null ? ": " + result.getFailure().getMessage() : ""));
             logFormatNames(true);
             exit(20);
         }
