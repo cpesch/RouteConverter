@@ -54,6 +54,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.gpsbabel.GpsBabelMath.degreesToSemicircles;
 import static slash.navigation.gpsbabel.GpsBabelMath.semicirclesToDegrees;
 
 /**
@@ -85,6 +86,9 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
     // Oppmann: Header1 field Obfuscation
     static final int OBFUSCATION_UNTIL_ADDITIONAL_DATA = 3;
     static final int OBFUSCATION_UNTIL_END_OF_FILE = 5;
+    // seen by Oppmann ("7=?"); GPXSee de-obfuscates whenever bit 2 of Flags1 is set
+    static final int OBFUSCATION_SEVEN = 7;
+    static final int FLAGS1_OBFUSCATED = 0x4;
     private static final int[] OBFUSCATION_KEY = {0x48, 0x06, 0xb3, 0x00};
 
     static final int WAYPOINTS_PER_BLOCK = 128;
@@ -97,7 +101,8 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
     private static final Charset WRITE_CHARSET = Charset.forName("windows-1252");
     // GPS_Math_Utime_To_Gtime(): seconds between 1970-01-01 and the Garmin epoch 1989-12-31
     static final long GARMIN_EPOCH_OFFSET = 631065600L;
-    private static final double SEMICIRCLES_PER_DEGREE = 2147483648.0 / 180.0;
+    // a PString and every string of a language string has a 16 bit length
+    static final int MAXIMUM_STRING_LENGTH = 0xFFFF;
     private static final int UNKNOWN_SIZE = -1;
     // Oppmann's record structure nests four to five levels deep; the bound keeps hostile files from
     // exhausting the stack
@@ -184,13 +189,26 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         }
     }
 
-    // GarminGPIFormat::rd_init(): the code pages GPSBabel can decode
+    /**
+     * The code pages GPSBabel can decode (1250-1257, 65001) and those that Oppmann has seen in Garmin files
+     * (874 Thai, 932 Shift-JIS, 936 GB2312, 950 Big5) or that GPXSee maps (949 Korean, 1258 Vietnamese, 0 as
+     * ASCII). An unknown code page or a charset this Java runtime lacks reads as windows-1252, like GPXSee's
+     * ISO-8859-1 fallback, instead of declining the file.
+     */
     static Charset charsetForCodePage(int codePage) {
-        if (codePage >= 1250 && codePage <= 1257)
-            return Charset.forName("windows-" + codePage);
-        if (codePage == 65001)
-            return UTF_8;
-        return null;
+        String name = switch (codePage) {
+            case 0 -> "US-ASCII";
+            case 874 -> "x-windows-874";
+            case 932 -> "windows-31j";
+            case 936 -> "GBK";
+            case 949 -> "x-windows-949";
+            case 950 -> "x-windows-950";
+            case 65001 -> "UTF-8";
+            default -> codePage >= 1250 && codePage <= 1258 ? "windows-" + codePage : null;
+        };
+        if (name != null && Charset.isSupported(name))
+            return Charset.forName(name);
+        return Charset.forName("windows-1252");
     }
 
     /** A record header as Oppmann describes it: type, flags, [total length,] main length. */
@@ -297,9 +315,11 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             if (total == UNKNOWN_SIZE)
                 total = main;
             int start = input.position();
-            if (main > total || start + total > limit)
+            if (main > total || start > limit)
                 throw new GpiException("Record " + type + " at " + start + " exceeds its container");
-            return new Record(type, flags, start + (int) main, start + (int) total);
+            // a record that the end of its container cuts off keeps the part that is there
+            int end = (int) Math.min(start + total, limit);
+            return new Record(type, flags, (int) Math.min(start + main, end), end);
         }
 
         // GarminGPIFormat::read_header() with Oppmann's record layout for Header1 and Header2
@@ -310,12 +330,15 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             if (!"GRMREC".equals(input.readFixedString(6, US_ASCII)))
                 throw new GpiException("No GPI file");
             input.skip(2 + 4);                              // format version, creation date
-            input.readUInt8();                              // flags
+            int flags1 = input.readUInt8();
             int obfuscation = input.readUInt8();
             // the name of the POI collection (GPSBabel skips it and writes "my.gpi"); decoded once
             // Header2 has named the code page
             if (input.position() + 2 <= header1.mainEnd) {
                 int nameLength = input.readUInt16();
+                // several files have three 0x00 bytes between the length and the name
+                if (nameLength > 0 && input.position() + 3 + nameLength <= header1.mainEnd && isZero(input.position(), 3))
+                    input.skip(3);
                 if (nameLength > 0 && input.position() + nameLength <= header1.mainEnd)
                     headerNameBytes = input.readBytes(nameLength);
             }
@@ -329,29 +352,31 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             input.skip(3 + 2);                              // padding, format version
             int codePage = input.readUInt16();
             charset = charsetForCodePage(codePage);
-            if (charset == null)
-                throw new GpiException("Unsupported code page " + codePage);
 
             int start = header2.end;
-            if (obfuscation == OBFUSCATION_UNTIL_ADDITIONAL_DATA || obfuscation == OBFUSCATION_UNTIL_END_OF_FILE)
+            if (obfuscation == OBFUSCATION_UNTIL_ADDITIONAL_DATA || obfuscation == OBFUSCATION_UNTIL_END_OF_FILE ||
+                    obfuscation == OBFUSCATION_SEVEN || (flags1 & FLAGS1_OBFUSCATED) != 0)
                 // the record list up to the End record is obfuscated in both modes; additional data
                 // behind the End record is not read
                 deobfuscate(data, start, data.length);
             return start;
         }
 
+        private boolean isZero(int position, int count) {
+            if (position + count > data.length)
+                return false;
+            for (int i = position; i < position + count; i++)
+                if (data[i] != 0)
+                    return false;
+            return true;
+        }
+
+        /**
+         * GarminGPIFormat::read(): the POIs that are readable when a record is broken or the file ends early.
+         */
         List<GpxPosition> read() throws EOFException, GpiException {
-            input.seek(readHeaders());
-            // GarminGPIFormat::read()
-            while (true) {
-                int position = input.position();
-                if (input.readUInt16() == END)
-                    break;
-                input.seek(position);
-                Record record = readRecord(data.length);
-                readRecordContent(record, null, 0);
-                input.seek(record.end);
-            }
+            int start = readHeaders();
+            readRecords(start, data.length, null, 0);
             return positions;
         }
 
@@ -369,19 +394,32 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             return name.isEmpty() || GPSBABEL_HEADER_NAME.equals(name) ? null : name;
         }
 
-        // the loops of read_poi(), read_poi_list() and read_poi_group() over the subordinated records
+        /**
+         * The loops of read_poi(), read_poi_list() and read_poi_group() over the subordinated records. Every
+         * record carries its length, so a record that cannot be read costs only itself: a waypoint its POI, a
+         * comment its text. A record header that is broken or cut off ends the loop, since the next record
+         * cannot be found, and keeps what was read before; so does a missing End record.
+         */
         private void readRecords(int start, int end, Wpt poi, int depth) throws EOFException, GpiException {
             if (depth > MAXIMUM_NESTING)
                 throw new GpiException("Records nested deeper than " + MAXIMUM_NESTING + " levels at " + start);
             input.seek(start);
-            while (end - input.position() >= 8) {
-                int position = input.position();
-                if (input.readUInt16() == END)
-                    break;
-                input.seek(position);
-                Record record = readRecord(end);
-                readRecordContent(record, poi, depth);
-                input.seek(record.end);
+            try {
+                while (end - input.position() >= 8) {
+                    int position = input.position();
+                    if (input.readUInt16() == END)
+                        break;
+                    input.seek(position);
+                    Record record = readRecord(end);
+                    try {
+                        readRecordContent(record, poi, depth);
+                    } catch (GpiException | EOFException e) {
+                        // drop this record and go on behind it
+                    }
+                    input.seek(record.end);
+                }
+            } catch (GpiException | EOFException e) {
+                // no further record can be found
             }
         }
 
@@ -395,12 +433,12 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
                 }
                 case AREA -> readRecords(record.mainEnd, record.end, null, depth + 1);
                 case POI_GROUP -> {
-                    readString(record.end);                 // group name
+                    readField(record.end, true);            // group name
                     readRecords(input.position(), record.end, null, depth + 1);
                 }
                 case COMMENT -> {
                     if (poi != null)
-                        poi.description = readString(record.end);
+                        poi.description = readField(record.end, true);
                 }
                 case DESCRIPTION -> {
                     if (poi != null)
@@ -424,9 +462,13 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         private void readWaypoint(Record record, int depth) throws EOFException, GpiException {
             double latitude = semicirclesToDegrees(input.readInt32());
             double longitude = semicirclesToDegrees(input.readInt32());
-            input.readUInt16();                             // always 1
-            input.readUInt8();                              // 1 when alerts are present
-            Wpt poi = new Wpt(latitude, longitude, readString(record.end), null, null);
+            // Oppmann: Unknown4 is always 1, followed by one byte that says 1 when alerts are present; like
+            // GPXSee skip as many bytes as Unknown4 says
+            int unknown4 = input.readUInt16();
+            if (input.position() + unknown4 > record.end)
+                throw new GpiException("Waypoint at " + input.position() + " exceeds its record");
+            input.skip(unknown4);
+            Wpt poi = new Wpt(latitude, longitude, readField(record.end, true), null, null);
 
             // GPSBabel reads the subordinated records right behind the shortname; with extra data
             // they start behind the main data
@@ -452,12 +494,21 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             }
         }
 
-        // read_tag() case 0xe
+        /**
+         * read_tag() case 0xe, extended by Oppmann's "Record type 14": a PString for the mask 6, a language
+         * string for all other masks (GPSBabel reads 1, 5 and 0x32 only), and for the mask 7 a URL behind it,
+         * which follows the text.
+         */
         private void readNotes(Record record, Wpt poi) throws EOFException, GpiException {
             int mask = input.readUInt8();
-            String string = null;
-            if (mask == 0x01 || mask == 0x05 || mask == 0x32)
-                string = readString(record.end);
+            String string = readField(record.end, mask != 6);
+            if (mask == 7) {
+                try {
+                    string = join("; ", string, readField(record.end, false));
+                } catch (GpiException | EOFException e) {
+                    // the text without the URL
+                }
+            }
             if (!isEmpty(poi.description))
                 poi.notes = string;
             else
@@ -506,13 +557,13 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         }
 
         /**
-         * A field of the Address or Contact record read with gpi_read_string(). For a field that Oppmann
-         * describes as a language string, an empty one - a 32 bit length of zero - is skipped as a whole,
-         * where gpi_read_string() would stop after its first half and read the rest as the next field.
+         * A field read with gpi_read_string(). For a field that Oppmann describes as a language string, an empty
+         * one - a 32 bit length of zero - is skipped as a whole, where gpi_read_string() would stop after its
+         * first half and read the rest as the next field.
          */
         private String readField(int limit, boolean languageString) throws EOFException, GpiException {
             int start = input.position();
-            String result = readString(limit);
+            String result = readString(limit, languageString);
             if (languageString && result == null && input.position() == start + 2 && start + 4 <= limit &&
                     input.readUInt16() != 0)
                 input.seek(start + 2);
@@ -528,22 +579,30 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         }
 
         /**
-         * GarminGPIFormat::gpi_read_string(): a string with a 16 bit length, either a single byte string
-         * or - if the two bytes behind the length are zero - a language string.
+         * GarminGPIFormat::gpi_read_string(): a string with an unsigned 16 bit length, either a single byte
+         * string or - if the two bytes behind the length are zero - a language string whose 32 bit length they
+         * complete. A field that Oppmann describes as a language string may also have a length beyond 65 535
+         * bytes: it is taken as such when the entries add up to it exactly.
          */
-        private String readString(int limit) throws EOFException, GpiException {
-            int length = input.readInt16();
-            if (length <= 0)
+        private String readString(int limit, boolean languageString) throws EOFException, GpiException {
+            int start = input.position();
+            int length = input.readUInt16();
+            if (length == 0)
                 return null;
+            // a language string is at least 4 bytes long
+            int afterLength = input.position();
+            int high = length >= 4 && input.remaining() >= 2 ? input.readUInt16() : -1;
             byte[] bytes;
-            if (input.readUInt8() == 0) {
-                if (input.readUInt8() != 0)
-                    throw new GpiException("Error reading string at " + input.position());
+            if (high == 0) {
                 if (input.position() + length > limit)
                     throw new GpiException("String at " + input.position() + " exceeds its record");
                 bytes = readLanguageStrings(length, limit);
+            } else if (high < 0x100 && languageString && isLanguageString(start, limit)) {
+                input.seek(start);
+                long total = input.readUInt32();
+                bytes = readLanguageStrings((int) total, limit);
             } else {
-                input.seek(input.position() - 1);
+                input.seek(afterLength);
                 if (input.position() + length > limit)
                     throw new GpiException("String at " + input.position() + " exceeds its record");
                 bytes = input.readBytes(length);
@@ -551,29 +610,61 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
             return decode(bytes);
         }
 
+        // a 32 bit language string length beyond 16 bits, which entries fill exactly
+        private boolean isLanguageString(int start, int limit) throws EOFException {
+            int position = input.position();
+            try {
+                input.seek(start);
+                long total = input.readUInt32();
+                if (total <= MAXIMUM_STRING_LENGTH || input.position() + total > limit)
+                    return false;
+                long consumed = 0;
+                while (consumed + 4 <= total) {
+                    int language1 = input.readUInt8(), language2 = input.readUInt8();
+                    if (language1 < 'A' || language1 > 'Z' || language2 < 'A' || language2 > 'Z')
+                        return false;
+                    int stringLength = input.readUInt16();
+                    input.skip(stringLength);
+                    consumed += 4 + stringLength;
+                }
+                return consumed == total;
+            } catch (EOFException e) {
+                return false;
+            } finally {
+                input.seek(position);
+            }
+        }
+
         /**
          * GarminGPIFormat::gpi_read_lc_string(): one or more entries of a two letter language code and a
-         * string with a 16 bit length. GPSBabel stops without the languagecode option for more than
-         * one entry; RouteConverter has no such option and takes the first entry.
+         * string with an unsigned 16 bit length. GPSBabel stops without the languagecode option for more than
+         * one entry; RouteConverter has no such option and takes the entry in the language of the user, else
+         * English, else the first entry.
          */
         private byte[] readLanguageStrings(int length, int limit) throws EOFException, GpiException {
-            byte[] result = null;
+            String userLanguage = Locale.getDefault().getLanguage().toUpperCase(Locale.ROOT);
+            byte[] first = null, english = null, user = null;
             int consumed = 0;
             while (consumed < length) {
                 int language1 = input.readUInt8(), language2 = input.readUInt8();
                 if (language1 < 'A' || language1 > 'Z' || language2 < 'A' || language2 > 'Z')
                     throw new GpiException("Invalid language code at " + input.position());
-                int stringLength = input.readInt16();
+                String language = "" + (char) language1 + (char) language2;
+                int stringLength = input.readUInt16();
                 if (input.position() + stringLength > limit)
                     throw new GpiException("String at " + input.position() + " exceeds its record");
-                byte[] bytes = stringLength > 0 ? input.readBytes(stringLength) : new byte[0];
-                consumed += 4 + Math.max(stringLength, 0);
-                if (result == null)
-                    result = bytes;
+                byte[] bytes = input.readBytes(stringLength);
+                consumed += 4 + stringLength;
+                if (first == null)
+                    first = bytes;
+                if (english == null && "EN".equals(language))
+                    english = bytes;
+                if (user == null && userLanguage.equals(language))
+                    user = bytes;
             }
             if (consumed != length)
                 throw new GpiException("Error out of sync (wrong size " + length + "/" + consumed + ")");
-            return result;
+            return user != null ? user : english != null ? english : first;
         }
     }
 
@@ -760,18 +851,6 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         }
     }
 
-    /**
-     * GPS_Math_Deg_To_Semi() of GPSBabel 1.5.4: the product is truncated towards zero (master rounds).
-     * A product outside the int range or NaN is undefined behaviour in C; the shipped x86 builds of 1.5.4
-     * return INT_MIN for it (cvttsd2si).
-     */
-    static int degreesToSemicircles(double degrees) {
-        double product = SEMICIRCLES_PER_DEGREE * degrees;
-        if (Double.isNaN(product) || product >= 2147483648.0 || product <= -2147483649.0)
-            return Integer.MIN_VALUE;
-        return (int) product;
-    }
-
     /** writer_data_t: a block of at most WAYPOINTS_PER_BLOCK waypoints or four sub-blocks. */
     static class Block {
         final List<Wpt> wpts = new ArrayList<>();
@@ -846,10 +925,14 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         private final LittleEndianOutput output = new LittleEndianOutput();
 
         // QTextCodec::fromUnicode() replaces every UTF-16 unit it cannot encode with '?', so a character
-        // outside the Basic Multilingual Plane becomes "??"
+        // outside the Basic Multilingual Plane becomes "??". The 16 bit length of a string caps the text at
+        // 65 535 bytes: windows-1252 has one byte per UTF-16 unit, so cutting the text cuts on a character
+        // boundary (a charset with more bytes per character has to cut the bytes instead)
         private static byte[] encode(String string) {
             if (string == null)
                 return new byte[0];
+            if (string.length() > MAXIMUM_STRING_LENGTH)
+                string = string.substring(0, MAXIMUM_STRING_LENGTH);
             CharsetEncoder encoder = WRITE_CHARSET.newEncoder();
             StringBuilder builder = new StringBuilder(string.length());
             for (int i = 0; i < string.length(); i++) {

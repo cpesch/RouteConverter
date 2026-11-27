@@ -18,6 +18,7 @@
 - Garmin POI (.gpi) files in other code pages than Western European, for example Central European, Cyrillic, Greek or UTF-8, can now be read; GPSBabel refused them (#453)
 - Pasting or opening a Google Maps shared list link (maps.app.goo.gl or the full placelists/list link) now imports it as a waypoint list, one waypoint per place, named after the list (#445)
 - Garmin POI (.gpi) files: the address, phone number, e-mail and web address of a POI are now read into its description; before, they were lost on the way through GPSBabel
+- Garmin POI (.gpi) files are read more leniently: Thai, Japanese, Chinese, Korean, Vietnamese and ASCII code pages and an unknown code page no longer decline the file, a string with the preferred language of the user is chosen from multi-language texts, texts of 32 KB and more, empty texts and description records with a plain text or a web address are read, and a broken POI or a file that ends early costs only that POI, not the whole file
 
 ### Changes
 
@@ -52,6 +53,7 @@
 
 ### Fixes
 
+- Garmin POI (.gpi) files: positions with seven decimals are written and read back unchanged, where saving and reopening could move them by up to 9 mm; a text longer than 65 535 bytes is cut instead of written as a broken text
 - FAI/IGC Flight Recorder (.igc) files: damaged lines, a byte order mark, a missing A record and a damaged task declaration no longer make the whole flight unreadable; a small step back in the fix times no longer moves the rest of the flight to the next day; no-fix positions at 0/0 and fixes with impossible coordinates are skipped; a task without turn points and a second task are read
 - FAI/IGC Flight Recorder (.igc) files are written with all header records the FAI specification requires and the date as HFDTEDATE, fixes are rounded to whole seconds and meters, and altitudes outside -9999 to 99999 m no longer corrupt the fix record
 - Garmin MapSource 6.x (.gdb) files: a damaged record no longer makes the whole file unreadable, the other records are read. Waypoints of older MapSource 6 files keep their time when they have a street address or a leg time, routes with avoided areas or roads keep their notes, and umlauts and the euro sign of older files are read correctly. Saving a route with two points of the same name now writes a file that can be read back; positions are rounded to the nearest unit instead of cut off, so +180° stays +180°, and no longer depend on the display precision; large files are read and written much faster. Garmin MapSource 5.x (.mps) files are saved with the same rounding

@@ -97,6 +97,8 @@ public class BabelGoldenWriteIT {
             "MagellanMapSendFormat/from11.gpx", "MagellanMapSendFormat/synthetic",
             "GarminMapSource5Format/from11.gpx", "GarminMapSource5Format/synthetic",
             "GarminPoiFormat/synthetic",
+            // Garmin POI rounds a coordinate to the nearest semicircle (D18, audit 2026-11-27), 1.5.4 truncates it
+            "GarminPoiFormat/from10.gpx", "GarminPoiFormat/from10trk.gpx", "GarminPoiFormat/from11.gpx",
             // Garmin MapSource 5.x and 6.x round a coordinate to the nearest semicircle and write the exact
             // coordinates and elevations (D18, audit 2026-11-27), 1.5.4 truncates them after rounding to the display precision
             "GarminMapSource5Format/from10.gpx", "GarminMapSource5Format/from10trk.gpx",
