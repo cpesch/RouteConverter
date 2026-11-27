@@ -52,6 +52,7 @@
 
 ### Fixes
 
+- Garmin MapSource 6.x (.gdb) files: a damaged record no longer makes the whole file unreadable, the other records are read. Waypoints of older MapSource 6 files keep their time when they have a street address or a leg time, routes with avoided areas or roads keep their notes, and umlauts and the euro sign of older files are read correctly. Saving a route with two points of the same name now writes a file that can be read back; positions are rounded to the nearest unit instead of cut off, so +180° stays +180°, and no longer depend on the display precision; large files are read and written much faster. Garmin MapSource 5.x (.mps) files are saved with the same rounding
 - ZIP archives written as a stream, such as Google Takeout exports, now open completely: files larger than 8 KB inside them were skipped; a damaged file inside a ZIP archive no longer ends reading the others, a partly downloaded archive is read up to where it breaks off, and files larger than 64 MB inside are skipped
 - Photos in a Google Takeout ZIP archive are now placed from the JSON file Google writes next to each photo (IMG_1.jpg.json), since Google removes the GPS data from most photos; photos without any location no longer show up as position lists without coordinates
 - A ZIP archive with several KML files no longer loses the positions of the first file and shows those of a later file twice

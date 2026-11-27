@@ -391,28 +391,29 @@ public class GarminMapSource5FormatTest {
         return output.toByteArray();
     }
 
-    // what GPSBabel 1.5.4 writes for the route of testWriteExactBytes(), record by record
+    // what GPSBabel 1.5.4 writes for the route of testWriteExactBytes(), record by record, with semicircles
+    // rounded instead of truncated (D18)
     private static final String EXPECTED =
             // signature, "D" record for version 5 ('i'), "A" record with program version 5.00
             "4d7352636400" +
             "02000000446900" +
             "1b00000041f401535141004a756c20203320323030330030383a33353a333300" +
             // waypoint "A": class 0 (user), the description as comment and notes, display 1, colour 0, symbol 18
-            "5c000000574100000000000000000000ffffffffffffffffffffffff0000ffffffff78563422d8822d08010000000000" +
+            "5c000000574100000000000000000000ffffffffffffffffffffffff0000ffffffff79563422d8822d08010000000000" +
             "002440646100000000000000000000010000000000000012000000000000000000000000000000000000000000006461" +
             "00" +
             // waypoint "B" without elevation: the name as comment
-            "59000000574200000000000000000000ffffffffffffffffffffffff0000ffffffffcf8a46222eb73f08000000000000" +
+            "59000000574200000000000000000000ffffffffffffffffffffffff0000ffffffffcf8a46222fb73f08000000000000" +
             "00000042000000000000000000000100000000000000120000000000000000000000000000000000000000000000" +
             // route "Test": bounds, two route points and the link between them, trailer
-            "db0000005254657374000000cf8a46222eb73f0801000000000000244078563422d8822d080100000000000024400200" +
+            "db0000005254657374000000cf8a46222fb73f0801000000000000244079563422d8822d080100000000000024400200" +
             "00004100000000000000000000ffffffffffffffffffffffff0000ffffffff0003000000000000000000000000000000" +
-            "00000200000078563422d8822d08010000000000002440cf8a46222eb73f0800000000000000000000cf8a46222eb73f" +
-            "0801000000000000244078563422d8822d080100000000000024404200000000000000000000ffffffffffffffffffff" +
+            "00000200000079563422d8822d08010000000000002440cf8a46222fb73f0800000000000000000000cf8a46222fb73f" +
+            "0801000000000000244079563422d8822d080100000000000024404200000000000000000000ffffffffffffffffffff" +
             "ffff0000ffffffff000300000000000000000000000000000000000000000001" +
             // track "Test": display 1, colour 0, the time of the first point, none for the second
-            "4c00000054546573740001000000000200000078563422d8822d080100000000000024400100f1536500000000000000" +
-            "0000cf8a46222eb73f080000000000000000000000000000000000000000000000" +
+            "4c00000054546573740001000000000200000079563422d8822d080100000000000024400100f1536500000000000000" +
+            "0000cf8a46222fb73f080000000000000000000000000000000000000000000000" +
             // empty map set name with autoname
             "02000000560001";
 
@@ -502,7 +503,7 @@ public class GarminMapSource5FormatTest {
         for (GpxRoute read : routes) {
             assertEquals(3, read.getPositionCount());
             for (int i = 0; i < 3; i++) {
-                // semicircles are truncated: 1e-7 degrees are 1.2 semicircles
+                // semicircles are rounded: 1e-7 degrees are 1.2 semicircles
                 assertEquals(route.getPosition(i).getLongitude(), read.getPosition(i).getLongitude(), 0.0000002);
                 assertEquals(route.getPosition(i).getLatitude(), read.getPosition(i).getLatitude(), 0.0000002);
                 assertEquals(route.getPosition(i).getElevation(), read.getPosition(i).getElevation());

@@ -92,7 +92,12 @@ public class BabelGoldenWriteIT {
             "OziExplorerRouteFormat/from11.gpx", "OziExplorerRouteFormat/synthetic", "OziExplorerWaypointFormat/synthetic",
             "MagellanMapSendFormat/from11.gpx", "MagellanMapSendFormat/synthetic",
             "GarminMapSource5Format/from11.gpx", "GarminMapSource5Format/synthetic",
-            "GarminPoiFormat/synthetic"
+            "GarminPoiFormat/synthetic",
+            // Garmin MapSource 5.x and 6.x round a coordinate to the nearest semicircle and write the exact
+            // coordinates and elevations (D18, audit 2026-11-27), 1.5.4 truncates them after rounding to the display precision
+            "GarminMapSource5Format/from10.gpx", "GarminMapSource5Format/from10trk.gpx",
+            "GarminMapSource6Format/from10.gpx", "GarminMapSource6Format/from10trk.gpx",
+            "GarminMapSource6Format/from11.gpx", "GarminMapSource6Format/synthetic"
     );
     // native writers of formats GPSBabel 1.5.4 never wrote: there is no write golden and none can exist
     // (spec 00083.3 decision D3.1, issue #386: "there is no oracle for the writer"); see TourExchangeFormatTest
