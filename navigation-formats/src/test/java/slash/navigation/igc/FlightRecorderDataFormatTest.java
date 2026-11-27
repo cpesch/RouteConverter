@@ -21,7 +21,11 @@
 package slash.navigation.igc;
 
 import org.junit.jupiter.api.Test;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.ParserContextImpl;
+import slash.navigation.base.ParserResult;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
@@ -36,6 +40,7 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -62,6 +67,10 @@ public class FlightRecorderDataFormatTest {
         ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
         format.read(new ByteArrayInputStream(content.getBytes(ISO_8859_1)), context);
         return context.getRoutes();
+    }
+
+    private String unreadable(String content) {
+        return assertThrows(UnreadableFileException.class, () -> read(content)).getMessage();
     }
 
     private static long millis(String instant) {
@@ -117,11 +126,43 @@ public class FlightRecorderDataFormatTest {
         assertTrue(read("").isEmpty());
         assertTrue(read("\r\n\r\n").isEmpty());
         assertTrue(read("$GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47").isEmpty());
+        assertTrue(read(igc(A_RECORD)).isEmpty());
+        assertTrue(read(igc(A_RECORD, "Hello", "Bye")).isEmpty());
     }
 
     @Test
-    public void rejectsFileWithOnlyMalformedFixRecordsWithoutThrowing() throws IOException {
-        assertTrue(read(igc(A_RECORD, "HFDTE280919", "B10010048072")).isEmpty());
+    public void reportsFileWithOnlyMalformedFixRecords() {
+        assertEquals("IGC file cannot be read: it has no readable fix (B) record, 1 unreadable lines, the first: " +
+                "fix (B) record parse error: B10010048072", unreadable(igc(A_RECORD, "HFDTE280919", "B10010048072")));
+    }
+
+    @Test
+    public void reportsEveryTruncationThatLosesAllFixes() throws IOException {
+        String valid = igc(A_RECORD, "HFDTE280919", PILOT, FIX_10);
+        for (int length = 0; length < valid.length(); length++) {
+            String truncated = valid.substring(0, length);
+            List<GpxRoute> routes;
+            try {
+                routes = read(truncated);
+            } catch (UnreadableFileException e) {
+                assertTrue(e.getMessage().startsWith("IGC file cannot be read: "), "length " + length + ": " + e.getMessage());
+                continue;
+            }
+            // without the date record or the fix: nothing; with the whole fix: the fix
+            if (!routes.isEmpty())
+                assertEquals(1, routes.get(routes.size() - 1).getPositionCount(), "length " + length);
+            else
+                assertFalse(truncated.contains(FIX_10), "length " + length);
+        }
+    }
+
+    @Test
+    public void parserReportsAnUnreadableFileInsteadOfAnEmptyRoute() throws IOException {
+        ParserResult result = new NavigationFormatParser(new NavigationFormatRegistry()).read(
+                new ByteArrayInputStream(igc(A_RECORD, "HFDTE280919", "B1000004807123N01116123EA01000").getBytes(ISO_8859_1)));
+        assertFalse(result.isSuccessful());
+        assertTrue(result.getFailure().getMessage().startsWith("IGC file cannot be read: it has no readable fix (B) record"),
+                result.getFailure().getMessage());
     }
 
     @Test
@@ -161,8 +202,10 @@ public class FlightRecorderDataFormatTest {
     }
 
     @Test
-    public void rejectsFixBeforeDate() throws IOException {
-        assertTrue(read(igc(A_RECORD, FIX_10)).isEmpty());
+    public void reportsFixWithoutDate() {
+        assertEquals("IGC file cannot be read: it has fix (B) records but no date (HFDTE) record", unreadable(igc(A_RECORD, FIX_10)));
+        assertEquals("IGC file cannot be read: its date (HFDTE) record is invalid: bad date: HFDTE320119",
+                unreadable(igc(A_RECORD, "HFDTE320119", FIX_10)));
     }
 
     @Test
@@ -480,6 +523,8 @@ public class FlightRecorderDataFormatTest {
 
     // synthetic cases checked against the aerofiles and go-igc readers
 
+    private static final int UNREADABLE = -1;
+
     private static final Object[][] CASES = {
         {"01-basic-crlf.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
         {"02-basic-lf.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
@@ -514,14 +559,14 @@ public class FlightRecorderDataFormatTest {
         {"30-leading-space-A.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
         {"31-no-A-record.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
         {"32-b-before-date.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
-        {"33-no-date.igc", 0, null, null},
+        {"33-no-date.igc", UNREADABLE, null, null},
         {"34-b-trailing-spaces.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
-        {"35-b-with-spaces-in-coords.igc", 0, null, null},
+        {"35-b-with-spaces-in-coords.igc", UNREADABLE, null, null},
         {"36-non-ascii-header.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
         {"37-utf8-header.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
         {"38-hfdtm-non-wgs84.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
         {"39-lat-lon-limits.igc", 3, "2011-01-16T10:00:00Z", "2011-01-16T10:00:10Z"},
-        {"40-lat-invalid-minutes.igc", 0, null, null},
+        {"40-lat-invalid-minutes.igc", UNREADABLE, null, null},
         {"41-task-ok.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
         {"42-task-zero-tp.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
         {"42b-two-tasks-zero-tp.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
@@ -540,8 +585,8 @@ public class FlightRecorderDataFormatTest {
         {"55-only-A.igc", 0, null, null},
         {"56-empty.igc", 0, null, null},
         {"57-not-igc-text.igc", 0, null, null},
-        {"58-bad-date.igc", 0, null, null},
-        {"59-hfdte-short.igc", 0, null, null},
+        {"58-bad-date.igc", UNREADABLE, null, null},
+        {"59-hfdte-short.igc", UNREADABLE, null, null},
         {"60-H-subtype-other.igc", 2, "2011-01-16T10:00:00Z", "2011-01-16T10:00:05Z"},
     };
 
@@ -555,7 +600,12 @@ public class FlightRecorderDataFormatTest {
                 ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
                 format.read(in, context);
                 routes = context.getRoutes();
+            } catch (UnreadableFileException e) {
+                // UNREADABLE: the file is an IGC file, but nothing can be read from it (D19)
+                assertEquals(UNREADABLE, count, name + ": " + e.getMessage());
+                continue;
             }
+            assertTrue(count != UNREADABLE, name + " is readable");
             if (count == 0) {
                 assertTrue(routes.isEmpty(), name);
                 continue;
