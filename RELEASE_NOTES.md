@@ -17,6 +17,7 @@
 - Obfuscated Garmin POI (.gpi) files, as commercial POI packages often come, can now be read; GPSBabel could not read them (#453)
 - Garmin POI (.gpi) files in other code pages than Western European, for example Central European, Cyrillic, Greek or UTF-8, can now be read; GPSBabel refused them (#453)
 - Pasting or opening a Google Maps shared list link (maps.app.goo.gl or the full placelists/list link) now imports it as a waypoint list, one waypoint per place, named after the list (#445)
+- Garmin POI (.gpi) files: the address, phone number, e-mail and web address of a POI are now read into its description; GPSBabel dropped them
 
 ### Changes
 

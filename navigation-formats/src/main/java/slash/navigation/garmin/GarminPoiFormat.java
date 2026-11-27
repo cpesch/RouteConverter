@@ -59,6 +59,8 @@ import static slash.navigation.gpsbabel.GpsBabelMath.semicirclesToDegrees;
 /**
  * Reads and writes Garmin Points of Interest (.gpi) files: a list of records with nested POI
  * groups, areas and waypoints. Obfuscated files of format version 01 are de-obfuscated on read.
+ * The address and contact records of a waypoint are read into its description; the writer keeps them
+ * as part of the comment text, not as address and contact records.
  *
  * @author Christian Pesch
  */
@@ -75,6 +77,8 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
     static final int AREA = 8;
     static final int POI_GROUP = 9;
     static final int COMMENT = 0xa;
+    static final int ADDRESS = 0xb;
+    static final int CONTACT = 0xc;
     static final int DESCRIPTION = 0xe;
     static final int END = 0xffff;
 
@@ -98,6 +102,11 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
     // Oppmann's record structure nests four to five levels deep; the bound keeps hostile files from
     // exhausting the stack
     static final int MAXIMUM_NESTING = 32;
+    // Oppmann: the flags of the Address and Contact records
+    static final int ADDRESS_CITY = 0x1, ADDRESS_COUNTRY = 0x2, ADDRESS_STATE = 0x4, ADDRESS_POSTAL_CODE = 0x8,
+            ADDRESS_STREET = 0x10, ADDRESS_HOUSE_NUMBER = 0x20;
+    static final int CONTACT_PHONE = 0x1, CONTACT_PHONE2 = 0x2, CONTACT_FAX = 0x4, CONTACT_EMAIL = 0x8,
+            CONTACT_LINK = 0x10;
 
     public String getExtension() {
         return ".gpi";
@@ -207,6 +216,8 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
     static class Wpt {
         double latitude, longitude;
         String shortName, description, notes;
+        // read only: the Address and Contact records as text
+        String address, contact;
 
         Wpt(double latitude, double longitude, String shortName, String description, String notes) {
             this.latitude = latitude;
@@ -395,9 +406,16 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
                     if (poi != null)
                         readNotes(record, poi);
                 }
+                case ADDRESS -> {
+                    if (poi != null)
+                        poi.address = readAddress(record.end);
+                }
+                case CONTACT -> {
+                    if (poi != null)
+                        poi.contact = readContact(record.end);
+                }
                 default -> {
-                    // bitmaps, categories, addresses, contacts, images, media and the
-                    // records of format version 01
+                    // bitmaps, categories, images, media and the records of format version 01
                 }
             }
         }
@@ -447,6 +465,71 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         }
 
         /**
+         * Oppmann, "Record type 11: Address": flags and the strings they announce, which are in the extra data
+         * for format version 00 and in the main data for 01. GPSBabel 1.5.4 drops the address on its way to
+         * RouteConverter's GPX; a broken or truncated record loses the address only.
+         */
+        private String readAddress(int limit) {
+            try {
+                int flags = input.readUInt16();
+                String city = (flags & ADDRESS_CITY) != 0 ? readLString(limit) : null;
+                String country = (flags & ADDRESS_COUNTRY) != 0 ? readLString(limit) : null;
+                String state = (flags & ADDRESS_STATE) != 0 ? readLString(limit) : null;
+                String postalCode = (flags & ADDRESS_POSTAL_CODE) != 0 ? readPString(limit) : null;
+                String street = (flags & ADDRESS_STREET) != 0 ? readLString(limit) : null;
+                String houseNumber = (flags & ADDRESS_HOUSE_NUMBER) != 0 ? readPString(limit) : null;
+                return join(", ", join(" ", street, houseNumber), join(" ", postalCode, city), state, country);
+            } catch (GpiException | EOFException e) {
+                return null;
+            }
+        }
+
+        /**
+         * Oppmann, "Record type 12: Contact": like the address. A fax number would be indistinguishable
+         * from the phone numbers in the description and is left out.
+         */
+        private String readContact(int limit) {
+            try {
+                int flags = input.readUInt16();
+                String phone = (flags & CONTACT_PHONE) != 0 ? readPString(limit) : null;
+                String phone2 = (flags & CONTACT_PHONE2) != 0 ? readPString(limit) : null;
+                if ((flags & CONTACT_FAX) != 0)
+                    readPString(limit);
+                String email = (flags & CONTACT_EMAIL) != 0 ? readPString(limit) : null;
+                String link = (flags & CONTACT_LINK) != 0 ? readPString(limit) : null;
+                return join(", ", phone, phone2, email, link);
+            } catch (GpiException | EOFException e) {
+                return null;
+            }
+        }
+
+        // Oppmann, "PString": a string with a 16 bit length
+        private String readPString(int limit) throws EOFException, GpiException {
+            int length = input.readUInt16();
+            if (input.position() + length > limit)
+                throw new GpiException("String at " + input.position() + " exceeds its record");
+            return decode(input.readBytes(length));
+        }
+
+        // Oppmann, "LString": a 32 bit length and one or more localized strings
+        private String readLString(int limit) throws EOFException, GpiException {
+            long length = input.readUInt32();
+            if (input.position() + length > limit)
+                throw new GpiException("String at " + input.position() + " exceeds its record");
+            if (length == 0)
+                return null;
+            return decode(readLanguageStrings((int) length, limit));
+        }
+
+        // GPSBabel 1.5.4 handles strings as C strings
+        private String decode(byte[] bytes) {
+            int end = 0;
+            while (end < bytes.length && bytes[end] != 0)
+                end++;
+            return new String(bytes, 0, end, charset);
+        }
+
+        /**
          * GarminGPIFormat::gpi_read_string(): a string with a 16 bit length, either a single byte string
          * or - if the two bytes behind the length are zero - a language string.
          */
@@ -460,18 +543,14 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
                     throw new GpiException("Error reading string at " + input.position());
                 if (input.position() + length > limit)
                     throw new GpiException("String at " + input.position() + " exceeds its record");
-                bytes = readLanguageStrings(length);
+                bytes = readLanguageStrings(length, limit);
             } else {
                 input.seek(input.position() - 1);
                 if (input.position() + length > limit)
                     throw new GpiException("String at " + input.position() + " exceeds its record");
                 bytes = input.readBytes(length);
             }
-            // GPSBabel 1.5.4 handles strings as C strings
-            int end = 0;
-            while (end < bytes.length && bytes[end] != 0)
-                end++;
-            return new String(bytes, 0, end, charset);
+            return decode(bytes);
         }
 
         /**
@@ -479,7 +558,7 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
          * string with a 16 bit length. GPSBabel stops without the languagecode option for more than
          * one entry; RouteConverter has no such option and takes the first entry.
          */
-        private byte[] readLanguageStrings(int length) throws EOFException, GpiException {
+        private byte[] readLanguageStrings(int length, int limit) throws EOFException, GpiException {
             byte[] result = null;
             int consumed = 0;
             while (consumed < length) {
@@ -487,6 +566,8 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
                 if (language1 < 'A' || language1 > 'Z' || language2 < 'A' || language2 > 'Z')
                     throw new GpiException("Invalid language code at " + input.position());
                 int stringLength = input.readInt16();
+                if (input.position() + stringLength > limit)
+                    throw new GpiException("String at " + input.position() + " exceeds its record");
                 byte[] bytes = stringLength > 0 ? input.readBytes(stringLength) : new byte[0];
                 consumed += 4 + Math.max(stringLength, 0);
                 if (result == null)
@@ -532,9 +613,30 @@ public class GarminPoiFormat extends GpxBackedNavigationFormat {
         return string == null || string.isEmpty() ? null : string;
     }
 
+    // the non-empty strings joined by the separator, or null
+    static String join(String separator, String... strings) {
+        StringBuilder result = new StringBuilder();
+        for (String string : strings) {
+            String trimmed = string != null ? string.trim() : null;
+            if (isEmpty(trimmed))
+                continue;
+            if (!result.isEmpty())
+                result.append(separator);
+            result.append(trimmed);
+        }
+        return result.isEmpty() ? null : result.toString();
+    }
+
     private GpxPosition createPosition(Wpt poi) {
         // GPSBabel writes the shortname as <name> and the notes as <desc>, and no element for an empty string
-        String description = asDescription(emptyToNull(asGpxText(poi.shortName)), emptyToNull(asGpxText(poi.gpxDesc())));
+        String name = emptyToNull(asGpxText(poi.shortName));
+        String desc = emptyToNull(asGpxText(poi.gpxDesc()));
+        // address and contact follow the description; the shortname that waypt_add() filled into an empty
+        // description is dropped
+        String details = asGpxText(join("; ", poi.address, poi.contact));
+        if (details != null)
+            desc = desc != null && !desc.equals(name) ? desc + "; " + details : details;
+        String description = asDescription(name, desc);
         return new GpxPosition(poi.longitude, poi.latitude, null, null, null, description);
     }
 
