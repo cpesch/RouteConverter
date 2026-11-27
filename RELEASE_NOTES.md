@@ -18,6 +18,7 @@
 - Garmin POI (.gpi) files in other code pages than Western European, for example Central European, Cyrillic, Greek or UTF-8, can now be read; GPSBabel refused them (#453)
 - Pasting or opening a Google Maps shared list link (maps.app.goo.gl or the full placelists/list link) now imports it as a waypoint list, one waypoint per place, named after the list (#445)
 - Garmin POI (.gpi) files: the address, phone number, e-mail and web address of a POI are now read into its description; before, they were lost on the way through GPSBabel
+- Garmin POI (.gpi) files are read more leniently: Thai, Japanese, Chinese, Korean, Vietnamese and ASCII code pages and an unknown code page no longer decline the file, a string with the preferred language of the user is chosen from multi-language texts, texts of 32 KB and more, empty texts and description records with a plain text or a web address are read, and a broken POI or a file that ends early costs only that POI, not the whole file
 
 ### Changes
 
@@ -52,6 +53,7 @@
 
 ### Fixes
 
+- Garmin POI (.gpi) files: positions with seven decimals are written and read back unchanged, where saving and reopening could move them by up to 9 mm; a text longer than 65 535 bytes is cut instead of written as a broken text
 - ZIP archives written as a stream, such as Google Takeout exports, now open completely: files larger than 8 KB inside them were skipped; a damaged file inside a ZIP archive no longer ends reading the others, a partly downloaded archive is read up to where it breaks off, and files larger than 64 MB inside are skipped
 - Photos in a Google Takeout ZIP archive are now placed from the JSON file Google writes next to each photo (IMG_1.jpg.json), since Google removes the GPS data from most photos; photos without any location no longer show up as position lists without coordinates
 - A ZIP archive with several KML files no longer loses the positions of the first file and shows those of a later file twice

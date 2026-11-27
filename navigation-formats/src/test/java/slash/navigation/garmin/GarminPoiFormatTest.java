@@ -20,6 +20,8 @@
 
 package slash.navigation.garmin;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
@@ -38,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -48,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.gpsbabel.GpsBabelMath.degreesToSemicircles;
 
 /**
  * Tests {@link GarminPoiFormat} with GPI files built byte by byte in the test.
@@ -309,9 +313,9 @@ public class GarminPoiFormatTest {
                 waypoint(1.0, 1.0, "Both", comment("description"), notes(1, "note")),
                 waypoint(1.1, 1.0, "Reverse", notes(5, "note"), comment("description")),
                 waypoint(1.2, 1.0, "Notes", notes(0x32, "note")),
-                waypoint(1.3, 1.0, "Ignored", notes(6, "plain")),
+                waypoint(1.3, 1.0, "Ignored", notes(6, "plain")),     // GPSBabel ignores mask 6, Oppmann reads it
                 waypoint(1.4, 1.0, "Same", comment("Same and more")))));
-        assertEquals(List.of("Both; note", "Reverse; description", "Notes; note", "Ignored", "Same and more"),
+        assertEquals(List.of("Both; note", "Reverse; description", "Notes; note", "Ignored; plain", "Same and more"),
                 readDescriptions(bytes));
     }
 
@@ -344,11 +348,6 @@ public class GarminPoiFormatTest {
                 readDescriptions(gpi(65001, group("G", area(waypoint(1.0, 1.0, languageString("Grüße".getBytes(UTF_8)),
                         record(0xa, languageString("Straße".getBytes(UTF_8)))))))));
         assertEquals(List.of("Grüße"), readDescriptions(gpi(1252, group("G", area(waypoint(1.0, 1.0, "Grüße"))))));
-    }
-
-    @Test
-    public void refusesCodePagesGpsBabelCannotDecode() throws IOException {
-        assertTrue(read(gpi(932, group("G", area(waypoint(1.0, 1.0, "A"))))).isEmpty());
     }
 
     @Test
@@ -659,18 +658,18 @@ public class GarminPoiFormatTest {
                 "00".getBytes(US_ASCII), int16(1252), int16(0));
         // sorted by shortname; GPSBabel copies the shortname into the empty description of "A"
         byte[] poiA = concat(int32(0x80002), int32(20 + 10 + 17), int32(20),
-                int32(GarminPoiFormat.degreesToSemicircles(48.2)), int32(GarminPoiFormat.degreesToSemicircles(11.6)),
+                int32(degreesToSemicircles(48.2)), int32(degreesToSemicircles(11.6)),
                 int16(1), new byte[]{0}, writtenString("A"),
                 int32(4), int32(2), int16(0),
                 int32(0xa), int32(9), writtenString("A"));
         byte[] poiB = concat(int32(0x80002), int32(20 + 10 + 22), int32(20),
-                int32(GarminPoiFormat.degreesToSemicircles(48.1)), int32(GarminPoiFormat.degreesToSemicircles(11.5)),
+                int32(degreesToSemicircles(48.1)), int32(degreesToSemicircles(11.5)),
                 int16(1), new byte[]{0}, writtenString("B"),
                 int32(4), int32(2), int16(0),
                 int32(0xa), int32(14), writtenString("second"));
         byte[] area = concat(int32(0x80008), int32(23 + poiA.length + poiB.length), int32(23),
-                int32(GarminPoiFormat.degreesToSemicircles(48.2)), int32(GarminPoiFormat.degreesToSemicircles(11.6)),
-                int32(GarminPoiFormat.degreesToSemicircles(48.1)), int32(GarminPoiFormat.degreesToSemicircles(11.5)),
+                int32(degreesToSemicircles(48.2)), int32(degreesToSemicircles(11.6)),
+                int32(degreesToSemicircles(48.1)), int32(degreesToSemicircles(11.5)),
                 int32(0), int16(1), new byte[]{0}, poiA, poiB);
         byte[] category = writtenString("Test");
         int groupSize = category.length + area.length;
@@ -785,12 +784,260 @@ public class GarminPoiFormatTest {
         }
     }
 
+    // audit 00083.16: strings, code pages, masks, obfuscation, recovery and the writer
+
+    private static byte[] pstring(byte[] bytes) {
+        return concat(int16(bytes.length), bytes);
+    }
+
+    // a language string with entries of the given languages and the 16 bit lengths of Oppmann's layout
+    private static byte[] languageString(String[] languages, byte[]... entries) {
+        LittleEndianOutput strings = new LittleEndianOutput();
+        for (int i = 0; i < entries.length; i++) {
+            strings.writeBytes(languages[i].getBytes(US_ASCII));
+            strings.writeInt16(entries[i].length);
+            strings.writeBytes(entries[i]);
+        }
+        return concat(int32(strings.size()), strings.toByteArray());
+    }
+
+    private static byte[] header1(String version, int flags1, int obfuscation, byte[] name) {
+        byte[] main = concat(("GRMREC" + version).getBytes(US_ASCII), int32(0), new byte[]{(byte) flags1, (byte) obfuscation},
+                int16(name.length), name);
+        return record(0, main);
+    }
+
+    private static byte[] filled(int length, char c) {
+        byte[] result = new byte[length];
+        Arrays.fill(result, (byte) c);
+        return result;
+    }
+
+    private static byte[] copyOfRange(byte[] bytes, int to) {
+        return Arrays.copyOf(bytes, to);
+    }
+
+    private static String repeat(int length, char c) {
+        return new String(filled(length, c), US_ASCII);
+    }
+
+    private Locale defaultLocale;
+
+    @BeforeEach
+    public void setEnglish() {
+        defaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.ENGLISH);
+    }
+
+    @AfterEach
+    public void restoreLocale() {
+        Locale.setDefault(defaultLocale);
+    }
+
     @Test
-    public void truncatesSemicirclesLikeGpsBabel154() {
-        assertEquals(1, GarminPoiFormat.degreesToSemicircles(1.5 * 180.0 / 2147483648.0));
-        assertEquals(-1, GarminPoiFormat.degreesToSemicircles(-1.5 * 180.0 / 2147483648.0));
-        assertEquals(Integer.MIN_VALUE, GarminPoiFormat.degreesToSemicircles(180.0));
-        assertEquals(Integer.MIN_VALUE, GarminPoiFormat.degreesToSemicircles(Double.NaN));
+    public void readsTheCodePagesOfAsiaAndVietnamAndAsciiInsteadOfDecliningTheFile() throws IOException {
+        byte[] tokyo = {(byte) 0x93, (byte) 0x8c, (byte) 0x8b, (byte) 0x9e};          // Shift-JIS
+        byte[] beijing = {(byte) 0xb1, (byte) 0xb1, (byte) 0xbe, (byte) 0xa9};        // GBK
+        byte[] seoul = {(byte) 0xbc, (byte) 0xad, (byte) 0xbf, (byte) 0xef};          // CP949
+        byte[] taipei = {(byte) 0xa5, (byte) 0x78, (byte) 0xa5, (byte) 0x5f};         // Big5
+        byte[] thai = {(byte) 0xe0, (byte) 0xa1};                                      // CP874
+        Object[][] cases = {
+                {932, tokyo, "東京"}, {936, beijing, "北京"}, {949, seoul, "서울"},
+                {950, taipei, "台北"}, {874, thai, "เก"}, {1258, new byte[]{'V', (byte) 0xea, 't'}, "Vêt"},
+                {0, "Plain".getBytes(US_ASCII), "Plain"}, {1253, new byte[]{(byte) 0xe1}, "α"},
+                // an unknown code page reads as windows-1252
+                {1200, new byte[]{(byte) 0xe4}, "ä"}, {12345, new byte[]{(byte) 0xe4}, "ä"}};
+        for (Object[] c : cases) {
+            byte[] bytes = gpi((Integer) c[0], group("G", area(waypoint(48.1, 11.5, languageString((byte[]) c[1])))));
+            assertEquals(List.of((String) c[2]), readDescriptions(bytes), "code page " + c[0]);
+        }
+    }
+
+    @Test
+    public void readsAnEmptyLanguageStringAsGroupNameAndAsShortName() throws IOException {
+        byte[] ok = waypoint(48.1, 11.5, "Ok");
+        // P2: an empty data source behind the group name
+        assertEquals(List.of("Ok"), readDescriptions(gpi(1252, record(9, concat(int32(0), area(ok))))));
+        // P3: a waypoint without extra data and an empty shortname, which the comment fills in; the comment follows
+        // the shortname
+        byte[] plain = record(2, concat(int32(semicircles(48.2)), int32(semicircles(11.6)), int16(1), new byte[]{0},
+                int32(0), comment("text")));
+        assertEquals(List.of("text", "Ok"), readDescriptions(gpi(1252, group("G", area(plain, ok)))));
+        // P3b: the same with extra data
+        byte[] extra = waypoint(48.2, 11.6, new byte[4], comment("text"));
+        assertEquals(List.of("text", "Ok"), readDescriptions(gpi(1252, group("G", area(extra, ok)))));
+    }
+
+    @Test
+    public void readsAnEmptyLanguageStringBehindTheCommentAndInTheDescription() throws IOException {
+        byte[] bytes = gpi(1252, group("G", area(
+                waypoint(48.1, 11.5, "A", record(0xa, int32(0))),
+                waypoint(48.2, 11.6, "B", record(0xe, concat(new byte[]{1}, int32(0)))),
+                waypoint(48.3, 11.7, "C", comment("c")))));
+        assertEquals(List.of("A", "B", "C; c"), readDescriptions(bytes));
+    }
+
+    @Test
+    public void readsStringsOf32768BytesAndMore() throws IOException {
+        // P10: the 16 bit lengths are unsigned
+        String text = repeat(40000, 'a');
+        byte[] bytes = gpi(1252, group("G", area(waypoint(48.1, 11.5, "Big", record(0xa, languageString(text.getBytes(US_ASCII)))))));
+        assertEquals(List.of("Big; " + text), readDescriptions(bytes));
+        // a PString of the description mask 6
+        byte[] pascal = gpi(1252, group("G", area(waypoint(48.1, 11.5, "Big", record(0xe, concat(new byte[]{6}, pstring(filled(65535, 'b'))))))));
+        assertEquals(List.of("Big; " + repeat(65535, 'b')), readDescriptions(pascal));
+        // a language string with a length beyond 16 bits: the entries add up to it
+        byte[] twoEntries = languageString(new String[]{"EN", "DE"}, filled(40000, 'c'), filled(40000, 'd'));
+        assertTrue(twoEntries.length > 65535 + 4);
+        byte[] beyond = gpi(1252, group("G", area(waypoint(48.1, 11.5, "Beyond", record(0xa, twoEntries)),
+                waypoint(48.2, 11.6, "Next"))));
+        assertEquals(List.of("Beyond; " + repeat(40000, 'c'), "Next"), readDescriptions(beyond));
+    }
+
+    @Test
+    public void readsTheDescriptionMasksSixAndSeven() throws IOException {
+        byte[] bytes = gpi(1252, group("G", area(
+                waypoint(48.1, 11.5, "D6", record(0xe, concat(new byte[]{6}, pstring("six".getBytes(US_ASCII))))),
+                waypoint(48.2, 11.6, "D7", record(0xe, concat(new byte[]{7}, string("seven"), pstring("http://x.example".getBytes(US_ASCII))))),
+                waypoint(48.3, 11.7, "D1", notes(1, "one")),
+                waypoint(48.4, 11.8, "D5", notes(5, "five")),
+                waypoint(48.5, 11.9, "D50", notes(0x32, "fifty")))));
+        assertEquals(List.of("D6; six", "D7; seven; http://x.example", "D1; one", "D5; five", "D50; fifty"),
+                readDescriptions(bytes));
+    }
+
+    @Test
+    public void keepsTheTextOfTheDescriptionMask7WhenTheUrlIsMissing() throws IOException {
+        byte[] bytes = gpi(1252, group("G", area(waypoint(48.1, 11.5, "D7", record(0xe, concat(new byte[]{7}, string("seven")))))));
+        assertEquals(List.of("D7; seven"), readDescriptions(bytes));
+    }
+
+    @Test
+    public void deobfuscatesTheValueSevenAndTheFlagsBitTwo() throws IOException {
+        byte[] ok = group("G", area(waypoint(48.1, 11.5, "Ok")));
+        int[][] cases = {{5, 7}, {0, 7}, {4, 0}, {5, 5}, {7, 3}};          // flags1, obfuscation
+        for (int[] c : cases) {
+            byte[] headers = concat(header1("01", c[0], c[1], "x".getBytes(US_ASCII)), header2("01", 1252, null));
+            byte[] clear = concat(headers, ok, end());
+            byte[] obfuscated = obfuscate(clear, headers.length, clear.length);
+            assertEquals(List.of("Ok"), readDescriptions(obfuscated), "flags1 " + c[0] + " obfuscation " + c[1]);
+        }
+        // neither flag nor value: plain
+        byte[] headers = concat(header1("01", 3, 0, "x".getBytes(US_ASCII)), header2("01", 1252, null));
+        assertEquals(List.of("Ok"), readDescriptions(concat(headers, ok, end())));
+    }
+
+    @Test
+    public void readsTheHeaderNameWithThreeZeroBytesBeforeIt() throws IOException {
+        // P8: Oppmann: "several examples have three bytes 0x00 between the string length and the string"
+        byte[] name = concat(new byte[3], "Name".getBytes(US_ASCII));
+        byte[] main = concat("GRMREC01".getBytes(US_ASCII), int32(0), new byte[]{3, 0}, int16(4), name);
+        byte[] bytes = concat(record(0, main), header2("01", 1252, null), group("G", area(waypoint(48.1, 11.5, "Ok"))), end());
+        assertEquals("Name", read(bytes).get(0).getName());
+        assertEquals(List.of("Ok"), readDescriptions(bytes));
+    }
+
+    @Test
+    public void takesTheStringInTheLanguageOfTheUserThenEnglishThenTheFirst() throws IOException {
+        byte[] german = "Kirche".getBytes(WINDOWS_1252), english = "Church".getBytes(WINDOWS_1252), french = "Église".getBytes(WINDOWS_1252);
+        byte[] both = languageString(new String[]{"DE", "EN"}, german, english);
+        byte[] bytes = gpi(1252, group("G", area(waypoint(48.1, 11.5, both))));
+        assertEquals(List.of("Church"), readDescriptions(bytes));       // English locale
+        Locale.setDefault(Locale.GERMAN);
+        assertEquals(List.of("Kirche"), readDescriptions(bytes));
+        Locale.setDefault(Locale.ITALIAN);                              // no Italian entry: English
+        assertEquals(List.of("Church"), readDescriptions(bytes));
+        byte[] noEnglish = languageString(new String[]{"DE", "FR"}, german, french);
+        assertEquals(List.of("Kirche"), readDescriptions(gpi(1252, group("G", area(waypoint(48.1, 11.5, noEnglish))))));
+        Locale.setDefault(Locale.FRENCH);
+        assertEquals(List.of("Église"), readDescriptions(gpi(1252, group("G", area(waypoint(48.1, 11.5, noEnglish))))));
+    }
+
+    @Test
+    public void skipsAsManyBytesAsUnknown4Says() throws IOException {
+        // P12: Oppmann says Unknown4 is always 1, GPXSee takes it as the count of bytes to skip
+        byte[] two = record(2, concat(int32(semicircles(48.1)), int32(semicircles(11.5)), int16(2), new byte[]{0, 0}, string("U2")), new byte[0]);
+        byte[] zero = record(2, concat(int32(semicircles(48.2)), int32(semicircles(11.6)), int16(0), string("U0")), new byte[0]);
+        assertEquals(List.of("U2", "U0"), readDescriptions(gpi(1252, group("G", area(two, zero)))));
+    }
+
+    @Test
+    public void dropsOnlyTheBrokenRecordAndKeepsTheOtherPois() throws IOException {
+        byte[] ok = waypoint(48.1, 11.5, "Ok"), ok2 = waypoint(48.3, 11.7, "Ok2");
+        // P4: an invalid language code in the comment of one POI loses the comment only
+        byte[] badLanguage = waypoint(48.2, 11.6, "Bad", record(0xa, languageString(new String[]{"e1"}, "x".getBytes(US_ASCII))));
+        assertEquals(List.of("Ok", "Bad", "Ok2"), readDescriptions(gpi(1252, group("G", area(ok, badLanguage, ok2)))));
+        // P4b: a wrong total length of the comment
+        byte[] badLength = waypoint(48.2, 11.6, "Bad", record(0xa, concat(int32(9), "EN".getBytes(US_ASCII), int16(3), "abc".getBytes(US_ASCII))));
+        assertEquals(List.of("Ok", "Bad", "Ok2"), readDescriptions(gpi(1252, group("G", area(ok, badLength, ok2)))));
+        // a waypoint with a broken shortname is dropped, the next one is read
+        byte[] badName = waypoint(48.2, 11.6, concat(int32(8), new byte[]{'e', 'n', 4, 0}, "Name".getBytes(US_ASCII)));
+        assertEquals(List.of("Ok", "Ok2"), readDescriptions(gpi(1252, group("G", area(ok, badName, ok2)))));
+        // a broken record in another group does not touch the groups behind it
+        assertEquals(List.of("Ok", "Ok2"), readDescriptions(gpi(1252, group("A", area(ok)),
+                record(9, new byte[]{9, 9, 9}), group("B", area(ok2)))));
+    }
+
+    @Test
+    public void keepsThePoisReadBeforeAMissingEndRecordOrAnEarlyEndOfTheFile() throws IOException {
+        byte[] full = gpi(1252, group("G", area(waypoint(48.1, 11.5, "One"), waypoint(48.2, 11.6, "Two"))),
+                group("H", area(waypoint(48.3, 11.7, "Three"))));
+        // P7: no End record
+        assertEquals(List.of("One", "Two", "Three"), readDescriptions(copyOfRange(full, full.length - 8)));
+        // P7b: cut inside the second group
+        byte[] cut = copyOfRange(full, full.length - 20);
+        assertEquals(List.of("One", "Two"), readDescriptions(cut));
+        // cut inside the second waypoint of the first group
+        List<String> descriptions = readDescriptions(copyOfRange(full, indexOf(full, string("Two")) - 20));
+        assertEquals(List.of("One"), descriptions);
+        // nothing readable: still no route
+        assertTrue(read(copyOfRange(full, indexOf(full, string("One")) - 20)).isEmpty());
+    }
+
+    @Test
+    public void writesTextOfMoreThan65535BytesTruncatedAsAValidString() throws IOException {
+        // W3 (batch 7, B2): the inner 16 bit length of the string wrapped
+        String text = repeat(70000, 'x');
+        byte[] bytes = write(route("Long", position(11.5, 48.1, "Long; " + text), position(11.6, 48.2, "After")), 0);
+        List<GpxRoute> routes = read(bytes);
+        assertEquals(1, routes.size());
+        assertEquals(2, routes.get(0).getPositionCount());
+        assertEquals("After", routes.get(0).getPosition(0).getDescription());
+        assertEquals("Long; " + repeat(65535, 'x'), routes.get(0).getPosition(1).getDescription());
+    }
+
+    @Test
+    public void roundTripsSevenDecimalPositionsWithoutChange() throws IOException {
+        Random random = new Random(42);
+        List<GpxPosition> positions = new ArrayList<>();
+        List<double[]> expected = new ArrayList<>();
+        for (int i = 0; i < 20000; i++) {
+            double latitude = Math.round((random.nextDouble() * 170 - 85) * 1e7) / 1e7;
+            double longitude = Math.round((random.nextDouble() * 358 - 179) * 1e7) / 1e7;
+            positions.add(position(longitude, latitude, "P" + i));
+            expected.add(new double[]{latitude, longitude});
+        }
+        GpxRoute route = new GpxRoute(new Gpx10Format(), Waypoints, "Precision", null, positions);
+        GpxRoute read = read(write(route, 0)).get(0);
+        assertEquals(20000, read.getPositionCount());
+        int changes = 0;
+        for (GpxPosition position : read.getPositions()) {
+            double[] e = expected.get(Integer.parseInt(position.getDescription().substring(1)));
+            if (Math.round(position.getLatitude() * 1e7) / 1e7 != e[0] || Math.round(position.getLongitude() * 1e7) / 1e7 != e[1])
+                changes++;
+        }
+        assertEquals(0, changes);
+    }
+
+    @Test
+    public void roundsSemicirclesAndKeepsPlus180Degrees() throws IOException {
+        assertEquals(2, degreesToSemicircles(1.5 * 180.0 / 2147483648.0));
+        assertEquals(-2, degreesToSemicircles(-1.5 * 180.0 / 2147483648.0));
+        assertEquals(1073741824, degreesToSemicircles(90.0));
+        GpxRoute read = read(write(route("Edges", position(180.0, 0.0, "E"), position(-180.0, 90.0, "W")), 0)).get(0);
+        assertEquals(180.0, read.getPosition(0).getLongitude(), 1e-7);
+        assertEquals(-180.0, read.getPosition(1).getLongitude(), 1e-7);
+        assertEquals(90.0, read.getPosition(1).getLatitude(), 1e-7);
     }
 
     // detection
@@ -803,12 +1050,9 @@ public class GarminPoiFormatTest {
         inputs.add("<?xml version=\"1.0\"?><gpx version=\"1.0\"></gpx>".getBytes(UTF_8));
         inputs.add("11.5,48.1,Name,Description\n".getBytes(UTF_8));
         inputs.add(Arrays.copyOf(valid, 20));                       // truncated header
-        inputs.add(Arrays.copyOf(valid, valid.length - 8));         // no End record
         inputs.add(concat(header1("00", 0, null), header2("00", 1252, null)));
         inputs.add(concat(header1("00", 0, null), record(1, "XYZ".getBytes(US_ASCII)), end()));
         inputs.add(gpi(1252, concat(int16(9), int16(0), int32(Integer.MAX_VALUE))));  // record exceeds the file
-        inputs.add(gpi(1252, group("G", area(waypoint(1.0, 1.0, concat(int16(8), new byte[]{0, 0, 'e', 'n', 4, 0},
-                "Name".getBytes(US_ASCII)))))));            // invalid language code
         inputs.add(gpi(1252, group("Empty")));                     // no waypoints
         Random random = new Random(453);
         for (int i = 0; i < 200; i++) {
