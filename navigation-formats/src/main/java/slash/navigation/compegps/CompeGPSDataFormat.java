@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.ZoneOffset.UTC;
+import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -68,12 +70,24 @@ import static slash.navigation.gpsbabel.GpsBabelText.humanToDec;
 public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
     private static final Logger log = Logger.getLogger(CompeGPSDataFormat.class.getName());
     private static final Charset WINDOWS_1252 = Charset.forName("windows-1252");
-    private static final String DUMMY_WAYPOINT_DATE = "27-MAR-62";
+    private static final String DUMMY_WAYPOINT_DATE_TIME = "27-MAR-62 00:00:00";
     private static final String[] MONTHS = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
     private static final Pattern ATOF = Pattern.compile("^[+-]?(?:\\d+\\.?\\d*|\\.\\d+)(?:[eE][+-]?\\d+)?");
-    private static final Pattern ATOI = Pattern.compile("^\\s*[+-]?\\d+");
-    private static final double UNKNOWN_ALTITUDE_WRITTEN = -99999999.0;
+    // a latitude as CompeGPS writes it: 48.1234567890ºN, the Garmin variant has another degree sign
+    private static final Pattern LATITUDE = Pattern.compile("^\\d+(?:[.,]\\d*)?\\D?[NS]$", Pattern.CASE_INSENSITIVE);
+    private static final Pattern WHITESPACE = Pattern.compile("[ \\t]+");
+    // what GPSBabel writes for an unknown altitude, and what TwoNav writes
+    private static final double UNKNOWN_ALTITUDE_GPSBABEL = -99999999.0;
     private static final double UNKNOWN_ALTITUDE_TWONAV = -9999.0;
+    // the dates that mean "no time": the dummy of CompeGPS waypoints, the one of Garmin exports and the
+    // epoch GPSBabel writes for a missing time
+    private static final LocalDateTime[] UNKNOWN_TIMES = {
+            LocalDateTime.of(1962, 3, 27, 0, 0),
+            LocalDateTime.of(2062, 3, 27, 0, 0),
+            LocalDateTime.of(1989, 12, 30, 23, 59, 59),
+            LocalDateTime.of(1989, 12, 31, 0, 0),
+            LocalDateTime.of(1970, 1, 1, 0, 0)
+    };
     // the masculine ordinal indicator that CompeGPS uses as degree sign, byte 0xBA in Windows-1252
     private static final char DEGREE = '\u00BA';
 
@@ -158,21 +172,6 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
         return matcher.find() ? Double.parseDouble(matcher.group()) : 0.0;
     }
 
-    private static int atoi(String string) {
-        Matcher matcher = ATOI.matcher(string);
-        if (!matcher.find())
-            return 0;
-        try {
-            return Integer.parseInt(matcher.group().trim().replace("+", ""));
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
-    private static String from(String string, int index) {
-        return index <= string.length() ? string.substring(index) : "";
-    }
-
     private static int monthLookup(String month) {
         for (int i = 0; i < MONTHS.length; i++) {
             if (MONTHS[i].equalsIgnoreCase(month))
@@ -181,44 +180,66 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
         return -1;
     }
 
-    private static class DateTime {
-        private int day, month, year; // year as years since 1900, like struct tm
-        private int hour, minute, second, millisecond;
-
-        private void parseDate(String string) {
-            day = atoi(string);
-            month = monthLookup(string.length() >= 6 ? string.substring(3, 6) : from(string, 3));
-            int y = atoi(from(string, 7));
-            if (y < 70)
-                y += 100;
-            if (y > 1900)
-                y -= 1900;
-            year = y;
+    /** Parses a number of 1 to the given count of digits, -1 if it is none. */
+    private static int parseDigits(String string, int maximumDigits) {
+        if (string.isEmpty() || string.length() > maximumDigits)
+            return -1;
+        for (int i = 0; i < string.length(); i++) {
+            if (!Character.isDigit(string.charAt(i)))
+                return -1;
         }
+        return Integer.parseInt(string);
+    }
 
-        private void parseTime(String string) {
-            hour = atoi(string);
-            minute = atoi(from(string, 3));
-            String seconds = from(string, 6);
-            second = atoi(seconds);
-            int dot = seconds.indexOf('.');
-            if (dot != -1) {
-                StringBuilder fraction = new StringBuilder();
-                for (int i = dot + 1; i < seconds.length() && fraction.length() < 3 && Character.isDigit(seconds.charAt(i)); i++)
-                    fraction.append(seconds.charAt(i));
-                while (fraction.length() > 0 && fraction.length() < 3)
-                    fraction.append('0');
-                if (fraction.length() > 0)
-                    millisecond = Integer.parseInt(fraction.toString());
-            }
-        }
+    /**
+     * Parses dd-MMM-yy or dd-MMM-yyyy and H:m:s with an optional fraction of a second. One digit days, hours,
+     * minutes and seconds are fine. Anything out of range or unparsable, and the dates that mean "no time",
+     * give no time; this never throws.
+     */
+    static CompactCalendar parseDateTime(String date, String time) {
+        if (date == null || time == null)
+            return null;
+        String[] dateParts = date.split("-", -1);
+        if (dateParts.length != 3)
+            return null;
+        int day = parseDigits(dateParts[0], 2);
+        int month = monthLookup(dateParts[1]);
+        int year = parseDigits(dateParts[2], 4);
+        if (day < 1 || month < 0 || year < 0 || dateParts[2].length() == 3)
+            return null;
+        if (dateParts[2].length() <= 2)
+            year += year < 70 ? 2000 : 1900;
 
-        private CompactCalendar toCalendar() {
-            LocalDateTime dateTime = LocalDateTime.of(1900 + year, 1, 1, 0, 0)
-                    .plusMonths(month).plusDays(day - 1L)
-                    .plusHours(hour).plusMinutes(minute).plusSeconds(second);
-            return fromMillis(dateTime.toInstant(UTC).toEpochMilli() + millisecond);
+        String[] timeParts = time.split(":", -1);
+        if (timeParts.length != 3)
+            return null;
+        int hour = parseDigits(timeParts[0], 2);
+        int minute = parseDigits(timeParts[1], 2);
+        String secondsAndFraction = timeParts[2];
+        int separator = Math.max(secondsAndFraction.indexOf('.'), secondsAndFraction.indexOf(','));
+        int second = parseDigits(separator == -1 ? secondsAndFraction : secondsAndFraction.substring(0, separator), 2);
+        int millisecond = 0;
+        if (separator != -1) {
+            String fraction = secondsAndFraction.substring(separator + 1);
+            if (!fraction.isEmpty() && parseDigits(fraction, fraction.length()) < 0)
+                return null;
+            fraction = (fraction + "000").substring(0, 3);
+            millisecond = Integer.parseInt(fraction);
         }
+        if (hour < 0 || hour > 23 || minute < 0 || minute > 59 || second < 0 || second > 59)
+            return null;
+
+        LocalDateTime dateTime;
+        try {
+            dateTime = LocalDateTime.of(year, month + 1, day, hour, minute, second);
+        } catch (DateTimeException e) {
+            return null;
+        }
+        for (LocalDateTime unknown : UNKNOWN_TIMES) {
+            if (unknown.equals(dateTime))
+                return null;
+        }
+        return fromMillis(dateTime.toInstant(UTC).toEpochMilli() + millisecond);
     }
 
     private GpxPosition createPosition(double latitude, double longitude, Double elevation, CompactCalendar time,
@@ -226,85 +247,65 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
         double[] wgs84 = Datums.toWgs84(latitude, longitude, 0.0, datum);
         // GPSBabel 1.5.4 reads back the unknown altitude and the missing time it writes as -99999999 m and as
         // 1970-01-01 - maintainer 2026-11-19: prefer correct behaviour over GPSBabel 1.5.4 bugs
-        if (elevation != null && (elevation == UNKNOWN_ALTITUDE_TWONAV || elevation == UNKNOWN_ALTITUDE_WRITTEN))
+        if (elevation != null && (elevation == UNKNOWN_ALTITUDE_TWONAV || elevation == UNKNOWN_ALTITUDE_GPSBABEL))
             elevation = null;
-        if (time != null && time.getTimeInMillis() == 0)
-            time = null;
         return new GpxPosition(wgs84[1], wgs84[0], elevation, null, time,
                 stripIllegalXmlCharacters(asDescription(stripIllegalXmlCharacters(name), stripIllegalXmlCharacters(description))));
     }
 
-    /**
-     * "W" lines: name, "A", latitude, longitude, date, time, altitude, description...
-     */
-    private GpxPosition parseWaypoint(String tail, int datum) {
-        String name = null, description = null;
-        double latitude = 0.0, longitude = 0.0;
-        Double elevation = null;
-        CompactCalendar time = null;
-        DateTime dateTime = new DateTime();
-        boolean hasTime = false;
-
-        int column = tail.startsWith("A ") ? 1 : 0;
-        for (String field : csvLineParse(tail, " ", "")) {
-            String c = field.trim();
-            if (!c.isEmpty()) {
-                switch (column) {
-                    case 0:
-                        int end = c.length();
-                        while (end > 0 && c.charAt(end - 1) == '_')
-                            end--;
-                        c = c.substring(0, end);
-                        if (!c.isEmpty())
-                            name = c;
-                        break;
-                    case 2:
-                        double[] lat = humanToDec(c, 1);
-                        if (!Double.isNaN(lat[0]))
-                            latitude = lat[0];
-                        break;
-                    case 3:
-                        double[] lon = humanToDec(c, 2);
-                        if (!Double.isNaN(lon[1]))
-                            longitude = lon[1];
-                        break;
-                    case 4:
-                        if (!DUMMY_WAYPOINT_DATE.equals(c)) {
-                            hasTime = true;
-                            dateTime.parseDate(c);
-                        }
-                        break;
-                    case 5:
-                        if (hasTime) {
-                            dateTime.parseTime(c);
-                            time = dateTime.toCalendar();
-                        }
-                        break;
-                    case 6:
-                        elevation = atof(c);
-                        break;
-                    case 7:
-                        description = c;
-                        break;
-                    default:
-                        if (column > 7)
-                            description = (description != null ? description : "") + " " + c;
-                }
-            }
-            column++;
-        }
-        return createPosition(latitude, longitude, elevation, time, name, description, datum);
+    private static boolean isLatitude(String token) {
+        return LATITUDE.matcher(token).matches();
     }
 
     /**
-     * "T" lines: "A", latitude, longitude, date, time, "s", altitude, ...
+     * "W" lines: name, "A", latitude, longitude, date, time, altitude, description... The name ends before the
+     * "A" that is followed by a latitude: GPSBabel takes a waypoint named "A" for one without name, and a name
+     * with blanks, which TwoNav and GPSBabel write as "_", shifts every field. TwoNav writes blanks in names as
+     * "_", so they become blanks again for files in its dialect. Returns null for a line without coordinates.
+     */
+    private GpxPosition parseWaypoint(String tail, int datum, boolean twoNavDialect) {
+        List<String> tokens = new ArrayList<>(asList(WHITESPACE.split(tail.trim())));
+        int a = -1;
+        for (int i = 0; i + 1 < tokens.size(); i++) {
+            if ("A".equals(tokens.get(i)) && isLatitude(tokens.get(i + 1))) {
+                a = i;
+                break;
+            }
+        }
+        if (a == -1)
+            return null;
+
+        String name = String.join(" ", tokens.subList(0, a));
+        int end = name.length();
+        while (end > 0 && name.charAt(end - 1) == '_')
+            end--;
+        name = name.substring(0, end);
+        if (twoNavDialect)
+            name = name.replace('_', ' ').trim();
+
+        double latitude = humanToDec(token(tokens, a + 1), 1)[0];
+        double longitude = humanToDec(token(tokens, a + 2), 2)[1];
+        if (Double.isNaN(latitude) || Double.isNaN(longitude))
+            return null;
+        CompactCalendar time = parseDateTime(token(tokens, a + 3), token(tokens, a + 4));
+        String altitude = token(tokens, a + 5);
+        Double elevation = altitude != null ? atof(altitude) : null;
+        String description = tokens.size() > a + 6 ? String.join(" ", tokens.subList(a + 6, tokens.size())) : null;
+        return createPosition(latitude, longitude, elevation, time, name.isEmpty() ? null : name, description, datum);
+    }
+
+    private static String token(List<String> tokens, int index) {
+        return index < tokens.size() ? tokens.get(index) : null;
+    }
+
+    /**
+     * "T" lines: "A", latitude, longitude, date, time, "s", altitude, ... Returns null for a line without
+     * coordinates.
      */
     private GpxPosition parseTrackPoint(String tail, int datum) {
-        double latitude = 0.0, longitude = 0.0;
+        double latitude = Double.NaN, longitude = Double.NaN;
         Double elevation = null;
-        CompactCalendar time = null;
-        DateTime dateTime = new DateTime();
-        boolean hasDate = false;
+        String date = null, time = null;
 
         int column = tail.startsWith("A ") ? 1 : 0;
         for (String field : csvLineParse(tail, " ", "")) {
@@ -312,23 +313,16 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
             if (!c.isEmpty()) {
                 switch (column) {
                     case 2:
-                        double[] lat = humanToDec(c, 1);
-                        if (!Double.isNaN(lat[0]))
-                            latitude = lat[0];
+                        latitude = humanToDec(c, 1)[0];
                         break;
                     case 3:
-                        double[] lon = humanToDec(c, 2);
-                        if (!Double.isNaN(lon[1]))
-                            longitude = lon[1];
+                        longitude = humanToDec(c, 2)[1];
                         break;
                     case 4:
-                        dateTime.parseDate(c);
-                        hasDate = true;
+                        date = c;
                         break;
                     case 5:
-                        dateTime.parseTime(c);
-                        if (hasDate)
-                            time = dateTime.toCalendar();
+                        time = c;
                         break;
                     case 7:
                         elevation = atof(c);
@@ -339,7 +333,9 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
             }
             column++;
         }
-        return createPosition(latitude, longitude, elevation, time, null, null, datum);
+        if (Double.isNaN(latitude) || Double.isNaN(longitude))
+            return null;
+        return createPosition(latitude, longitude, elevation, parseDateTime(date, time), null, null, datum);
     }
 
     /**
@@ -360,6 +356,7 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
         if (text.startsWith("﻿"))
             text = text.substring(1);
 
+        boolean twoNavDialect = UTF_8.equals(charset);
         int datum = Datums.lookupIndex("WGS 84");
         boolean hasDatum = false, hasCoordinateSystem = false, hasData = false;
         boolean hasPoint = false;
@@ -389,9 +386,10 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
             switch (type) {
                 case 'G':
                     datum = Datums.lookupIndex(tail);
+                    // GPSBabel declines a file with an unknown datum
                     if (datum < 0) {
-                        log.warning("CompeGPS Data: Unsupported datum \"" + tail + "\"");
-                        return null;
+                        log.warning("CompeGPS Data: unknown datum \"" + tail + "\", reading the positions as WGS 84");
+                        datum = Datums.lookupIndex("WGS 84");
                     }
                     hasDatum = true;
                     hasCoordinateSystem = false;
@@ -413,11 +411,16 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
                     route.name = field(tail, ",", 1);
                     break;
                 case 'W':
-                    lastWaypoint = parseWaypoint(tail, datum);
+                    GpxPosition waypoint = parseWaypoint(tail, datum, twoNavDialect);
+                    if (waypoint == null) {
+                        log.warning("CompeGPS Data: skipping waypoint without coordinates \"" + cin + "\"");
+                        break;
+                    }
+                    lastWaypoint = waypoint;
                     if (route != null)
-                        route.positions.add(lastWaypoint);
+                        route.positions.add(waypoint);
                     else
-                        waypoints.add(lastWaypoint);
+                        waypoints.add(waypoint);
                     hasPoint = true;
                     break;
                 case 'w':
@@ -429,8 +432,13 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
                 case 'T':
                     if (track == null)
                         track = new RouteData();
-                    lastWaypoint = parseTrackPoint(tail, datum);
-                    track.positions.add(lastWaypoint);
+                    GpxPosition trackPoint = parseTrackPoint(tail, datum);
+                    if (trackPoint == null) {
+                        log.warning("CompeGPS Data: skipping track point without coordinates \"" + cin + "\"");
+                        break;
+                    }
+                    lastWaypoint = trackPoint;
+                    track.positions.add(trackPoint);
                     hasPoint = true;
                     break;
                 case 't':
@@ -476,23 +484,30 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
                 dateTime.getYear() % 100, dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond());
     }
 
+    private static boolean hasCoordinates(GpxPosition position) {
+        return formatPosition(position.getLatitude()) != null && formatPosition(position.getLongitude()) != null;
+    }
+
+    private static String coordinates(GpxPosition position) {
+        return latitude(formatPosition(position.getLatitude()).doubleValue()) + ' ' +
+                longitude(formatPosition(position.getLongitude()).doubleValue());
+    }
+
     private void writeTrackPoints(GpxRoute route, int startIndex, int endIndex, StringBuilder builder) {
         List<GpxPosition> positions = route.getPositions();
         String routeName = stripIllegalXmlCharacters(asRouteName(route.getName()));
         boolean writeTrackInfo = true;
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
-            BigDecimal latitude = formatPosition(position.getLatitude());
-            BigDecimal longitude = formatPosition(position.getLongitude());
-            if (latitude == null || longitude == null)
+            if (!hasCoordinates(position))
                 continue;
             BigDecimal elevation = formatElevation(position.getElevation());
 
-            builder.append("T  A ").append(latitude(latitude.doubleValue())).append(' ')
-                    .append(longitude(longitude.doubleValue())).append(' ')
+            builder.append("T  A ").append(coordinates(position)).append(' ')
                     .append(formatDateTime(position.getTime()))
+                    // TwoNav writes -9999 for an unknown altitude, GPSBabel -99999999
                     .append(format(Locale.ROOT, " s %.1f 0.0 0.0 0.0 0 -1000.0 -1.0 -1.0 -1.0 -1.0",
-                            elevation != null ? elevation.doubleValue() : UNKNOWN_ALTITUDE_WRITTEN))
+                            elevation != null ? elevation.doubleValue() : UNKNOWN_ALTITUDE_TWONAV))
                     .append('\n');
             if (writeTrackInfo) {
                 writeTrackInfo = false;
@@ -504,15 +519,53 @@ public abstract class CompeGPSDataFormat extends GpxBackedNavigationFormat {
     }
 
     /**
-     * All three classes write the track form: RouteConverter hands GPSBabel a GPX with the route, track and
-     * waypoints of the same positions and "-r -w -t", and GPSBabel's compegps writer then writes the
-     * tracks only. The route characteristics are forced to the class's on reading.
+     * "W" lines as GPSBabel's compegps writer emits them: blanks in the name become "_", a waypoint without
+     * name gets "_", which reads back as none. Unlike GPSBabel the time of the waypoint is written, if it has
+     * one, and an unknown altitude as TwoNav writes it.
+     */
+    private void writeWaypoints(GpxRoute route, int startIndex, int endIndex, StringBuilder builder) {
+        List<GpxPosition> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            GpxPosition position = positions.get(i);
+            if (!hasCoordinates(position))
+                continue;
+            String name = cleanField(asName(position.getDescription()), "").trim().replace(' ', '_');
+            String description = cleanField(asDesc(position.getDescription()), "").trim();
+            BigDecimal elevation = formatElevation(position.getElevation());
+
+            builder.append("W  ").append(name.isEmpty() ? "_" : name).append(" A ")
+                    .append(coordinates(position)).append(' ')
+                    .append(position.getTime() != null ? formatDateTime(position.getTime()) : DUMMY_WAYPOINT_DATE_TIME)
+                    .append(format(Locale.ROOT, " %.6f", elevation != null ? elevation.doubleValue() : UNKNOWN_ALTITUDE_TWONAV));
+            if (!description.isEmpty())
+                builder.append(' ').append(description);
+            builder.append('\n');
+        }
+    }
+
+    private void writeRoute(GpxRoute route, int startIndex, int endIndex, StringBuilder builder) {
+        String name = cleanField(stripIllegalXmlCharacters(asRouteName(route.getName())), ",").trim();
+        builder.append("R  16711680,").append(name.isEmpty() ? " " : name).append(",1,-1\n");
+        writeWaypoints(route, startIndex, endIndex, builder);
+    }
+
+    /**
+     * Each class writes what the programs of CompeGPS and TwoNav expect in a file of its extension: waypoints
+     * as "W" lines in a .wpt, a route as an "R" line followed by "W" lines in a .rte and a track as "T" lines
+     * in a .trk. GPSBabel 1.5.4 wrote the track form for all three, since RouteConverter handed it the same
+     * positions as route, track and waypoints. The route characteristics are forced to the class's on reading.
      */
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         StringBuilder builder = new StringBuilder();
         builder.append("G  WGS 84\n");
         builder.append("U  1\n");
-        writeTrackPoints(route, startIndex, endIndex, builder);
+        RouteCharacteristics characteristics = getRouteCharacteristics();
+        if (characteristics == Waypoints)
+            writeWaypoints(route, startIndex, endIndex, builder);
+        else if (characteristics == Route)
+            writeRoute(route, startIndex, endIndex, builder);
+        else
+            writeTrackPoints(route, startIndex, endIndex, builder);
         // all text is Windows-1252, the charset the reader assumes without BOM or "B  UTF-8" line. GPSBabel 1.5.4
         // passes names through as UTF-8 next to a single byte degree sign, which reads back as mojibake -
         // maintainer 2026-11-19: prefer correct behaviour over GPSBabel 1.5.4 bugs

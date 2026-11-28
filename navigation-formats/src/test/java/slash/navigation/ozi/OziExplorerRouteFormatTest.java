@@ -133,8 +133,22 @@ public class OziExplorerRouteFormatTest {
     }
 
     @Test
-    public void unknownDatumYieldsNoRoute() throws IOException {
-        assertTrue(read(new OziExplorerTrackFormat(), plt("Nowhere Datum 1999", "Feet", "47.5,8.25,0,100,,,")).isEmpty());
+    public void unknownDatumIsReadAsWgs84() throws IOException {
+        // GPSBabel declines the file
+        GpxPosition position = read(new OziExplorerTrackFormat(), plt("Nowhere Datum 1999", "Feet", "47.5,8.25,0,100,,,")).get(0).getPosition(0);
+        assertEquals(47.5, position.getLatitude(), 0.0);
+        assertEquals(8.25, position.getLongitude(), 0.0);
+    }
+
+    @Test
+    public void oziExplorerDatumNamesAreConverted() throws IOException {
+        // OziExplorer's name for OSGB36, which GPSBabel does not know
+        GpxPosition position = read(new OziExplorerWaypointFormat(), wpt("Ord Srvy Grt Britn",
+                "1,London,51.500000,-0.100000,,0,1,3,0,65535,d,0,0,0,-777,6,0,17")).get(0).getPosition(0);
+        double[] expected = Datums.toWgs84(51.5, -0.1, 0.0, Datums.lookupIndex("OSGB36"));
+        assertEquals(expected[0], position.getLatitude(), 1e-12);
+        assertEquals(expected[1], position.getLongitude(), 1e-12);
+        assertTrue(Math.abs(expected[1] + 0.1) > 1e-4);
     }
 
     @Test
@@ -187,14 +201,18 @@ public class OziExplorerRouteFormatTest {
 
     @Test
     public void route2FileWithUnknownDatumOrWithoutPositionsYieldsNoRoute() throws IOException {
-        assertTrue(read(new OziExplorerRouteFormat(), RT2.replace("WGS 84", "Nowhere Datum 1999")).isEmpty());
+        assertEquals(1, read(new OziExplorerRouteFormat(), RT2.replace("WGS 84", "Nowhere Datum 1999")).size());
         assertTrue(read(new OziExplorerRouteFormat(), "H1,OziExplorer CE Route2 File Version 1.0\nH2,WGS 84\nH3,Empty,,0\n").isEmpty());
         assertTrue(read(new OziExplorerRouteFormat(), "H1,OziExplorer CE Route2 File Version 1.0\nWGS 84\n").isEmpty());
     }
 
     @Test
-    public void unknownAltitudeUnitYieldsNoRoute() throws IOException {
-        assertTrue(read(new OziExplorerTrackFormat(), plt("WGS 84", "Furlongs", "47.5,8.25,0,100,,,")).isEmpty());
+    public void unknownAltitudeUnitIsFeet() throws IOException {
+        // GPSBabel declines the file, the format defines feet
+        GpxPosition furlongs = read(new OziExplorerTrackFormat(), plt("WGS 84", "Furlongs", "47.5,8.25,0,100,,,")).get(0).getPosition(0);
+        assertEquals(30.48, furlongs.getElevation(), 1e-9);
+        GpxPosition metres = read(new OziExplorerTrackFormat(), plt("WGS 84", "Metres", "47.5,8.25,0,100,,,")).get(0).getPosition(0);
+        assertEquals(100.0, metres.getElevation(), 1e-9);
     }
 
     @Test
@@ -235,8 +253,68 @@ public class OziExplorerRouteFormatTest {
         assertEquals(86400000L + 43200000L, noon.getTime().getTimeInMillis());
         GpxPosition none = read(new OziExplorerTrackFormat(), plt("WGS 84", "Feet", "47.5,8.25,0,10,,,")).get(0).getPosition(0);
         assertNull(none.getTime());
-        GpxPosition tooEarly = read(new OziExplorerTrackFormat(), plt("WGS 84", "Feet", "47.5,8.25,0,10,25569.0000000,,")).get(0).getPosition(0);
-        assertNull(tooEarly.getTime());
+        GpxPosition epoch = read(new OziExplorerTrackFormat(), plt("WGS 84", "Feet", "47.5,8.25,0,10,25569.0000000,,")).get(0).getPosition(0);
+        assertNull(epoch.getTime());
+        GpxPosition zero = read(new OziExplorerTrackFormat(), plt("WGS 84", "Feet", "47.5,8.25,0,10,0,,")).get(0).getPosition(0);
+        assertNull(zero.getTime());
+        // GPSBabel drops times before 1970, Delphi counts them
+        GpxPosition before1970 = read(new OziExplorerTrackFormat(), plt("WGS 84", "Feet", "47.5,8.25,0,10,25568.5000000,,")).get(0).getPosition(0);
+        assertEquals(-43200000L, before1970.getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void absurdTimesAndAltitudesAreDropped() throws IOException {
+        List<GpxRoute> routes = read(new OziExplorerTrackFormat(), plt("WGS 84", "Feet",
+                "47.5,8.25,0,1e300,1e300,,", "47.6,8.35,0,100001,9e15,,", "47.7,8.45,0,-100001,2958466,,",
+                "47.8,8.55,0,99999,2958465.5,,"));
+        List<GpxPosition> positions = routes.get(0).getPositions();
+        assertEquals(4, positions.size());
+        for (int i = 0; i < 3; i++) {
+            assertNull(positions.get(i).getTime(), "position " + i);
+            assertNull(positions.get(i).getElevation(), "position " + i);
+        }
+        assertEquals(99999 * 0.3048, positions.get(3).getElevation(), 1e-6);
+        assertNotNull(positions.get(3).getTime());
+    }
+
+    @Test
+    public void garbledBlankAndOutOfRangeRowsAreSkipped() throws IOException {
+        List<GpxRoute> tracks = read(new OziExplorerTrackFormat(), plt("WGS 84", "Feet",
+                "47.5,8.25,0,100,,,", "abc,def,0,100,,,", "999,999,0,100,,,", ",,,,,,", "47.5,,0,100,,,",
+                "-90,180,0,100,,,", "90.5,8.25,0,100,,,", "47.6,180.5,0,100,,,"));
+        assertEquals(1, tracks.size());
+        assertEquals(2, tracks.get(0).getPositionCount());
+        assertEquals(-90.0, tracks.get(0).getPosition(1).getLatitude(), 0.0);
+
+        List<GpxRoute> routes = read(new OziExplorerRouteFormat(), rte("WGS 84", "R,0,Route 1,,",
+                "W,0,,1,P1", "W,0,,2,P2,48.1", "W,0,,3,P3,48.1,11.5,,0,1,3,0,65535,,0,0", ",,,,,,,,,"));
+        assertEquals(1, routes.get(0).getPositionCount());
+        assertEquals("P3", routes.get(0).getPosition(0).getDescription());
+
+        List<GpxRoute> waypoints = read(new OziExplorerWaypointFormat(), wpt("WGS 84",
+                "1,Alpha,47.500000,8.250000,,0,1,3,0,65535,d,0,0,0,328,6,0,17", "2,Beta,x,y,,0,1,3,0,65535,d,0,0,0,328,6,0,17",
+                ",,,,,,,,,,,,,,,,,"));
+        assertEquals(1, waypoints.get(0).getPositionCount());
+    }
+
+    @Test
+    public void loneCarriageReturnsEndLines() throws IOException {
+        String text = "OziExplorer Track Point File Version 2.1\rWGS 84\rAltitude is in Feet\rReserved 3\r" +
+                "0,2,255,Mac,0,0,2,8421376\r2\r47.5,8.25,0,100,,,\r47.6,8.35,0,100,,,\r";
+        List<GpxRoute> routes = read(new OziExplorerTrackFormat(), text);
+        assertEquals("Mac", routes.get(0).getName());
+        assertEquals(2, routes.get(0).getPositionCount());
+    }
+
+    @Test
+    public void character209IsAComma() throws IOException {
+        // "comma's not allowed in text fields, character 209 can be used instead and a comma will be substituted"
+        List<GpxRoute> routes = read(new OziExplorerRouteFormat(), rte("WGS 84", "R,0,Route\u00D11,Desc\u00D1x,",
+                "W,0,,1,P\u00D11,47.1,8.1,,0,1,3,0,65535,a\u00D1b,0,0"));
+        assertEquals("Route,1", routes.get(0).getName());
+        assertEquals("P,1; a,b", routes.get(0).getPosition(0).getDescription());
+        List<GpxRoute> tracks = read(new OziExplorerTrackFormat(), plt("WGS 84", "Feet", "47.5,8.25,0,100,,,").replace("Test Track", "A\u00D1B"));
+        assertEquals("A,B", tracks.get(0).getName());
     }
 
     @Test
@@ -325,20 +403,27 @@ public class OziExplorerRouteFormatTest {
         GpxRoute route = new GpxRoute(new Gpx10Format(), Waypoints, null, null, new ArrayList<>(asList(
                 position(8.25, 47.5, 100.0, "Alpha; first, point"), position(-8.5, -47.25, null, "Beta"))));
         String expected = lines("OziExplorer Waypoint File Version 1.1", "WGS 84", "Reserved 2", "Reserved 3",
-                "1,Alpha,47.500000,8.250000,,0,1,3,0,65535,first  point,0,0,0,328,6,0,17",
+                "1,Alpha,47.500000,8.250000,,0,1,3,0,65535,first\u00D1 point,0,0,0,328,6,0,17",
                 "2,Beta,-47.250000,-8.500000,,0,1,3,0,65535,Beta,0,0,0,-777,6,0,17");
         assertEquals(expected, write(new OziExplorerWaypointFormat(), route));
     }
 
     @Test
-    public void writesTrackFileWithDefaultName() throws IOException {
+    public void writesTrackFileWithoutName() throws IOException {
+        // GPSBabel writes "ComplimentsOfGPSBabel" for a track without name and whole feet; GPSBabel master one decimal
         GpxRoute route = new GpxRoute(new Gpx10Format(), Track, null, null, new ArrayList<>(asList(
-                position(8.25, 47.5, 30.48, null), position(8.5, 47.75, null, null))));
+                position(8.25, 47.5, 30.48, null), position(8.5, 47.75, null, null), position(8.75, 48.0, 10.0, null))));
         String expected = lines("OziExplorer Track Point File Version 2.1", "WGS 84", "Altitude is in Feet", "Reserved 3",
-                "0,2,255,ComplimentsOfGPSBabel,0,0,2,8421376", "0",
-                "47.500000,8.250000,1,100,,,",
-                "47.750000,8.500000,0,-777,,,");
-        assertEquals(expected, write(new OziExplorerTrackFormat(), route));
+                "0,2,255,,0,0,2,8421376", "0",
+                "47.500000,8.250000,1,100.0,,,",
+                "47.750000,8.500000,0,-777.0,,,",
+                "48.000000,8.750000,0,32.8,,,");
+        String written = write(new OziExplorerTrackFormat(), route);
+        assertEquals(expected, written);
+        List<GpxRoute> routes = read(new OziExplorerTrackFormat(), written);
+        assertNull(routes.get(0).getName());
+        assertNull(routes.get(0).getPosition(1).getElevation());
+        assertEquals(10.0, routes.get(0).getPosition(2).getElevation(), 0.02);
     }
 
     @Test
@@ -347,16 +432,16 @@ public class OziExplorerRouteFormatTest {
         GpxRoute route = new GpxRoute(new Gpx10Format(), Track, "Named", null, new ArrayList<>(asList(timed)));
         String written = write(new OziExplorerTrackFormat(), route);
         assertTrue(written.contains("0,2,255,Named,0,0,2,8421376\r\n0\r\n"), written);
-        assertTrue(written.endsWith("47.500000,8.250000,1,-777,25570.5000000,,\r\n"), written);
+        assertTrue(written.endsWith("47.500000,8.250000,1,-777.0,25570.5000000,,\r\n"), written);
     }
 
     @Test
-    public void descriptionIsCutTo40CharactersWithoutCommas() throws IOException {
+    public void descriptionIsCutTo40CharactersWithCommasAsCharacter209() throws IOException {
         String longDescription = "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z";
         GpxRoute route = new GpxRoute(new Gpx10Format(), Waypoints, null, null, new ArrayList<>(asList(
                 position(8.25, 47.5, null, longDescription))));
         String written = write(new OziExplorerWaypointFormat(), route);
-        String name = longDescription.replace(",", " ");
+        String name = longDescription.replace(',', '\u00D1');
         // only the description column is limited to 40 characters, the name is not
         assertEquals(lines("OziExplorer Waypoint File Version 1.1", "WGS 84", "Reserved 2", "Reserved 3",
                 "1," + name + ",47.500000,8.250000,,0,1,3,0,65535," + name.substring(0, 40) + ",0,0,0,-777,6,0,17"), written);
@@ -446,9 +531,9 @@ public class OziExplorerRouteFormatTest {
         new OziExplorerTrackFormat().write(asList(first, second), out);
         String expected = lines("OziExplorer Track Point File Version 2.1", "WGS 84", "Altitude is in Feet", "Reserved 3",
                 "0,2,255,One,0,0,2,8421376", "0",
-                "47.500000,8.250000,1,-777,,,",
-                "47.750000,8.500000,0,-777,,,",
-                "48.000000,9.000000,1,-777,,,");
+                "47.500000,8.250000,1,-777.0,,,",
+                "47.750000,8.500000,0,-777.0,,,",
+                "48.000000,9.000000,1,-777.0,,,");
         assertEquals(expected, new String(out.toByteArray(), CP1252));
     }
 
@@ -502,7 +587,7 @@ public class OziExplorerRouteFormatTest {
         List<GpxRoute> routes = read(format, written);
         assertEquals(1, routes.size());
         assertEquals(3, routes.get(0).getPositionCount());
-        assertEquals("Na me x y z; de sc q", routes.get(0).getPosition(0).getDescription());
+        assertEquals("Na,me x y z; de,sc q", routes.get(0).getPosition(0).getDescription());
     }
 
     @Test
@@ -510,14 +595,14 @@ public class OziExplorerRouteFormatTest {
         OziExplorerRouteFormat format = new OziExplorerRouteFormat();
         String written = write(format, hostileRoute(Route, "Rte, with\r\ncomma", asList("line one", "line two,three")));
         assertOneRecordPerLine(written, 4 + 1 + 3);
-        assertTrue(written.contains("R,1,Rte  with comma,line one line two three,\r\n"), written);
+        assertTrue(written.contains("R,1,Rte\u00D1 with comma,line one line two\u00D1three,\r\n"), written);
         // field 14 carries the description of the point
-        assertTrue(written.contains(",65535,de sc q,0,0\r\n"), written);
+        assertTrue(written.contains(",65535,de\u00D1sc q,0,0\r\n"), written);
         List<GpxRoute> routes = read(format, written);
         assertEquals(1, routes.size());
-        assertEquals("Rte  with comma", routes.get(0).getName());
+        assertEquals("Rte, with comma", routes.get(0).getName());
         assertEquals(3, routes.get(0).getPositionCount());
-        assertEquals("Na me x y z; de sc q", routes.get(0).getPosition(0).getDescription());
+        assertEquals("Na,me x y z; de,sc q", routes.get(0).getPosition(0).getDescription());
         assertEquals("B", routes.get(0).getPosition(1).getDescription());
     }
 
@@ -526,10 +611,10 @@ public class OziExplorerRouteFormatTest {
         OziExplorerTrackFormat format = new OziExplorerTrackFormat();
         String written = write(format, hostileRoute(Track, "My, Track\r\n" + "x\0", null));
         assertOneRecordPerLine(written, 6 + 3);
-        assertTrue(written.contains("0,2,255,My  Track x,0,0,2,8421376\r\n"), written);
+        assertTrue(written.contains("0,2,255,My\u00D1 Track x,0,0,2,8421376\r\n"), written);
         List<GpxRoute> routes = read(format, written);
         assertEquals(1, routes.size());
-        assertEquals("My  Track x", routes.get(0).getName());
+        assertEquals("My, Track x", routes.get(0).getName());
         assertEquals(3, routes.get(0).getPositionCount());
     }
 
