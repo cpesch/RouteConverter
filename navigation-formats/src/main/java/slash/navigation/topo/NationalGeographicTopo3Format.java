@@ -38,7 +38,10 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import static java.math.RoundingMode.HALF_EVEN;
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -52,17 +55,21 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  * GPSBabel's tpo3 format as RouteConverter used it: options "-r -w -t", i.e. tracks (freehand routes),
  * waypoints, routes, map notes, symbols and text labels; map notes, symbols and text labels become waypoints.
  * Tracks are decoded with GPSBabel's 2020 algorithm (spec 00083 decision D13.1).
+ * Unlike GPSBabel, a damaged block, track or route point loses only itself (D19), and symbols are named
+ * after their symbol style (D25).
  *
  * @author Christian Pesch
  */
 
 public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
+    private static final Logger log = Logger.getLogger(NationalGeographicTopo3Format.class.getName());
     // the format spec declares Windows-1252 for the strings of these Windows-only files
     static final Charset CHARSET = Charset.forName("windows-1252");
 
     private static final byte[] VERSION_PREFIX = "TOPO! Ver".getBytes(US_ASCII);
     private static final int FIXED_HEADER_SIZE = 512;
 
+    static final int SYMBOL_STYLES_BLOCK = 0x030000;
     static final int SYMBOLS_BLOCK = 0x040000;
     static final int TRACK_STYLES_BLOCK = 0x050000;
     static final int TRACKS_BLOCK = 0x060000;
@@ -72,8 +79,13 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
     static final int ROUTES_BLOCK = 0x0f0000;
 
     private static final int TRACK_NAME_LENGTH = 255;
+    // real files hold a few thousand track points; a delta byte decodes to one point, so this bounds the memory
+    static final int MAXIMUM_TRACK_BYTES = 2_000_000;
+    // GPSBabel warns about a jump of more than one degree between two track points
     private static final int UNKNOWN_ALTITUDE = -3276800;
     private static final double COORDINATE_SCALE = 0x800000;
+    // GPSBabel warns about a jump of more than one degree between two track points
+    private static final double MAXIMUM_TRACK_JUMP = 1.0;
     private static final int END_SCALE_TAG = 0x00;
     private static final int FULL_POINT_TAG = 0x88;
     // MAGIC! (no idea where this comes from)
@@ -126,47 +138,28 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
         return -1;
     }
 
-    /**
-     * Checks the chain of blocks that follows the fixed-length header: every block points to the next one
-     * inside the file until a pointer of 0 ends the chain. GPSBabel scans for
-     * the "Red Without Arrow" compass style instead, a user-editable name that the readers do not need,
-     * since every reader finds its block by following this chain (tpo_find_block()).
-     *
-     * @return null if the chain is sound, otherwise what is wrong with it
-     */
-    static String checkBlockChain(byte[] data) {
-        long offset = FIXED_HEADER_SIZE;
-        // a chain of blocks of at least 8 bytes each cannot be longer than this
-        int maximumHops = data.length / 8 + 1;
-        for (int hops = 0; hops < maximumHops; hops++) {
-            if (offset + 8 > data.length)
-                return "block " + (hops + 1) + " at byte " + offset + " is beyond the end of the file at " + data.length;
-            // the type of the block at position does not matter here
-            int position = (int) offset;
-            offset = ((data[position + 4] & 0xFFL) | (data[position + 5] & 0xFFL) << 8 |
-                    (data[position + 6] & 0xFFL) << 16 | (data[position + 7] & 0xFFL) << 24);
-            if (offset == 0)
-                return null;
-        }
-        return "block chain loops";
-    }
-
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
         byte[] data = source.readAllBytes();
         if (!isTopo3Header(data))
             return emptyList();
 
         // the version string at the start makes this a TOPO! file: from here on it is damaged, not foreign
-        String chainProblem = checkBlockChain(data);
-        if (chainProblem != null)
-            throw new UnreadableFileException("TOPO! file is damaged: " + chainProblem);
-        try {
-            return new Parser(data).read();
-        } catch (EOFException e) {
-            throw new UnreadableFileException("TOPO! file ends unexpectedly: " + e.getMessage(), e);
-        } catch (InvalidTopoException e) {
-            throw new UnreadableFileException("TOPO! file is damaged: " + e.getMessage(), e);
+        Parser parser = new Parser(data);
+        List<GpxRoute> result = parser.read();
+        if (!parser.problems.isEmpty()) {
+            if (result.isEmpty())
+                throw new UnreadableFileException("TOPO! file is damaged: " + parser.problems.get(0));
+            log.warning("TOPO! file is damaged, read what is valid: " + String.join("; ", parser.problems));
         }
+        return result;
+    }
+
+    private interface BlockReader {
+        void read() throws EOFException, InvalidTopoException;
+    }
+
+    interface TrackPointConsumer {
+        void accept(int lat, int lon) throws InvalidTopoException;
     }
 
     private static class InvalidTopoException extends Exception {
@@ -210,6 +203,11 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
         private final List<Point> waypoints = new ArrayList<>();
         private final List<GpxRoute> routes = new ArrayList<>();
         private final List<GpxRoute> tracks = new ArrayList<>();
+        // what is damaged; the blocks are independent and found by their offset, so the others are still read
+        final List<String> problems = new ArrayList<>();
+        // the data offset of the first block of each type in the chain
+        private Map<Integer, Integer> blocks;
+        private int trackBytes;
 
         Parser(byte[] data) {
             this.input = new LittleEndianInput(data);
@@ -218,13 +216,14 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
         /**
          * tpo_read_3_x(): GPSBabel's GPX lists waypoints, routes and tracks in this order
          */
-        List<GpxRoute> read() throws EOFException, InvalidTopoException {
-            readTracks();
-            List<Point> index = readWaypoints();
-            readRoutes(index);
-            readMapNotes();
-            readSymbols();
-            readTextLabels();
+        List<GpxRoute> read() {
+            salvage("tracks", this::readTracks);
+            List<Point> index = new ArrayList<>();
+            salvage("waypoints", () -> readWaypoints(index));
+            salvage("routes", () -> readRoutes(index));
+            salvage("map notes", this::readMapNotes);
+            salvage("symbols", this::readSymbols);
+            salvage("text labels", this::readTextLabels);
 
             List<GpxRoute> result = new ArrayList<>();
             if (!waypoints.isEmpty()) {
@@ -240,6 +239,19 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
             result.addAll(routes);
             result.addAll(tracks);
             return result;
+        }
+
+        /**
+         * Reads a block and keeps what was read up to a problem: GPSBabel drops the whole file instead.
+         */
+        private void salvage(String what, BlockReader reader) {
+            try {
+                reader.read();
+            } catch (EOFException e) {
+                problems.add(what + " end unexpectedly" + (e.getMessage() != null ? ": " + e.getMessage() : ""));
+            } catch (InvalidTopoException e) {
+                problems.add(what + ": " + e.getMessage());
+            }
         }
 
         /**
@@ -284,23 +296,38 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
 
         /**
          * tpo_find_block(): follows the chain of blocks after the fixed-length header and positions the
-         * input at the first data byte of the desired block
+         * input at the first data byte of the desired block. The chain is walked once: a block behind a
+         * broken link is missing, the blocks before it are read.
          */
-        private boolean findBlock(int desired) throws EOFException, InvalidTopoException {
-            long offset = FIXED_HEADER_SIZE;
-            int type;
-            int hops = 0;
-            do {
-                if (offset > Integer.MAX_VALUE)
-                    throw new EOFException("Cannot seek to " + offset);
-                input.seek((int) offset);
-                type = input.readInt32();
-                offset = input.readInt32() & 0xFFFFFFFFL;
+        private boolean findBlock(int desired) throws EOFException {
+            if (blocks == null) {
+                blocks = new HashMap<>();
+                long offset = FIXED_HEADER_SIZE;
+                int length = input.position() + input.remaining();
                 // a chain of blocks of at least 8 bytes each cannot be longer than this
-                if (++hops > (input.position() + input.remaining()) / 8 + 1)
-                    throw new InvalidTopoException("Block chain loops");
-            } while (type != desired && offset != 0);
-            return type == desired;
+                int maximumHops = length / 8 + 1;
+                for (int hops = 0; ; hops++) {
+                    if (hops >= maximumHops) {
+                        problems.add("block chain loops");
+                        break;
+                    }
+                    if (offset + 8 > length) {
+                        problems.add("block " + (hops + 1) + " at byte " + offset + " is beyond the end of the file at " + length);
+                        break;
+                    }
+                    input.seek((int) offset);
+                    int type = input.readInt32();
+                    blocks.putIfAbsent(type, (int) offset + 8);
+                    offset = input.readInt32() & 0xFFFFFFFFL;
+                    if (offset == 0)
+                        break;
+                }
+            }
+            Integer position = blocks.get(desired);
+            if (position == null)
+                return false;
+            input.seek(position);
+            return true;
         }
 
         /**
@@ -342,21 +369,28 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
             for (int i = 0; i < trackCount; i++) {
                 readInt(); // line type
                 long styleIndex = readInt() - 1; // starts at 1
-                if (styleIndex < 0 || styleIndex >= styles.length)
-                    throw new InvalidTopoException("Track " + (i + 1) + " refers to undefined style " + (styleIndex + 1));
-                Style style = styles[(int) styleIndex];
+                // GPSBabel fails; the track is read without its style
+                Style style = null;
+                if (styleIndex >= 0 && styleIndex < styles.length)
+                    style = styles[(int) styleIndex];
+                else
+                    problems.add("track " + (i + 1) + " refers to undefined style " + (styleIndex + 1));
                 readInt(); // length in meters?
 
                 int nameLength = readLength(1);
                 String name = nameLength > 0 ? readString(nameLength) : "TRK " + (i + 1);
-                String description = String.format("Style=%s, Width=%d, Dashed=%d, Color=#%02x%02x%02x",
-                        style.name, style.wide, style.dash, style.color[0], style.color[1], style.color[2]);
+                String description = style != null ? String.format("Style=%s, Width=%d, Dashed=%d, Color=#%02x%02x%02x",
+                        style.name, style.wide, style.dash, style.color[0], style.color[1], style.color[2]) : null;
 
                 int byteCount = readLength(1);
+                if (trackBytes + (long) byteCount > MAXIMUM_TRACK_BYTES) {
+                    problems.add("track " + (i + 1) + " exceeds " + MAXIMUM_TRACK_BYTES + " bytes of track points");
+                    input.skip(byteCount);
+                    continue;
+                }
+                trackBytes += byteCount;
                 byte[] bytes = input.readBytes(byteCount);
-                List<GpxPosition> positions = new ArrayList<>();
-                for (Point point : decodeTrack(bytes))
-                    positions.add(createPosition(point));
+                List<GpxPosition> positions = readTrackPositions(bytes, i + 1);
                 // the GPX reader of RouteConverter skips tracks without points
                 if (!positions.isEmpty())
                     tracks.add(new GpxRoute(new Gpx10Format(), Track, emptyToNull(name), asDescription(description), positions));
@@ -364,12 +398,33 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
         }
 
         /**
+         * Decodes the points straight into positions and keeps those before a decoding error.
+         */
+        private List<GpxPosition> readTrackPositions(byte[] bytes, int track) {
+            List<GpxPosition> positions = new ArrayList<>();
+            try {
+                decodeTrack(bytes, (lat, lon) -> positions.add(createPosition(new Point(lat, lon))));
+            } catch (InvalidTopoException e) {
+                problems.add("track " + track + ": " + e.getMessage());
+            }
+            // GPSBabel warns: a jump of more than one degree means corrupt data up to the next full point
+            for (int i = 1; i < positions.size(); i++) {
+                GpxPosition from = positions.get(i - 1), to = positions.get(i);
+                if (Math.abs(to.getLatitude() - from.getLatitude()) > MAXIMUM_TRACK_JUMP ||
+                        Math.abs(to.getLongitude() - from.getLongitude()) > MAXIMUM_TRACK_JUMP) {
+                    log.warning("TOPO! track " + track + " jumps by more than one degree at point " + (i + 1) + ", it is probably corrupt");
+                    break;
+                }
+            }
+            return positions;
+        }
+
+        /**
          * tpo_process_waypoints(): GPS waypoints; their copies, made before waypt_add(), make up the routes
          */
-        private List<Point> readWaypoints() throws EOFException, InvalidTopoException {
-            List<Point> index = new ArrayList<>();
+        private void readWaypoints(List<Point> index) throws EOFException, InvalidTopoException {
             if (!findBlock(WAYPOINTS_BLOCK))
-                return index;
+                return;
 
             // per waypoint: 2 unknown, name length, 1 unknown, longitude, latitude, altitude, comment length;
             // the 4 unknown bytes at the end may be missing at the end of the file
@@ -399,7 +454,6 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
                 waypoints.add(waypoint);
                 skipIgnoredBytes(4);
             }
-            return index;
         }
 
         /**
@@ -423,8 +477,11 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
                 List<GpxPosition> positions = new ArrayList<>();
                 for (int j = 0; j < pointCount; j++) {
                     long number = readInt();
-                    if (number < 1 || number > index.size())
-                        throw new InvalidTopoException("Route " + (i + 1) + " refers to undefined waypoint " + number);
+                    // GPSBabel fails; only the route point is skipped
+                    if (number < 1 || number > index.size()) {
+                        problems.add("route " + (i + 1) + " refers to undefined waypoint " + number);
+                        continue;
+                    }
                     Point point = new Point(index.get((int) number - 1));
                     // route_add_wpt() numbers a point without name across all routes
                     routePointCount++;
@@ -474,21 +531,46 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
         }
 
         /**
-         * tpo_process_symbols(): symbols become waypoints "SYM n"
+         * The names of the symbol styles; GPSBabel does not read them. Per style: 2 unknown, name length,
+         * name, 1 unknown (the icon?), 12 unknown, 4 color bytes.
+         */
+        private List<String> readSymbolStyles() {
+            List<String> names = new ArrayList<>();
+            try {
+                if (!findBlock(SYMBOL_STYLES_BLOCK))
+                    return names;
+                int styleCount = readLength(20);
+                for (int i = 0; i < styleCount; i++) {
+                    input.skip(2);
+                    int nameLength = input.readUInt8();
+                    names.add(nameLength > 0 ? readString(nameLength) : null);
+                    input.skip(1 + 12 + 4);
+                }
+            } catch (EOFException | InvalidTopoException e) {
+                problems.add("symbol styles: " + e.getMessage());
+            }
+            return names;
+        }
+
+        /**
+         * tpo_process_symbols(): symbols become waypoints named after their symbol style (D25); GPSBabel
+         * names them "SYM n", which remains for a symbol without a style name
          */
         private void readSymbols() throws EOFException, InvalidTopoException {
+            List<String> styles = readSymbolStyles();
             if (!findBlock(SYMBOLS_BLOCK))
                 return;
 
-            // per symbol: 2 unknown, longitude, latitude
+            // per symbol: 1 unknown, style, longitude, latitude
             int symbolCount = readLength(10);
             for (int i = 0; i < symbolCount; i++) {
                 readInt();
-                readInt();
+                long styleIndex = readInt() - 1; // starts at 1, like the track styles
                 int lon = input.readInt32();
                 int lat = input.readInt32();
                 Point symbol = new Point(lat, lon);
-                symbol.shortName = "SYM " + (i + 1);
+                String style = styleIndex >= 0 && styleIndex < styles.size() ? emptyToNull(styles.get((int) styleIndex)) : null;
+                symbol.shortName = style != null ? style : "SYM " + (i + 1);
                 waypoints.add(symbol);
             }
         }
@@ -537,8 +619,7 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
      * optional longitude and latitude scales whose upper two bytes are zero, and single-byte deltas against
      * the scales; 0x88 announces a full point, 0x00 ends a run of deltas.
      */
-    static List<Point> decodeTrack(byte[] buffer) throws InvalidTopoException {
-        List<Point> result = new ArrayList<>();
+    static void decodeTrack(byte[] buffer, TrackPointConsumer consumer) throws InvalidTopoException {
         // set repeatedly, they retain their value between settings
         int latScale = 0, lonScale = 0;
         int lat = 0, lon = 0;
@@ -551,7 +632,7 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
                     index += 4;
                     lat = readInt32(buffer, index);
                     index += 4;
-                    result.add(new Point(lat, lon));
+                    consumer.accept(lat, lon);
                     // after a full point: scaling, 0x88 for another full point or a single byte to be scaled
                     mode = isScale(buffer, index) ? Mode.CheckLonScale : Mode.Check0x88Tag;
                 }
@@ -591,12 +672,11 @@ public class NationalGeographicTopo3Format extends GpxBackedNavigationFormat {
                         lon += lonScale * SCALE_MULTIPLIERS[value >> 4];
                         lat += latScale * SCALE_MULTIPLIERS[value & 0xf];
                         index++;
-                        result.add(new Point(lat, lon));
+                        consumer.accept(lat, lon);
                     }
                 }
             }
         }
-        return result;
     }
 
     /**

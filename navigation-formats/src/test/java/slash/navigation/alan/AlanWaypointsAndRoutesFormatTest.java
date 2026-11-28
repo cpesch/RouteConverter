@@ -435,13 +435,14 @@ public class AlanWaypointsAndRoutesFormatTest {
     }
 
     @Test
-    public void keepsTimesBefore1970() throws IOException {
-        // GPSBabel 1.5.4 writes 2106-02-07T06:28:15Z for these and reads times before 1970 as ones after it
+    public void writesTimesBefore1970ButReadsThemAsNoTime() throws IOException {
+        // GPSBabel 1.5.4 writes 2106-02-07T06:28:15Z for these and reads times before 1970 as ones after it;
+        // a year before 1980 is implausible for the device and reads as no time (D23)
         long time = LocalDateTime.of(1969, 7, 8, 9, 10, 11).toEpochSecond(UTC);
         byte[] data = write(route("Old", position(1.0, 2.0, time, "Old")));
         assertEquals(date(1969, 7, 8), buffer(data).getInt(WPT + 28));
         assertEquals(9 * 3600 + 10 * 60 + 11, buffer(data).getInt(WPT + 32));
-        assertEquals(time * 1000, read(data).get(0).getPosition(0).getTime().getTimeInMillis());
+        assertNull(read(data).get(0).getPosition(0).getTime());
         assertEquals(Long.valueOf(time), Map500.unpackTime(date(1969, 7, 8), 9 * 3600 + 10 * 60 + 11));
     }
 
@@ -532,5 +533,41 @@ public class AlanWaypointsAndRoutesFormatTest {
         write(routes);
         routes.add(route("R50", position(1.0, 1.0, null, "Same")));
         assertWriteFails("50 routes", () -> write(routes));
+    }
+
+    @Test
+    public void readsImplausibleDatesAsNoTime() throws IOException {
+        // alan.cc reads a date of 0 as 2041 (GPSBabel 1.5.4) or year -1, a device's day 0, month 0, year 2000 as
+        // 1999-11-30 and a garbage year up to 65535 as is (D23)
+        int[][] dates = {{0, 0}, {date(2000, 0, 0), 20 * 3600 + 11 * 60}, {date(2005, 0, 1), 0}, {date(2005, 13, 1), 0}, {date(2005, 1, 0), 0},
+                {date(1979, 12, 31), 0}, {date(2101, 1, 1), 0}, {date(30000, 1, 1), 0}, {date(2005, 1, 1), 86400},
+                {date(2005, 1, 1), -1}};
+        for (int[] dateAndTime : dates) {
+            ByteBuffer buffer = emptyFile();
+            waypoint(buffer, 0, 0, "A", "", 36000, -36000, dateAndTime[0], dateAndTime[1]);
+            assertNull(read(buffer.array()).get(0).getPosition(0).getTime());
+        }
+        ByteBuffer buffer = emptyFile();
+        waypoint(buffer, 0, 0, "A", "", 36000, -36000, date(2005, 6, 7), 3600);
+        assertEquals(LocalDateTime.of(2005, 6, 7, 1, 0).toEpochSecond(UTC) * 1000,
+                read(buffer.array()).get(0).getPosition(0).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void wrapsWaypointsLikeGpsBabelAndSkipsOutOfRangeOnes() throws IOException {
+        // GPSBabel's waypt_add() wraps once and fails the whole file if still out of range; the point is skipped (D23)
+        ByteBuffer buffer = emptyFile();
+        waypoint(buffer, 0, 0, "A", "", 36000, -36000, 0, 0);
+        waypoint(buffer, 1, 1, "B", "", 0x7fffffff, 0x7fffffff, 0, 0);
+        waypoint(buffer, 2, 2, "C", "", 36000, 180 * 36000, 0, 0);
+        waypoint(buffer, 3, 3, "D", "", 200 * 36000, -36000, 0, 0);
+        route(buffer, 0, 0, "R", "", 0, 1, 2);
+        List<GpxRoute> routes = read(buffer.array());
+        GpxRoute waypoints = routes.get(0);
+        assertEquals(3, waypoints.getPositionCount());
+        assertEquals("A", waypoints.getPosition(0).getDescription());
+        assertEquals(0.0, waypoints.getPosition(1).getLatitude(), 0.0);
+        assertEquals(-160.0, waypoints.getPosition(2).getLongitude(), 0.0);
+        assertEquals(2, routes.get(1).getPositionCount());
     }
 }
