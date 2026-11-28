@@ -43,6 +43,7 @@ import slash.navigation.base.NavigationFormatRegistry;
 
 import static java.nio.charset.StandardCharsets.UTF_16LE;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -192,13 +193,31 @@ public class Igo8TrackFormatTest {
     }
 
     @Test
-    public void rejectsTotalFileSizeBeyondFileLength() throws IOException {
-        assertUnreadable(file(288 + 24, 0, point(5, degrees(1), degrees(2))));
+    public void readsTheCompletePointsOfACutFile() throws IOException {
+        // GPSBabel 1.5.4 reads the points of a cut file until the end of the file
+        byte[] data = file(288 + 24, 0, point(5, degrees(1), degrees(2)));
+        assertEquals(1, read(data).get(0).getPositionCount());
+        assertTrue(read(withoutMagic(data)).isEmpty());
+
+        byte[] full = file(point(5, degrees(1), degrees(2)), point(6, degrees(3), degrees(4)), point(7, degrees(5), degrees(6)));
+        assertEquals(2, read(Arrays.copyOf(full, full.length - 12)).get(0).getPositionCount());
+        // a trailing partial point is dropped
+        assertEquals(2, read(Arrays.copyOf(full, full.length - 5)).get(0).getPositionCount());
+        assertEquals(1, read(Arrays.copyOf(full, 288 + 12)).get(0).getPositionCount());
+        assertTrue(read(Arrays.copyOf(full, 288 + 11)).isEmpty());
     }
 
     @Test
-    public void rejectsDataNotMultipleOfPointSize() throws IOException {
-        assertUnreadable(file(288 + 13, 20, point(5, degrees(1), degrees(2))));
+    public void readsTheCompletePointsOfAnOddSizeField() throws IOException {
+        // GPSBabel 1.5.4 floors the number of points
+        byte[] data = file(288 + 13, 20, point(5, degrees(1), degrees(2)));
+        assertEquals(1, read(data).get(0).getPositionCount());
+        assertTrue(read(withoutMagic(data)).isEmpty());
+
+        long[][] points = new long[11][];
+        for (int i = 0; i < points.length; i++)
+            points[i] = point(5 + i, degrees(1 + i * 0.01), degrees(2));
+        assertEquals(10, read(file(288 + 12 * 10 + 5, 0, points)).get(0).getPositionCount());
     }
 
     @Test
@@ -252,7 +271,7 @@ public class Igo8TrackFormatTest {
         assertEquals(1, buffer.getInt(16));
 
         byte[] expected = new byte[256];
-        byte[] title = "Title\u0000Description\u0000".getBytes(UTF_16LE);
+        byte[] title = "name\u0000Description\u0000".getBytes(UTF_16LE);
         System.arraycopy(title, 0, expected, 0, title.length);
         byte[] actual = new byte[256];
         System.arraycopy(data, 20, actual, 0, 256);
@@ -288,14 +307,69 @@ public class Igo8TrackFormatTest {
     }
 
     @Test
-    public void inventedTimeCounterOnlyAdvancesForPositionsWithoutTime() throws IOException {
+    public void inventedTimeContinuesFromThePreviousTime() throws IOException {
+        // GPSBabel 1.5.4 writes 1 and 2 for the positions without time, which puts the track out of order
         byte[] data = write(position(1.0, 2.0, 500L), position(3.0, 4.0, null), position(5.0, 6.0, 600L), position(7.0, 8.0, null));
         ByteBuffer buffer = buffer(data);
         assertEquals(500, buffer.getInt(276));
         assertEquals(500, buffer.getInt(288));
-        assertEquals(1, buffer.getInt(300));
+        assertEquals(501, buffer.getInt(300));
         assertEquals(600, buffer.getInt(312));
-        assertEquals(2, buffer.getInt(324));
+        assertEquals(601, buffer.getInt(324));
+    }
+
+    @Test
+    public void timesOutsideTheFieldAreClamped() throws IOException {
+        // GPSBabel 1.5.4 lets them wrap around: -100000000 s becomes 2102-12-07
+        byte[] data = write(position(1.0, 2.0, -100000000L), position(3.0, 4.0, 4300000000L), position(5.0, 6.0, null));
+        ByteBuffer buffer = buffer(data);
+        assertEquals(1, buffer.getInt(288));
+        assertEquals(0xFFFFFFFFL, buffer.getInt(300) & 0xFFFFFFFFL);
+        assertEquals(0xFFFFFFFFL, buffer.getInt(312) & 0xFFFFFFFFL);
+    }
+
+    private byte[] writeRoute(String name, List<String> description, GpxPosition... positions) throws IOException {
+        GpxRoute route = new GpxRoute(new Gpx10Format(), Track, name, description, new ArrayList<>(asList(positions)));
+        ByteArrayOutputStream target = new ByteArrayOutputStream();
+        format.write(route, target, 0, positions.length);
+        return target.toByteArray();
+    }
+
+    private static String header(byte[] data) {
+        return new String(data, 20, 256, UTF_16LE);
+    }
+
+    @Test
+    public void writesNameAndDescriptionOfTheRoute() throws IOException {
+        // GPSBabel 1.5.4 writes the placeholders "Title" and "Description"
+        byte[] data = writeRoute("Tour \u00fcber den Pass", asList("", "First line", "Second line"), position(1.0, 2.0, 5L));
+        assertTrue(header(data).startsWith("Tour \u00fcber den Pass\u0000First line\u0000"), header(data));
+        GpxRoute route = read(data).get(0);
+        assertEquals("Tour \u00fcber den Pass", route.getName());
+
+        byte[] placeholders = writeRoute(null, null, position(1.0, 2.0, 5L));
+        assertTrue(header(placeholders).startsWith("Title\u0000Description\u0000"), header(placeholders));
+        assertNull(read(placeholders).get(0).getName());
+    }
+
+    @Test
+    public void cutsALongNameAndKeepsTheHeaderReadable() throws IOException {
+        String name = "N\u0000a\tme" + "x".repeat(200);
+        byte[] data = writeRoute(name, singletonList("Desc"), position(1.0, 2.0, 5L));
+        assertEquals(288 + 12, data.length);
+        GpxRoute route = read(data).get(0);
+        assertEquals(126, route.getName().length());
+        assertTrue(route.getName().startsWith("N a me"), route.getName());
+    }
+
+    @Test
+    public void readsTheTitleWithoutTheRestOfAnEarlierTitle() throws IOException {
+        byte[] data = file(point(5, degrees(1), degrees(2)));
+        byte[] header = "Short\u0000 rest of a longer title\u0000".getBytes(UTF_16LE);
+        System.arraycopy(header, 0, data, 20, header.length);
+        GpxRoute route = read(data).get(0);
+        assertEquals("Short", route.getName());
+        assertTrue(route.getDescription() == null || route.getDescription().isEmpty());
     }
 
     @Test

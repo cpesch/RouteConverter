@@ -104,6 +104,8 @@ public class BabelGoldenWriteIT {
             "GarminMapSource5Format/from10.gpx", "GarminMapSource5Format/from10trk.gpx",
             "GarminMapSource6Format/from10.gpx", "GarminMapSource6Format/from10trk.gpx",
             "GarminMapSource6Format/from11.gpx", "GarminMapSource6Format/synthetic",
+            // iGO8 writes the name of the route as the title (D25, audit 2026-11-27), 1.5.4 writes "Title"
+            "Igo8TrackFormat",
             // CompeGPS Data waypoint and route files are written as "W" lines, a route with an "R" line in front (D20,
             // audit 2026-11-27, OC B1), 1.5.4 writes a track for every class
             "CompeGPSDataRouteFormat/from10.gpx", "CompeGPSDataRouteFormat/from10trk.gpx", "CompeGPSDataRouteFormat/from11.gpx",

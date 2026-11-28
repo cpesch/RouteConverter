@@ -42,11 +42,13 @@ import java.util.List;
 import static java.lang.Math.abs;
 import static java.lang.Math.floorDiv;
 import static java.math.RoundingMode.HALF_EVEN;
+import static java.nio.charset.StandardCharsets.UTF_16LE;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.gpsbabel.GpsBabelText.cleanField;
 
 /**
  * Reads and writes iGO8 Track (.trk) files.
@@ -70,8 +72,10 @@ public class Igo8TrackFormat extends GpxBackedNavigationFormat {
     private static final int UNKNOWN_3 = 0x00000003;
     private static final int DEFAULT_TRACK_NUMBER = 0x00000010;
     private static final int UNKNOWN_4 = 0x00000001;
+    // what GPSBabel writes without its title and description options
     private static final String TITLE = "Title";
     private static final String DESCRIPTION = "Description";
+    private static final long MAXIMUM_TIME = 0xFFFFFFFFL;
 
     public String getExtension() {
         return ".trk";
@@ -123,12 +127,19 @@ public class Igo8TrackFormat extends GpxBackedNavigationFormat {
         LittleEndianInput input = new LittleEndianInput(data);
         input.seek(TOTAL_FILE_SIZE_OFFSET);
         long totalFileSize = input.readUInt32();
-        if (totalFileSize < POINTS_OFFSET || totalFileSize > data.length ||
-                (totalFileSize - POINTS_OFFSET) % POINT_SIZE != 0) {
+        if (totalFileSize < POINTS_OFFSET) {
             if (magic)
                 throw new UnreadableFileException("iGO8 track is damaged: its size field says " + totalFileSize +
-                        " bytes, the file has " + data.length);
+                        " bytes, the header alone has " + POINTS_OFFSET);
             return emptyList();
+        }
+        if (totalFileSize > data.length || (totalFileSize - POINTS_OFFSET) % POINT_SIZE != 0) {
+            // without the ID block only a coherent size field is evidence enough
+            if (!magic)
+                return emptyList();
+            // igo8.cc reads (size - 288) / 12 points until the end of the file: a cut file or an odd size field
+            // keeps its complete points (D19, audit 2026-11-27)
+            totalFileSize = Math.min(totalFileSize, data.length);
         }
 
         int count = (int) ((totalFileSize - POINTS_OFFSET) / POINT_SIZE);
@@ -150,10 +161,30 @@ public class Igo8TrackFormat extends GpxBackedNavigationFormat {
         // an empty track is dropped by the GPX reader
         if (positions.isEmpty())
             return emptyList();
-        GpxRoute route = new GpxRoute(new Gpx10Format(), Track, null, null, positions);
+        GpxRoute route = new GpxRoute(new Gpx10Format(), Track, readTitle(data), null, positions);
         if (!magic && !isPlausibleWithoutMagic(route))
             return emptyList();
         return singletonList(route);
+    }
+
+    /**
+     * The title of the header or null if it is empty or what GPSBabel writes without its title option
+     * (D25, audit 2026-11-27). The description is not read: iGO leaves the rest of a longer, earlier title behind
+     * the terminator of the title.
+     */
+    static String readTitle(byte[] data) {
+        int titleEnd = findTerminator(data, ID_BLOCK_SIZE, HEADER_SIZE);
+        String title = stripIllegalXmlCharacters(new String(data, ID_BLOCK_SIZE, titleEnd - ID_BLOCK_SIZE, UTF_16LE)).trim();
+        return title.isEmpty() || title.equals(TITLE) ? null : title;
+    }
+
+    // the index of the UTF-16LE NUL terminator of the string at offset or the limit
+    private static int findTerminator(byte[] data, int offset, int limit) {
+        for (int i = offset; i + 1 < limit; i += 2) {
+            if (data[i] == 0 && data[i + 1] == 0)
+                return i;
+        }
+        return limit;
     }
 
     // GPSBabel writes coordinates to GPX with %0.9f
@@ -165,9 +196,9 @@ public class Igo8TrackFormat extends GpxBackedNavigationFormat {
 
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         LittleEndianOutput output = new LittleEndianOutput();
-        writeHeader(output);
+        writeHeader(output, title(route), description(route));
 
-        long inventedTime = 1;
+        long previousTime = 0;
         int pointCount = 0;
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
@@ -179,9 +210,13 @@ public class Igo8TrackFormat extends GpxBackedNavigationFormat {
                 continue;
 
             long time = position.getTime() != null ? floorDiv(position.getTime().getTimeInMillis(), 1000L) : 0;
-            // GPSBabel 1.5.4 treats a zero creation time as missing
+            // GPSBabel 1.5.4 treats a zero creation time as missing and invents 1, 2, 3, ... for missing times;
+            // continuing from the time before keeps the track in order (D18, audit 2026-11-27)
             if (time == 0)
-                time = inventedTime++;
+                time = previousTime + 1;
+            // the time field is an unsigned 32 bit number of seconds since 1970, which GPSBabel lets wrap around
+            time = Math.max(1, Math.min(MAXIMUM_TIME, time));
+            previousTime = time;
 
             // the Information Block starts with the time of the first point
             if (pointCount == 0) {
@@ -210,18 +245,37 @@ public class Igo8TrackFormat extends GpxBackedNavigationFormat {
         return (int) (value + (value < 0 ? -0.5 : 0.5));
     }
 
-    private void writeHeader(LittleEndianOutput output) {
+    // the title is the name of the route (D25, audit 2026-11-27)
+    private static String title(GpxRoute route) {
+        String name = route.getName() != null ? cleanField(route.getName(), "").trim() : "";
+        return name.isEmpty() ? TITLE : name;
+    }
+
+    // the description is the first line of the description of the route (D25, audit 2026-11-27)
+    private static String description(GpxRoute route) {
+        List<String> description = route.getDescription();
+        if (description != null) {
+            for (String line : description) {
+                String text = line != null ? cleanField(line, "").trim() : "";
+                if (!text.isEmpty())
+                    return text;
+            }
+        }
+        return DESCRIPTION;
+    }
+
+    private void writeHeader(LittleEndianOutput output, String title, String description) {
         output.writeUInt32(UNKNOWN_1);
         output.writeUInt32(UNKNOWN_2);
         output.writeUInt32(UNKNOWN_3);
         output.writeUInt32(DEFAULT_TRACK_NUMBER);
         output.writeUInt32(UNKNOWN_4);
 
-        byte[] description = new byte[DESCRIPTION_BLOCK_SIZE];
+        byte[] block = new byte[DESCRIPTION_BLOCK_SIZE];
         // the title leaves room for the terminator of the description that follows it
-        int position = printUnicode(description, 0, DESCRIPTION_BLOCK_SIZE - 2, TITLE);
-        printUnicode(description, position, DESCRIPTION_BLOCK_SIZE - position, DESCRIPTION);
-        output.writeBytes(description);
+        int position = printUnicode(block, 0, DESCRIPTION_BLOCK_SIZE - 2, title);
+        printUnicode(block, position, DESCRIPTION_BLOCK_SIZE - position, description);
+        output.writeBytes(block);
     }
 
     /**
@@ -235,6 +289,9 @@ public class Igo8TrackFormat extends GpxBackedNavigationFormat {
         if (maxChars < 1)
             throw new IllegalArgumentException("iGO8 header overflow");
         int count = Math.min(string.length(), maxChars - 1);
+        // a surrogate pair is not cut in two
+        if (count > 0 && count < string.length() && Character.isHighSurrogate(string.charAt(count - 1)))
+            count--;
         for (int i = 0; i < count; i++) {
             char c = string.charAt(i);
             destination[offset + i * 2] = (byte) c;

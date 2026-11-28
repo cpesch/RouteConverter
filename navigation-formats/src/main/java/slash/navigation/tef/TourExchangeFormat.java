@@ -27,22 +27,27 @@ package slash.navigation.tef;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.GpxBackedNavigationFormat;
+import slash.navigation.base.UnreadableFileException;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
 import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLReporter;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.io.Writer;
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -50,10 +55,17 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.lang.Math.max;
 import static java.lang.Math.round;
 import static java.math.RoundingMode.HALF_UP;
+import static java.nio.charset.CodingErrorAction.REPORT;
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_16BE;
+import static java.nio.charset.StandardCharsets.UTF_16LE;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -67,6 +79,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  */
 
 public class TourExchangeFormat extends GpxBackedNavigationFormat {
+    private static final Logger log = Logger.getLogger(TourExchangeFormat.class.getName());
     private static final String ROOT = "TEF";
     private static final String COMMENT = "TourExchangeFormat";
     private static final DateTimeFormatter TIME_STAMP = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
@@ -88,9 +101,16 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
 
     private static final class Item {
         private String shortname, description;
-        private double longitude, latitude;
+        private double longitude = Double.NaN, latitude = Double.NaN;
         private Double altitude;
         private boolean via;
+
+        // an item without coordinates or with coordinates out of range is skipped (D23, audit 2026-11-27);
+        // tef_xml.cc reads it as a position at 0/0
+        private boolean hasValidCoordinates() {
+            return !Double.isNaN(longitude) && !Double.isNaN(latitude) &&
+                    Math.abs(longitude) <= 180.0 && Math.abs(latitude) <= 90.0;
+        }
     }
 
     private static boolean is(String name, String expected) {
@@ -106,9 +126,21 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
         }
     }
 
-    // tef_read_comma_float: only the first comma is replaced
+    // tef_read_comma_float: only the first comma is replaced; NaN if it is no number
     private static double toDoubleWithComma(String value) {
-        return toDouble(value.replaceFirst(",", "."));
+        try {
+            double result = Double.parseDouble(value.trim().replaceFirst(",", "."));
+            return Double.isInfinite(result) ? Double.NaN : result;
+        } catch (NumberFormatException e) {
+            return Double.NaN;
+        }
+    }
+
+    // an empty or unparseable altitude is unknown, a decimal comma is read like in the coordinates;
+    // tef_xml.cc reads both as 0
+    private static Double toAltitude(String value) {
+        double result = toDoubleWithComma(value);
+        return Double.isNaN(result) ? null : result;
     }
 
     private static int toUnsignedInt(String value) {
@@ -149,27 +181,109 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
     }
 
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
-        byte[] bytes = source.readAllBytes();
+        String text = decode(source.readAllBytes());
+        return text != null ? parse(text) : null;
+    }
+
+    private static final Pattern ENCODING = Pattern.compile("^\\s*<\\?xml[^>]*encoding\\s*=\\s*[\"']([A-Za-z0-9._:-]+)[\"']");
+    private static final Charset WINDOWS_1252 = Charset.forName("windows-1252");
+
+    private static String decode(byte[] bytes, int offset, Charset charset) throws CharacterCodingException {
+        return charset.newDecoder().onMalformedInput(REPORT).onUnmappableCharacter(REPORT)
+                .decode(ByteBuffer.wrap(bytes, offset, bytes.length - offset)).toString();
+    }
+
+    /**
+     * The text of the file: decoded by its byte order mark, by the encoding of its XML declaration or as UTF-8,
+     * falling back to Windows-1252 if it is no UTF-8 (D22, audit 2026-11-27), without whitespace before the
+     * XML declaration, which the XML parser does not accept. Null if the declared encoding is unknown.
+     * Decoding here keeps the JDK's XML parser from printing encoding errors to stderr.
+     */
+    static String decode(byte[] bytes) {
+        int offset = 0;
+        Charset charset = null;
+        if (bytes.length >= 3 && (bytes[0] & 0xFF) == 0xEF && (bytes[1] & 0xFF) == 0xBB && (bytes[2] & 0xFF) == 0xBF) {
+            offset = 3;
+            charset = UTF_8;
+        } else if (bytes.length >= 2 && (bytes[0] & 0xFF) == 0xFF && (bytes[1] & 0xFF) == 0xFE) {
+            offset = 2;
+            charset = UTF_16LE;
+        } else if (bytes.length >= 2 && (bytes[0] & 0xFF) == 0xFE && (bytes[1] & 0xFF) == 0xFF) {
+            offset = 2;
+            charset = UTF_16BE;
+        } else {
+            Matcher matcher = ENCODING.matcher(new String(bytes, 0, Math.min(bytes.length, 200), ISO_8859_1));
+            if (matcher.find()) {
+                try {
+                    charset = Charset.forName(matcher.group(1));
+                } catch (IllegalArgumentException e) {
+                    return null;
+                }
+            }
+        }
+
+        String text;
         try {
-            return parse(bytes);
-        } catch (XMLStreamException | RuntimeException e) {
-            return null;
+            text = decode(bytes, offset, charset != null ? charset : UTF_8);
+        } catch (CharacterCodingException e) {
+            if (charset != null && !UTF_8.equals(charset))
+                return null;
+            text = new String(bytes, offset, bytes.length - offset, WINDOWS_1252);
+        }
+        return text.stripLeading();
+    }
+
+    // the JDK's parser reports warnings and recoverable errors here instead of on stderr
+    private static final XMLReporter SILENT = (message, errorType, relatedInformation, location) -> {
+    };
+
+    private static final class Reading {
+        private double version = 1.5;
+        private boolean hasRoute = false;
+        private String routeName = null, routeDescription = null;
+        private final List<Item> items = new ArrayList<>();
+        private final List<GpxPosition> wayPositions = new ArrayList<>(), routePositions = new ArrayList<>();
+    }
+
+    /**
+     * waypoint_final() for the items of a waypoint list: the first and the last item and every via station are
+     * waypoints, every item is a route point. tef_xml.cc stops with an error if the number of items differs from
+     * ItemCount; here the last item is the destination in any case (D19, audit 2026-11-27).
+     */
+    private void finishItems(Reading reading) {
+        List<Item> valid = new ArrayList<>();
+        for (Item item : reading.items) {
+            if (item.hasValidCoordinates())
+                valid.add(item);
+        }
+        reading.items.clear();
+        for (int i = 0; i < valid.size(); i++) {
+            Item item = valid.get(i);
+            if (i == 0 || i == valid.size() - 1)
+                item.via = true;
+            int wayIndex = reading.wayPositions.size() + 1;
+            if (item.via)
+                reading.wayPositions.add(asPosition(item, reading.version, "WPT", wayIndex, true));
+            if (reading.hasRoute)
+                reading.routePositions.add(item.via ? asPosition(item, reading.version, "WPT", wayIndex, false) :
+                        asPosition(item, reading.version, "RPT", reading.routePositions.size() + 1, false));
         }
     }
 
-    private List<GpxRoute> parse(byte[] bytes) throws XMLStreamException {
+    private List<GpxRoute> parse(String text) throws IOException {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
-        XMLStreamReader reader = factory.createXMLStreamReader(new ByteArrayInputStream(bytes));
+        factory.setXMLReporter(SILENT);
+
+        Reading reading = new Reading();
+        boolean recognized = false;
+        XMLStreamReader reader = null;
         try {
+            reader = factory.createXMLStreamReader(new StringReader(text));
             List<String> path = new ArrayList<>();
-            double version = 1.5;
-            int itemCount = -1, waypoints = 0;
+            int itemCount = -1;
             Item item = null;
-            boolean hasRoute = false;
-            String routeName = null, routeDescription = null;
-            List<GpxPosition> wayPositions = new ArrayList<>(), routePositions = new ArrayList<>();
 
             while (reader.hasNext()) {
                 int event = reader.next();
@@ -181,27 +295,26 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
                     String where = String.join("/", path);
 
                     if ("TEF".equals(where)) {
-                        boolean valid = false;
                         for (int i = 0; i < reader.getAttributeCount(); i++) {
                             String attribute = reader.getAttributeLocalName(i);
                             if (is(attribute, "Comment")) {
                                 if (is(reader.getAttributeValue(i), COMMENT))
-                                    valid = true;
+                                    recognized = true;
                             } else if (is(attribute, "Version"))
-                                version = toDouble(reader.getAttributeValue(i));
+                                reading.version = toDouble(reader.getAttributeValue(i));
                         }
-                        if (!valid)
+                        if (!recognized)
                             return null;
                     } else if ("TEF/Header".equals(where)) {
-                        hasRoute = true;
-                        routeName = null;
-                        routeDescription = null;
+                        reading.hasRoute = true;
+                        reading.routeName = null;
+                        reading.routeDescription = null;
                         for (int i = 0; i < reader.getAttributeCount(); i++) {
                             String attribute = reader.getAttributeLocalName(i);
                             if (is(attribute, "Name"))
-                                routeName = reader.getAttributeValue(i).trim();
+                                reading.routeName = reader.getAttributeValue(i).trim();
                             else if (is(attribute, "Software"))
-                                routeDescription = reader.getAttributeValue(i).trim();
+                                reading.routeDescription = reader.getAttributeValue(i).trim();
                         }
                     } else if ("TEF/WaypointList".equals(where)) {
                         for (int i = 0; i < reader.getAttributeCount(); i++) {
@@ -209,10 +322,7 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
                                 itemCount = toUnsignedInt(reader.getAttributeValue(i));
                         }
                     } else if ("TEF/WaypointList/Item".equals(where)) {
-                        waypoints++;
                         item = new Item();
-                        if (waypoints == 1 || waypoints == itemCount)
-                            item.via = true;
                         for (int i = 0; i < reader.getAttributeCount(); i++) {
                             String attribute = reader.getAttributeLocalName(i);
                             String value = reader.getAttributeValue(i);
@@ -223,7 +333,7 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
                             else if (is(attribute, "ViaStation") && is(value, "true"))
                                 item.via = true;
                             else if (is(attribute, "Altitude"))
-                                item.altitude = toDouble(value);
+                                item.altitude = toAltitude(value);
                         }
                     } else if ("TEF/WaypointList/Item/Point".equals(where) && item != null) {
                         for (int i = 0; i < reader.getAttributeCount(); i++) {
@@ -239,36 +349,50 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
                     String where = String.join("/", path);
                     path.remove(path.size() - 1);
 
-                    boolean listEnd = "TEF/WaypointList".equals(where);
-                    if ("TEF/WaypointList/Item".equals(where) || listEnd) {
-                        // waypoint_final()
-                        if (item != null) {
-                            int wayIndex = wayPositions.size() + 1;
-                            if (item.via)
-                                wayPositions.add(asPosition(item, version, "WPT", wayIndex, true));
-                            if (hasRoute)
-                                routePositions.add(item.via ? asPosition(item, version, "WPT", wayIndex, false) :
-                                        asPosition(item, version, "RPT", routePositions.size() + 1, false));
-                            item = null;
-                        }
-                        if (listEnd && waypoints != itemCount)
-                            return null;
+                    if ("TEF/WaypointList/Item".equals(where) && item != null) {
+                        reading.items.add(item);
+                        item = null;
+                    } else if ("TEF/WaypointList".equals(where)) {
+                        if (itemCount != reading.items.size())
+                            log.warning("Tour Exchange Format announces " + itemCount + " items but has " +
+                                    reading.items.size() + ", using the last item as destination");
+                        finishItems(reading);
+                        itemCount = -1;
                     }
                 }
             }
-
-            List<GpxRoute> result = new ArrayList<>();
-            if (!wayPositions.isEmpty())
-                result.add(new GpxRoute(new Gpx10Format(), Waypoints, null, null, wayPositions));
-            if (hasRoute) {
-                String name = routeName == null || routeName.isEmpty() ? null : stripIllegalXmlCharacters(routeName);
-                result.add(new GpxRoute(new Gpx10Format(), Route, name,
-                        asDescription(stripIllegalXmlCharacters(routeDescription)), routePositions));
-            }
-            return result;
+        } catch (XMLStreamException | RuntimeException e) {
+            if (!recognized)
+                return null;
+            // a file that is cut or damaged after the header keeps the items read so far
+            finishItems(reading);
+            if (reading.wayPositions.isEmpty() && reading.routePositions.isEmpty())
+                throw new UnreadableFileException("Tour Exchange Format file is damaged: " + e.getMessage(), e);
+            log.warning("Tour Exchange Format file is damaged, reading the items before the damage: " + e.getMessage());
         } finally {
-            reader.close();
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (XMLStreamException e) {
+                    // nothing to do
+                }
+            }
         }
+
+        if (!recognized)
+            return null;
+        if (reading.wayPositions.isEmpty() && reading.routePositions.isEmpty())
+            throw new UnreadableFileException("Tour Exchange Format file contains no item with coordinates");
+
+        List<GpxRoute> result = new ArrayList<>();
+        if (!reading.wayPositions.isEmpty())
+            result.add(new GpxRoute(new Gpx10Format(), Waypoints, null, null, reading.wayPositions));
+        if (reading.hasRoute) {
+            String name = reading.routeName == null || reading.routeName.isEmpty() ? null : stripIllegalXmlCharacters(reading.routeName);
+            result.add(new GpxRoute(new Gpx10Format(), Route, name,
+                    asDescription(stripIllegalXmlCharacters(reading.routeDescription)), reading.routePositions));
+        }
+        return result;
     }
 
     // writing
@@ -381,8 +505,10 @@ public class TourExchangeFormat extends GpxBackedNavigationFormat {
             boolean first = i == 0, last = i == positions.size() - 1;
 
             buffer.append("<Item");
+            // an unknown elevation is left out as in the files of the Tourenplaner (D18, audit 2026-11-27)
             Double elevation = position.getElevation();
-            attribute(buffer, "Altitude", Long.toString(elevation != null ? round(elevation) : 0));
+            if (elevation != null)
+                attribute(buffer, "Altitude", Long.toString(round(elevation)));
             attribute(buffer, "PointDist", Long.toString(round(cumulated)));
             if (position.getDescription() != null)
                 attribute(buffer, "PointDescription", position.getDescription());

@@ -32,6 +32,11 @@ Igo8TrackFormat unrecognized/vasily-nextgen-igo-track004.trk
 GarminPcx5Format test/from-pcx5.wpt
 GarminPcx5Format test/large-pcx5.wpt
 GarminPcx5Format samples/bcr_with_itnconv_pcx5.rte
+GarminPcx5Format samples/WP-Ijsselmeer.wpt
+GarminPcx5Format samples/Tour_8154.trk
+GarminPcx5Format samples/ftt_pcx5.trk
+GarminPcx5Format samples/Über_Bleckede_an_die_Elbe_und_über_Kamerun_zurück-PCX.trk
+GarminPcx5Format samples/toskana00b.rte
 CompeGPSDataRouteFormat test/from-compegps.rte
 CompeGPSDataTrackFormat test/from-compegps.trk
 CompeGPSDataTrackFormat samples/eugen_twonav_2010-06-06-01.TRK

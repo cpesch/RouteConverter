@@ -27,17 +27,22 @@ import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
+import slash.navigation.base.UnreadableFileException;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -61,8 +66,12 @@ public class TourExchangeFormatTest {
     }
 
     private List<GpxRoute> read(String xml) throws IOException {
+        return read(xml.getBytes(UTF_8));
+    }
+
+    private List<GpxRoute> read(byte[] bytes) throws IOException {
         ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
-        format.read(new ByteArrayInputStream(xml.getBytes(UTF_8)), context);
+        format.read(new ByteArrayInputStream(bytes), context);
         return context.getRoutes();
     }
 
@@ -97,9 +106,114 @@ public class TourExchangeFormatTest {
     }
 
     @Test
-    public void itemCountMismatchYieldsNoRoute() throws IOException {
-        assertTrue(read(tef("TourExchangeFormat", "2.0", "3", item("PointDescription=\"A\"", "1", "2"))).isEmpty());
-        assertTrue(read(tef("TourExchangeFormat", "2.0", null, item("PointDescription=\"A\"", "1", "2"))).isEmpty());
+    public void itemCountMismatchMakesTheLastItemTheDestination() throws IOException {
+        // tef_xml.cc stops with "waypoint count differs"
+        for (String itemCount : new String[]{"3", null, "1", "x"}) {
+            List<GpxRoute> routes = read(tef("TourExchangeFormat", "2.0", itemCount,
+                    item("PointDescription=\"A\"", "1", "2"), item("PointDescription=\"B\"", "3", "4")));
+            assertEquals(2, routes.size(), itemCount);
+            assertEquals(2, routes.get(0).getPositionCount(), itemCount);
+            assertEquals("A", routes.get(0).getPosition(0).getDescription());
+            assertEquals("B", routes.get(0).getPosition(1).getDescription());
+            assertEquals(2, routes.get(1).getPositionCount(), itemCount);
+        }
+    }
+
+    @Test
+    public void itemsWithoutValidCoordinatesAreSkipped() throws IOException {
+        // tef_xml.cc reads them as positions at 0/0
+        List<GpxRoute> routes = read(tef("TourExchangeFormat", "2.0", "6",
+                item("PointDescription=\"A\"", "1", "2"),
+                "<Item PointDescription=\"NoPoint\"/>",
+                item("PointDescription=\"TwoCommas\"", "10,5,1", "2"),
+                item("PointDescription=\"Text\"", "abc", "2"),
+                item("PointDescription=\"OutOfRange\"", "181", "2"),
+                item("PointDescription=\"B\"", "3", "4")));
+        assertEquals(2, routes.get(0).getPositionCount());
+        assertEquals("B", routes.get(0).getPosition(1).getDescription());
+        assertEquals(2, routes.get(1).getPositionCount());
+        assertEquals(3.0, routes.get(1).getPosition(1).getLongitude(), 0.0);
+    }
+
+    @Test
+    public void altitudeIsReadLikeTheCoordinates() throws IOException {
+        // tef_xml.cc reads an empty altitude and a decimal comma as 0
+        List<GpxRoute> routes = read(tef("TourExchangeFormat", "2.0", "4",
+                item("Altitude=\"\" PointDescription=\"A\"", "1", "2"),
+                item("Altitude=\"12,5\" PointDescription=\"B\"", "1", "2"),
+                item("Altitude=\"abc\" PointDescription=\"C\"", "1", "2"),
+                item("Altitude=\"-3.5\" PointDescription=\"D\"", "1", "2")));
+        GpxRoute route = routes.get(1);
+        assertNull(route.getPosition(0).getElevation());
+        assertEquals(12.5, route.getPosition(1).getElevation(), 0.0);
+        assertNull(route.getPosition(2).getElevation());
+        assertEquals(-3.5, route.getPosition(3).getElevation(), 0.0);
+    }
+
+    @Test
+    public void whitespaceBeforeTheXmlDeclarationIsAccepted() throws IOException {
+        assertEquals(2, read("\n  \r\n" + standardTef()).size());
+        assertEquals(2, read(("\ufeff\n " + standardTef()).getBytes(UTF_8)).size());
+        assertEquals(2, read(("\ufeff" + standardTef()).getBytes(UTF_8)).size());
+    }
+
+    @Test
+    public void bytesThatAreNoUtf8DoNotPrintToStandardError() throws IOException {
+        PrintStream original = System.err;
+        ByteArrayOutputStream captured = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(captured, true, UTF_8));
+        try {
+            String xml = "<TEF Comment=\"TourExchangeFormat\"><Header Name=\"K\u00e4se\"/>";
+            assertThrows(UnreadableFileException.class, () -> read(xml.getBytes(ISO_8859_1)));
+            assertTrue(read("no xml \u00e4".getBytes(ISO_8859_1)).isEmpty());
+        } finally {
+            System.setErr(original);
+        }
+        assertEquals("", captured.toString(UTF_8));
+    }
+
+    @Test
+    public void readsEncodings() throws IOException {
+        String xml = tef("TourExchangeFormat", "2.0", "2", item("PointDescription=\"K\u00e4se\"", "1", "2"),
+                item("PointDescription=\"B\"", "3", "4"));
+        // no declaration and no UTF-8: Windows-1252 (D22)
+        String undeclared = xml.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n", "");
+        assertEquals("K\u00e4se", read(undeclared.getBytes(ISO_8859_1)).get(0).getPosition(0).getDescription());
+        assertEquals("K\u00e4se", read(undeclared.getBytes(UTF_8)).get(0).getPosition(0).getDescription());
+        String declared = xml.replace("UTF-8", "ISO-8859-1");
+        assertEquals("K\u00e4se", read(declared.getBytes(ISO_8859_1)).get(0).getPosition(0).getDescription());
+        byte[] utf16 = ("\ufeff" + xml.replace("UTF-8", "UTF-16")).getBytes(java.nio.charset.StandardCharsets.UTF_16LE);
+        assertEquals("K\u00e4se", read(utf16).get(0).getPosition(0).getDescription());
+        assertTrue(read(xml.replace("UTF-8", "NO-SUCH-ENCODING").getBytes(UTF_8)).isEmpty());
+    }
+
+    @Test
+    public void damagedFileKeepsTheItemsBeforeTheDamage() throws IOException {
+        String xml = standardTef();
+        String cut = xml.substring(0, xml.indexOf("<Item PointDescription=\"Ziel\""));
+        List<GpxRoute> routes = read(cut + "<Item");
+        assertEquals(2, routes.size());
+        assertEquals(3, routes.get(1).getPositionCount());
+        // the last item read is the destination
+        assertEquals(2, routes.get(0).getPositionCount());
+    }
+
+    @Test
+    public void recognizedFileWithoutItemsIsUnreadable() {
+        String xml = standardTef();
+        assertThrows(UnreadableFileException.class, () -> read(xml.substring(0, xml.indexOf("<Item"))));
+        assertThrows(UnreadableFileException.class, () -> read(tef("TourExchangeFormat", "2.0", "0")));
+        assertThrows(UnreadableFileException.class, () -> read(tef("TourExchangeFormat", "2.0", "1", "<Item PointDescription=\"A\"/>")));
+    }
+
+    @Test
+    public void unknownElevationIsNotWritten() throws IOException {
+        String xml = write(route("Tour", position(1, 2, null, null, "A"), position(3, 4, 12.0, null, "B")));
+        assertFalse(xml.contains("Altitude=\"0\""), xml);
+        assertTrue(xml.contains("<Item Altitude=\"12\" "), xml);
+        List<GpxRoute> routes = read(xml);
+        assertNull(routes.get(1).getPosition(0).getElevation());
+        assertEquals(12.0, routes.get(1).getPosition(1).getElevation(), 0.0);
     }
 
     @Test
@@ -236,7 +350,7 @@ public class TourExchangeFormatTest {
         assertEquals("<WaypointList ItemCount=\"3\">", lines[6]);
 
         assertTrue(lines[7].matches("<Item Altitude=\"6\" PointDist=\"0\" PointDescription=\"Hamburg\" Prio=\"-2\" SegDist=\"\\d+\" SegTime=\"0\" TimeStamp=\"2007-06-12T09:22:45\"><Point x=\"10.032\" y=\"53.56949\"/></Item>"), lines[7]);
-        assertTrue(lines[8].matches("<Item Altitude=\"0\" PointDist=\"\\d+\" PointDescription=\"Mitte\" Prio=\"4\" SegDist=\"\\d+\" SegTime=\"0\" ViaStation=\"true\"><Point x=\"10.0334\" y=\"53.5701\"/></Item>"), lines[8]);
+        assertTrue(lines[8].matches("<Item PointDist=\"\\d+\" PointDescription=\"Mitte\" Prio=\"4\" SegDist=\"\\d+\" SegTime=\"0\" ViaStation=\"true\"><Point x=\"10.0334\" y=\"53.5701\"/></Item>"), lines[8]);
         assertTrue(lines[9].matches("<Item Altitude=\"44\" PointDist=\"\\d+\" PointDescription=\"Ziel\" Prio=\"-4\" SegDist=\"0\" SegTime=\"0\" TimeStamp=\"2007-06-12T09:23:45\"><Point x=\"10.04\" y=\"53.58\"/></Item>"), lines[9]);
         assertEquals("</WaypointList>", lines[10]);
         assertEquals("</TEF>", lines[11]);
@@ -288,7 +402,10 @@ public class TourExchangeFormatTest {
             assertEquals(expected.getLongitude(), actual.getLongitude(), 0.000005);
             assertEquals(expected.getLatitude(), actual.getLatitude(), 0.000005);
             assertEquals(expected.getDescription(), actual.getDescription());
-            assertEquals(expected.getElevation() != null ? expected.getElevation() : 0.0, actual.getElevation(), 0.5);
+            if (expected.getElevation() != null)
+                assertEquals(expected.getElevation(), actual.getElevation(), 0.5);
+            else
+                assertNull(actual.getElevation());
             assertEquals(expected.getDescription(), routes.get(0).getPosition(i).getDescription());
         }
     }

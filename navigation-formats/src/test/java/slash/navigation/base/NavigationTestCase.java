@@ -659,6 +659,19 @@ public abstract class NavigationTestCase extends TestCase {
         return nameDescription(garminUmlauts(trim(position.getDescription(), 39)), 6, 4);
     }
 
+    // a name that is taken already is made unique within its six characters (D21), as "Wayp.1" for "Waypoi"
+    private static boolean isGarminPcx5UniqueName(String sourceDescription, String targetDescription) {
+        if (sourceDescription == null || targetDescription == null)
+            return false;
+        int sourceSeparator = sourceDescription.indexOf(';'), targetSeparator = targetDescription.indexOf(';');
+        String sourceName = sourceSeparator != -1 ? sourceDescription.substring(0, sourceSeparator) : sourceDescription;
+        String targetName = targetSeparator != -1 ? targetDescription.substring(0, targetSeparator) : targetDescription;
+        String sourceRest = sourceSeparator != -1 ? sourceDescription.substring(sourceSeparator) : "";
+        String targetRest = targetSeparator != -1 ? targetDescription.substring(targetSeparator) : "";
+        java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("(.*)\\.\\d+").matcher(targetName);
+        return sourceRest.equals(targetRest) && matcher.matches() && sourceName.startsWith(matcher.group(1));
+    }
+
     private static String getGarminPoiPositionDescription(NavigationPosition position) {
         String description = position.getDescription();
         if (description == null)
@@ -807,7 +820,8 @@ public abstract class NavigationTestCase extends TestCase {
             } else if (targetFormat instanceof GarminPcx5Format) {
                 String sourceName = getGarminPcx5PositionDescription(sourcePosition);
                 String targetName = getGarminPcx5PositionDescription(targetPosition);
-                assertEquals(sourceName, targetName, "Description " + index + " does not match");
+                if (!isGarminPcx5UniqueName(sourceName, targetName))
+                    assertEquals(sourceName, targetName, "Description " + index + " does not match");
             } else if (targetFormat instanceof Route66Format)
                 assertEquals(toMixedCase(sourcePosition.getDescription()), description, "Description " + index + " does not match");
             else if (sourceFormat instanceof GarminMapSource5Format || sourceFormat instanceof GarminMapSource6Format ||
