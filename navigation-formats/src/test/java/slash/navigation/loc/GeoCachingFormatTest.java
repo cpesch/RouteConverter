@@ -106,12 +106,78 @@ public class GeoCachingFormatTest {
         assertEquals("GC1; First & <cache>", routes.get(0).getPosition(0).getDescription());
     }
 
-    @Test
-    public void invalidUtf8IsDeclined() {
-        byte[] bytes = "<?xml version=\"1.0\"?><loc><waypoint><name id=\"a\">K\u00fcche</name><coord lat=\"1\" lon=\"2\"/></waypoint></loc>".getBytes(java.nio.charset.StandardCharsets.ISO_8859_1);
+    private List<GpxRoute> read(byte[] bytes) throws IOException {
         ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
-        assertThrows(IOException.class, () -> format.read(new ByteArrayInputStream(bytes), context));
-        assertTrue(context.getRoutes().isEmpty());
+        format.read(new ByteArrayInputStream(bytes), context);
+        return context.getRoutes();
+    }
+
+    private static final String KUECHE = "<loc><waypoint><name id=\"a\">K\u00fcche \u20ac</name><coord lat=\"1\" lon=\"2\"/></waypoint></loc>";
+
+    @Test
+    public void undeclaredWindows1252IsRead() throws IOException {
+        for (String declaration : new String[]{"<?xml version=\"1.0\"?>", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+                "<?xml version=\"1.0\" encoding=\"foo-9\"?>", ""}) {
+            List<GpxRoute> routes = read((declaration + KUECHE).getBytes(java.nio.charset.Charset.forName("windows-1252")));
+            assertEquals("a; K\u00fcche \u20ac", routes.get(0).getPosition(0).getDescription(), declaration);
+        }
+    }
+
+    @Test
+    public void utf8WithByteOrderMarkIsRead() throws IOException {
+        byte[] text = ("<?xml version=\"1.0\"?>" + KUECHE).getBytes(UTF_8);
+        byte[] bytes = new byte[text.length + 3];
+        bytes[0] = (byte) 0xEF;
+        bytes[1] = (byte) 0xBB;
+        bytes[2] = (byte) 0xBF;
+        System.arraycopy(text, 0, bytes, 3, text.length);
+        assertEquals("a; K\u00fcche \u20ac", read(bytes).get(0).getPosition(0).getDescription());
+    }
+
+    @Test
+    public void utf16WithByteOrderMarkIsRead() throws IOException {
+        String xml = "\uFEFF<?xml version=\"1.0\" encoding=\"UTF-16\"?>" + KUECHE;
+        assertEquals("a; K\u00fcche \u20ac", read(xml.getBytes(java.nio.charset.StandardCharsets.UTF_16LE)).get(0).getPosition(0).getDescription());
+        assertEquals("a; K\u00fcche \u20ac", read(xml.getBytes(java.nio.charset.StandardCharsets.UTF_16BE)).get(0).getPosition(0).getDescription());
+    }
+
+    @Test
+    public void controlCharactersAreReplacedBySpaces() throws IOException {
+        List<GpxRoute> routes = read("<loc><waypoint><name id=\"a\">x\u0001y\u0000z</name><coord lat=\"1\" lon=\"2\"/></waypoint></loc>");
+        assertEquals("a; x y z", routes.get(0).getPosition(0).getDescription());
+    }
+
+    @Test
+    public void waypointsBeforeBrokenXmlAreKept() throws IOException {
+        String first = "<waypoint><name id=\"a\">First</name><coord lat=\"1\" lon=\"2\"/></waypoint>";
+        for (String tail : new String[]{"<waypoint><name id=\"b\">Sec", "<waypoint><name id=\"b\">&nbsp;</name>",
+                "<waypoint><name id=\"b\">A & B</name>", "</lo"}) {
+            List<GpxRoute> routes = read("<?xml version=\"1.0\"?><loc version=\"1.0\">" + first + tail);
+            assertEquals(1, routes.get(0).getPositionCount(), tail);
+            assertEquals("a; First", routes.get(0).getPosition(0).getDescription());
+        }
+    }
+
+    @Test
+    public void waypointsWithoutValidCoordinatesAreSkipped() throws IOException {
+        String[] coords = {"<coord lat=\"abc\" lon=\"2\"/>", "<coord lat=\"91\" lon=\"2\"/>", "<coord lat=\"1\" lon=\"181\"/>",
+                "<coord lat=\"NaN\" lon=\"2\"/>", "<coord lat=\"1\" lon=\"Infinity\"/>", "<coord lat=\"1\" lon=\"0x1F\"/>",
+                "<coord lat=\"1\" lon=\"2d\"/>", "<coord lat=\"1\"/>", ""};
+        for (String coord : coords) {
+            List<GpxRoute> routes = read("<loc><waypoint><name id=\"bad\"/>" + coord + "</waypoint>" +
+                    "<waypoint><name id=\"good\"/><coord lat=\"-90\" lon=\"180\"/></waypoint></loc>");
+            assertEquals(1, routes.get(0).getPositionCount(), coord);
+            assertEquals("good", routes.get(0).getPosition(0).getDescription());
+        }
+        assertTrue(read("<loc><waypoint><name id=\"bad\"/><coord lat=\"x\" lon=\"y\"/></waypoint></loc>").isEmpty());
+    }
+
+    @Test
+    public void decimalCommaAndExponentAreRead() throws IOException {
+        GpxPosition position = read("<loc><waypoint><name id=\"a\"/><coord lat=\" 47,5 \" lon=\"1.15e1\"/></waypoint></loc>")
+                .get(0).getPosition(0);
+        assertEquals(47.5, position.getLatitude(), 0.0);
+        assertEquals(11.5, position.getLongitude(), 0.0);
     }
 
     @Test

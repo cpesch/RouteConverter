@@ -156,6 +156,67 @@ public class GarminPoiDbFormatTest {
     }
 
     @Test
+    public void readsCarriageReturnLineEndings() throws IOException {
+        GpxRoute route = readSingle("11.1,47.2,A,B\r12.1,48.2,C,D\r");
+        assertEquals(2, route.getPositionCount());
+        assertEquals("A; B", route.getPosition(0).getDescription());
+        assertEquals("C; D", route.getPosition(1).getDescription());
+        assertEquals(12.1, route.getPosition(1).getLongitude(), 0.0);
+    }
+
+    @Test
+    public void readsQuotedFields() throws IOException {
+        GpxRoute route = readSingle("11.1,47.2,\"Camera, Town\"\n" +
+                "\"12.1\",\"48.2\",\"Name, with comma\",\"Desc, too\"\n" +
+                "13.1, 49.2, \"Say \"\"hi\"\"\", \"\"\n");
+        assertEquals(3, route.getPositionCount());
+        assertEquals("Camera, Town", route.getPosition(0).getDescription());
+        assertEquals("Name, with comma; Desc, too", route.getPosition(1).getDescription());
+        assertEquals(12.1, route.getPosition(1).getLongitude(), 0.0);
+        assertEquals(48.2, route.getPosition(1).getLatitude(), 0.0);
+        assertEquals("Say \"hi\"", route.getPosition(2).getDescription());
+    }
+
+    @Test
+    public void readsUnbalancedQuotesLiterally() throws IOException {
+        GpxRoute route = readSingle("11.1,47.2,Tower 5\",High\n" +
+                "8 5' 6.1\" E,47 3' 2.2\" N,Name\n");
+        assertEquals("Tower 5\"; High", route.getPosition(0).getDescription());
+        assertEquals("Name", route.getPosition(1).getDescription());
+        assertEquals(47.05061, route.getPosition(1).getLatitude(), 0.00001);
+    }
+
+    @Test
+    public void skipsByteOrderMarkHeaderAndComments() throws IOException {
+        byte[] text = ("Longitude,Latitude,Name,Comment\n# a comment\n; another\n11.1,47.2,A,B\n  # indented\n12.1,48.2,C,D\n").getBytes(UTF_8);
+        byte[] bytes = new byte[text.length + 3];
+        bytes[0] = (byte) 0xEF;
+        bytes[1] = (byte) 0xBB;
+        bytes[2] = (byte) 0xBF;
+        System.arraycopy(text, 0, bytes, 3, text.length);
+        List<GpxRoute> routes = read(bytes);
+        assertEquals(1, routes.size());
+        assertEquals(2, routes.get(0).getPositionCount());
+        assertEquals(11.1, routes.get(0).getPosition(0).getLongitude(), 0.0);
+
+        assertEquals(1, readSingle("\"lon\",\"lat\",\"name\"\n11.1,47.2,A\n").getPositionCount());
+        assertEquals(1, readSingle("X,Y,Name,Description\n11.1,47.2,A\n").getPositionCount());
+        assertEquals(1, readSingle("Länge,Breite,Name\n11.1,47.2,A\n").getPositionCount());
+    }
+
+    @Test
+    public void headerOnlyAtTheBeginning() throws IOException {
+        assertTrue(read("11.1,47.2,A,B\nLongitude,Latitude,Name,Comment\n").isEmpty());
+        assertTrue(read("Name,Latitude,Longitude\n11.1,47.2,A\n").isEmpty());
+    }
+
+    @Test
+    public void readsWindows1252() throws IOException {
+        List<GpxRoute> routes = read("11.1,47.2,Müller,Straße €\n".getBytes(java.nio.charset.Charset.forName("windows-1252")));
+        assertEquals("Müller; Straße €", routes.get(0).getPosition(0).getDescription());
+    }
+
+    @Test
     public void oneBadLineRejectsTheWholeFile() throws IOException {
         assertTrue(read("11.1,47.1,One,A\nnot a poi line\n12.2,48.2,Two,B\n").isEmpty());
     }

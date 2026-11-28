@@ -37,10 +37,10 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.util.Collections.singletonList;
@@ -48,6 +48,9 @@ import static slash.common.io.Transfer.trim;
 import static slash.common.io.Transfer.trimLineFeeds;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.gpsbabel.GpsBabelText.canEncodeCp1252;
+import static slash.navigation.gpsbabel.GpsBabelText.decodeUtf8OrCp1252;
+import static slash.navigation.gpsbabel.GpsBabelText.encodeCp1252;
 
 /**
  * Reads and writes Tom Tom POI (.ov2) files.
@@ -56,6 +59,9 @@ import static slash.navigation.common.NavigationConversion.formatPosition;
  * A {@code >} in the text is TomTom's separator of name and phone number; like GPSBabel the text is kept as a whole.
  * For the icon on the device a 22x22, 16-colour {@code .bmp} with the same base name is needed.
  * <p>
+ * The text is read as UTF-8 if it is valid UTF-8, else as Windows-1252; it is written as Windows-1252
+ * (decision D22). Bytes Windows-1252 leaves undefined survive a read and write unchanged.
+ * <p>
  * Translated from GPSBabel tomtom.cc, which is based on a reverse-engineering of the format.
  *
  * @author Christian Pesch
@@ -63,7 +69,7 @@ import static slash.navigation.common.NavigationConversion.formatPosition;
 
 public class TomTomPoiFormat extends GpxBackedNavigationFormat {
     private static final Preferences preferences = Preferences.userNodeForPackage(TomTomRouteFormat.class);
-    private static final Charset WINDOWS_1252 = Charset.forName("windows-1252");
+    private static final Logger log = Logger.getLogger(TomTomPoiFormat.class.getName());
 
     private static final int DELETED_RECORD = 0;
     private static final int BLOCK_HEADER_RECORD = 1;
@@ -134,7 +140,9 @@ public class TomTomPoiFormat extends GpxBackedNavigationFormat {
     /**
      * Parses the records of an .ov2 file like GPSBabel's data_read(), but returns false instead of a fatal error
      * for everything that is not an .ov2 file: other first record type than 0, 1, 2, 3 or 100, bad record sizes,
-     * truncated records and coordinates outside of the world.
+     * truncated records and coordinates outside of the world. Once a POI record has been read completely, a bad
+     * record size, a truncated record or padding at the end only ends the scan and the POIs read so far are kept
+     * (decision D19).
      */
     private boolean parse(byte[] data, List<String> texts, List<double[]> coordinates) {
         if (data.length == 0 || !isFirstRecordType(data[0] & 0xFF))
@@ -151,7 +159,7 @@ public class TomTomPoiFormat extends GpxBackedNavigationFormat {
                         // to the payload size, not to the size field
                         int deletedSize = input.readInt32() - DELETED_HEADER_SIZE;
                         if (!isValidRecordSize(deletedSize))
-                            return false;
+                            return salvage(texts, "bad record size");
                         input.skip(deletedSize);
                         break;
                     case BLOCK_HEADER_RECORD:
@@ -164,11 +172,11 @@ public class TomTomPoiFormat extends GpxBackedNavigationFormat {
                         // a type 3 record is treated as type 2, further strings after the NUL are ignored
                         int size = input.readInt32();
                         if (!isValidRecordSize(size) || size < MINIMUM_POI_RECORD_SIZE)
-                            return false;
+                            return salvage(texts, "bad record size");
                         int x = input.readInt32();
                         int y = input.readInt32();
                         if (Math.abs((long) x) > MAXIMUM_LONGITUDE || Math.abs((long) y) > MAXIMUM_LATITUDE)
-                            return false;
+                            return salvage(texts, "coordinates outside of the world");
                         byte[] text = input.readBytes(size - MINIMUM_POI_RECORD_SIZE);
                         coordinates.add(new double[]{x / 100000.0, y / 100000.0});
                         texts.add(decodeText(text));
@@ -185,8 +193,15 @@ public class TomTomPoiFormat extends GpxBackedNavigationFormat {
                 }
             }
         } catch (EOFException e) {
-            return false;
+            return salvage(texts, "truncated record");
         }
+        return true;
+    }
+
+    private static boolean salvage(List<String> texts, String reason) {
+        if (texts.isEmpty())
+            return false;
+        log.warning("Stopped reading after " + texts.size() + " POIs: " + reason);
         return true;
     }
 
@@ -203,13 +218,13 @@ public class TomTomPoiFormat extends GpxBackedNavigationFormat {
         int length = 0;
         while (length < bytes.length && bytes[length] != 0)
             length++;
-        return new String(bytes, 0, length, WINDOWS_1252);
+        return decodeUtf8OrCp1252(Arrays.copyOf(bytes, length));
     }
 
     // writing
 
     private static byte[] encodeText(String description) {
-        byte[] bytes = description.getBytes(WINDOWS_1252);
+        byte[] bytes = encodeCp1252(description);
         // strlen() of the C string
         int length = 0;
         while (length < bytes.length && bytes[length] != 0)
@@ -219,11 +234,12 @@ public class TomTomPoiFormat extends GpxBackedNavigationFormat {
     }
 
     /**
-     * GPSBabel's write_float_as_long(): {@code (long)(value + 0.500000000001)}. The cast truncates toward zero,
-     * thus negative values are not rounded half up: -1.0000001 becomes 0, not -1. Kept for byte-stable files.
+     * Rounds half up. GPSBabel's write_float_as_long() is {@code (long)(value + 0.500000000001)}, whose cast
+     * truncates toward zero, so every negative coordinate ended up one unit (1.1 m) closer to zero (decision D18);
+     * flooring keeps GPSBabel's results for positive values and rounds negative values correctly.
      */
     static long writeFloatAsLong(double value) {
-        return (long) (value + 0.500000000001);
+        return (long) Math.floor(value + 0.500000000001);
     }
 
     private static int compareDescriptions(Poi a, Poi b) {
@@ -347,6 +363,13 @@ public class TomTomPoiFormat extends GpxBackedNavigationFormat {
             if (latitude < minLatitude)
                 minLatitude = latitude;
         }
+
+        int unencodable = 0;
+        for (Poi poi : list)
+            if (!canEncodeCp1252(poi.description))
+                unencodable++;
+        if (unencodable > 0)
+            log.warning(unencodable + " POI texts contain characters outside of Windows-1252, they are written as '?'");
 
         Poi[] pois = list.toArray(new Poi[0]);
         Block blocks = computeBlocks(pois, 0, pois.length, minLongitude, maxLongitude, minLatitude, maxLatitude);
