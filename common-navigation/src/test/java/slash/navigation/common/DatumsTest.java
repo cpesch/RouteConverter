@@ -22,7 +22,9 @@ package slash.navigation.common;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.common.Datums.lookupIndex;
 import static slash.navigation.common.Datums.toWgs84;
 
@@ -85,5 +87,65 @@ public class DatumsTest {
     public void testName() {
         assertEquals("WGS 84", Datums.name(118));
         assertEquals("Adindan", Datums.name(0));
+    }
+
+    @Test
+    public void testOziExplorerNamesUseTheSameDatum() {
+        String[][] pairs = {
+                {"Ord Srvy Grt Britn", "OSGB36"},
+                {"Tokyo", "Tokyo mean"},
+                {"Pulkovo 1942 (1)", "Pulkovo 1942"},
+                {"Pulkovo 1942 (2)", "Pulkovo 1942"},
+                {"S42", "S-42(Pulkovo1942)"},
+                {"Johnston Island", "Johnston Island 61"},
+                {"European 1979", "European 1979 mean"},
+                {"Arc 1950", "ARC 1950 Mean"},
+                {"Hartebeeshoek94", "WGS 84"},
+        };
+        for (String[] pair : pairs) {
+            int alias = lookupIndex(pair[0]);
+            int target = lookupIndex(pair[1]);
+            assertTrue(target >= 0, pair[1]);
+            assertEquals(target, alias, pair[0]);
+            assertArrayEquals(toWgs84(51.5, -0.1, 0.0, target), toWgs84(51.5, -0.1, 0.0, alias), 0.0, pair[0]);
+        }
+        assertEquals(lookupIndex("S42"), lookupIndex("S42       "));
+    }
+
+    @Test
+    public void testOziExplorerNamesOfMissingDatumsStayUnknown() {
+        for (String name : new String[]{"Potsdam Rauenberg DHDN", "RT 90", "NTF France", "Rijksdriehoeksmeting",
+                "Hermannskogel", "Old Hawaiian", "Australian Geodetic 1966"})
+            assertEquals(-1, lookupIndex(name), name);
+    }
+
+    @Test
+    public void testPolesKeepTheLongitude() {
+        int datum = lookupIndex("European 1950");
+        for (double latitude : new double[]{90.0, -90.0, 89.9999, -89.9999}) {
+            double[] result = toWgs84(latitude, 10.0, 0.0, datum);
+            assertEquals(10.0, result[1], 0.0, "latitude " + latitude);
+            assertTrue(Math.abs(result[0]) <= 90.0 + 0.001, "latitude " + latitude);
+        }
+    }
+
+    @Test
+    public void testLongitudeIsWrappedAtTheAntimeridian() {
+        double[] east = toWgs84(48.1, 179.9999, 0.0, lookupIndex("European 1950"));
+        assertTrue(east[1] >= -180.0 && east[1] <= 180.0, "longitude " + east[1]);
+        assertEquals(-179.9988, east[1], 0.0001);
+        double[] west = toWgs84(-48.1, -179.9999, 0.0, lookupIndex("Tokyo mean"));
+        assertTrue(west[1] >= -180.0 && west[1] <= 180.0, "longitude " + west[1]);
+    }
+
+    @Test
+    public void testNonFiniteValuesPassThrough() {
+        int datum = lookupIndex("European 1950");
+        double[] result = toWgs84(Double.NaN, 11.0, 0.0, datum);
+        assertTrue(Double.isNaN(result[0]));
+        assertEquals(11.0, result[1], 0.0);
+        result = toWgs84(48.0, Double.POSITIVE_INFINITY, 0.0, datum);
+        assertEquals(48.0, result[0], 0.0);
+        assertEquals(Double.POSITIVE_INFINITY, result[1], 0.0);
     }
 }

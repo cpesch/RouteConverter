@@ -248,12 +248,21 @@ public class CompeGPSDataRouteFormatTest {
     public void utmAndUnknownDatumAndInvalidFilesYieldNoRoute() throws IOException {
         CompeGPSDataFormat format = new CompeGPSDataWaypointFormat();
         assertTrue(read(format, "G  WGS 84\nU  0\nW  A A 123456 5000000 27-MAR-62 00:00:00 1.0\n").isEmpty());
-        assertTrue(read(format, "G  No Such Datum\nU  1\nW  A A 48.0" + DEG + "N 11.0" + DEG + "E 27-MAR-62 00:00:00 1.0\n").isEmpty());
         assertTrue(read(format, "U  1\nW  A A 48.0" + DEG + "N 11.0" + DEG + "E 27-MAR-62 00:00:00 1.0\n").isEmpty());
         assertTrue(read(format, "U  1\nG  WGS 84\nW  A A 48.0" + DEG + "N 11.0" + DEG + "E 27-MAR-62 00:00:00 1.0\n").isEmpty());
         assertTrue(read(format, HEADER).isEmpty());
         assertTrue(read(format, "this is not a CompeGPS file\nat all\n").isEmpty());
         assertTrue(read(format, "").isEmpty());
+    }
+
+    @Test
+    public void unknownDatumIsReadAsWgs84() throws IOException {
+        // GPSBabel declines the file
+        GpxPosition position = read(new CompeGPSDataWaypointFormat(), "G  No Such Datum\nU  1\nW  A A 48.0" + DEG + "N 11.0" + DEG +
+                "E 27-MAR-62 00:00:00 1.0\n").get(0).getPosition(0);
+        assertEquals(48.0, position.getLatitude(), 0.0);
+        assertEquals(11.0, position.getLongitude(), 0.0);
+        assertEquals("A", position.getDescription());
     }
 
     @Test
@@ -285,17 +294,156 @@ public class CompeGPSDataRouteFormatTest {
     private static final String EXPECTED_TRACK = "G  WGS 84\nU  1\n" +
             "T  A 48.1234567000\u00BAN 11.5000000000\u00BAE 03-JUN-11 11:34:37 s 520.0 0.0 0.0 0.0 0 -1000.0 -1.0 -1.0 -1.0 -1.0\n" +
             "t 4294967295|My route x|-1|-1\n" +
-            "T  A 48.2000000000\u00BAS 11.6000000000\u00BAW 01-JAN-70 00:00:00 s -99999999.0 0.0 0.0 0.0 0 -1000.0 -1.0 -1.0 -1.0 -1.0\n" +
+            "T  A 48.2000000000\u00BAS 11.6000000000\u00BAW 01-JAN-70 00:00:00 s -9999.0 0.0 0.0 0.0 0 -1000.0 -1.0 -1.0 -1.0 -1.0\n" +
             "F  1234\n";
 
+    private static final String EXPECTED_WAYPOINTS =
+            "W  Home A 48.1234567000\u00BAN 11.5000000000\u00BAE 03-JUN-11 11:34:37 520.000000 Sweet home\n" +
+            "W  Two_Words A 48.2000000000\u00BAS 11.6000000000\u00BAW 27-MAR-62 00:00:00 -9999.000000\n";
+
+    private static List<GpxPosition> writePositions() {
+        List<GpxPosition> positions = new ArrayList<>();
+        positions.add(position(11.5, 48.1234567, 520.0, "2011-06-03T11:34:37Z", "Home; Sweet home"));
+        positions.add(position(-11.6, -48.2, null, null, "Two Words"));
+        return positions;
+    }
+
     @Test
-    public void allClassesWriteTheTrackFormWhateverTheCharacteristics() throws IOException {
-        for (CompeGPSDataFormat format : asList(new CompeGPSDataWaypointFormat(), new CompeGPSDataRouteFormat(), new CompeGPSDataTrackFormat())) {
-            for (RouteCharacteristics characteristics : asList(Waypoints, Route, Track)) {
-                List<GpxPosition> positions = new ArrayList<>();
-                positions.add(position(11.5, 48.1234567, 520.0, "2011-06-03T11:34:37Z", "Home; Sweet home"));
-                positions.add(position(-11.6, -48.2, null, null, "Two Words"));
-                assertEquals(EXPECTED_TRACK, write(format, format.createRoute(characteristics, "My route| x", positions)));
+    public void eachClassWritesItsOwnFormWhateverTheCharacteristics() throws IOException {
+        // GPSBabel 1.5.4 wrote the track form for all three classes
+        for (RouteCharacteristics characteristics : asList(Waypoints, Route, Track)) {
+            assertEquals(EXPECTED_TRACK, write(new CompeGPSDataTrackFormat(),
+                    new CompeGPSDataTrackFormat().createRoute(characteristics, "My route| x", writePositions())));
+            assertEquals(HEADER + EXPECTED_WAYPOINTS, write(new CompeGPSDataWaypointFormat(),
+                    new CompeGPSDataWaypointFormat().createRoute(characteristics, "My route| x", writePositions())));
+            assertEquals(HEADER + "R  16711680,My route| x,1,-1\n" + EXPECTED_WAYPOINTS, write(new CompeGPSDataRouteFormat(),
+                    new CompeGPSDataRouteFormat().createRoute(characteristics, "My route| x", writePositions())));
+        }
+    }
+
+    @Test
+    public void waypointsAndRoutesSurviveWriteAndRead() throws IOException {
+        for (CompeGPSDataFormat format : asList(new CompeGPSDataWaypointFormat(), new CompeGPSDataRouteFormat())) {
+            List<GpxPosition> positions = writePositions();
+            positions.add(position(12.0, 49.0, 1.5, null, null));
+            String written = write(format, format.createRoute(Route, "Name, with\r\ncomma", positions));
+            for (String line : written.split("\n"))
+                assertTrue(line.matches("^[GURW] .*"), line);
+            List<GpxRoute> routes = read(format, written);
+            assertEquals(1, routes.size());
+            GpxRoute route = routes.get(0);
+            assertEquals(format instanceof CompeGPSDataRouteFormat ? "Name  with comma" : null, route.getName());
+            assertEquals(3, route.getPositionCount());
+            assertEquals("Home; Sweet home", route.getPosition(0).getDescription());
+            assertEquals(millis("2011-06-03T11:34:37Z"), route.getPosition(0).getTime().getTimeInMillis());
+            assertEquals(520.0, route.getPosition(0).getElevation(), DELTA);
+            // blanks become "_", which only the TwoNav dialect turns back into blanks
+            assertEquals("Two_Words", route.getPosition(1).getDescription());
+            assertNull(route.getPosition(1).getTime());
+            assertNull(route.getPosition(1).getElevation());
+            assertNull(route.getPosition(2).getDescription());
+            assertEquals(49.0, route.getPosition(2).getLatitude(), DELTA);
+        }
+    }
+
+    @Test
+    public void waypointNamesAreTheTextBeforeTheAThatPrecedesTheLatitude() throws IOException {
+        String text = HEADER +
+                "W  A A 48.1" + DEG + "N 11.5" + DEG + "E 27-MAR-62 00:00:00 5.000000 desc\n" +
+                "W  Foo Bar A 48.2" + DEG + "N 11.6" + DEG + "E 27-MAR-62 00:00:00 6.000000\n" +
+                "W  A 48.3" + DEG + "N 11.7" + DEG + "E 27-MAR-62 00:00:00 7.000000\n" +
+                "W  Nowhere A foo bar 27-MAR-62 00:00:00 8.000000\n" +
+                "W  Garmin A 48.4?N 11.8?E 27-MAR-62 00:00:00 9.000000\n";
+        List<GpxPosition> positions = read(new CompeGPSDataWaypointFormat(), text).get(0).getPositions();
+        // GPSBabel takes "A" for the "A" of the line and declines the file, and shifts the fields of "Foo Bar"
+        assertEquals(4, positions.size());
+        assertEquals("A; desc", positions.get(0).getDescription());
+        assertEquals(48.1, positions.get(0).getLatitude(), DELTA);
+        assertEquals(5.0, positions.get(0).getElevation(), DELTA);
+        assertEquals("Foo Bar", positions.get(1).getDescription());
+        assertEquals(11.6, positions.get(1).getLongitude(), DELTA);
+        assertNull(positions.get(2).getDescription());
+        assertEquals(48.3, positions.get(2).getLatitude(), DELTA);
+        assertEquals("Garmin", positions.get(3).getDescription());
+        assertEquals(48.4, positions.get(3).getLatitude(), DELTA);
+    }
+
+    @Test
+    public void underscoresAreBlanksInTheTwoNavDialectOnly() throws IOException {
+        String body = "G  WGS 84\nU  1\nW  Two_Words_Here__ A 48.1" + DEG + "N 11.5" + DEG + "E 27-MAR-62 00:00:00 5.000000 a_b\n";
+        assertEquals("Two Words Here; a_b", read(new CompeGPSDataWaypointFormat(), ("B  UTF-8\n" + body).getBytes(UTF_8))
+                .get(0).getPosition(0).getDescription());
+        assertEquals("Two_Words_Here; a_b", read(new CompeGPSDataWaypointFormat(), body).get(0).getPosition(0).getDescription());
+    }
+
+    @Test
+    public void trackPointsWithoutCoordinatesAreSkipped() throws IOException {
+        String text = HEADER +
+                "T  A 48.0" + DEG + "N 11.0" + DEG + "E 03-JUN-11 07:24:40 s 500.0\n" +
+                "T  A foo 11.0" + DEG + "E 03-JUN-11 07:24:41 s 500.0\n" +
+                "T  A 48.2" + DEG + "N 11.2" + DEG + "E 03-JUN-11 07:24:42 s 500.0\n";
+        GpxRoute route = read(new CompeGPSDataTrackFormat(), text).get(0);
+        assertEquals(2, route.getPositionCount());
+        assertEquals(48.2, route.getPosition(1).getLatitude(), DELTA);
+    }
+
+    @Test
+    public void sentinelTimesAndAltitudesAreNoValues() throws IOException {
+        String text = HEADER +
+                "T  A 48.0" + DEG + "N 11.0" + DEG + "E 30-DEC-89 23:59:59 s -99999999.0\n" +
+                "T  A 48.1" + DEG + "N 11.1" + DEG + "E 27-MAR-62 00:00:00 s -9999.0\n" +
+                "T  A 48.2" + DEG + "N 11.2" + DEG + "E 00-NUL-00 00:00:00 s -9999.000000\n" +
+                "T  A 48.3" + DEG + "N 11.3" + DEG + "E 01-JAN-70 00:00:00 s 1.0\n" +
+                "T  A 48.4" + DEG + "N 11.4" + DEG + "E 30-DEC-89 23:59:58 s 2.0\n";
+        List<GpxPosition> positions = read(new CompeGPSDataTrackFormat(), text).get(0).getPositions();
+        assertEquals(5, positions.size());
+        for (int i = 0; i < 4; i++)
+            assertNull(positions.get(i).getTime(), "position " + i);
+        for (int i = 0; i < 3; i++)
+            assertNull(positions.get(i).getElevation(), "position " + i);
+        assertEquals(millis("1989-12-30T23:59:58Z"), positions.get(4).getTime().getTimeInMillis());
+    }
+
+    private static Long parse(String date, String time) {
+        CompactCalendar calendar = CompeGPSDataFormat.parseDateTime(date, time);
+        return calendar != null ? calendar.getTimeInMillis() : null;
+    }
+
+    @Test
+    public void dateAndTimeParsingIsTolerantAndNeverThrows() {
+        assertEquals(millis("2011-06-03T07:24:40Z"), parse("03-JUN-11", "07:24:40"));
+        assertEquals(millis("2011-06-03T07:24:40Z"), parse("3-JUN-11", "7:24:40"));
+        assertEquals(millis("2011-06-03T07:04:04Z"), parse("03-jun-2011", "7:4:4"));
+        assertEquals(millis("2011-06-03T07:24:40.123Z"), parse("03-JUN-2011", "07:24:40.123"));
+        assertEquals(millis("2011-06-03T07:24:40.123Z"), parse("03-JUN-2011", "07:24:40,123"));
+        assertEquals(millis("2011-06-03T07:24:40.500Z"), parse("03-JUN-2011", "07:24:40.5"));
+        assertEquals(millis("2011-06-03T07:24:40.123Z"), parse("03-JUN-2011", "07:24:40.123456"));
+        assertEquals(millis("1969-06-03T07:24:40Z"), parse("03-JUN-1969", "07:24:40"));
+        // GPSBabel and RouteConverter until now: exceptions, December for an unknown month, roll-overs
+        for (String[] bad : new String[][]{
+                {"03-JUN-1000000000", "07:24:40"}, {"03-JUN-999999999", "07:24:40"}, {"03-XXX-11", "07:24:40"},
+                {"99-JAN-11", "07:24:40"}, {"03-JAN-11", "99:99:99"}, {"31-FEB-11", "07:24:40"}, {"00-NUL-00", "00:00:00"},
+                {"03-JUN-11", "24:00:00"}, {"03-JUN-11", "07:24"}, {"03-JUN-11", "07:24:40.x"}, {"03-JUN-110", "07:24:40"},
+                {"03JUN11", "07:24:40"}, {"03-JUN-11", ""}, {"", ""}, {null, "07:24:40"}, {"03-JUN-11", null},
+                {"-3-JUN-11", "07:24:40"}, {"03-JUN-11", "-7:24:40"}}) {
+            assertNull(parse(bad[0], bad[1]), bad[0] + " " + bad[1]);
+        }
+    }
+
+    @Test
+    public void randomDatesAndTimesNeverThrow() {
+        java.util.Random random = new java.util.Random(20261127L);
+        String alphabet = "0123456789-:.,JANFEBXUL+ e";
+        for (int i = 0; i < 20000; i++) {
+            StringBuilder date = new StringBuilder(), time = new StringBuilder();
+            for (int j = random.nextInt(16); j > 0; j--)
+                date.append(alphabet.charAt(random.nextInt(alphabet.length())));
+            for (int j = random.nextInt(16); j > 0; j--)
+                time.append(alphabet.charAt(random.nextInt(alphabet.length())));
+            CompactCalendar calendar = CompeGPSDataFormat.parseDateTime(date.toString(), time.toString());
+            if (calendar != null) {
+                int year = calendar.getCalendar().get(java.util.Calendar.YEAR);
+                assertTrue(year >= 1 && year <= 9999, date + " " + time);
             }
         }
     }

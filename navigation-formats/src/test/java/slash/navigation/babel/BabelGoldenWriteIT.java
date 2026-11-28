@@ -104,6 +104,14 @@ public class BabelGoldenWriteIT {
             "GarminMapSource5Format/from10.gpx", "GarminMapSource5Format/from10trk.gpx",
             "GarminMapSource6Format/from10.gpx", "GarminMapSource6Format/from10trk.gpx",
             "GarminMapSource6Format/from11.gpx", "GarminMapSource6Format/synthetic",
+            // CompeGPS Data waypoint and route files are written as "W" lines, a route with an "R" line in front (D20,
+            // audit 2026-11-27, OC B1), 1.5.4 writes a track for every class
+            "CompeGPSDataRouteFormat/from10.gpx", "CompeGPSDataRouteFormat/from10trk.gpx", "CompeGPSDataRouteFormat/from11.gpx",
+            "CompeGPSDataWaypointFormat/from10.gpx", "CompeGPSDataWaypointFormat/from10trk.gpx", "CompeGPSDataWaypointFormat/from11.gpx",
+            // OziExplorer tracks are written with altitudes of one decimal as GPSBabel master writes them (D18, audit
+            // 2026-11-27, OC E8b) and without the name ComplimentsOfGPSBabel (D25, OC E5), 1.5.4 writes whole feet
+            "OziExplorerTrackFormat/from10.gpx", "OziExplorerTrackFormat/from10trk.gpx", "OziExplorerTrackFormat/from11.gpx",
+            "OziExplorerTrackFormat/synthetic",
             // Tom Tom POI rounds a negative coordinate half up (D18, audit 2026-11-27), 1.5.4 truncates it toward zero
             "TomTomPoiFormat/from10.gpx", "TomTomPoiFormat/from10trk.gpx", "TomTomPoiFormat/from11.gpx"
     );
