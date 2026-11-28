@@ -24,11 +24,20 @@
 
 package slash.navigation.gpsbabel;
 
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CodingErrorAction;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static slash.navigation.base.GpxBackedNavigationFormat.isLegalXmlCharacter;
 import static slash.navigation.gpsbabel.GpsBabelMath.ddmm2degrees;
 
@@ -39,7 +48,101 @@ public class GpsBabelText {
     private static final double UNSET = 999;
     private static final Pattern ATOF = Pattern.compile("^(?:\\d+\\.?\\d*|\\.\\d+)(?:[eE][+-]?\\d+)?");
 
+    private static final Charset WINDOWS_1252 = Charset.forName("windows-1252");
+    // the five bytes Windows-1252 leaves undefined; they are mapped to the C1 control characters of the same value
+    private static final String WINDOWS_1252_HOLES = "\u0081\u008D\u008F\u0090\u009D";
+    private static final byte[] UTF8_BOM = {(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
+
     private GpsBabelText() {
+    }
+
+    /**
+     * Removes a leading UTF-8 byte order mark ({@code EF BB BF}), which editors like Notepad and Excel write
+     * and which no format expects in front of its first field. Other bytes are returned unchanged.
+     */
+    public static byte[] stripBom(byte[] bytes) {
+        if (bytes.length >= UTF8_BOM.length && bytes[0] == UTF8_BOM[0] && bytes[1] == UTF8_BOM[1] && bytes[2] == UTF8_BOM[2])
+            return Arrays.copyOfRange(bytes, UTF8_BOM.length, bytes.length);
+        return bytes;
+    }
+
+    /**
+     * Decodes the text of a file or field whose encoding is not declared: as UTF-8 when the bytes are valid
+     * UTF-8, else as Windows-1252 (see {@link #decodeCp1252(byte[], int, int)}), which decodes every byte.
+     * A leading UTF-8 byte order mark is removed. Pure ASCII decodes the same either way, and text in
+     * Windows-1252 with characters above 0x7F is practically never valid UTF-8, so the guess is safe.
+     */
+    public static String decodeUtf8OrCp1252(byte[] bytes) {
+        byte[] text = stripBom(bytes);
+        CharsetDecoder decoder = UTF_8.newDecoder()
+                .onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(CodingErrorAction.REPORT);
+        try {
+            return decoder.decode(ByteBuffer.wrap(text)).toString();
+        } catch (CharacterCodingException e) {
+            return decodeCp1252(text, 0, text.length);
+        }
+    }
+
+    /**
+     * Decodes Windows-1252 without losing a byte: the five bytes the code page leaves undefined
+     * (0x81, 0x8D, 0x8F, 0x90, 0x9D) become the characters U+0081 ... U+009D instead of U+FFFD,
+     * so {@link #encodeCp1252(String)} writes them back unchanged.
+     */
+    public static String decodeCp1252(byte[] bytes, int offset, int length) {
+        StringBuilder result = new StringBuilder(new String(bytes, offset, length, WINDOWS_1252));
+        for (int i = 0; i < result.length(); i++)
+            if (result.charAt(i) == '\uFFFD')
+                result.setCharAt(i, (char) (bytes[offset + i] & 0xFF));
+        return result.toString();
+    }
+
+    /**
+     * Encodes text as Windows-1252, the counterpart of {@link #decodeCp1252(byte[], int, int)}: U+0081 ... U+009D
+     * of the five undefined bytes are written as these bytes, every other character the code page cannot
+     * represent becomes {@code ?}. Use {@link #canEncodeCp1252(String)} to find out whether that happens.
+     */
+    public static byte[] encodeCp1252(String text) {
+        StringBuilder holes = new StringBuilder();
+        String marked = markHoles(text, holes);
+        byte[] result = marked.getBytes(WINDOWS_1252);
+        if (holes.length() > 0) {
+            int hole = 0;
+            for (int i = 0; i < result.length && hole < holes.length(); i++)
+                if (result[i] == 0x1A)
+                    result[i] = (byte) holes.charAt(hole++);
+        }
+        return result;
+    }
+
+    /**
+     * Whether {@link #encodeCp1252(String)} writes every character of the text, without a {@code ?} for a
+     * character outside Windows-1252.
+     */
+    public static boolean canEncodeCp1252(String text) {
+        CharsetEncoder encoder = WINDOWS_1252.newEncoder();
+        String marked = markHoles(text, new StringBuilder());
+        try {
+            encoder.encode(CharBuffer.wrap(marked));
+            return true;
+        } catch (CharacterCodingException e) {
+            return false;
+        }
+    }
+
+    // replaces the characters of the undefined bytes - and a literal SUB, so it cannot be mistaken
+    // for one of them - by SUB (0x1A, the same byte in Windows-1252) and remembers what they were
+    private static String markHoles(String text, StringBuilder holes) {
+        StringBuilder result = null;
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (c == 0x1A || WINDOWS_1252_HOLES.indexOf(c) != -1) {
+                if (result == null)
+                    result = new StringBuilder(text);
+                result.setCharAt(i, (char) 0x1A);
+                holes.append(c);
+            }
+        }
+        return result == null ? text : result.toString();
     }
 
     /**

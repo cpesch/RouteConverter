@@ -24,10 +24,18 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static slash.navigation.gpsbabel.GpsBabelText.canEncodeCp1252;
 import static slash.navigation.gpsbabel.GpsBabelText.csvLineParse;
+import static slash.navigation.gpsbabel.GpsBabelText.decodeCp1252;
+import static slash.navigation.gpsbabel.GpsBabelText.decodeUtf8OrCp1252;
+import static slash.navigation.gpsbabel.GpsBabelText.encodeCp1252;
+import static slash.navigation.gpsbabel.GpsBabelText.stripBom;
 import static slash.navigation.gpsbabel.GpsBabelText.humanToDec;
 
 public class GpsBabelTextTest {
@@ -131,5 +139,55 @@ public class GpsBabelTextTest {
         assertEquals("a;b", GpsBabelText.cleanField("a;b", ","));
         assertEquals("", GpsBabelText.cleanField(null, ","));
         assertEquals("\uD83D\uDE00 x", GpsBabelText.cleanField("\uD83D\uDE00 x", ","));
+    }
+
+    private static byte[] bytes(int... values) {
+        byte[] result = new byte[values.length];
+        for (int i = 0; i < values.length; i++)
+            result[i] = (byte) values[i];
+        return result;
+    }
+
+    @Test
+    public void testStripBom() {
+        assertArrayEquals(bytes('a'), stripBom(bytes(0xEF, 0xBB, 0xBF, 'a')));
+        assertArrayEquals(bytes(), stripBom(bytes(0xEF, 0xBB, 0xBF)));
+        assertArrayEquals(bytes(0xEF, 0xBB, 'a'), stripBom(bytes(0xEF, 0xBB, 'a')));
+        assertArrayEquals(bytes(0xFF, 0xFE, 'a'), stripBom(bytes(0xFF, 0xFE, 'a')));
+        assertArrayEquals(bytes(), stripBom(bytes()));
+    }
+
+    @Test
+    public void testDecodeUtf8OrCp1252() {
+        assertEquals("M\u00fcller \u20ac", decodeUtf8OrCp1252("M\u00fcller \u20ac".getBytes(UTF_8)));
+        assertEquals("M\u00fcller \u20ac", decodeUtf8OrCp1252(bytes('M', 0xFC, 'l', 'l', 'e', 'r', ' ', 0x80)));
+        assertEquals("ab", decodeUtf8OrCp1252(bytes(0xEF, 0xBB, 0xBF, 'a', 'b')));
+        assertEquals("\u00fc", decodeUtf8OrCp1252(bytes(0xEF, 0xBB, 0xBF, 0xFC)));
+        assertEquals("plain", decodeUtf8OrCp1252("plain".getBytes(UTF_8)));
+        assertEquals("", decodeUtf8OrCp1252(bytes()));
+    }
+
+    @Test
+    public void testCp1252HolesRoundTrip() {
+        byte[] all = new byte[256];
+        for (int i = 0; i < all.length; i++)
+            all[i] = (byte) i;
+        String text = decodeCp1252(all, 0, all.length);
+        assertEquals(256, text.length());
+        assertEquals('\u0081', text.charAt(0x81));
+        assertEquals('\u009D', text.charAt(0x9D));
+        assertEquals('\u20AC', text.charAt(0x80));
+        assertEquals((char) 0x1A, text.charAt(0x1A));
+        assertArrayEquals(all, encodeCp1252(text));
+        assertTrue(canEncodeCp1252(text));
+        assertEquals("\u0090", decodeCp1252(bytes('x', 0x90, 'y'), 1, 1));
+    }
+
+    @Test
+    public void testEncodeCp1252ReplacesOtherCharacters() {
+        assertArrayEquals(bytes('a', '?', 0x81, '?', 'b'), encodeCp1252("a\u017C\u0081\uD83D\uDE00b"));
+        assertFalse(canEncodeCp1252("\u017C\u00F3\u0142\u0107"));
+        assertFalse(canEncodeCp1252("\uD83D\uDE00"));
+        assertTrue(canEncodeCp1252("M\u00fcller \u20ac \u0081"));
     }
 }

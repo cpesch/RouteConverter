@@ -38,6 +38,9 @@ import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.singletonList;
@@ -46,11 +49,17 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.gpsbabel.GpsBabelText.cleanField;
 import static slash.navigation.gpsbabel.GpsBabelText.csvLineParse;
+import static slash.navigation.gpsbabel.GpsBabelText.decodeUtf8OrCp1252;
 import static slash.navigation.gpsbabel.GpsBabelText.humanToDec;
 
 /**
  * Reads and writes Garmin POI Database (.xcsv) files, the CSV input of Garmin POI Loader:
  * <code>longitude,latitude,shortname,description</code>, one waypoint per line.
+ * <p>
+ * Reading is more lenient than GPSBabel: fields may be enclosed in double quotes (decision D25), lines may end with
+ * CR, LF or CR LF, a byte order mark, a header line and comment lines starting with {@code #} or {@code ;} are
+ * skipped, and text that is not UTF-8 is read as Windows-1252 (decision D22). Every other line has to be a point of
+ * interest, else the file is some other text.
  *
  * @author Christian Pesch
  */
@@ -63,7 +72,11 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
     private static final int DESCRIPTION_LENGTH = 50;
     private static final int FIELD_COUNT = 3;
     private static final String RECORD_DELIMITER = "\n";
-    // GPSBabel 1.5.4 passes the characters through as UTF-8
+    private static final Pattern LINE_BREAK = Pattern.compile("\r\n|\r|\n");
+    private static final String ENCLOSURE = "\"";
+    private static final Set<String> HEADER_FIELDS = Set.of("longitude", "latitude", "lon", "long", "lng", "lat",
+            "x", "y", "breite", "länge", "laenge");
+    // GPSBabel 1.5.4 writes the characters as UTF-8
     private static final Charset CHARSET = UTF_8;
 
     public String getExtension() {
@@ -130,7 +143,18 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
     }
 
     private GpxPosition parseLine(String line) {
-        List<String> fields = csvLineParse(line, DELIMITER, null);
+        // a double quote that is no enclosure, like the seconds sign of 41 9 5.6", leaves the enclosures unbalanced
+        // or the fields unusable: then the line is read without enclosures, as GPSBabel does
+        boolean balanced = line.chars().filter(c -> c == '"').count() % 2 == 0;
+        GpxPosition position = balanced ? parseFields(csvLineParse(line, DELIMITER, ENCLOSURE), true) : null;
+        return position != null ? position : parseFields(csvLineParse(line, DELIMITER, null), false);
+    }
+
+    private static String unescape(String field, boolean enclosed) {
+        return enclosed ? field.replace(ENCLOSURE + ENCLOSURE, ENCLOSURE) : field;
+    }
+
+    private GpxPosition parseFields(List<String> fields, boolean enclosed) {
         if (fields.size() < FIELD_COUNT)
             return null;
 
@@ -156,8 +180,8 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
                 latitude < -90.0 || latitude > 90.0 || longitude < -180.0 || longitude > 180.0)
             return null;
 
-        String name = stripIllegalXmlCharacters(trim(fields.get(2)));
-        String description = stripIllegalXmlCharacters(trim(fields.size() > 3 ? fields.get(3) : ""));
+        String name = stripIllegalXmlCharacters(trim(unescape(fields.get(2), enclosed)));
+        String description = stripIllegalXmlCharacters(trim(unescape(fields.size() > 3 ? fields.get(3) : "", enclosed)));
         String text = asWayPointDescription(name.isEmpty() ? null : name, description.isEmpty() ? null : description);
         return new GpxPosition(longitude, latitude, null, null, null, text);
     }
@@ -167,11 +191,28 @@ public class GarminPoiDbFormat extends GpxBackedNavigationFormat {
         return asDescription(name, description);
     }
 
+    private static boolean isComment(String line) {
+        return line.startsWith("#") || line.startsWith(";");
+    }
+
+    private static boolean isHeader(String line) {
+        List<String> fields = csvLineParse(line, DELIMITER, ENCLOSURE);
+        return fields.size() >= FIELD_COUNT &&
+                HEADER_FIELDS.contains(trim(fields.get(0)).toLowerCase(Locale.ROOT)) &&
+                HEADER_FIELDS.contains(trim(fields.get(1)).toLowerCase(Locale.ROOT));
+    }
+
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
-        String content = new String(readFully(source), CHARSET);
+        String content = decodeUtf8OrCp1252(readFully(source));
         List<GpxPosition> positions = new ArrayList<>();
-        for (String line : content.split("\n", -1)) {
-            if (trim(line).isEmpty())
+        boolean first = true;
+        for (String line : LINE_BREAK.split(content, -1)) {
+            String trimmed = trim(line);
+            if (trimmed.isEmpty() || isComment(trimmed))
+                continue;
+            boolean header = first && isHeader(line);
+            first = false;
+            if (header)
                 continue;
             GpxPosition position = parseLine(line);
             // every line has to be a point of interest, else this is some other text

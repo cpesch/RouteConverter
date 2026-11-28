@@ -111,7 +111,9 @@ public class BabelGoldenWriteIT {
             // OziExplorer tracks are written with altitudes of one decimal as GPSBabel master writes them (D18, audit
             // 2026-11-27, OC E8b) and without the name ComplimentsOfGPSBabel (D25, OC E5), 1.5.4 writes whole feet
             "OziExplorerTrackFormat/from10.gpx", "OziExplorerTrackFormat/from10trk.gpx", "OziExplorerTrackFormat/from11.gpx",
-            "OziExplorerTrackFormat/synthetic"
+            "OziExplorerTrackFormat/synthetic",
+            // Tom Tom POI rounds a negative coordinate half up (D18, audit 2026-11-27), 1.5.4 truncates it toward zero
+            "TomTomPoiFormat/from10.gpx", "TomTomPoiFormat/from10trk.gpx", "TomTomPoiFormat/from11.gpx"
     );
     // native writers of formats GPSBabel 1.5.4 never wrote: there is no write golden and none can exist
     // (spec 00083.3 decision D3.1, issue #386: "there is no oracle for the writer"); see TourExchangeFormatTest
