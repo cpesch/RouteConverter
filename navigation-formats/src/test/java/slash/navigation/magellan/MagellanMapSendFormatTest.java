@@ -46,6 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public class MagellanMapSendFormatTest {
@@ -276,29 +277,125 @@ public class MagellanMapSendFormatTest {
 
     @Test
     public void rejectsOtherFileTypes() {
-        // 0 region and 3 log are fatal to GPSBabel, 2 track is not read yet
-        for (int type : new int[]{0, 2, 3, 4}) {
+        // 0 region and 3 log are fatal to GPSBabel
+        for (int type : new int[]{0, 3, 4}) {
             LittleEndianOutput output = header(type);
             output.writeInt32(1);
             waypoint(output, "A", "B", 1, 1.0, 2.0, 3.0);
             output.writeInt32(0);
-            assertEquals("Cannot read MapSend file of type " + type + ", only waypoint files (type 1)",
+            assertEquals("Cannot read MapSend file of type " + type + ", only waypoint (type 1) and track files (type 2)",
                     assertUnreadable(output.toByteArray()).getMessage());
         }
     }
 
+    private static void trackPoint(LittleEndianOutput output, String version, double longitude, double latitude,
+                                   double altitude, int seconds, int centiseconds) {
+        output.writeDouble(longitude);
+        output.writeDouble(-latitude);
+        if (Integer.parseInt(version) < 36)
+            output.writeInt32((int) altitude);
+        else
+            output.writeFloat((float) altitude);
+        output.writeInt32(seconds);
+        output.writeInt32(1); // valid
+        if (Integer.parseInt(version) >= 34)
+            output.writeUInt8(centiseconds);
+    }
+
+    private static LittleEndianOutput trackHeader(String version, String name, int count) {
+        LittleEndianOutput output = header(13, "4D5333" + version + " MS", version, 2);
+        pstr(output, name);
+        output.writeUInt32(count);
+        return output;
+    }
+
     @Test
-    public void rejectsTrackFile() throws IOException {
-        LittleEndianOutput output = header(13, "4D533334 MS", "34", 2);
-        pstr(output, "Track");
-        output.writeUInt32(1);
-        output.writeDouble(11.5);
-        output.writeDouble(-48.1);
-        output.writeInt32(500);
-        output.writeInt32(1700000000);
-        output.writeInt32(1);
-        output.writeUInt8(0);
-        assertUnreadable(output.toByteArray());
+    public void readsTrackFile() throws IOException {
+        // the GPX of GPSBabel 1.5.4 for this file: one track "Track", times with centiseconds
+        LittleEndianOutput output = trackHeader("34", "Track", 2);
+        trackPoint(output, "34", 8.5, 50.1, 100, 1000000000, 23);
+        trackPoint(output, "34", 8.6, 50.2, -200, 1000000100, 0);
+        List<GpxRoute> routes = read(output.toByteArray());
+        assertEquals(1, routes.size());
+        GpxRoute route = routes.get(0);
+        assertEquals(Track, route.getCharacteristics());
+        assertEquals("Track", route.getName());
+        assertEquals(2, route.getPositionCount());
+        GpxPosition first = route.getPosition(0);
+        assertEquals(8.5, first.getLongitude());
+        assertEquals(50.1, first.getLatitude());
+        assertEquals(100.0, first.getElevation());
+        assertEquals(1000000000230L, first.getTime().getTimeInMillis());
+        assertNull(first.getDescription());
+        GpxPosition second = route.getPosition(1);
+        assertEquals(-200.0, second.getElevation());
+        assertEquals(1000000100000L, second.getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void readsTrackFileOfVersion30WithoutCentiseconds() throws IOException {
+        LittleEndianOutput output = trackHeader("30", "", 2);
+        trackPoint(output, "30", 8.5, 50.1, 100, 1000000000, 0);
+        trackPoint(output, "30", 8.6, 50.2, 101, 1000000001, 0);
+        List<GpxRoute> routes = read(output.toByteArray());
+        assertEquals(1, routes.size());
+        assertNull(routes.get(0).getName());
+        assertEquals(2, routes.get(0).getPositionCount());
+        assertEquals(101.0, routes.get(0).getPosition(1).getElevation());
+        assertEquals(1000000001000L, routes.get(0).getPosition(1).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void readsTrackFileOfVersion36WithFloatAltitude() throws IOException {
+        LittleEndianOutput output = trackHeader("36", "T36", 1);
+        trackPoint(output, "36", 8.5, 50.1, 123.456, 1000000000, 7);
+        GpxPosition position = read(output.toByteArray()).get(0).getPosition(0);
+        // GPSBabel 1.5.4 writes the float as 123.456001
+        assertEquals(123.456001, position.getElevation());
+        assertEquals(1000000000070L, position.getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void readsTrackFileDroppingImpossibleValues() throws IOException {
+        LittleEndianOutput output = trackHeader("34", "T", 5);
+        trackPoint(output, "34", 8.6, 50.2, -99999999, 0, 0);
+        trackPoint(output, "34", 8.7, 50.3, -100000000, -5, 99);
+        trackPoint(output, "34", 8.8, 95.0, 5, 1000000100, 0);
+        trackPoint(output, "34", 200.0, 50.0, 5, 1000000200, 0);
+        trackPoint(output, "34", Double.NaN, 50.0, 5, 1000000300, 0);
+        List<GpxRoute> routes = read(output.toByteArray());
+        assertEquals(1, routes.size());
+        // GPSBabel keeps the out-of-range points and writes 2106 for a negative time (D23)
+        assertEquals(2, routes.get(0).getPositionCount());
+        for (GpxPosition position : routes.get(0).getPositions()) {
+            assertNull(position.getElevation());
+            assertNull(position.getTime());
+        }
+    }
+
+    @Test
+    public void readsEmptyTrackFileAsNothing() throws IOException {
+        assertTrue(read(trackHeader("34", "Track", 0).toByteArray()).isEmpty());
+        LittleEndianOutput output = trackHeader("34", "Track", 1);
+        trackPoint(output, "34", 200.0, 95.0, 5, 1000000200, 0);
+        assertTrue(read(output.toByteArray()).isEmpty());
+    }
+
+    @Test
+    public void rejectsTrackFileWithMorePointsThanBytes() {
+        LittleEndianOutput output = trackHeader("34", "Track", 2);
+        trackPoint(output, "34", 8.5, 50.1, 100, 1000000000, 23);
+        output.writeBytes(new byte[28]);
+        assertEquals("MapSend file is damaged: 2 track points exceed the 57 remaining bytes",
+                assertUnreadable(output.toByteArray()).getMessage());
+        assertUnreadable(trackHeader("34", "Track", -1).toByteArray());
+    }
+
+    @Test
+    public void readsVersionLikeAtoi() {
+        assertEquals(34, MagellanMapSendFormat.readVersion(header(13, "4D533334 MS", "34", 2).toByteArray()));
+        assertEquals(3, MagellanMapSendFormat.readVersion(header(13, "4D533334 MS", "3a", 2).toByteArray()));
+        assertEquals(0, MagellanMapSendFormat.readVersion(header(13, "4D533334 MS", "x4", 2).toByteArray()));
     }
 
     @Test

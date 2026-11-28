@@ -67,6 +67,8 @@ FlightRecorderDataFormat samples/2006-09-28-CGP-xYYY-01.IGC
 FlightRecorderDataFormat samples/98JUSch1.igc
 FlightRecorderDataFormat samples/gpx_with_g7towin.igc
 MagellanMapSendFormat test/from-mapsend.wpt
+MagellanMapSendFormat samples/7_04_Ostfriesland.wpt
+MagellanMapSendFormat samples/bcr_with_gpsbabel.wpt
 AlanTrackLogFormat test/from.trl
 AlanTrackLogFormat test/from11.trl
 AlanWaypointsAndRoutesFormat test/from.wpr

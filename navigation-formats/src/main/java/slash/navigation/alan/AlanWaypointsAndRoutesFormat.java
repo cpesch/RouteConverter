@@ -51,10 +51,12 @@ import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.alan.Map500.asGpxCoordinate;
 import static slash.navigation.alan.Map500.deg2pt;
 import static slash.navigation.alan.Map500.fromLabel;
+import static slash.navigation.alan.Map500.isPlausibleTime;
 import static slash.navigation.alan.Map500.packTime;
 import static slash.navigation.alan.Map500.pt2deg;
 import static slash.navigation.alan.Map500.str2lab;
 import static slash.navigation.alan.Map500.unpackTime;
+import static slash.navigation.alan.Map500.wrapCoordinates;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.NavigationConversion.formatPosition;
@@ -181,9 +183,14 @@ public class AlanWaypointsAndRoutesFormat extends GpxBackedNavigationFormat impl
             return null;
         Wpt wpt = wpr.wpt[idx];
 
-        double latitude = asGpxCoordinate(-pt2deg(wpt.y));
-        double longitude = asGpxCoordinate(pt2deg(wpt.x));
-        Long seconds = unpackTime(wpt.date, wpt.time);
+        // like GPSBabel's waypt_add() for the waypoints, but an out-of-range point is skipped (D23)
+        double[] coordinates = wrapCoordinates(pt2deg(wpt.x), -pt2deg(wpt.y));
+        if (coordinates == null)
+            return null;
+        double longitude = asGpxCoordinate(coordinates[0]);
+        double latitude = asGpxCoordinate(coordinates[1]);
+        // an implausible date is no time (D23)
+        Long seconds = isPlausibleTime(wpt.date, wpt.time) ? unpackTime(wpt.date, wpt.time) : null;
         String name = stripIllegalXmlCharacters(trim(fromLabel(wpt.name, 0, WPT_NAME_LEN, false)));
         String comment = stripIllegalXmlCharacters(trim(fromLabel(wpt.comment, 0, WPT_COMMENT_LEN, false)));
         // GPSBabel 1.5.4 writes the creation time into GPX only if it is not zero
