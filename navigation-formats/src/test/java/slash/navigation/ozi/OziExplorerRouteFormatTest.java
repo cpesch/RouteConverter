@@ -396,6 +396,59 @@ public class OziExplorerRouteFormatTest {
         assertEquals("Grüße", route.getPosition(0).getDescription());
     }
 
+    private static List<GpxRoute> readBytes(OziExplorerFormat format, byte[] content) throws IOException {
+        ParserContextImpl<GpxRoute> context = new ParserContextImpl<>();
+        format.read(new ByteArrayInputStream(content), context);
+        return context.getRoutes();
+    }
+
+    private static byte[] utf8WithBom(String content) {
+        byte[] text = content.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        byte[] result = new byte[text.length + 3];
+        result[0] = (byte) 0xEF; result[1] = (byte) 0xBB; result[2] = (byte) 0xBF;
+        System.arraycopy(text, 0, result, 3, text.length);
+        return result;
+    }
+
+    @Test
+    public void utf8WaypointFileWithByteOrderMarkIsRead() throws IOException {
+        List<GpxRoute> routes = readBytes(new OziExplorerWaypointFormat(),
+                utf8WithBom(wpt("WGS 84", "1,Grüße,47.5,8.25,,0,1,3,0,65535,Ελλάδα,0,0,0,10,6,0,17")));
+        assertEquals(1, routes.size());
+        assertEquals("Grüße; Ελλάδα", routes.get(0).getPosition(0).getDescription());
+    }
+
+    @Test
+    public void utf8RouteFileWithoutByteOrderMarkIsRead() throws IOException {
+        List<GpxRoute> routes = readBytes(new OziExplorerRouteFormat(), rte("WGS 84", "R,0,Straße,Weg über Köln,",
+                "W,0,,1,Zürich,47.500000,8.250000,,0,1,3,0,65535,Bahnhof,0,0",
+                "W,0,,2,Genève,47.600000,8.350000,,0,1,3,0,65535,Gare,0,0").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        assertEquals(1, routes.size());
+        assertEquals("Straße", routes.get(0).getName());
+        assertEquals("Zürich; Bahnhof", routes.get(0).getPosition(0).getDescription());
+        assertEquals("Genève; Gare", routes.get(0).getPosition(1).getDescription());
+    }
+
+    @Test
+    public void utf8TrackFileWithByteOrderMarkIsRead() throws IOException {
+        List<GpxRoute> routes = readBytes(new OziExplorerTrackFormat(), utf8WithBom(
+                plt("WGS 84", "Feet", "47.500000,8.250000,0,100.0,40000.5000000,,").replace("Test Track", "Größe")));
+        assertEquals(1, routes.size());
+        assertEquals("Größe", routes.get(0).getName());
+        assertEquals(1, routes.get(0).getPositionCount());
+    }
+
+    @Test
+    public void windows1252FieldNextToUtf8FieldIsReadPerField() throws IOException {
+        byte[] utf8 = rte("WGS 84", "R,0,Straße,,",
+                "W,0,,1,A,47.500000,8.250000,,0,1,3,0,65535,,0,0",
+                "W,0,,2,B,47.600000,8.350000,,0,1,3,0,65535,,0,0").getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        String content = new String(utf8, java.nio.charset.StandardCharsets.ISO_8859_1).replace("A,47.5", "M\u00FCnster,47.5");
+        List<GpxRoute> routes = readBytes(new OziExplorerRouteFormat(), content.getBytes(java.nio.charset.StandardCharsets.ISO_8859_1));
+        assertEquals("Straße", routes.get(0).getName());
+        assertEquals("Münster", routes.get(0).getPosition(0).getDescription());
+    }
+
     // writing
 
     @Test

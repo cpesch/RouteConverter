@@ -37,16 +37,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static java.nio.charset.CodingErrorAction.REPORT;
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.math.RoundingMode.HALF_EVEN;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.isEmpty;
@@ -55,6 +50,9 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.gpsbabel.GpsBabelText.cleanField;
+import static slash.navigation.gpsbabel.GpsBabelText.decodeUtf8OrCp1252;
+import static slash.navigation.gpsbabel.GpsBabelText.encodeCp1252;
+import static slash.navigation.gpsbabel.GpsBabelText.stripBom;
 
 /**
  * The base of the OziExplorer formats: reads and writes OziExplorer Track (.plt), Route (.rte) and
@@ -66,7 +64,6 @@ import static slash.navigation.gpsbabel.GpsBabelText.cleanField;
 
 public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implements MultipleRoutesFormat<GpxRoute> {
     private static final Logger log = Logger.getLogger(OziExplorerFormat.class.getName());
-    private static final Charset WINDOWS_1252 = Charset.forName("windows-1252");
     private static final String CRLF = "\r\n";
     private static final double DAYS_SINCE_1990 = 25569; // sic: days between 1899-12-30 and 1970-01-01
     private static final int SECONDS_PER_DAY = 86400;
@@ -90,16 +87,21 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
      * through as bytes to and from GPX (UTF-8), which destroys umlauts in both directions, and writes names as
      * ISO-8859-1 - maintainer 2026-11-19: prefer correct behaviour over GPSBabel 1.5.4 bugs. The file is handled
      * as ISO-8859-1 internally, so that every byte survives, and strings are converted per field.
+     * Other programs write OziExplorer files as UTF-8, often with a byte order mark: a field that is valid UTF-8
+     * is read as UTF-8, any other as Windows-1252 (D22, audit 2026-11-27, OC L2). Files are written as Windows-1252.
      */
 
-    /** Decodes a text from a string holding one character per file byte, character 209 becomes a comma. */
+    /**
+     * Decodes a text from a string holding one character per file byte: as UTF-8 when the bytes are valid UTF-8,
+     * else as Windows-1252; character 209 becomes a comma.
+     */
     private static String decodeText(String field) {
-        return new String(field.getBytes(ISO_8859_1), WINDOWS_1252).replace(COMMA_SUBSTITUTE, ',');
+        return decodeUtf8OrCp1252(field.getBytes(ISO_8859_1)).replace(COMMA_SUBSTITUTE, ',');
     }
 
     /** Encodes a text to a string holding one character per file byte. */
     private static String encodeText(String text) {
-        return new String(text.getBytes(WINDOWS_1252), ISO_8859_1);
+        return new String(encodeCp1252(text), ISO_8859_1);
     }
 
     /** Makes a text fit into one field: a comma becomes character 209, line breaks and the like a space. */
@@ -258,16 +260,6 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
         return datum;
     }
 
-    /** Decodes the text of a Route2 file, which other programs write as UTF-8 instead of Windows-1252. */
-    private static String decodeRoute2Text(String field) {
-        try {
-            return UTF_8.newDecoder().onMalformedInput(REPORT).onUnmappableCharacter(REPORT)
-                    .decode(ByteBuffer.wrap(field.getBytes(ISO_8859_1))).toString();
-        } catch (CharacterCodingException e) {
-            return decodeText(field);
-        }
-    }
-
     /**
      * Reads an OziExplorer CE Route2 (.rt2) file, which GPSBabel does not know: three header lines
      * H1 (file type), H2 (datum) and H3 (route name) followed by one "W,name,latitude,longitude,flag"
@@ -284,13 +276,13 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
             String line = lines.get(i);
             String[] parts = line.split(",", -1);
             if (line.startsWith(ROUTE2_NAME))
-                routeName = nullIfEmpty(clean(decodeRoute2Text(parts[1]).trim()));
+                routeName = nullIfEmpty(clean(decodeText(parts[1]).trim()));
             else if (line.startsWith("W,") && parts.length >= 4) {
                 double latitude = toCoordinate(parts, 2, 90.0), longitude = toCoordinate(parts, 3, 180.0);
                 if (Double.isNaN(latitude) || Double.isNaN(longitude))
                     continue;
                 double[] converted = Datums.toWgs84(latitude, longitude, 0.0, datum);
-                String name = nullIfEmpty(clean(decodeRoute2Text(parts[1]).trim()));
+                String name = nullIfEmpty(clean(decodeText(parts[1]).trim()));
                 positions.add(new GpxPosition(converted[1], converted[0], null, null, null, name));
             }
         }
@@ -304,7 +296,7 @@ public abstract class OziExplorerFormat extends GpxBackedNavigationFormat implem
     }
 
     protected List<GpxRoute> readRoutes(InputStream source) throws IOException {
-        List<String> lines = splitLines(new String(readBytes(source), ISO_8859_1));
+        List<String> lines = splitLines(new String(stripBom(readBytes(source)), ISO_8859_1));
         if (lines.size() < 2)
             return null;
 

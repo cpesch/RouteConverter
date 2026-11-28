@@ -53,6 +53,7 @@
 
 ### Fixes
 
+- OziExplorer track, route and waypoint files saved as UTF-8 by other programs, with or without a byte order mark, are now read with their umlauts and other non-Latin characters; before, a byte order mark made the file unreadable and UTF-8 text came out garbled
 - Garmin POI (.gpi) files: positions with seven decimals are written and read back unchanged, where saving and reopening could move them by up to 9 mm; a text longer than 65 535 bytes is cut instead of written as a broken text
 - FAI/IGC Flight Recorder (.igc) files: damaged lines, a byte order mark, a missing A record and a damaged task declaration no longer make the whole flight unreadable; a small step back in the fix times no longer moves the rest of the flight to the next day; no-fix positions at 0/0 and fixes with impossible coordinates are skipped; a task without turn points and a second task are read
 - FAI/IGC Flight Recorder (.igc) files are written with all header records the FAI specification requires and the date as HFDTEDATE, fixes are rounded to whole seconds and meters, and altitudes outside -9999 to 99999 m no longer corrupt the fix record

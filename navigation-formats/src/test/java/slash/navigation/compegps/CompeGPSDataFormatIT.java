@@ -50,16 +50,16 @@ public class CompeGPSDataFormatIT {
 
     @Test
     public void testRoute() throws IOException {
-        checkFile("from-compegps.rte", Route, 2);
+        checkFile("from-compegps.rte", Route, 19);
     }
 
     @Test
     public void testTrack() throws IOException {
-        checkFile("from-compegps.trk", Track, 2);
+        checkFile("from-compegps.trk", Track, 3670);
     }
 
     @Test
     public void testWaypoints() throws IOException {
-        checkFile("from-compegps.wpt", Waypoints, 2);
+        checkFile("from-compegps.wpt", Waypoints, 31);
     }
 }
