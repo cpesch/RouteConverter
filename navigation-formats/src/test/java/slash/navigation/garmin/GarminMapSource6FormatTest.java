@@ -1019,8 +1019,9 @@ public class GarminMapSource6FormatTest {
         assertEquals(40000, large.getPositionCount());
         assertEquals(47.39999, large.getPosition(39999).getLatitude(), 0.0000001);
         assertEquals(40000, routes.get(2).getPositionCount());
-        // quadratic lookups took 16 s to write and 3 s to read
-        assertTrue(written - start < 2_000_000_000L, "write took " + (written - start) / 1000000 + " ms");
+        // quadratic lookups took 16 s to write and 3 s to read; the 2 s bound this test started with
+        // left write too little headroom above normal CI jitter (shared runners, C1-only JVM)
+        assertTrue(written - start < 3_000_000_000L, "write took " + (written - start) / 1000000 + " ms");
         assertTrue(read - written < 2_000_000_000L, "read took " + (read - written) / 1000000 + " ms");
     }
 
