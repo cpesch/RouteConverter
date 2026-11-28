@@ -147,7 +147,8 @@ public class AlanTrackLogFormatTest {
         assertTrue(format.isSupportsWriting());
         assertFalse(format.isSupportsMultipleRoutes());
         assertFalse(format instanceof MultipleRoutesFormat);
-        assertEquals(Integer.MAX_VALUE, format.getMaximumPositionCount());
+        // 2500 points per track: the user interface splits longer tracks
+        assertEquals(2500, format.getMaximumPositionCount());
     }
 
     @Test
@@ -301,8 +302,8 @@ public class AlanTrackLogFormatTest {
         assertEquals(100.0, track.getPosition(0).getElevation(), 0.0);
         assertEquals(36.0, track.getPosition(0).getSpeed(), 1e-9);
         assertNull(track.getPosition(0).getTime());
-        // an unknown elevation is written as 0xffff, which reads as -0.2 m
-        assertEquals(-0.2, track.getPosition(1).getElevation(), 0.0);
+        // an unknown elevation is written as 0xffff, which alan.cc reads as -0.2 m and here is unknown again (D23)
+        assertNull(track.getPosition(1).getElevation());
         assertNull(track.getPosition(1).getSpeed());
     }
 
@@ -319,5 +320,44 @@ public class AlanTrackLogFormatTest {
         } catch (IOException e) {
             assertTrue(e.getMessage().contains("2500 points per track"));
         }
+    }
+
+    @Test
+    public void readsFillPatternHeightAsUnknown() throws IOException {
+        ByteBuffer buffer = emptyFile();
+        header(buffer, 0, 2, bytes("T"), bytes(""));
+        point(buffer, 0, 0, 36000, -36000, 720, -1);
+        point(buffer, 0, 1, 36000, -36000, 720, -2);
+        GpxRoute track = read(buffer.array()).get(0);
+        assertNull(track.getPosition(0).getElevation());
+        assertEquals(-0.4, track.getPosition(1).getElevation(), 0.0);
+    }
+
+    @Test
+    public void skipsPointsWithOutOfRangeCoordinates() throws IOException {
+        // GPSBabel keeps them, an out-of-range point is skipped (D23)
+        ByteBuffer buffer = emptyFile();
+        header(buffer, 0, 3, bytes("T"), bytes(""));
+        point(buffer, 0, 0, 36000, -36000, 0, 0);
+        point(buffer, 0, 1, 0x7fffffff, -36000, 0, 0);
+        point(buffer, 0, 2, 36000, 0x7fffffff, 0, 0);
+        GpxRoute track = read(buffer.array()).get(0);
+        assertEquals(1, track.getPositionCount());
+        assertEquals(1.0, track.getPosition(0).getLatitude(), 0.0);
+    }
+
+    @Test
+    public void writesElevationsAndSpeedsBeyondTheFieldAsUnknown() throws IOException {
+        // alan.cc wraps them around the 16 bit field: 8848 m became -4259.2 m, 250 km/h a bad speed (D18)
+        List<GpxRoute> routes = read(write(track("High", null,
+                position(1.0, 1.0, 8848.0, 250.0),
+                position(1.0, 1.0, 6553.4, 163.0),
+                position(1.0, 1.0, -6553.8, null))));
+        GpxRoute track = routes.get(0);
+        assertNull(track.getPosition(0).getElevation());
+        assertNull(track.getPosition(0).getSpeed());
+        assertEquals(6553.4, track.getPosition(1).getElevation(), 0.0);
+        assertEquals(163.0, track.getPosition(1).getSpeed(), 0.1);
+        assertNull(track.getPosition(2).getElevation());
     }
 }

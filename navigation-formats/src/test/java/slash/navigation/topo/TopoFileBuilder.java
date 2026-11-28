@@ -210,6 +210,22 @@ class TopoFileBuilder {
         return bytes;
     }
 
+    /** symbol styles as in the public tpo-sample3.tpo: 2 unknown, name, icon?, 12 unknown, 4 color bytes */
+    static Bytes symbolStyles(String... names) {
+        Bytes bytes = new Bytes().varint(names.length);
+        for (String name : names)
+            bytes.u8(0xff).u8(0xff).string(name).u8(7).zeros(12).u8(0xff).u8(0xff).u8(0).u8(0);
+        return bytes;
+    }
+
+    /** symbols with their 1-based style */
+    static Bytes styledSymbols(int[] styles, double... coordinates) {
+        Bytes bytes = new Bytes().varint(styles.length);
+        for (int i = 0; i < styles.length; i++)
+            bytes.varint(0).varint(styles[i]).point(coordinates[2 * i], coordinates[2 * i + 1]);
+        return bytes;
+    }
+
     static Bytes textLabels(Bytes... labels) {
         Bytes bytes = new Bytes().varint(labels.length);
         for (Bytes label : labels)

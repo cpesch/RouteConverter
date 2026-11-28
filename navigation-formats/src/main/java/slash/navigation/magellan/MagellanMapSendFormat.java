@@ -48,14 +48,17 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.NavigationConversion.formatElevation;
 import static slash.navigation.common.NavigationConversion.formatPosition;
 
 /**
  * Reads and writes Magellan MapSend (.wpt) files. A native translation of GPSBabel's mapsend format as
- * RouteConverter used it: options "-r -w", i.e. waypoint files with their routes; track files are not delivered.
+ * RouteConverter used it: options "-r -w", i.e. waypoint files with their routes; track files are read as a
+ * track, since GPSBabel's GPX output delivered them despite "-r -w". Only waypoint files are written.
  *
  * @author Christian Pesch
  */
@@ -70,12 +73,18 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
     private static final String SIGNATURE_SUFFIX = " MS";
     private static final String WRITTEN_SIGNATURE = "4D533330 MS";
     private static final int TYPE_WAYPOINT = 1;
+    private static final int TYPE_TRACK = 2;
+    // the version from which track points have a float altitude and from which they have centiseconds
+    private static final int FLOAT_ALTITUDE_VERSION = 36;
+    private static final int CENTISECONDS_VERSION = 34;
     // name, description, number, icon, status, altitude, longitude, latitude
     private static final int MINIMUM_WAYPOINT_SIZE = 1 + 1 + 4 + 1 + 1 + 3 * 8;
     // name, number, count
     private static final int MINIMUM_ROUTE_SIZE = 1 + 4 + 4;
     // name, number, longitude, latitude, icon
     private static final int MINIMUM_ROUTE_POINT_SIZE = 1 + 4 + 2 * 8 + 1;
+    // longitude, latitude, altitude, time, valid
+    private static final int MINIMUM_TRACK_POINT_SIZE = 2 * 8 + 4 + 4 + 4;
     private static final int MAXIMUM_DESCRIPTION_LENGTH = 30;
     private static final int SHORT_NAME_LENGTH = 8;
     private static final String DEFAULT_ROUTE_NAME = "Route";
@@ -130,15 +139,28 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
         input.seek(HEADER_SIZE - 4);
         int type = input.readInt16();
         // regions and logs are fatal to GPSBabel
-        if (type != TYPE_WAYPOINT)
-            throw new UnreadableFileException(String.format("Cannot read MapSend file of type %d, only waypoint files (type %d)", type, TYPE_WAYPOINT));
+        if (type != TYPE_WAYPOINT && type != TYPE_TRACK)
+            throw new UnreadableFileException(String.format("Cannot read MapSend file of type %d, only waypoint (type %d) and track files (type %d)",
+                    type, TYPE_WAYPOINT, TYPE_TRACK));
 
         input.seek(HEADER_SIZE);
         try {
-            return readWaypointFile(input);
+            return type == TYPE_TRACK ? readTrackFile(input, readVersion(data)) : readWaypointFile(input);
         } catch (EOFException e) {
             throw new UnreadableFileException("MapSend file ends unexpectedly at byte " + input.position(), e);
         }
+    }
+
+    /** GPSBabel's atoi() of the two version characters after the signature: leading digits, 0 if none. */
+    static int readVersion(byte[] data) {
+        int version = 0;
+        for (int i = HEADER_LENGTH - 1; i < HEADER_LENGTH + 1; i++) {
+            char c = (char) (data[i] & 0xff);
+            if (!isDigit(c))
+                break;
+            version = version * 10 + (c - '0');
+        }
+        return version;
     }
 
     private static boolean fits(LittleEndianInput input, long count, int minimumSize) {
@@ -236,6 +258,40 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
         return result;
     }
 
+    // GPSBabel's mapsend_track_read()
+    private List<GpxRoute> readTrackFile(LittleEndianInput input, int version) throws IOException {
+        String name = stripIllegalXmlCharacters(trim(readString(input)));
+        long pointCount = input.readUInt32();
+        int pointSize = MINIMUM_TRACK_POINT_SIZE + (version >= CENTISECONDS_VERSION ? 1 : 0);
+        if (!fits(input, pointCount, pointSize))
+            throw countExceedsFile("track points", pointCount, input);
+
+        List<GpxPosition> positions = new ArrayList<>((int) pointCount);
+        for (long i = 0; i < pointCount; i++) {
+            double longitude = input.readDouble();
+            double latitude = -input.readDouble();
+            double altitude = version < FLOAT_ALTITUDE_VERSION ? (double) input.readInt32() : (double) input.readFloat();
+            long seconds = input.readInt32();
+            input.readInt32(); // valid
+            int centiseconds = version >= CENTISECONDS_VERSION ? input.readUInt8() : 0;
+
+            // GPSBabel does not check track points; an invalid or out-of-range coordinate skips the point (D23)
+            if (!Double.isFinite(longitude) || !Double.isFinite(latitude) ||
+                    latitude < -90.0 || latitude > 90.0 || longitude < -180.0 || longitude > 180.0)
+                continue;
+
+            // GPSBabel writes no time for 0 and a time before 1970 as one after 2106: both are no time (D23)
+            positions.add(new GpxPosition(asGpxCoordinate(longitude), asGpxCoordinate(latitude), asGpxElevation(altitude),
+                    null, seconds > 0 ? fromMillis(seconds * 1000 + centiseconds * 10L) : null, null));
+        }
+        // the GPX reader drops a track without points
+        if (positions.isEmpty())
+            return emptyList();
+        List<GpxRoute> result = new ArrayList<>();
+        result.add(new GpxRoute(new Gpx10Format(), Track, name, null, positions));
+        return result;
+    }
+
     private GpxPosition createPosition(double longitude, double latitude, Double elevation, String name, String desc) {
         String description = asDescription(stripIllegalXmlCharacters(name), stripIllegalXmlCharacters(desc));
         return new GpxPosition(asGpxCoordinate(longitude), asGpxCoordinate(latitude), elevation, null, null, description);
@@ -246,7 +302,8 @@ public class MagellanMapSendFormat extends GpxBackedNavigationFormat {
     }
 
     private static Double asGpxElevation(double altitude) {
-        if (altitude == UNKNOWN_ALTITUDE || !Double.isFinite(altitude))
+        // like mapsend_track_read(), anything at or below GPSBabel's unknown_alt is unknown (D23)
+        if (altitude < UNKNOWN_ALTITUDE + 1 || !Double.isFinite(altitude))
             return null;
         return new BigDecimal(altitude).setScale(GPX_ELEVATION_DIGITS, RoundingMode.HALF_EVEN).doubleValue();
     }

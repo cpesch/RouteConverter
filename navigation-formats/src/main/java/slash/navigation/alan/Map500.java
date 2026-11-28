@@ -51,6 +51,11 @@ final class Map500 {
     private static final double SPEED_SCALE = 720.0;
     private static final int SECONDS_PER_DAY = 86400;
     private static final int[] MONTH_TO_DAYS = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
+    // a packed date outside of these years is no time (D23)
+    private static final int MINIMUM_YEAR = 1980;
+    private static final int MAXIMUM_YEAR = 2100;
+    // the fill pattern of alan.cc's writer: an unknown height or speed
+    static final short UNKNOWN = -1;
     // GPSBabel writes coordinates to GPX with %0.9f and the speed with %.6f
     private static final int GPX_COORDINATE_DIGITS = 9;
     private static final int GPX_SPEED_DIGITS = 6;
@@ -66,20 +71,59 @@ final class Map500 {
         return siRound(degrees * PT_SCALE);
     }
 
-    static double hgt2m(int height) {
-        return height / ALTITUDE_SCALE;
+    /**
+     * The height in meters or null for 0xFFFF: alan.cc's writer fills unknown heights with it
+     * and reads it back as -0.2 m (D23).
+     */
+    static Double hgt2m(int height) {
+        return height != UNKNOWN ? height / ALTITUDE_SCALE : null;
     }
 
+    /**
+     * alan.cc casts to a C short, which wraps 6553.6 m and more to negative heights; a height
+     * that does not fit is written as unknown instead (D18).
+     */
     static short m2hgt(double meters) {
-        return (short) siRound(meters * ALTITUDE_SCALE);
+        return toShortOrUnknown(siRound(meters * ALTITUDE_SCALE));
     }
 
     static double sp2mps(int speed) {
         return speed / SPEED_SCALE;
     }
 
+    /**
+     * alan.cc casts to a C short, which wraps 163.8 km/h and more to a negative, that is bad,
+     * speed; a speed that does not fit is written as unknown instead (D18).
+     */
     static short mps2sp(double metersPerSecond) {
-        return (short) siRound(metersPerSecond * SPEED_SCALE);
+        return toShortOrUnknown(siRound(metersPerSecond * SPEED_SCALE));
+    }
+
+    private static short toShortOrUnknown(int value) {
+        return value >= Short.MIN_VALUE && value <= Short.MAX_VALUE ? (short) value : UNKNOWN;
+    }
+
+    /**
+     * GPSBabel's waypt_add(): wraps the latitude by 180 and the longitude by 360 degrees once.
+     * GPSBabel fails the whole file if they are still out of range; here only the point is
+     * skipped (D23).
+     *
+     * @return longitude and latitude or null if they are out of range
+     */
+    static double[] wrapCoordinates(double longitude, double latitude) {
+        if (latitude < -90.0)
+            latitude += 180.0;
+        else if (latitude > 90.0)
+            latitude -= 180.0;
+        if (longitude < -180.0)
+            longitude += 360.0;
+        else if (longitude > 180.0)
+            longitude -= 360.0;
+        return isValidCoordinates(longitude, latitude) ? new double[]{longitude, latitude} : null;
+    }
+
+    static boolean isValidCoordinates(double longitude, double latitude) {
+        return latitude >= -90.0 && latitude <= 90.0 && longitude >= -180.0 && longitude <= 180.0;
     }
 
     static double asGpxCoordinate(double value) {
@@ -157,6 +201,19 @@ final class Map500 {
         int date = dateTime.getDayOfMonth() | (dateTime.getMonthValue() << 8) | (dateTime.getYear() << 16);
         int time = (int) Math.floorMod(seconds, SECONDS_PER_DAY);
         return new int[]{date, time};
+    }
+
+    /**
+     * A packed date and time is plausible if the day, month and seconds of the day are in range
+     * and the year is between 1980 and 2100. alan.cc has no rule for an unknown time and turns
+     * a date of 0 into 2041 or a garbage year up to 65535 into a time; those become no time (D23).
+     */
+    static boolean isPlausibleTime(int date, int time) {
+        int year = (date >> 16) & 0xffff;
+        int month = (date >> 8) & 0xff;
+        int day = date & 0xff;
+        return year >= MINIMUM_YEAR && year <= MAXIMUM_YEAR && month >= 1 && month <= 12 &&
+                day >= 1 && day <= 31 && time >= 0 && time < SECONDS_PER_DAY;
     }
 
     /**

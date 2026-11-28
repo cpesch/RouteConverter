@@ -48,6 +48,7 @@ import static slash.navigation.alan.Map500.asGpxSpeed;
 import static slash.navigation.alan.Map500.deg2pt;
 import static slash.navigation.alan.Map500.fromLabel;
 import static slash.navigation.alan.Map500.hgt2m;
+import static slash.navigation.alan.Map500.isValidCoordinates;
 import static slash.navigation.alan.Map500.m2hgt;
 import static slash.navigation.alan.Map500.mps2sp;
 import static slash.navigation.alan.Map500.pt2deg;
@@ -100,6 +101,10 @@ public class AlanTrackLogFormat extends GpxBackedNavigationFormat {
         return "Alan Map 500 Tracklog (*" + getExtension() + ")";
     }
 
+    public int getMaximumPositionCount() {
+        return MAXPTINTRK;
+    }
+
     public boolean isSupportsMultipleRoutes() {
         return false;
     }
@@ -143,9 +148,14 @@ public class AlanTrackLogFormat extends GpxBackedNavigationFormat {
                 input.seek(trackLog + MAXPTINTRK * 8 + j * 4);
                 int speed = input.readInt16();
                 int height = input.readInt16();
+                double longitude = pt2deg(x);
+                double latitude = -pt2deg(y);
+                // GPSBabel does not check track points; an out-of-range point is skipped (D23)
+                if (!isValidCoordinates(longitude, latitude))
+                    continue;
                 // a negative speed is a bad speed
                 Double kmh = speed >= 0 ? msToKmh(asGpxSpeed(sp2mps(speed))) : null;
-                positions.add(new GpxPosition(asGpxCoordinate(pt2deg(x)), asGpxCoordinate(-pt2deg(y)), hgt2m(height),
+                positions.add(new GpxPosition(asGpxCoordinate(longitude), asGpxCoordinate(latitude), hgt2m(height),
                         kmh, null, null));
             }
             // the GPX reader drops a track without points
